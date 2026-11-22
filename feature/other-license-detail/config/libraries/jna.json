@@ -1,0 +1,10 @@
+{
+  "uniqueId": "net.java.dev.jna:jna",
+  "name": "JNA",
+  "description": "Vosk が実行時に使う Java Native Access（LGPL-2.1 と Apache-2.0 のデュアルライセンス。ここでは Apache-2.0 を選択）",
+  "website": "https://github.com/java-native-access/jna",
+  "scm": { "url": "https://github.com/java-native-access/jna" },
+  "developers": [{ "name": "JNA contributors" }],
+  "licenses": ["Apache-2.0"],
+  "openSource": true
+}
