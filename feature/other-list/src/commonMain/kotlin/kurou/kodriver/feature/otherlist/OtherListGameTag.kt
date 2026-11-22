@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -21,7 +22,7 @@ import kurou.kodriver.core.designsystem.simulatorShortName
 import kurou.kodriver.domain.model.Simulator
 
 /**
- * [simulators] のゲーム名タグを指定された順に並べ、その右に詳細へ進む矢印を表示する。
+ * [simulators] のゲーム名タグを指定された順に縦に積んで中央寄せにし、その右に詳細へ進む矢印を表示する。
  * 対象ゲームは最大2件の固定リストのため、ImmutableList化のコストに見合わない。
  */
 @Suppress("UnstableCollections")
@@ -34,8 +35,13 @@ internal fun OtherListGameTagsWithChevron(
         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        simulators.forEach { simulator ->
-            OtherListGameTag(simulator = simulator, isSelected = isSelected)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            simulators.forEach { simulator ->
+                OtherListGameTag(simulator = simulator, isSelected = isSelected)
+            }
         }
         Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
     }
