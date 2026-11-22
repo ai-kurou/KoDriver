@@ -58,12 +58,20 @@ internal const val SHINE_PEAK_ALPHA = 0.35f
 /**
  * 光の帯の中心の x 座標（px）を返す。[progress] が 0 のとき帯は画面の左外、1 のとき右外にあり、
  * 画面全体を左から右へ横切る。drawWithContent 内はユニットテストできないため切り出している。
+ *
+ * 帯は斜め（グラデーションの終点が [height] × [slantFraction] だけ下）なので、画面の角でも
+ * 両端で光が残らないよう、斜めの分（角をグラデーションの向きへ射影した長さ）を移動量に含める。
  */
 internal fun shineBandCenter(
     progress: Float,
     width: Float,
+    height: Float,
     bandWidth: Float,
-): Float = -bandWidth + (width + 2f * bandWidth) * progress
+    slantFraction: Float,
+): Float {
+    val pad = 1.5f * bandWidth + slantFraction * height * height / bandWidth
+    return -pad + (width + 2f * pad) * progress
+}
 
 /**
  * 起動完了時に光が画面を横切る演出の描画。[progress] が 0 以下または 1 以上のときは何も描かない。
@@ -77,7 +85,7 @@ private fun Modifier.shine(
         drawContent()
         if (progress > 0f && progress < 1f) {
             val bandWidth = size.width * SHINE_BAND_WIDTH_FRACTION
-            val center = shineBandCenter(progress, size.width, bandWidth)
+            val center = shineBandCenter(progress, size.width, size.height, bandWidth, SHINE_BAND_SLANT_FRACTION)
             drawRect(
                 brush =
                     Brush.linearGradient(
