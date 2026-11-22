@@ -1,10 +1,13 @@
 package kurou.kodriver.feature.autoreadoutlist
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
@@ -71,7 +74,7 @@ public fun AutoReadoutContent(
     )
 }
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun AutoReadoutContent(
     uiState: AutoReadoutListUiState,
@@ -149,45 +152,61 @@ internal fun AutoReadoutContent(
 
     backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }
 
-    ListDetailPaneScaffold(
-        directive = navigator.scaffoldDirective,
-        scaffoldState = navigator.scaffoldState,
-        paneExpansionState = paneExpansionState,
-        paneExpansionDragHandle = { VerticalDivider() },
-        modifier = modifier.constrainToTabletopTopPane(windowPosture),
-        listPane = {
-            AutoReadoutListPane(
-                uiState = uiState,
-                onMove = onMove,
-                onReadoutEnabledChanged = onReadoutEnabledChanged,
-                onQueueEnabledChanged = onQueueEnabledChanged,
-                onStartSoundEnabledChanged = onStartSoundEnabledChanged,
-                onItemClick = {
-                    lastOpenedItemKey = it.value
-                    onItemSelected(it)
-                },
-                scrollToTopRequest = scrollToTopRequest,
-                restoreFocusItemKey = lastOpenedItemKey.takeIf { uiState.selectedItem == null },
-                onFocusRestored = { lastOpenedItemKey = null },
-            )
-        },
-        detailPane = {
-            uiState.selectedItem?.let { selectedItem ->
-                Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
-                    AutoReadoutDetailPane(
-                        title = autoReadoutItemDisplayName(selectedItem.id),
-                        rootItemName = autoReadoutItemDisplayName(selectedItem.id),
-                        background = autoReadoutBackground(selectedItem.id),
-                        canNavigateBack = navigator.canNavigateBack(),
-                        onBack = { navigateBack() },
-                        rootEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(selectedItem.id),
-                        onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
-                        content = { detailContent(selectedItem) },
+    // 共有要素は一覧と詳細を同時に表示しない1ペイン表示のときだけ使う。2ペイン表示では遷移が起きない。
+    val useSharedBounds = navigator.scaffoldDirective.maxHorizontalPartitions == 1
+    SharedTransitionLayout(modifier = modifier.constrainToTabletopTopPane(windowPosture)) {
+        ListDetailPaneScaffold(
+            directive = navigator.scaffoldDirective,
+            scaffoldState = navigator.scaffoldState,
+            paneExpansionState = paneExpansionState,
+            paneExpansionDragHandle = { VerticalDivider() },
+            listPane = {
+                AnimatedPane {
+                    AutoReadoutListPane(
+                        uiState = uiState,
+                        onMove = onMove,
+                        onReadoutEnabledChanged = onReadoutEnabledChanged,
+                        onQueueEnabledChanged = onQueueEnabledChanged,
+                        onStartSoundEnabledChanged = onStartSoundEnabledChanged,
+                        onItemClick = {
+                            lastOpenedItemKey = it.value
+                            onItemSelected(it)
+                        },
+                        scrollToTopRequest = scrollToTopRequest,
+                        restoreFocusItemKey = lastOpenedItemKey.takeIf { uiState.selectedItem == null },
+                        onFocusRestored = { lastOpenedItemKey = null },
+                        sharedBounds =
+                            if (useSharedBounds) AutoReadoutSharedBounds(this@SharedTransitionLayout, this) else null,
                     )
                 }
-            }
-        },
-    )
+            },
+            detailPane = {
+                uiState.selectedItem?.let { selectedItem ->
+                    AnimatedPane {
+                        Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
+                            AutoReadoutDetailPane(
+                                title = autoReadoutItemDisplayName(selectedItem.id),
+                                rootItemName = autoReadoutItemDisplayName(selectedItem.id),
+                                background = autoReadoutBackground(selectedItem.id),
+                                canNavigateBack = navigator.canNavigateBack(),
+                                onBack = { navigateBack() },
+                                rootEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(selectedItem.id),
+                                onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
+                                topBarModifier =
+                                    if (useSharedBounds) {
+                                        AutoReadoutSharedBounds(this@SharedTransitionLayout, this@AnimatedPane)
+                                            .modifier(selectedItem.id)
+                                    } else {
+                                        Modifier
+                                    },
+                                content = { detailContent(selectedItem) },
+                            )
+                        }
+                    }
+                }
+            },
+        )
+    }
 }
 
 @Preview(showBackground = true)
