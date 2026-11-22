@@ -24,7 +24,6 @@ digraph G {
   ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:desktop-splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -67,6 +66,7 @@ digraph G {
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:server-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=1]
   ":server" -> ":core:domain"
   ":server" -> ":core:ace-windows-domain"
@@ -111,7 +111,6 @@ digraph G {
   ":feature:auto-readout-list" -> ":core:lmu-windows-domain"
   ":feature:auto-readout-list" -> ":core:ace-windows-domain"
   ":feature:auto-readout-list" -> ":core:gt7-ps5-domain"
-  ":feature:desktop-splash" -> ":core:domain"
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" -> ":core:domain"
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" -> ":core:gt7-ps5-domain"
   ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" -> ":core:domain"
@@ -195,4 +194,5 @@ digraph G {
   ":feature:speech-recognition-list" -> ":core:ace-windows-domain"
   ":feature:speech-recognition-list" -> ":core:gt7-ps5-domain"
   ":feature:speech-recognition-list" -> ":core:lmu-windows-domain"
+  ":feature:splash" -> ":core:domain"
 }
