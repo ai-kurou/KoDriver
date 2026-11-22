@@ -111,10 +111,21 @@ class AutoReadoutItemBackgroundTest {
     }
 
     @Test
-    fun `背景画像を持たない項目は背景画像を表示しない`() {
+    fun `車両故障の項目は車両故障の背景画像を表示する`() {
         val keys: List<ReadoutItemKey> =
             listOf(
                 LmuWindowsReadoutItemKey.VehicleDamage.Root,
+            )
+        for (key in keys) {
+            assertEquals(ReadoutBackground.VEHICLE_FAILURE, autoReadoutBackground(key), key.value)
+        }
+    }
+
+    @Test
+    fun `背景画像を持たない項目は背景画像を表示しない`() {
+        val keys: List<ReadoutItemKey> =
+            listOf(
+                LmuWindowsReadoutItemKey.ClassCarGap.Root,
             )
         for (key in keys) {
             assertNull(autoReadoutBackground(key), key.value)

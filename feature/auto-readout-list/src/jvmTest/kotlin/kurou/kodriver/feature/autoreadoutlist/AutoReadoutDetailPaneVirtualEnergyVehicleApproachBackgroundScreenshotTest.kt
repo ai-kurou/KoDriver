@@ -4,7 +4,7 @@ import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import org.junit.Test
 
-/** バーチャルエネルギー・車両接近・ピットタイミングの項目の詳細ペイン上部バーを、本番と同じタイトル・背景画像で撮影する。 */
+/** バーチャルエネルギー・車両接近・ピットタイミング・車両故障の項目の詳細ペイン上部バーを、本番と同じタイトル・背景画像で撮影する。 */
 class AutoReadoutDetailPaneVirtualEnergyVehicleApproachBackgroundScreenshotTest {
     init {
         registerAllReadoutItemKeys()
@@ -34,4 +34,10 @@ class AutoReadoutDetailPaneVirtualEnergyVehicleApproachBackgroundScreenshotTest 
 
     @Test
     fun `LMU ピットタイミング ダークテーマ`() = captureDetailPane(LmuWindowsReadoutItemKey.PitTiming.Root, dark = true)
+
+    @Test
+    fun `LMU 車両故障`() = captureDetailPane(LmuWindowsReadoutItemKey.VehicleDamage.Root, dark = false)
+
+    @Test
+    fun `LMU 車両故障 ダークテーマ`() = captureDetailPane(LmuWindowsReadoutItemKey.VehicleDamage.Root, dark = true)
 }

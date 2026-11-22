@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
  * 燃料関連（残量・残り周回数）は燃料缶の画像を使う。
  * 車両接近（LMU・ACE）は接近する車両の画像を使う。
  * ピットタイミング（LMU）はピットの画像を使う。
+ * 車両故障（LMU）は故障した車両の画像を使う。
  */
 internal fun autoReadoutBackground(item: ReadoutItemKey): ReadoutBackground? {
     if (item is LmuWindowsReadoutItemKey.Flag || item is AceWindowsReadoutItemKey.Flag) {
@@ -27,6 +28,9 @@ internal fun autoReadoutBackground(item: ReadoutItemKey): ReadoutBackground? {
     }
     if (item is LmuWindowsReadoutItemKey.PitTiming) {
         return ReadoutBackground.PIT_TIMING
+    }
+    if (item is LmuWindowsReadoutItemKey.VehicleDamage) {
+        return ReadoutBackground.VEHICLE_FAILURE
     }
     return when (autoReadoutItemCategory(item)) {
         ManualReadoutItemCategory.TYRE -> ReadoutBackground.TYRE
