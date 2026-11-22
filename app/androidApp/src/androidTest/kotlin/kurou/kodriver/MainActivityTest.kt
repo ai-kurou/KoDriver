@@ -406,6 +406,12 @@ class MainActivityTest {
         }
     }
 
+    private fun waitUntilNotDisplayedByContentDescription(description: String) {
+        composeTestRule.waitUntil(timeoutMillis = 8_000L) {
+            composeTestRule.onAllNodes(hasContentDescription(description)).fetchSemanticsNodes().isEmpty()
+        }
+    }
+
     private fun clickItemAndNavigateBack(text: String) {
         scrollToItem(text)
         clickItem(text)
@@ -435,6 +441,9 @@ class MainActivityTest {
     private fun navigateBack() {
         if (composeTestRule.onAllNodes(hasContentDescription("戻る")).fetchSemanticsNodes().isNotEmpty()) {
             composeTestRule.onNode(hasContentDescription("戻る")).performClick()
+            // 一覧と詳細の切り替えにはペインの出入りの動きがあり、その間は詳細が残っているため、
+            // 詳細の戻るボタンが消えてから次の操作に移る。
+            waitUntilNotDisplayedByContentDescription("戻る")
         } else {
             scenario?.onActivity { activity ->
                 activity.onBackPressedDispatcher.onBackPressed()
