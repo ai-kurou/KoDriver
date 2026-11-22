@@ -1,0 +1,10 @@
+{
+  "uniqueId": "org.openfst:openfst",
+  "name": "OpenFst",
+  "description": "Vosk のネイティブライブラリ（libvosk）に静的に組み込まれている有限状態トランスデューサのライブラリ",
+  "website": "https://www.openfst.org/",
+  "scm": { "url": "https://www.openfst.org/" },
+  "developers": [{ "name": "OpenFst contributors" }],
+  "licenses": ["Apache-2.0"],
+  "openSource": true
+}
