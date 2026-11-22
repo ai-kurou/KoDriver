@@ -9,9 +9,21 @@
 ## ライセンス一覧
 
 ライセンス画面（`OtherLicenseDetailPane.kt`）は `Res.readBytes("files/aboutlibraries.json")` で、リポジトリにコミットされた
-`src/commonMain/composeResources/files/aboutlibraries.json` を読む。
+`src/commonMain/composeResources/files/aboutlibraries.json` を読む。画面に出るのはこのファイルの内容のみ。
 
 - `config/libraries/*.json`（`vosk.json`、`vosk-model-small-ja.json`）は `aboutLibraries.collect.configPath` によりプラグインの生成物
-  （`build/generated/aboutLibraries/.../aboutlibraries.json`）にだけ入り、画面は読まない。
-- コミット済みの `aboutlibraries.json` を再生成するタスクは現状ない。そのため Vosk 本体・日本語モデル・JNA は、画面にはまだ出ない（未反映。別途対応予定）。
-  反映するには、生成物をコミット済みファイルへ反映する作業が別途必要。
+  （`build/generated/aboutLibraries/.../aboutlibraries.json`）にだけ入る。生成物は画面が読まないため、そのままでは画面に出ない。
+- Vosk 本体（`com.alphacephei:vosk`）と日本語モデル（`com.alphacephei:vosk-model-small-ja`）は、コミット済みの `aboutlibraries.json` に反映済み。
+  ライセンスは既存の Apache-2.0 定義を共用する。
+- JNA は `config/libraries` に定義がなく、コミット済みの `aboutlibraries.json` には含まれない（画面には出ない）。
+
+### コミット済み `aboutlibraries.json` の更新手順
+
+Gradle 依存の生成物を丸ごと置き換えると、アプリ全体の依存一覧と差が大きくなるため、次の手順で config 由来のエントリだけを反映する。
+
+1. 生成タスクを出力先を指定して実行する（`exportLibraryDefinitions` は `config/libraries` の定義を含む一覧を出力する）:
+   `./gradlew :feature:other-license-detail:exportLibraryDefinitions -PaboutLibraries.exportPath=<出力先ディレクトリ>`
+2. 出力された `aboutlibraries.json` から `uniqueId` が `com.alphacephei:` で始まるエントリを取り出し、
+   コミット済みファイルの `libraries` に `uniqueId` 順で追加・置換する（`libraries` は `uniqueId` 昇順、JSON は 1 行の compact 形式で保つ）。
+3. `git diff` で差分が対象エントリだけであることを確認する。
+4. `config/libraries/*.json` を変更した場合は、この手順で同じエントリを反映し直す。
