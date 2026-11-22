@@ -68,13 +68,13 @@ class ManualReadoutContentTest {
                 }
             }
         }
-        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed()
         rule.onNodeWithText("詳細スロット").assertDoesNotExist()
         rule.runOnIdle { selected.value = true }
-        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed()
         rule.onNodeWithText("詳細スロット").assertIsDisplayed()
         rule.runOnIdle { selected.value = false }
-        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed()
         rule.onNodeWithText("詳細スロット").assertDoesNotExist()
     }
 
@@ -107,13 +107,13 @@ class ManualReadoutContentTest {
                 }
             }
         }
-        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed()
         rule.onNodeWithText("詳細スロット").assertDoesNotExist()
         rule.runOnIdle { selected.value = true }
-        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed()
         rule.onNodeWithText("詳細スロット").assertIsDisplayed()
         rule.runOnIdle { selected.value = false }
-        rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed()
+        rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed()
         rule.onNodeWithText("詳細スロット").assertDoesNotExist()
     }
 
@@ -151,10 +151,10 @@ class ManualReadoutContentTest {
             }
         }
         rule.onNodeWithText("詳細 target").assertDoesNotExist()
-        rule.onNodeWithText("LMU(Windows)セット1").performClick()
+        rule.onNodeWithText("LMU (Win)セット1").performClick()
         rule.onNodeWithText("詳細 target").performClick()
         rule.onNodeWithText("詳細 target").assertDoesNotExist()
-        rule.onNodeWithText("LMU(Windows)セット1").assertExists()
+        rule.onNodeWithText("LMU (Win)セット1").assertExists()
     }
 
     @Test
@@ -186,7 +186,7 @@ class ManualReadoutContentTest {
             }
         }
         rule.onNodeWithText("詳細 target").assertExists()
-        rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
+        rule.onNodeWithText("LMU (Win)セット1").performTouchInput { longClick() }
         rule.onNodeWithText("削除").performClick()
         rule.onNodeWithText("削除").performClick()
         rule.onNodeWithText("詳細 target").assertDoesNotExist()

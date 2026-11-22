@@ -273,7 +273,7 @@ class MainActivityTest {
 
     @Test
     fun `LMU選択時にアプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
-        assertDebugStateScreen("Le Mans Ultimate（Windows版）", "ゲームフェーズ（LMUのみ）")
+        assertDebugStateScreen("Le Mans Ultimate（Windows版）", "ゲームフェーズ（LMU (Win)のみ）")
     }
 
     @Test

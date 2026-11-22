@@ -121,7 +121,7 @@ class ManualReadoutListPaneWiringTest {
                     }
                 }
             }
-            rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed().performClick()
+            rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed().performClick()
             rule.onNodeWithText("詳細 lmu-set").assertIsDisplayed()
             rule.runOnIdle { simulatorId = Simulator.Gt7Ps5.id }
             rule.waitForIdle()
@@ -140,17 +140,17 @@ class ManualReadoutListPaneWiringTest {
             rule.waitForIdle()
             rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
             rule.onNode(hasScrollToIndexAction()).performScrollToIndex(25)
-            rule.onNodeWithText("LMU(Windows)セット1").assertDoesNotExist()
+            rule.onNodeWithText("LMU (Win)セット1").assertDoesNotExist()
             rule.runOnIdle { tabReselectRequest++ }
             rule.waitForIdle()
-            rule.onNodeWithText("LMU(Windows)セット1").assertIsDisplayed().performClick()
+            rule.onNodeWithText("LMU (Win)セット1").assertIsDisplayed().performClick()
             rule.onNodeWithText("詳細 lmu-set").assertIsDisplayed()
             rule.runOnIdle { showContent = false }
             rule.waitForIdle()
             rule.runOnIdle { showContent = true }
             rule.waitForIdle()
             rule.onNodeWithText("詳細 lmu-set").assertIsDisplayed()
-            rule.onNodeWithText("LMU(Windows)セット1").performTouchInput { longClick() }
+            rule.onNodeWithText("LMU (Win)セット1").performTouchInput { longClick() }
             rule.onNodeWithText("削除").performClick()
             rule.onNodeWithText("削除").performClick()
             rule.onNodeWithText("詳細 lmu-set").assertDoesNotExist()
