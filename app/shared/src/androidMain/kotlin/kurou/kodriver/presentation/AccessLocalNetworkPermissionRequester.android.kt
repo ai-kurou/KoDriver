@@ -73,6 +73,8 @@ internal actual fun rememberAccessLocalNetworkPermissionRequester(
 
 private const val AMBIGUOUS_DENIALS_FOR_PERMANENT_DENIAL = 2
 
+// ACCESS_LOCAL_NETWORK（API 37 定数）はコンパイル時に文字列へインライン展開されるため、古い端末でも実行時エラーにならない。
+// 呼び出しは権限が必要な端末（rememberAccessLocalNetworkPermissionRequester の経路）でのみ行われる。
 @SuppressLint("InlinedApi")
 private fun Activity?.shouldShowRationale(): Boolean =
     this != null &&

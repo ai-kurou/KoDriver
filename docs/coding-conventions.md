@@ -161,6 +161,14 @@ val voices = runCapturingErrorsOrNull { getAvailableVoices() } ?: emptyList()
 
 ルートの `build.gradle.kts` で、全サブプロジェクトの Kotlin コンパイルに `allWarningsAsErrors` を設定している。警告が出るとコンパイルが失敗するため、`@Suppress` で隠さず原因を解消する。非推奨 API の移行で検証方式やリソース読み込みの挙動が変わるなど、そのPRで対応できない場合に限り、理由をコメントに書いて対象の宣言・式に限定した `@Suppress("DEPRECATION")` を付ける。
 
+## Android Lint の重大度
+
+`kmp-library` プラグイン（`build-logic`）と `app:androidApp` の `lint` ブロックで、`NewApi` と `InlinedApi` を `error` に固定している。minSdk 未満の API を `SDK_INT` ガードなしで呼ぶと古い端末でのみクラッシュするため、既定の重大度や suppress の変更で検出が弱まらないようにするため。
+
+- Lint baseline（`lint-baseline.xml`）は使わない。既存の違反は baseline で隠さず、コードを直すか、理由を書いた個別の `@SuppressLint` で対応する。
+- `@SuppressLint("InlinedApi")` は、対象が `SDK_INT` ガード済み、またはインライン展開される定数で実行時に安全な場合に限り、理由コメントを付けて対象の宣言に限定する。
+- 違反の検出確認は、ガードなしの新 API 呼び出しを一時的に入れて `lint` が失敗することを確かめ、確認後に戻す（コミットしない）。
+
 ## Kotlin の公開範囲（explicitApi）
 
 `explicitApi()`（strict モード）は、`build-logic` の `kmp-library` プラグインを使う KMP ライブラリモジュールのほか、`server` や `app:androidApp` など個別に有効にしたモジュールでも有効になっている。対象モジュールの main 系ソースセットでは、宣言の可視性と、public な関数の戻り値型・public なプロパティの型を明示する。
