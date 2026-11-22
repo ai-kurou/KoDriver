@@ -1,13 +1,10 @@
 package kurou.kodriver.feature.manualreadoutlist
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.Bolt
@@ -22,8 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -52,8 +48,17 @@ internal fun manualReadoutCategoryColor(category: ManualReadoutItemCategory): Co
     }
 }
 
+internal fun manualReadoutCategoryIcon(category: ManualReadoutItemCategory): ImageVector =
+    when (category) {
+        ManualReadoutItemCategory.VIRTUAL_ENERGY -> Icons.Default.Bolt
+        ManualReadoutItemCategory.FUEL -> Icons.Default.LocalGasStation
+        ManualReadoutItemCategory.TYRE -> Icons.Default.DonutLarge
+        ManualReadoutItemCategory.BRAKE -> Icons.Default.Album
+        ManualReadoutItemCategory.TIME -> Icons.Default.Timer
+    }
+
 @Composable
-private fun manualReadoutCategoryLabel(category: ManualReadoutItemCategory): String =
+internal fun manualReadoutCategoryLabel(category: ManualReadoutItemCategory): String =
     stringResource(
         when (category) {
             ManualReadoutItemCategory.VIRTUAL_ENERGY -> Res.string.manual_readout_category_virtual_energy
@@ -98,14 +103,7 @@ internal fun ManualReadoutCategoryChips(
                         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
                     ) {
                         Icon(
-                            imageVector =
-                                when (category) {
-                                    ManualReadoutItemCategory.VIRTUAL_ENERGY -> Icons.Default.Bolt
-                                    ManualReadoutItemCategory.FUEL -> Icons.Default.LocalGasStation
-                                    ManualReadoutItemCategory.TYRE -> Icons.Default.DonutLarge
-                                    ManualReadoutItemCategory.BRAKE -> Icons.Default.Album
-                                    ManualReadoutItemCategory.TIME -> Icons.Default.Timer
-                                },
+                            imageVector = manualReadoutCategoryIcon(category),
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
                             tint = color,
@@ -122,26 +120,6 @@ internal fun ManualReadoutCategoryChips(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-internal fun ManualReadoutCategoryDots(summary: ManualReadoutCategorySummary) {
-    Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
-        summary.counts.forEach { (category, count) ->
-            val description =
-                stringResource(
-                    Res.string.manual_readout_list_category_count,
-                    manualReadoutCategoryLabel(category),
-                    count,
-                )
-            Box(
-                Modifier
-                    .size(8.dp)
-                    .background(manualReadoutCategoryColor(category), CircleShape)
-                    .semantics { contentDescription = description },
-            )
         }
     }
 }

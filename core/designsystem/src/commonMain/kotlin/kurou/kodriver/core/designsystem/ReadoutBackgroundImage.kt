@@ -22,6 +22,9 @@ internal const val BACKGROUND_IMAGE_MAX_HEIGHT_FRACTION = 1.5f
 /** 背景画像を2枚以上横に並べるときの、項目カード幅に対する並べた領域全体の幅の割合。 */
 internal const val BACKGROUND_IMAGES_WIDTH_FRACTION = 0.65f
 
+/** 背景画像を全面に敷くときに、画像の上へ重ねる色の不透明度。上に置く文字やアイコンの視認性を保つ。 */
+internal const val FULL_BACKGROUND_IMAGE_OVERLAY_ALPHA = 0.65f
+
 /** 背景画像の左端（カード色に溶け込む側）の不透明度。 */
 internal const val BACKGROUND_IMAGE_FADE_START_ALPHA = 1f
 
@@ -124,5 +127,32 @@ public fun Modifier.rightAlignedBackgroundImages(
                 topLeft = Offset(left, 0f),
                 size = Size(total, size.height),
             )
+        }
+    }
+
+/**
+ * 正方形の [painters] を領域全体に横へ等分して敷き、各画像を縦横中央で切り取って描く。
+ * 画像の上に [overlayColor] を [FULL_BACKGROUND_IMAGE_OVERLAY_ALPHA] で重ね、前面の文字やアイコンを読みやすくする。
+ * [painters] が空のときは何も描かない。
+ */
+public fun Modifier.fullBackgroundImages(
+    painters: List<Painter>,
+    overlayColor: Color,
+): Modifier =
+    if (painters.isEmpty()) {
+        this
+    } else {
+        drawBehind {
+            val tileWidth = size.width / painters.size
+            val side = maxOf(tileWidth, size.height)
+            painters.forEachIndexed { index, painter ->
+                val tileLeft = tileWidth * index
+                clipRect(left = tileLeft, right = tileLeft + tileWidth) {
+                    translate(left = tileLeft + (tileWidth - side) / 2f, top = (size.height - side) / 2f) {
+                        with(painter) { draw(Size(side, side)) }
+                    }
+                }
+            }
+            drawRect(color = overlayColor.copy(alpha = FULL_BACKGROUND_IMAGE_OVERLAY_ALPHA))
         }
     }
