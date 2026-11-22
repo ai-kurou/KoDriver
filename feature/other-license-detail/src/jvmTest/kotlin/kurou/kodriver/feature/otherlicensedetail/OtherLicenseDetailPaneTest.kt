@@ -9,10 +9,13 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.entity.Scm
+import com.mikepenz.aboutlibraries.util.parseData
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.runBlocking
+import kurou.kodriver.feature.otherlicensedetail.generated.resources.Res
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -39,6 +42,21 @@ class OtherLicenseDetailPaneTest {
         rule.onNode(hasContentDescription("戻る")).performClick()
 
         assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `同梱のVoskと日本語モデルがライセンス一覧のデータに含まれる`() {
+        runBlocking {
+            val json = Res.readBytes("files/aboutlibraries.json").decodeToString()
+            val libraries: Map<String, Library> = parseData(json).libraries.associateBy { it.uniqueId }
+
+            val vosk = libraries["com.alphacephei:vosk"]
+            val voskModel = libraries["com.alphacephei:vosk-model-small-ja"]
+            assertEquals("Vosk", vosk?.name)
+            assertEquals("vosk-model-small-ja-0.22", voskModel?.name)
+            assertEquals(listOf("Apache-2.0"), vosk?.licenses?.map { it.spdxId })
+            assertEquals(listOf("Apache-2.0"), voskModel?.licenses?.map { it.spdxId })
+        }
     }
 
     @Test
