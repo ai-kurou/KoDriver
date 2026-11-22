@@ -147,3 +147,10 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - → で次の部品、← で前の部品（0 番に戻れる）へ移動する。端では折り返さず、行の外にも出ず、消費だけする。
 - 無効な部品（`partEnabled` が false）は飛ばす。
 - Alt / Ctrl / Shift / Meta 付きの矢印と、行内の部品にフォーカスがない場合は処理しない。↑↓ は従来どおり行単位の移動（`ListRowFocusState`）が担う。
+
+## 行の背景画像
+
+読み上げ項目の行カードの背景画像は `ReadoutBackground` enum で種類を管理する。画像は `composeResources/drawable/<種類>_row_background.jpg` に置く。
+
+- 画像は 600x600 の JPEG で、1枚あたり 150KB 以下に収める（既存の画像はいずれも 150KB 以下）。
+- どの項目にどの画像を使うかは各 feature が決める。画像を追加するときは enum に値を追加し、feature 側の対応づけとテストを更新する。

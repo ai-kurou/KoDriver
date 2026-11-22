@@ -5,7 +5,7 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import org.junit.Test
 
 /** バーチャルエネルギー・車両接近・ピットタイミング・車両故障の項目の詳細ペイン上部バーを、本番と同じタイトル・背景画像で撮影する。 */
-class AutoReadoutDetailPaneVirtualEnergyVehicleApproachBackgroundScreenshotTest {
+class AutoReadoutDetailPaneOtherBackgroundScreenshotTest {
     init {
         registerAllReadoutItemKeys()
     }
