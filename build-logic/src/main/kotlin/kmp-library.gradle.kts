@@ -23,6 +23,8 @@ kotlin {
         lint {
             abortOnError = true
             warningsAsErrors = false
+            // minSdk 未満の API を SDK_INT ガードなしで使うと古い端末でのみクラッシュするため、重大度を error に固定する（方針は docs/coding-conventions.md）
+            error += setOf("NewApi", "InlinedApi")
         }
     }
 }
