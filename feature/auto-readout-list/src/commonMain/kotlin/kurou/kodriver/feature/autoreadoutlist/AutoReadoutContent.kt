@@ -2,6 +2,9 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -28,6 +31,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntRect
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
@@ -161,7 +165,11 @@ internal fun AutoReadoutContent(
             paneExpansionState = paneExpansionState,
             paneExpansionDragHandle = { VerticalDivider() },
             listPane = {
-                AnimatedPane {
+                AnimatedPane(
+                    enterTransition = PaneEnterTransition,
+                    exitTransition = PaneExitTransition,
+                    boundsAnimationSpec = PaneBoundsAnimationSpec,
+                ) {
                     AutoReadoutListPane(
                         uiState = uiState,
                         onMove = onMove,
@@ -182,7 +190,11 @@ internal fun AutoReadoutContent(
             },
             detailPane = {
                 uiState.selectedItem?.let { selectedItem ->
-                    AnimatedPane {
+                    AnimatedPane(
+                        enterTransition = PaneEnterTransition,
+                        exitTransition = PaneExitTransition,
+                        boundsAnimationSpec = PaneBoundsAnimationSpec,
+                    ) {
                         Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
                             AutoReadoutDetailPane(
                                 title = autoReadoutItemDisplayName(selectedItem.id),
@@ -208,6 +220,18 @@ internal fun AutoReadoutContent(
         )
     }
 }
+
+private const val PANE_TRANSITION_MILLIS = 250
+
+/**
+ * ペインの出入りはフェードにする。
+ * 既定は減衰比0.8のバネでペインを横へスライドさせるため、目標位置を行き過ぎて左右に揺れて見える。
+ */
+private val PaneEnterTransition = fadeIn(animationSpec = tween(durationMillis = PANE_TRANSITION_MILLIS))
+private val PaneExitTransition = fadeOut(animationSpec = tween(durationMillis = PANE_TRANSITION_MILLIS))
+
+/** ペインが表示されたまま大きさや位置が変わるときの動き。既定のバネと違い、行き過ぎない。 */
+private val PaneBoundsAnimationSpec = tween<IntRect>(durationMillis = PANE_TRANSITION_MILLIS)
 
 /**
  * 現在のペインへ scaffold が自動でフォーカスを移す動きを止めた [PaneScaffoldDirective] を返す。
