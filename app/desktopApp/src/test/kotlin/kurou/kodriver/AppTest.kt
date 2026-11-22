@@ -379,7 +379,7 @@ class AppTest {
         selectSimulator("Le Mans Ultimate（Windows版）")
 
         clickItem("手動")
-        waitUntilDisplayed("LMUの手動読み上げセットはまだありません")
+        waitUntilDisplayed("LMU (Win)の手動読み上げセットはまだありません")
         waitUntilDisplayed("手動読み上げについて")
     }
 
