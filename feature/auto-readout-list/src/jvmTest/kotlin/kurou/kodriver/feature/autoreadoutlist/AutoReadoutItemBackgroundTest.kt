@@ -100,10 +100,21 @@ class AutoReadoutItemBackgroundTest {
     }
 
     @Test
-    fun `タイヤ・ブレーキ・自己ベストラップ・フラッグ・燃料・バーチャルエネルギー残量・車両接近以外の項目は背景画像を表示しない`() {
+    fun `ピットタイミングの項目はピットの背景画像を表示する`() {
         val keys: List<ReadoutItemKey> =
             listOf(
                 LmuWindowsReadoutItemKey.PitTiming.Root,
+            )
+        for (key in keys) {
+            assertEquals(ReadoutBackground.PIT_TIMING, autoReadoutBackground(key), key.value)
+        }
+    }
+
+    @Test
+    fun `背景画像を持たない項目は背景画像を表示しない`() {
+        val keys: List<ReadoutItemKey> =
+            listOf(
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
             )
         for (key in keys) {
             assertNull(autoReadoutBackground(key), key.value)

@@ -5,6 +5,7 @@ import kurou.kodriver.core.designsystem.generated.resources.best_lap_row_backgro
 import kurou.kodriver.core.designsystem.generated.resources.brake_row_background
 import kurou.kodriver.core.designsystem.generated.resources.flag_row_background
 import kurou.kodriver.core.designsystem.generated.resources.fuel_row_background
+import kurou.kodriver.core.designsystem.generated.resources.pit_timing_row_background
 import kurou.kodriver.core.designsystem.generated.resources.tyre_row_background
 import kurou.kodriver.core.designsystem.generated.resources.vehicle_approach_row_background
 import kurou.kodriver.core.designsystem.generated.resources.virtual_energy_row_background
@@ -37,4 +38,7 @@ public enum class ReadoutBackground(
 
     /** 車両接近。 */
     VEHICLE_APPROACH(Res.drawable.vehicle_approach_row_background),
+
+    /** ピットタイミング。 */
+    PIT_TIMING(Res.drawable.pit_timing_row_background),
 }
