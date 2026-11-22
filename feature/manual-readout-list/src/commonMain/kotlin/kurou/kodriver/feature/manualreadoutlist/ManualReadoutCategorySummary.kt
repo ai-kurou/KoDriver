@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.manualreadoutlist
 
 import androidx.compose.runtime.Immutable
+import kurou.kodriver.core.designsystem.ReadoutBackground
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
 
 /** Compose が安定と判断できるよう、カテゴリ別件数の一覧を包む。 */
@@ -19,3 +20,13 @@ internal fun manualReadoutCategoryCounts(itemKeys: List<String>): List<Pair<Manu
 
 internal fun manualReadoutCategorySummary(itemKeys: List<String>): ManualReadoutCategorySummary =
     ManualReadoutCategorySummary(manualReadoutCategoryCounts(itemKeys))
+
+/** カテゴリに対応する背景画像を返す。 */
+internal fun manualReadoutCategoryBackground(category: ManualReadoutItemCategory): ReadoutBackground =
+    when (category) {
+        ManualReadoutItemCategory.VIRTUAL_ENERGY -> ReadoutBackground.VIRTUAL_ENERGY
+        ManualReadoutItemCategory.FUEL -> ReadoutBackground.FUEL
+        ManualReadoutItemCategory.TYRE -> ReadoutBackground.TYRE
+        ManualReadoutItemCategory.BRAKE -> ReadoutBackground.BRAKE
+        ManualReadoutItemCategory.TIME -> ReadoutBackground.BEST_LAP
+    }

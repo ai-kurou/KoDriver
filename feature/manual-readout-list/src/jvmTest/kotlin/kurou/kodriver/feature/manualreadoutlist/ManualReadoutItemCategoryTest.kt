@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutlist
 
+import kurou.kodriver.core.designsystem.ReadoutBackground
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinitions
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemDefinitions
@@ -71,5 +72,21 @@ class ManualReadoutItemCategoryTest {
             listOf(ManualReadoutItemCategory.FUEL to 2),
             manualReadoutCategoryCounts(List(2) { LmuWindowsReadoutItemKey.RemainingFuel.Root.value }),
         )
+    }
+
+    @Test
+    fun `カテゴリごとに対応する背景画像を返す`() {
+        val expected =
+            mapOf(
+                ManualReadoutItemCategory.VIRTUAL_ENERGY to ReadoutBackground.VIRTUAL_ENERGY,
+                ManualReadoutItemCategory.FUEL to ReadoutBackground.FUEL,
+                ManualReadoutItemCategory.TYRE to ReadoutBackground.TYRE,
+                ManualReadoutItemCategory.BRAKE to ReadoutBackground.BRAKE,
+                ManualReadoutItemCategory.TIME to ReadoutBackground.BEST_LAP,
+            )
+        assertEquals(ManualReadoutItemCategory.entries.toSet(), expected.keys)
+        expected.forEach { (category, background) ->
+            assertEquals(background, manualReadoutCategoryBackground(category), category.name)
+        }
     }
 }

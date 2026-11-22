@@ -19,6 +19,9 @@ internal const val BACKGROUND_IMAGE_WIDTH_FRACTION = 0.55f
 /** 背景画像の一辺の、項目カード高さに対する上限の倍率。幅が広いときに画像が大きくなりすぎるのを防ぐ。 */
 internal const val BACKGROUND_IMAGE_MAX_HEIGHT_FRACTION = 1.5f
 
+/** 背景画像を2枚以上横に並べるときの、項目カード幅に対する並べた領域全体の幅の割合。 */
+internal const val BACKGROUND_IMAGES_WIDTH_FRACTION = 0.65f
+
 /** 背景画像の左端（カード色に溶け込む側）の不透明度。 */
 internal const val BACKGROUND_IMAGE_FADE_START_ALPHA = 1f
 
@@ -33,6 +36,21 @@ internal fun backgroundImageSide(
     width: Float,
     height: Float,
 ): Float = minOf(width * BACKGROUND_IMAGE_WIDTH_FRACTION, height * BACKGROUND_IMAGE_MAX_HEIGHT_FRACTION)
+
+/**
+ * 背景画像を [count] 枚横に並べた領域の幅（px）を返す。1枚のときは [backgroundImageSide] と同じ。
+ * 2枚以上は [BACKGROUND_IMAGES_WIDTH_FRACTION] を幅基準とし、1枚あたり高さ基準の上限を超えない。
+ */
+internal fun backgroundImagesWidth(
+    width: Float,
+    height: Float,
+    count: Int,
+): Float =
+    if (count <= 1) {
+        backgroundImageSide(width, height)
+    } else {
+        minOf(width * BACKGROUND_IMAGES_WIDTH_FRACTION, height * BACKGROUND_IMAGE_MAX_HEIGHT_FRACTION * count)
+    }
 
 /**
  * 正方形の [painter] を右寄せ・縦中央で描き、左端から [fadeColor]（カードの背景色）へ溶け込ませる。
@@ -65,4 +83,46 @@ public fun Modifier.rightAlignedBackgroundImage(
             topLeft = Offset(left, 0f),
             size = Size(side, size.height),
         )
+    }
+
+/**
+ * 正方形の [painters] を右寄せで横に等分して並べ、各画像を縦横中央で切り取って描く。
+ * 左端から [fadeColor]（カードの背景色）へ溶け込ませる描き方は [rightAlignedBackgroundImage] と同じ。
+ * 1枚のときは [rightAlignedBackgroundImage] と同じ見た目になる。
+ */
+public fun Modifier.rightAlignedBackgroundImages(
+    painters: List<Painter>,
+    fadeColor: Color,
+): Modifier =
+    if (painters.size <= 1) {
+        painters.firstOrNull()?.let { rightAlignedBackgroundImage(it, fadeColor) } ?: this
+    } else {
+        drawBehind {
+            val total = backgroundImagesWidth(size.width, size.height, painters.size)
+            val left = size.width - total
+            val tileWidth = total / painters.size
+            val side = maxOf(tileWidth, size.height)
+            painters.forEachIndexed { index, painter ->
+                val tileLeft = left + tileWidth * index
+                clipRect(left = tileLeft, right = tileLeft + tileWidth) {
+                    translate(left = tileLeft + (tileWidth - side) / 2f, top = (size.height - side) / 2f) {
+                        with(painter) { draw(Size(side, side)) }
+                    }
+                }
+            }
+            drawRect(
+                brush =
+                    Brush.horizontalGradient(
+                        colors =
+                            listOf(
+                                fadeColor.copy(alpha = BACKGROUND_IMAGE_FADE_START_ALPHA),
+                                fadeColor.copy(alpha = BACKGROUND_IMAGE_FADE_END_ALPHA),
+                            ),
+                        startX = left,
+                        endX = size.width,
+                    ),
+                topLeft = Offset(left, 0f),
+                size = Size(total, size.height),
+            )
+        }
     }
