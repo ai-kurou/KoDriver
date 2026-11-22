@@ -29,13 +29,16 @@ internal class RecognitionPipeline(
 
     private var lastPartial = ""
     private var lastMode = SpeechRecognitionMode.WakeWord
+    private var volumeGateHoldChunks = 0
 
     suspend fun FlowCollector<SpeechRecognitionEvent>.process(pcm: ByteArray) {
-        emit(SpeechRecognitionEvent.Level(pcm.pcmLevel()))
+        val level = pcm.pcmLevel()
+        emit(SpeechRecognitionEvent.Level(level))
         val previousMode = lastMode
         lastMode = modeSync.sync()
         if (lastMode != previousMode) lastPartial = ""
-        when (val transcript = transcriber.accept(pcm)) {
+        val input = if (isVolumeGateOpen(level)) pcm else ByteArray(pcm.size)
+        when (val transcript = transcriber.accept(input)) {
             is SpeechTranscript.Partial -> {
                 if (transcript.text != lastPartial) {
                     lastPartial = transcript.text
@@ -51,7 +54,33 @@ internal class RecognitionPipeline(
             null -> {}
         }
     }
+
+    /**
+     * 音量ゲートの開閉を決める。閾値以上の断片でホールドを [VOLUME_GATE_HOLD_CHUNKS] に戻し、
+     * 閾値未満の断片はホールドが残っている間だけ開のまま、残数を1つ減らす。
+     */
+    private fun isVolumeGateOpen(level: Float): Boolean {
+        if (level >= VOLUME_GATE_THRESHOLD) {
+            volumeGateHoldChunks = VOLUME_GATE_HOLD_CHUNKS
+            return true
+        }
+        val open = volumeGateHoldChunks > 0
+        if (open) volumeGateHoldChunks--
+        return open
+    }
 }
+
+/**
+ * 音量ゲートの閾値（[pcmLevel] の 0.0〜1.0）。これ未満の断片は無音として認識器に渡し、小さい音による誤反応を防ぐ。
+ * 既定値であり、実機で誤反応や取りこぼしを見て調整する前提。
+ */
+internal const val VOLUME_GATE_THRESHOLD = 0.3f
+
+/**
+ * 音量ゲートが閾値以上の断片のあと開いたままにする断片数。断片は100ms（500ms分）。
+ * 語尾や息継ぎの小さい音を確定まで認識器に渡すための既定値であり、実機で調整する前提。
+ */
+internal const val VOLUME_GATE_HOLD_CHUNKS = 5
 
 /**
  * 認識モデルが使えれば [SpeechTranscriber] を作る。使えない・読み込めないときは記録して null を返す。
