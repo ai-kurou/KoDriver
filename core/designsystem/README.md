@@ -154,3 +154,4 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 - 画像は 600x600 の JPEG で、1枚あたり 150KB 以下に収める（既存の画像はいずれも 150KB 以下）。
 - どの項目にどの画像を使うかは各 feature が決める。画像を追加するときは enum に値を追加し、feature 側の対応づけとテストを更新する。
+- 複数の画像を1行に並べるときは `rightAlignedBackgroundImages` を使う。右側の領域（幅の65%、1枚あたり高さ基準の上限あり）を枚数で等分し、各画像を中央で切り取って横に並べる。1枚のときは `rightAlignedBackgroundImage` と同じ見た目になる。

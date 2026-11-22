@@ -55,6 +55,7 @@ import kotlinx.coroutines.delay
 import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.PlayingEqualizer
+import kurou.kodriver.core.designsystem.rightAlignedBackgroundImages
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_cancel
@@ -64,6 +65,7 @@ import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_reado
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_delete_title
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_edit
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_requesting
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 /** セット名・カテゴリ別件数・対応環境のホットキーと読み上げボタンを表示する。 */
@@ -87,6 +89,9 @@ internal fun ManualReadoutSetRow(
             ?.first
             ?.let { manualReadoutCategoryColor(it) }
             ?: MaterialTheme.colorScheme.outlineVariant
+    val backgroundPainters =
+        categories.counts.map { (category, _) -> painterResource(manualReadoutCategoryBackground(category).drawable) }
+    val cardColor = MaterialTheme.colorScheme.surfaceContainerLow
     val haptic = LocalHapticFeedback.current
     var requestCount by remember { mutableIntStateOf(0) }
     LaunchedEffect(requestCount) {
@@ -111,7 +116,7 @@ internal fun ManualReadoutSetRow(
                         menuExpanded = true
                     },
                 ),
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        colors = CardDefaults.elevatedCardColors(containerColor = cardColor),
     ) {
         ManualReadoutSetMenu(
             expanded = menuExpanded,
@@ -123,6 +128,7 @@ internal fun ManualReadoutSetRow(
             modifier =
                 Modifier
                     .fillMaxWidth()
+                    .rightAlignedBackgroundImages(backgroundPainters, cardColor)
                     .drawBehind { drawRect(stripeColor, size = size.copy(width = 5.dp.toPx())) }
                     .padding(
                         start = KoDriverSpacing.large,
