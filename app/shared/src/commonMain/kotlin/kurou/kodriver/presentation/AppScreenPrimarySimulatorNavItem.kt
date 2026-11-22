@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.ArrowDropUp
@@ -34,6 +35,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_auto_readout
@@ -59,6 +61,17 @@ internal val PrimarySimulatorRailHeaderIconSize = 40.dp
  * NavigationRail ヘッダーとナビ項目を区切る [HorizontalDivider] の幅。
  */
 internal val PrimarySimulatorRailHeaderDividerWidth = 32.dp
+
+/**
+ * NavigationBar のシミュレーター項目ラベルの最大幅。超える場合はスペース位置で折り返し、
+ * 「LMU (Win)」を「LMU」「(Win)」の2行で表示する。単語1つのラベル（GT7・ACE）は1行のまま。
+ */
+internal val PrimarySimulatorBarLabelMaxWidth = 44.dp
+
+/**
+ * NavigationBar のシミュレーター項目ラベルの最大行数。
+ */
+internal const val PRIMARY_SIMULATOR_BAR_LABEL_MAX_LINES = 2
 
 @Composable
 internal fun AppDestination.label(): String =
@@ -131,7 +144,12 @@ internal fun AppScreenPrimarySimulatorNavItem(
                 val dropdownArrowRotation by
                     animateFloatAsState(targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
+                    Text(
+                        text = appScreenPrimarySimulatorLabel(selectedSimulatorId),
+                        textAlign = TextAlign.Center,
+                        maxLines = PRIMARY_SIMULATOR_BAR_LABEL_MAX_LINES,
+                        modifier = Modifier.widthIn(max = PrimarySimulatorBarLabelMaxWidth),
+                    )
                     Icon(
                         imageVector = Icons.Filled.ArrowDropUp,
                         contentDescription = null,
