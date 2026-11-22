@@ -93,7 +93,7 @@ class ManualReadoutListPaneTest {
         listOf(
             "lmu_windows" to "LMU (Win)セット1",
             "gt7_ps5" to "GT7セット1",
-            "ace_windows" to "ACEセット1",
+            "ace_windows" to "ACE (Win)セット1",
         ).forEach { (simulatorId, expectedTitle) ->
             rule.setContent {
                 KoDriverTheme {
@@ -251,7 +251,7 @@ class ManualReadoutListPaneTest {
 
     @Test
     fun `LMUとGT7とACEに合わせて空状態の文言を更新する`() {
-        val simulatorName = mutableStateOf("LMU")
+        val simulatorName = mutableStateOf("LMU (Win)")
         rule.setContent {
             KoDriverTheme {
                 ManualReadoutListPaneContent(
@@ -265,7 +265,7 @@ class ManualReadoutListPaneTest {
             }
         }
 
-        listOf("LMU", "GT7", "ACE").forEach { name ->
+        listOf("LMU (Win)", "GT7", "ACE (Win)").forEach { name ->
             rule.runOnIdle { simulatorName.value = name }
             rule.onNodeWithText("${name}の手動読み上げセットはまだありません").assertIsDisplayed()
         }

@@ -144,7 +144,7 @@ class SimulatorDisplayTest {
 
     @Test
     fun `ace_windowsの短縮名を返す`() {
-        assertEquals("ACE", simulatorShortName("ace_windows"))
+        assertEquals("ACE (Win)", simulatorShortName("ace_windows"))
     }
 
     @Test

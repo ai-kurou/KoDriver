@@ -303,7 +303,7 @@ class MainActivityTest {
 
     @Test
     fun `ACEの手動タブにセットがない場合は空状態を表示する`() {
-        assertManualReadoutEmptyState("Assetto Corsa EVO（Windows版）", "ACE")
+        assertManualReadoutEmptyState("Assetto Corsa EVO（Windows版）", "ACE (Win)")
     }
 
     @Test
