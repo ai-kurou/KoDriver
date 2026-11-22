@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.desktopsplash
+package kurou.kodriver.feature.splash
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

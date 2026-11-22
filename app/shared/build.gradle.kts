@@ -21,7 +21,7 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
-            implementation(projects.feature.desktopSplash)
+            implementation(projects.feature.splash)
             implementation(projects.feature.main)
             implementation(projects.feature.serverConnection)
             implementation(projects.feature.lmuWindowsNarrator)

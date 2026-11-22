@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.desktopsplash
+package kurou.kodriver.feature.splash
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed

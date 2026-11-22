@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.desktopsplash
+package kurou.kodriver.feature.splash
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize

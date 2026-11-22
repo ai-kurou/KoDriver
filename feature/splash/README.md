@@ -1,4 +1,4 @@
-# desktop-splash
+# splash
 
 デスクトップアプリ起動中に表示するスプラッシュ画面の状態管理を担うモジュール。
 
@@ -20,5 +20,5 @@ JVM の起動から Compose 初期化・Koin モジュール構築・Ktor サー
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
-![Module Graph](../../docs/graphs/feature-desktop-splash.svg)
+![Module Graph](../../docs/graphs/feature-splash.svg)
 <!-- MODULE-GRAPH-END -->

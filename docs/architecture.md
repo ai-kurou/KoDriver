@@ -27,7 +27,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:windows-shared-memory` | Windows共有メモリI/Oの汎用基盤（`lmu-windows-data` / `ace-windows-data` が共通利用） | [図](graphs/core-windows-shared-memory.svg) |
 | `:core:designsystem` | アプリ全体で共有する Composable コンポーネント | [図](graphs/core-designsystem.svg) |
 | `:core:narrator` | 開始音のWAV再生・TTS読み上げ制御の共通基盤（lmu/gt7/ace の各narrator featureが共通利用） | [図](graphs/core-narrator.svg) |
-| `:feature:desktop-splash` | デスクトップ起動中スプラッシュの初期化進捗管理・画面表示 | [図](graphs/feature-desktop-splash.svg) |
+| `:feature:splash` | スプラッシュの初期化進捗管理・画面表示（現状はデスクトップ起動時のみ使用） | [図](graphs/feature-splash.svg) |
 | `:feature:lmu-windows-debug-state-detail` | LMUのデバッグ状態表示（18枚のカード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-lmu-windows-debug-state-detail.svg) |
 | `:feature:gt7-ps5-debug-state-detail` | GT7（PS5）専用のデバッグ状態表示（6枚のカード・状態集約・カード順序保存。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-gt7-ps5-debug-state-detail.svg) |
 | `:feature:ace-windows-debug-state-detail` | ACEのデバッグ状態表示（7枚のカード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-ace-windows-debug-state-detail.svg) |

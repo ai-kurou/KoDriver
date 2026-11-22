@@ -1,12 +1,12 @@
-package kurou.kodriver.feature.desktopsplash
+package kurou.kodriver.feature.splash
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import kurou.kodriver.feature.desktopsplash.generated.resources.Res
-import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_error_close
-import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_error_title
+import kurou.kodriver.feature.splash.generated.resources.Res
+import kurou.kodriver.feature.splash.generated.resources.desktop_splash_error_close
+import kurou.kodriver.feature.splash.generated.resources.desktop_splash_error_title
 import org.jetbrains.compose.resources.stringResource
 
 /**

@@ -4,7 +4,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "kurou.kodriver.feature.desktopsplash"
+        namespace = "kurou.kodriver.feature.splash"
         withHostTest {
             isIncludeAndroidResources = true
         }
@@ -26,5 +26,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kurou.kodriver.feature.desktopsplash.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.splash.generated.resources"
 }

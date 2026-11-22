@@ -1,9 +1,9 @@
-package kurou.kodriver.feature.desktopsplash
+package kurou.kodriver.feature.splash
 
-import kurou.kodriver.feature.desktopsplash.generated.resources.Res
-import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_initializing_modules
-import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_ready
-import kurou.kodriver.feature.desktopsplash.generated.resources.desktop_splash_starting_server
+import kurou.kodriver.feature.splash.generated.resources.Res
+import kurou.kodriver.feature.splash.generated.resources.desktop_splash_initializing_modules
+import kurou.kodriver.feature.splash.generated.resources.desktop_splash_ready
+import kurou.kodriver.feature.splash.generated.resources.desktop_splash_starting_server
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

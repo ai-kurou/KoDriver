@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.desktopsplash
+package kurou.kodriver.feature.splash
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

@@ -10,10 +10,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.CancellationException
-import kurou.kodriver.feature.desktopsplash.DesktopSplashErrorDialog
-import kurou.kodriver.feature.desktopsplash.DesktopSplashProgress
-import kurou.kodriver.feature.desktopsplash.DesktopSplashScreen
-import kurou.kodriver.feature.desktopsplash.runInitialization
+import kurou.kodriver.feature.splash.DesktopSplashErrorDialog
+import kurou.kodriver.feature.splash.DesktopSplashProgress
+import kurou.kodriver.feature.splash.DesktopSplashScreen
+import kurou.kodriver.feature.splash.runInitialization
 
 /**
  * デスクトップアプリの起動時に、初期化が完了するまでスプラッシュ画面を表示するホスト。

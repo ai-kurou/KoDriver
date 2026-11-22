@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.desktopsplash
+package kurou.kodriver.feature.splash
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
@@ -38,8 +38,8 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ReadoutBackground
 import kurou.kodriver.core.designsystem.rightAlignedBackgroundImage
-import kurou.kodriver.feature.desktopsplash.generated.resources.Res
-import kurou.kodriver.feature.desktopsplash.generated.resources.app_icon
+import kurou.kodriver.feature.splash.generated.resources.Res
+import kurou.kodriver.feature.splash.generated.resources.app_icon
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
