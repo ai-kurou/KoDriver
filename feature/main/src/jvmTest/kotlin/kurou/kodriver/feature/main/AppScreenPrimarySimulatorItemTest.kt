@@ -59,13 +59,13 @@ class AppScreenPrimarySimulatorItemTest {
     }
 
     @Test
-    fun `ace_windowsの場合ラベルはACEになる`() {
+    fun `ace_windowsの場合ラベルはACE (Win)になる`() {
         var label = ""
         rule.setContent {
             label = appScreenPrimarySimulatorLabel(simulatorId = "ace_windows")
         }
 
-        assertEquals("ACE", label)
+        assertEquals("ACE (Win)", label)
     }
 
     @Test

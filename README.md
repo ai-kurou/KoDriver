@@ -27,7 +27,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 - アナウンス優先度のドラッグ＆ドロップによる並び替え
 - 開始音の WAV 再生と、全項目の OS 標準 TTS（自由文言）によるリアルタイムアナウンス
 - 読み上げ音声（Windows / Android）の選択と試聴
-- LMU (Windows版) / ACE 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
+- LMU (Windows版) / ACE (Windows版) 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
 - GT7 PS5 のテレメトリを UDP で直接受信（Android / Windows 対応、SimHub 経由も可）
 - テレメトリログの記録・一覧表示・詳細確認
 - ウェイクワード「コドライバー」に続けて語句を言うと対応する項目を読み上げる音声認識（オフライン。Android / Windows）。言うと何が読み上げられるかは「音声」タブで確認できる
@@ -37,13 +37,13 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 **デスクトップアプリ（Windows）**
 
 - Windows 10 以降
-- Le Mans Ultimate（Windows版、LMU 使用時）、Gran Turismo 7 PS5（GT7 使用時）、または Assetto Corsa EVO（ACE 使用時）
+- Le Mans Ultimate（Windows版、LMU 使用時）、Gran Turismo 7 PS5（GT7 使用時）、または Assetto Corsa EVO（Windows版、ACE 使用時）
 - 音声認識を使う場合: マイク（入力デバイス）
 
 **Android アプリ**
 
 - Android 9.0 以降
-- LMU (Windows版) / ACE 情報を受信する場合: デスクトップアプリと同一 LAN への接続
+- LMU (Windows版) / ACE (Windows版) 情報を受信する場合: デスクトップアプリと同一 LAN への接続
 - GT7 PS5 テレメトリを受信する場合: PS5 または SimHub を実行している PC と同一 LAN への接続
 - 音声認識を使う場合: マイク（マイクの権限の許可が必要）
 
@@ -53,7 +53,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
 [Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の MSI インストーラーをダウンロードして実行してください。
 
-Windows 版 KoDriver をあらかじめ起動しておいてください。LMU (Windows版) または ACE が起動すると KoDriver が自動的に接続します。
+Windows 版 KoDriver をあらかじめ起動しておいてください。LMU (Windows版) または ACE (Windows版) が起動すると KoDriver が自動的に接続します。
 
 インストール時に Windows SmartScreen の警告が表示される場合があります。詳しい手順、ファイアウォール設定、既知の制限は [Windows 版のインストール手順](docs/windows-install.md) を参照してください。
 
@@ -65,7 +65,7 @@ Windows 版 KoDriver をあらかじめ起動しておいてください。LMU (
 
 Android 17（API 37）以降では、「その他」の接続先IPアドレス設定画面を開いたときに許可を求められます。見逃した場合は、画面上部の接続バナー（「ローカルネットワークの許可が必要です」）をタップして、ローカルネットワークへのアクセスを許可してください。許可しないとWindows版KoDriverやPS5・SimHubとの通信ができません。拒否を繰り返した場合は、バナーのタップでアプリの設定が開きます（「その他 → ローカルネットワークへのアクセス許可」からも開けます）。
 
-LMU (Windows版) / ACEとの接続先の設定は、[Windows版のインストール手順](docs/windows-install.md#android-アプリと連携する場合)を参照してください。
+LMU (Windows版) / ACE (Windows版)との接続先の設定は、[Windows版のインストール手順](docs/windows-install.md#android-アプリと連携する場合)を参照してください。
 
 ## 音声認識の使い方
 

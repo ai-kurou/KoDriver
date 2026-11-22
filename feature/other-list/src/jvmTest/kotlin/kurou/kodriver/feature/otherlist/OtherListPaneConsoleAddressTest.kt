@@ -62,7 +62,7 @@ class OtherListPaneConsoleAddressTest {
         rule.onAllNodesWithText("GT7").assertCountEquals(1)
         rule.onNode(hasText("ゲーム機・SimHubへ接続するIPアドレス") and hasText("GT7")).assertIsDisplayed()
         rule.onAllNodesWithText("LMU (Win)").assertCountEquals(0)
-        rule.onAllNodesWithText("ACE").assertCountEquals(0)
+        rule.onAllNodesWithText("ACE (Win)").assertCountEquals(0)
     }
 
     private fun assertConsoleAddressLabel(

@@ -84,7 +84,7 @@ public fun simulatorPlatformLabel(simulatorId: String): String? =
     }
 
 /**
- * ナビゲーション項目など表示幅が限られる場所向けの短縮名（"LMU (Win)"・"GT7"・"ACE"）を返す。
+ * ナビゲーション項目など表示幅が限られる場所向けの短縮名（"LMU (Win)"・"GT7"・"ACE (Win)"）を返す。
  * これらは略称であり翻訳対象ではないため文字列リソース化しない。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
@@ -92,6 +92,6 @@ public fun simulatorShortName(simulatorId: String): String =
     when (simulatorId) {
         LMU_WINDOWS_ID -> "LMU (Win)"
         GT7_PS5_ID -> "GT7"
-        ACE_WINDOWS_ID -> "ACE"
+        ACE_WINDOWS_ID -> "ACE (Win)"
         else -> error("未対応のsimulatorId: $simulatorId")
     }
