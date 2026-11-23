@@ -80,4 +80,20 @@ class AndroidSplashOverlayTest {
         rule.onNodeWithText("背後", useUnmergedTree = true).assertExists()
         assertFalse(clicked)
     }
+
+    @Test
+    fun `出だしの背景色は光が進むと消える`() {
+        assertEquals(1f, startColorAlpha(0f))
+        assertEquals(0.5f, startColorAlpha(ANDROID_SPLASH_START_COLOR_FADE_FRACTION / 2f), 0.0001f)
+        assertEquals(0f, startColorAlpha(ANDROID_SPLASH_START_COLOR_FADE_FRACTION))
+        assertEquals(0f, startColorAlpha(1f))
+    }
+
+    @Test
+    fun `アイコンは光の中ほどで最も膨らみ両端で元の大きさに戻る`() {
+        assertEquals(1f, iconScale(0f), 0.0001f)
+        assertEquals(1f + ANDROID_SPLASH_ICON_POP, iconScale(0.5f), 0.0001f)
+        assertEquals(1f, iconScale(1f), 0.0001f)
+        assertEquals(1f, iconScale(2f), 0.0001f)
+    }
 }

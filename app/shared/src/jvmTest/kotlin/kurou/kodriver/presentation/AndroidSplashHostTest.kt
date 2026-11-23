@@ -8,6 +8,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class AndroidSplashHostTest {
     @get:Rule
@@ -19,7 +21,7 @@ class AndroidSplashHostTest {
         rule.setContent {
             MaterialTheme {
                 Text("メイン画面")
-                AndroidSplashHost(isRestored = false, alreadyShown = false, animatorDurationScale = 1f)
+                AndroidSplashHost(show = true)
             }
         }
 
@@ -34,15 +36,21 @@ class AndroidSplashHostTest {
     }
 
     @Test
-    fun `表示済みのときはスプラッシュを重ねない`() {
+    fun `表示しないときはスプラッシュを重ねない`() {
         rule.setContent {
             MaterialTheme {
                 Text("メイン画面")
-                AndroidSplashHost(isRestored = false, alreadyShown = true, animatorDurationScale = 1f)
+                AndroidSplashHost(show = false)
             }
         }
 
         rule.onNodeWithText("メイン画面").assertIsDisplayed()
         rule.onNodeWithContentDescription("KoDriver").assertDoesNotExist()
+    }
+
+    @Test
+    fun `表示の可否はオーバーレイの判定と一致する`() {
+        assertTrue(shouldShowAndroidSplash(isRestored = false, alreadyShown = false, animatorDurationScale = 1f))
+        assertFalse(shouldShowAndroidSplash(isRestored = true, alreadyShown = false, animatorDurationScale = 1f))
     }
 }

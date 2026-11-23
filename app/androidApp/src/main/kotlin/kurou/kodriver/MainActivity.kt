@@ -13,6 +13,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import kotlinx.coroutines.CancellationException
 import kurou.kodriver.presentation.AndroidSplashHost
 import kurou.kodriver.presentation.AppScreen
+import kurou.kodriver.presentation.shouldShowAndroidSplash
 
 /** このプロセスで既にスプラッシュのオーバーレイを表示したか。Activity が再生成されても再表示しないために持つ。 */
 private var splashOverlayShown = false
@@ -23,7 +24,7 @@ private var splashOverlayShown = false
 public class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalActivityApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         enableEdgeToEdge(
             statusBarStyle =
                 SystemBarStyle.light(
@@ -36,14 +37,20 @@ public class MainActivity : ComponentActivity() {
             Settings.Global.getFloat(contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
         val alreadyShown = splashOverlayShown
         splashOverlayShown = true
+        val showSplash =
+            shouldShowAndroidSplash(
+                isRestored = savedInstanceState != null,
+                alreadyShown = alreadyShown,
+                animatorDurationScale = animatorDurationScale,
+            )
+        if (showSplash) {
+            // オーバーレイが同じ見た目で引き継ぐため、OS のスプラッシュの終了アニメーション（フェード）は省いて即座に取り除く。
+            splashScreen.setOnExitAnimationListener { provider -> provider.remove() }
+        }
         setContent {
             AppScreen(
                 overlayContent = {
-                    AndroidSplashHost(
-                        isRestored = savedInstanceState != null,
-                        alreadyShown = alreadyShown,
-                        animatorDurationScale = animatorDurationScale,
-                    )
+                    AndroidSplashHost(show = showSplash)
                 },
                 backHandler = { enabled, onProgress, onBack ->
                     PredictiveBackHandler(enabled = enabled) { progress ->
