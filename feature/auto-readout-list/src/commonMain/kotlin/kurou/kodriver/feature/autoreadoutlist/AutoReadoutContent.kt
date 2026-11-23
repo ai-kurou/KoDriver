@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.Posture
@@ -37,6 +38,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
 import kurou.kodriver.core.designsystem.KoDriverListPaneWidth
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
@@ -131,6 +133,12 @@ internal fun AutoReadoutContent(
     LaunchedEffect(uiState.selectedItem) {
         uiState.selectedItem?.let { lastSelectedItem = it }
     }
+    // 一覧ペインは詳細表示中に合成から外れるため、スクロール位置は外側で保持し、戻ったときに最上部へ戻らないようにする
+    val listState = rememberLazyListState()
+    // 一覧ペインの中で実行すると、詳細から戻ってペインが再び合成されるたびに過去のリクエスト値で再実行され、最上部へ戻ってしまう
+    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+        listState.animateScrollToItem(0)
+    }
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
         predictiveBackProgress = 0f
@@ -185,7 +193,7 @@ internal fun AutoReadoutContent(
                             lastOpenedItemKey = it.value
                             onItemSelected(it)
                         },
-                        scrollToTopRequest = scrollToTopRequest,
+                        listState = listState,
                         restoreFocusItemKey = lastOpenedItemKey.takeIf { uiState.selectedItem == null },
                         onFocusRestored = { lastOpenedItemKey = null },
                         sharedBounds =

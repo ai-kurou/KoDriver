@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -99,7 +100,6 @@ import kurou.kodriver.core.designsystem.ListRowPartsFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.ReadoutStartSoundIcons
 import kurou.kodriver.core.designsystem.RestoreRowFocusOnReturn
-import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.core.designsystem.handleListRowPartArrowKey
 import kurou.kodriver.core.designsystem.handleListRowReorderKey
@@ -190,12 +190,11 @@ internal fun AutoReadoutListPane(
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemClick: (ReadoutItemKey) -> Unit,
-    scrollToTopRequest: Int = 0,
     restoreFocusItemKey: String? = null,
     onFocusRestored: () -> Unit = {},
     sharedBounds: AutoReadoutSharedBounds? = null,
+    listState: LazyListState = rememberLazyListState(),
 ) {
-    val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val isAceSelected = uiState.selectedSimulator is Simulator.AceWindows
     val isGt7Ps5DesktopHintShown = shouldShowGt7Ps5DesktopAutoReadoutHint(uiState.selectedSimulator)
@@ -232,10 +231,6 @@ internal fun AutoReadoutListPane(
                 autoReadoutItemIndex(to.index, autoReadoutItemStartIndex, uiState.items.size),
             )
         }
-
-    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
-        listState.animateScrollToItem(0)
-    }
 
     val visibleState = remember { MutableTransitionState(false).apply { targetState = true } }
     val entryOffset = with(LocalDensity.current) { 12.dp.roundToPx() }
