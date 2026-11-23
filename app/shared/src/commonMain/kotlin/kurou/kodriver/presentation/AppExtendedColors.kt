@@ -18,14 +18,14 @@ internal data class AppExtendedColorScheme(
 
 internal val AppLightExtendedColorScheme =
     AppExtendedColorScheme(
-        warningContainer = Color(0xFFFFF9C4),
-        onWarningContainer = Color(0xFF5F4B00),
+        warningContainer = Color(0xFFFFE0B2),
+        onWarningContainer = Color(0xFF7A3E00),
     )
 
 internal val AppDarkExtendedColorScheme =
     AppExtendedColorScheme(
-        warningContainer = Color(0xFF5C4700),
-        onWarningContainer = Color(0xFFFFE8A3),
+        warningContainer = Color(0xFF5C3300),
+        onWarningContainer = Color(0xFFFFD9B0),
     )
 
 internal val LocalAppExtendedColorScheme = staticCompositionLocalOf { AppLightExtendedColorScheme }
