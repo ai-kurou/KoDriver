@@ -55,6 +55,18 @@ internal fun backgroundImagesWidth(
         minOf(width * BACKGROUND_IMAGES_WIDTH_FRACTION, height * BACKGROUND_IMAGE_MAX_HEIGHT_FRACTION * count)
     }
 
+/** 下寄せの背景画像の一辺の、描画領域の高さに対する上限の割合。縦長の画面で画像が画面を覆いすぎないようにする。 */
+internal const val BOTTOM_BACKGROUND_IMAGE_MAX_HEIGHT_FRACTION = 0.6f
+
+/**
+ * 下寄せの背景画像の一辺（px）を返す。幅いっぱいを基準に、高さ基準の上限
+ * （[BOTTOM_BACKGROUND_IMAGE_MAX_HEIGHT_FRACTION]）を超えない。drawBehind 内はユニットテストできないため切り出している。
+ */
+internal fun bottomBackgroundImageSide(
+    width: Float,
+    height: Float,
+): Float = minOf(width, height * BOTTOM_BACKGROUND_IMAGE_MAX_HEIGHT_FRACTION)
+
 /**
  * 正方形の [painter] を右寄せ・縦中央で描き、左端から [fadeColor]（カードの背景色）へ溶け込ませる。
  * 一辺は [backgroundImageSide] で決め、幅が広くても [BACKGROUND_IMAGE_MAX_HEIGHT_FRACTION] を超えて大きくならない。
@@ -155,4 +167,36 @@ public fun Modifier.fullBackgroundImages(
             }
             drawRect(color = overlayColor.copy(alpha = FULL_BACKGROUND_IMAGE_OVERLAY_ALPHA))
         }
+    }
+
+/**
+ * 正方形の [painter] を下端・横中央で描き、上端から [fadeColor] へ溶け込ませる。縦長の画面向け。
+ * 一辺は [bottomBackgroundImageSide] で決める。横は描画領域からはみ出す分を切り取る。
+ */
+public fun Modifier.bottomAlignedBackgroundImage(
+    painter: Painter,
+    fadeColor: Color,
+): Modifier =
+    drawBehind {
+        val side = bottomBackgroundImageSide(size.width, size.height)
+        val top = size.height - side
+        clipRect(top = top) {
+            translate(left = (size.width - side) / 2f, top = top) {
+                with(painter) { draw(Size(side, side)) }
+            }
+        }
+        drawRect(
+            brush =
+                Brush.verticalGradient(
+                    colors =
+                        listOf(
+                            fadeColor.copy(alpha = BACKGROUND_IMAGE_FADE_START_ALPHA),
+                            fadeColor.copy(alpha = BACKGROUND_IMAGE_FADE_END_ALPHA),
+                        ),
+                    startY = top,
+                    endY = size.height,
+                ),
+            topLeft = Offset(0f, top),
+            size = Size(size.width, side),
+        )
     }

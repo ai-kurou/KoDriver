@@ -12,9 +12,11 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.ReadoutBackground
+import kurou.kodriver.core.designsystem.bottomAlignedBackgroundImage
 import kurou.kodriver.core.designsystem.rightAlignedBackgroundImage
 import kurou.kodriver.feature.splash.generated.resources.Res
 import kurou.kodriver.feature.splash.generated.resources.app_icon
@@ -30,7 +32,7 @@ internal const val SHINE_PEAK_ALPHA = 0.35f
 private const val SHINE_BAND_SLANT_FRACTION = 0.5f
 
 /** スプラッシュに表示するアプリアイコンの標準の大きさ。 */
-public val SplashAppIconSize: Dp = 96.dp
+public val SplashAppIconSize: Dp = 144.dp
 
 /**
  * 光の帯の中心の x 座標（px）を返す。[progress] が 0 のとき帯は画面の左外、1 のとき右外にあり、
@@ -79,15 +81,29 @@ private fun Modifier.shine(
         }
     }
 
+/** 写真の置き方を [portrait] で切り替える。縦長のときは下端に置いて上へ、横長のときは右側に置いて左へ溶かす。 */
+private fun Modifier.photoBackground(
+    portrait: Boolean,
+    photo: Painter,
+    fadeColor: Color,
+): Modifier =
+    if (portrait) {
+        bottomAlignedBackgroundImage(photo, fadeColor)
+    } else {
+        rightAlignedBackgroundImage(photo, fadeColor)
+    }
+
 /**
  * スプラッシュ画面の背景。自己ベストラップの写真を右側に置いて左へ背景色へ溶かし、その上に光の帯を重ねる。
- * [shineProgress]（0〜1）は光の位置で、範囲外のときは光を描かない。[content] は背景の上に重ねる。
+ * [shineProgress]（0〜1）は光の位置で、範囲外のときは光を描かない。[portrait] が true のときは写真を下端に置いて上へ溶かす（縦長の画面向け）。
+ * [content] は背景の上に重ねる。
  * デスクトップと Android のスプラッシュで共通に使う。
  */
 @Composable
 public fun SplashBackdrop(
     shineProgress: Float,
     modifier: Modifier = Modifier,
+    portrait: Boolean = false,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val surface = MaterialTheme.colorScheme.surface
@@ -96,7 +112,7 @@ public fun SplashBackdrop(
         modifier =
             modifier
                 .fillMaxSize()
-                .rightAlignedBackgroundImage(photo, surface)
+                .photoBackground(portrait, photo, surface)
                 .shine(shineProgress, MaterialTheme.colorScheme.primary),
         content = content,
     )

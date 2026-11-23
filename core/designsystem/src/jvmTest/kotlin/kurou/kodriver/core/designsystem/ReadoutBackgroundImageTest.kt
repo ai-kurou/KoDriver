@@ -38,4 +38,16 @@ class ReadoutBackgroundImageTest {
         // 幅基準 2000 * 0.65 = 1300 > 高さ基準 200 * 1.5 * 2 = 600
         assertEquals(600f, backgroundImagesWidth(2000f, 200f, 2))
     }
+
+    @Test
+    fun `下寄せの背景画像の一辺は幅が狭いとき幅基準になる`() {
+        // 幅基準 300 < 高さ基準 1000 * 0.6 = 600
+        assertEquals(300f, bottomBackgroundImageSide(width = 300f, height = 1000f))
+    }
+
+    @Test
+    fun `下寄せの背景画像の一辺は高さが低いとき高さ基準の上限で止まる`() {
+        // 幅基準 800 > 高さ基準 500 * 0.6 = 300
+        assertEquals(300f, bottomBackgroundImageSide(width = 800f, height = 500f))
+    }
 }
