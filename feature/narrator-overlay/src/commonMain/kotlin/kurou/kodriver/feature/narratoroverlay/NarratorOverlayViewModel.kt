@@ -9,12 +9,14 @@ import kurou.kodriver.domain.usecase.ObserveLatestNarratedTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionTranscriptUseCase
 
 internal class NarratorOverlayViewModel(
     observeLatestNarratedTelemetryLog: ObserveLatestNarratedTelemetryLogUseCase,
     observeOverlayTextSize: ObserveOverlayTextSizeUseCase,
     observeOverlayTextColor: ObserveOverlayTextColorUseCase,
     observeOverlayBackgroundOpacity: ObserveOverlayBackgroundOpacityUseCase,
+    observeSpeechRecognitionTranscript: ObserveSpeechRecognitionTranscriptUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<NarratorOverlayUiState> =
         NarratorOverlayFlow(
@@ -22,5 +24,6 @@ internal class NarratorOverlayViewModel(
             overlayTextSize = observeOverlayTextSize(),
             overlayTextColor = observeOverlayTextColor(),
             backgroundOpacity = observeOverlayBackgroundOpacity(),
+            speechRecognitionTranscript = observeSpeechRecognitionTranscript(),
         ).uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), NarratorOverlayUiState())
 }

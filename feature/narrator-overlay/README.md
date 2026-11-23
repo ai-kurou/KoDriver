@@ -31,7 +31,16 @@ OKで保存され、キャンセル・ダイアログ外タップ・ViewModel破
 文字サイズは共有Repositoryのプレビュー値を含めて購読するため、設定ダイアログのラジオボタン選択で
 即時に変わる。OKで保存され、キャンセル・ダイアログ外タップ・ViewModel破棄では保存値に戻る。
 
-`NarratorOverlayFlow` は最新の読み上げログ・文字サイズ・文字色・背景不透明度の4つの入力を
+マイクが聞き取った文言は、読み上げ文言の下段に小さめの文字（本文サイズの0.7倍）で表示する。
+`ObserveSpeechRecognitionTranscriptUseCase`（`:core:domain`）を購読し、認識途中の文字列があればそれを（文字色を薄くして）、
+なければ直近に確定した発話の先頭候補を表示する。確定した発話は次の認識途中の文字列が来る・音声認識が停止または
+失敗するまで残る。表示する文言がないときは下段を出さず、従来と同じ見た目になる。Vosk の語彙外記号 `[unk]` は
+`speech_recognition_unknown_word`（このモジュールの `composeResources`）の置換語で表示する。
+音声認識（マイク・Vosk）は `:feature:main` の1か所でのみ開き、結果は `:core:domain` の
+`SpeechRecognitionTranscriptRepository` 経由で受け取る。文字サイズ・文字色・背景不透明度は既存のオーバーレイ設定を共有し、
+マイク文言専用の設定はない（表示ON/OFFスイッチは未実装）。
+
+`NarratorOverlayFlow` は最新の読み上げログ・文字サイズ・文字色・背景不透明度・マイク文言の5つの入力を
 `NarratorOverlayUiState` に合成する冷たい Flow を提供する。
 `NarratorOverlayViewModel` は UseCase から入力を取得し、`viewModelScope` と
 `SharingStarted.WhileSubscribed(5_000)`、初期値 `NarratorOverlayUiState()` を指定した

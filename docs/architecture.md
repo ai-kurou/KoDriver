@@ -78,10 +78,12 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:ace-windows-auto-readout-remaining-fuel-laps-detail` | ACE 燃料残り周回数アナウンスの詳細設定 UI（有効/無効・閾値・リセット・試聴。設定は Narrator の読み上げ判定に反映） | [図](graphs/feature-ace-windows-auto-readout-remaining-fuel-laps-detail.svg) |
 | `:feature:other-log-list` | テレメトリログの一覧表示 UI | [図](graphs/feature-other-log-list.svg) |
 | `:feature:other-log-detail` | テレメトリログの詳細表示 UI | [図](graphs/feature-other-log-detail.svg) |
-| `:feature:narrator-overlay` | TelemetryLog の最新の読み上げ内容をライブ購読して表示するオーバーレイ | [図](graphs/feature-narrator-overlay.svg) |
+| `:feature:narrator-overlay` | TelemetryLog の最新の読み上げ内容と、マイクが聞き取った文言をライブ購読して表示するオーバーレイ | [図](graphs/feature-narrator-overlay.svg) |
 | `:server` | デスクトップアプリと同一プロセスで起動する Ktor サーバー。`/ws/<Simulator.id>/<feature>` WebSocket で共有メモリ・LMU REST API 由来の走行情報を配信する | [図](graphs/server.svg) |
 
 デバッグ状態詳細ペインの固定カードからの読み上げ要求は、各 ViewModel → `RequestDebugReadoutUseCase` → `DebugReadoutRequestRepository`（Desktop / Android 共通のインメモリ SharedFlow、replay なし）→ 各 NarratorViewModel の独立した購読 Job → EventProcessor → 通常の優先度・キュー・開始音・TTS・ログ保存の順で処理する。要求は各ペイン固有のシミュレーターと TopLevel 項目を指定し、項目スイッチ・テレメトリ受信・テンプレート置換には依存しない。ログには現在の状態・設定と `observedAtMs`、`debugReadout: true` を記録する。オーバーレイは既存の最新読み上げログ購読で表示する。feature 同士の依存は追加せず domain の要求型・Repository・UseCase を介する。
+
+マイクが聞き取った文言（認識途中の文字列・直近に確定した発話）のオーバーレイ表示は、`:feature:main` の `SpeechRecognitionViewModel` → `ReportSpeechRecognitionTranscriptUseCase` → `SpeechRecognitionTranscriptRepository`（Desktop / Android 共通のインメモリ StateFlow）→ `ObserveSpeechRecognitionTranscriptUseCase` → `:feature:narrator-overlay` の順で渡す。`observeRecognition()` は cold でマイク・Vosk を新規に開くため、オーバーレイは音声認識を直接購読しない。
 
 LMU のブレーキ摩耗は `:core:lmu-windows-rest-api-data` がデスクトップ版で取得し、`:server` の `/ws/lmu_windows/brake_wear` から配信する。Android 版は `:core:lmu-windows-data` の WebSocket Repository で受信し、共通の残量計算・Narrator に渡す。取得失敗時の `null` も配信する。
 

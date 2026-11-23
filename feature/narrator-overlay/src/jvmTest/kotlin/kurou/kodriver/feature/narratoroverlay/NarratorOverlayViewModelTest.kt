@@ -19,15 +19,18 @@ import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.SpeechRecognitionTranscript
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
+import kurou.kodriver.domain.repository.SpeechRecognitionTranscriptRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveLatestNarratedTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionTranscriptUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -46,6 +49,9 @@ class NarratorOverlayViewModelTest {
 
     private val overlayTextColorRepository: OverlayTextColorPreferencesRepository = mockk()
     private val overlayTextColorFlow = MutableStateFlow(OVERLAY_TEXT_COLOR_DEFAULT)
+
+    private val speechRecognitionTranscriptRepository: SpeechRecognitionTranscriptRepository = mockk()
+    private val speechRecognitionTranscriptFlow = MutableStateFlow(SpeechRecognitionTranscript())
 
     private val overlayTextSizeFlow = MutableStateFlow(OverlayTextSize.MEDIUM)
     private val overlayBackgroundOpacityFlow = MutableStateFlow(50)
@@ -67,6 +73,8 @@ class NarratorOverlayViewModelTest {
             observeOverlayTextSize = ObserveOverlayTextSizeUseCase(overlayTextSizeRepository),
             observeOverlayBackgroundOpacity =
                 ObserveOverlayBackgroundOpacityUseCase(overlayBackgroundOpacityRepository),
+            observeSpeechRecognitionTranscript =
+                ObserveSpeechRecognitionTranscriptUseCase(speechRecognitionTranscriptRepository),
         )
 
     @Test
@@ -77,6 +85,7 @@ class NarratorOverlayViewModelTest {
                 overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
             } returns overlayBackgroundOpacityFlow
             every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { speechRecognitionTranscriptRepository.transcript } returns speechRecognitionTranscriptFlow
             every { telemetryLogRepository.observeLatestNarratedTelemetryLog() } returns MutableStateFlow(null)
             val viewModel = createViewModel()
 
@@ -86,15 +95,18 @@ class NarratorOverlayViewModelTest {
             assertEquals(OverlayTextSize.MEDIUM, state.overlayTextSize)
             assertEquals(50, state.backgroundOpacity)
             assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, state.overlayTextColor)
+            assertEquals(SpeechRecognitionTranscript(), state.speechRecognitionTranscript)
             verify(exactly = 1) { telemetryLogRepository.observeLatestNarratedTelemetryLog() }
             verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
             verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
             verify(exactly = 1) { overlayTextColorRepository.observeOverlayTextColor() }
+            verify(exactly = 1) { speechRecognitionTranscriptRepository.transcript }
             confirmVerified(
                 telemetryLogRepository,
                 overlayTextSizeRepository,
                 overlayBackgroundOpacityRepository,
                 overlayTextColorRepository,
+                speechRecognitionTranscriptRepository,
             )
         }
 
@@ -118,6 +130,7 @@ class NarratorOverlayViewModelTest {
                 overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
             } returns overlayBackgroundOpacityFlow
             every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { speechRecognitionTranscriptRepository.transcript } returns speechRecognitionTranscriptFlow
             every { telemetryLogRepository.observeLatestNarratedTelemetryLog() } returns telemetryLogFlow
             val viewModel = createViewModel()
 
@@ -128,11 +141,13 @@ class NarratorOverlayViewModelTest {
             verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
             verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
             verify(exactly = 1) { overlayTextColorRepository.observeOverlayTextColor() }
+            verify(exactly = 1) { speechRecognitionTranscriptRepository.transcript }
             confirmVerified(
                 telemetryLogRepository,
                 overlayTextSizeRepository,
                 overlayBackgroundOpacityRepository,
                 overlayTextColorRepository,
+                speechRecognitionTranscriptRepository,
             )
         }
 
@@ -144,6 +159,7 @@ class NarratorOverlayViewModelTest {
                 overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
             } returns overlayBackgroundOpacityFlow
             every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { speechRecognitionTranscriptRepository.transcript } returns speechRecognitionTranscriptFlow
             every { telemetryLogRepository.observeLatestNarratedTelemetryLog() } returns MutableStateFlow(null)
             val viewModel = createViewModel()
 
@@ -154,11 +170,13 @@ class NarratorOverlayViewModelTest {
             verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
             verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
             verify(exactly = 1) { overlayTextColorRepository.observeOverlayTextColor() }
+            verify(exactly = 1) { speechRecognitionTranscriptRepository.transcript }
             confirmVerified(
                 telemetryLogRepository,
                 overlayTextSizeRepository,
                 overlayBackgroundOpacityRepository,
                 overlayTextColorRepository,
+                speechRecognitionTranscriptRepository,
             )
         }
 
@@ -170,6 +188,7 @@ class NarratorOverlayViewModelTest {
                 overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
             } returns overlayBackgroundOpacityFlow
             every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { speechRecognitionTranscriptRepository.transcript } returns speechRecognitionTranscriptFlow
             every { telemetryLogRepository.observeLatestNarratedTelemetryLog() } returns MutableStateFlow(null)
             val viewModel = createViewModel()
 
@@ -180,11 +199,13 @@ class NarratorOverlayViewModelTest {
             verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
             verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
             verify(exactly = 1) { overlayTextColorRepository.observeOverlayTextColor() }
+            verify(exactly = 1) { speechRecognitionTranscriptRepository.transcript }
             confirmVerified(
                 telemetryLogRepository,
                 overlayTextSizeRepository,
                 overlayBackgroundOpacityRepository,
                 overlayTextColorRepository,
+                speechRecognitionTranscriptRepository,
             )
         }
 
@@ -196,6 +217,7 @@ class NarratorOverlayViewModelTest {
                 overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
             } returns overlayBackgroundOpacityFlow
             every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { speechRecognitionTranscriptRepository.transcript } returns speechRecognitionTranscriptFlow
             every { telemetryLogRepository.observeLatestNarratedTelemetryLog() } returns MutableStateFlow(null)
             val viewModel = createViewModel()
 
@@ -206,11 +228,43 @@ class NarratorOverlayViewModelTest {
             verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
             verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
             verify(exactly = 1) { overlayTextColorRepository.observeOverlayTextColor() }
+            verify(exactly = 1) { speechRecognitionTranscriptRepository.transcript }
             confirmVerified(
                 telemetryLogRepository,
                 overlayTextSizeRepository,
                 overlayBackgroundOpacityRepository,
                 overlayTextColorRepository,
+                speechRecognitionTranscriptRepository,
+            )
+        }
+
+    @Test
+    fun `SpeechRecognitionTranscriptRepository の StateFlow が更新されると UiState の speechRecognitionTranscript も更新される`() =
+        runTest {
+            val transcript = SpeechRecognitionTranscript(partialText = "ピット", recognizedText = "燃料")
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { telemetryLogRepository.observeLatestNarratedTelemetryLog() } returns MutableStateFlow(null)
+            every { speechRecognitionTranscriptRepository.transcript } returns speechRecognitionTranscriptFlow
+            val viewModel = createViewModel()
+
+            speechRecognitionTranscriptFlow.update { transcript }
+
+            assertEquals(transcript, viewModel.uiState.first().speechRecognitionTranscript)
+            verify(exactly = 1) { telemetryLogRepository.observeLatestNarratedTelemetryLog() }
+            verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
+            verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
+            verify(exactly = 1) { overlayTextColorRepository.observeOverlayTextColor() }
+            verify(exactly = 1) { speechRecognitionTranscriptRepository.transcript }
+            confirmVerified(
+                telemetryLogRepository,
+                overlayTextSizeRepository,
+                overlayBackgroundOpacityRepository,
+                overlayTextColorRepository,
+                speechRecognitionTranscriptRepository,
             )
         }
 }

@@ -6,6 +6,7 @@ import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayWindowBoundsUseCase
+import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionTranscriptUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayWindowBoundsUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -15,15 +16,17 @@ import org.koin.dsl.module
  * オーバーレイ表示機能（narrator-overlay feature）の Koin モジュール。
  *
  * 提供: NarratorOverlayViewModel と、それが使う ObserveLatestNarratedTelemetryLogUseCase・
- * ObserveOverlayTextSizeUseCase・ObserveOverlayTextColorUseCase・ObserveOverlayBackgroundOpacityUseCase。加えて、
+ * ObserveOverlayTextSizeUseCase・ObserveOverlayTextColorUseCase・ObserveOverlayBackgroundOpacityUseCase・
+ * ObserveSpeechRecognitionTranscriptUseCase。加えて、
  * rememberNarratorOverlayVisible が使う ObserveOverlayVisibleUseCase、rememberNarratorOverlayBounds /
  * rememberNarratorOverlayBoundsSaver が使う ObserveOverlayWindowBoundsUseCase・SaveOverlayWindowBoundsUseCase。
  */
 public val narratorOverlayModule: Module =
     module {
-        viewModel { NarratorOverlayViewModel(get(), get(), get(), get()) }
+        viewModel { NarratorOverlayViewModel(get(), get(), get(), get(), get()) }
 
         factory { ObserveLatestNarratedTelemetryLogUseCase(get()) }
+        factory { ObserveSpeechRecognitionTranscriptUseCase(get()) }
         factory { ObserveOverlayTextColorUseCase(get()) }
         factory { ObserveOverlayTextSizeUseCase(get()) }
         factory { ObserveOverlayBackgroundOpacityUseCase(get()) }
