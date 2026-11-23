@@ -9,6 +9,15 @@ Android とデスクトップで同じ演出にするための部品。
 - `SplashBackdrop` … 自己ベストラップの背景画像（`ReadoutBackground.BEST_LAP`）を右側に置いて左へ溶かし、その上に光の帯を重ねる背景。光の位置は `shineProgress`（0〜1）で渡す。
 - `SplashAppIcon` … アプリアイコン。
 
+## Android 専用（`kurou.kodriver.feature.splash.android`）
+
+OS のスプラッシュ（`installSplashScreen`）が終わった直後に、メイン画面の上へ約1秒だけ重ねる演出。
+
+- `AndroidSplashOverlay` … `SplashBackdrop` とアイコンを重ね、光が横切ったあとフェードアウトして `onFinished` を一度通知する。表示中はタッチを消費し、背後のメイン画面を操作させない。縦横は `BoxWithConstraints` の描画領域で決め、縦長のときは写真を下端に置く。
+- `shouldShowAndroidSplashOverlay` … 表示の可否。コールドスタート（保存状態からの復元でなく、このプロセスで未表示）で、端末のアニメーション縮尺（`ANIMATOR_DURATION_SCALE`）が 0 でないときだけ表示する。
+
+`:app:shared` の `AndroidSplashHost` がメイン画面の上に重ね、`MainActivity` が判定に使う値を渡す。
+
 ## デスクトップ専用（`kurou.kodriver.feature.splash.desktop`）
 
 JVM の起動から Compose 初期化・Koin モジュール構築・Ktor サーバー起動までには数秒かかるため、その間の初期化フェーズ（[DesktopSplashStep]）を保持・購読するためのプラットフォーム非依存のコアを提供する。
