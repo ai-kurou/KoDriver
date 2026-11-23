@@ -19,13 +19,20 @@ import kotlin.coroutines.cancellation.CancellationException
  * 同じ途中経過は続けて流さず、モードが変わったときは途中経過を引き継がない。
  * 状態を持つため、1 回の聞き取りごとに作る。ただし [modeSync] は [SpeechTranscriber] が反映済みのモードを覚えているため、
  * 同じ [SpeechTranscriber] を使い続ける間は聞き取りをまたいで同じものを渡す。
+ *
+ * 音量ゲートの閾値（[pcmLevel] の 0.0〜1.0）は [volumeGateThreshold] の現在値で、これ未満の断片は無音として認識器に渡し、
+ * 小さい音による誤反応を防ぐ。0.0 ならゲートは常に開く。設定の変更は次の断片から反映される。
  */
 internal class RecognitionPipeline(
     private val transcriber: SpeechTranscriber,
     private val modeSync: TranscriberModeSync,
+    private val volumeGateThreshold: StateFlow<Float>,
 ) {
-    constructor(transcriber: SpeechTranscriber, mode: StateFlow<SpeechRecognitionMode>) :
-        this(transcriber, TranscriberModeSync(transcriber, mode))
+    constructor(
+        transcriber: SpeechTranscriber,
+        mode: StateFlow<SpeechRecognitionMode>,
+        volumeGateThreshold: StateFlow<Float>,
+    ) : this(transcriber, TranscriberModeSync(transcriber, mode), volumeGateThreshold)
 
     private var lastPartial = ""
     private var lastMode = SpeechRecognitionMode.WakeWord
@@ -60,7 +67,7 @@ internal class RecognitionPipeline(
      * 閾値未満の断片はホールドが残っている間だけ開のまま、残数を1つ減らす。
      */
     private fun isVolumeGateOpen(level: Float): Boolean {
-        if (level >= VOLUME_GATE_THRESHOLD) {
+        if (level >= volumeGateThreshold.value) {
             volumeGateHoldChunks = VOLUME_GATE_HOLD_CHUNKS
             return true
         }
@@ -69,12 +76,6 @@ internal class RecognitionPipeline(
         return open
     }
 }
-
-/**
- * 音量ゲートの閾値（[pcmLevel] の 0.0〜1.0）。これ未満の断片は無音として認識器に渡し、小さい音による誤反応を防ぐ。
- * 既定値であり、実機で誤反応や取りこぼしを見て調整する前提。
- */
-internal const val VOLUME_GATE_THRESHOLD = 0.3f
 
 /**
  * 音量ゲートが閾値以上の断片のあと開いたままにする断片数。断片は100ms（500ms分）。

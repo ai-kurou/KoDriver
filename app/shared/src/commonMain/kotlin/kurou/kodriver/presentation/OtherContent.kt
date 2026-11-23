@@ -168,9 +168,6 @@ private fun handleOtherItemClick(
 
         OtherListItemType.WindowsSpeechUnavailable -> onOpenWindowsSpeechSettings()
 
-        // 詳細ペインと保存先は未実装で、OtherListPane側でもタップを通知しないため、ここには到達しない。
-        OtherListItemType.MicrophoneCutQuietSound -> Unit
-
         OtherListItemType.ShowLogs,
         OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
@@ -183,6 +180,7 @@ private fun handleOtherItemClick(
         // TtsLanguageDataMissingはOtherListPane側でOS設定画面を直接開くため、ここには到達しない。
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.OverlayBackgroundOpacity,
+        OtherListItemType.MicrophoneCutQuietSound,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,

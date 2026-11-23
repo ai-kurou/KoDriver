@@ -7,7 +7,9 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Rule
 import org.junit.Test
 
@@ -31,12 +33,13 @@ class OtherListPaneMicrophoneTest {
     }
 
     @Test
-    fun `小さい音をカットをクリックしても選択を通知せず選択状態にならない`() {
+    fun `小さい音をカットをクリックすると選択を通知する`() {
+        every { onItemClick(OtherListItemType.MicrophoneCutQuietSound) } returns Unit
         setPane()
 
         rule.onNodeWithText("小さい音をカット").performClick()
 
-        rule.onNodeWithText("小さい音をカット").assertIsNotSelected()
+        verify(exactly = 1) { onItemClick(OtherListItemType.MicrophoneCutQuietSound) }
         confirmVerified(onItemClick)
     }
 

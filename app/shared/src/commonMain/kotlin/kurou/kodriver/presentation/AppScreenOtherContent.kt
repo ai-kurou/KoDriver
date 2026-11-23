@@ -15,6 +15,7 @@ import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlogdetail.TelemetryLogDetailContent
 import kurou.kodriver.feature.otherloglist.TelemetryLogListPaneHost
+import kurou.kodriver.feature.othermicrophonecutquietsounddetail.OtherMicrophoneCutQuietSoundDetailPane
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPane
 import kurou.kodriver.feature.otheroverlaytextcolordetail.OtherOverlayTextColorDetailDialog
 import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
@@ -147,6 +148,10 @@ internal fun DefaultOtherDetailContent(
             OtherOverlayBackgroundOpacityDetailPane(canNavigateBack, onBack)
         }
 
+        OtherListItemType.MicrophoneCutQuietSound -> {
+            OtherMicrophoneCutQuietSoundDetailPane(canNavigateBack, onBack)
+        }
+
         OtherListItemType.License -> {
             OtherLicenseDetailPane(canNavigateBack, onBack)
         }
@@ -182,7 +187,6 @@ internal fun DefaultOtherDetailContent(
         OtherListItemType.ResetManualReadoutSettings,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
-        OtherListItemType.MicrophoneCutQuietSound,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,

@@ -23,23 +23,27 @@ import kurou.kodriver.domain.model.SpeechRecognitionMode
 import java.util.Collections
 import java.util.concurrent.CountDownLatch
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 private val SILENT_CHUNK = ByteArray(VOSK_READ_CHUNK_BYTES)
 
+@Suppress("TooManyFunctions")
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidVoskSpeechRecognitionRepositoryTest {
     private val permissionRepository = FakeRecordAudioPermissionRepository()
     private val transcriberFactory = FakeSpeechTranscriberFactory()
     private val recorder = FakePcmRecorder()
+    private val cutQuietSound = FakeMicrophoneCutQuietSoundPreferencesRepository()
 
     private fun TestScope.createRepository() =
         AndroidVoskSpeechRecognitionRepository(
             transcriberFactory = transcriberFactory,
             recorderFactory = { recorder },
             permissionRepository = permissionRepository,
+            microphoneCutQuietSound = cutQuietSound,
             ioDispatcher = StandardTestDispatcher(testScheduler),
         )
 
@@ -183,6 +187,27 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
         }
 
     @Test
+    fun `小さい音をカットの設定に従って小さい断片を無音にし、0なら元の音声を渡す`() =
+        runTest {
+            val quiet = ByteArray(VOSK_READ_CHUNK_BYTES) { i -> if (i % 2 == 0) 100 else 0 }
+
+            suspend fun acceptedPcm(): ByteArray {
+                transcriberFactory.acceptedPcm.clear()
+                recorder.chunks.add(quiet)
+                transcriberFactory.transcripts.add(SpeechTranscript.Partial("燃料"))
+                createRepository().observeRecognition().take(3).toList()
+                return transcriberFactory.acceptedPcm.single()
+            }
+
+            val withDefault = acceptedPcm()
+            cutQuietSound.level.value = 0
+            val withOff = acceptedPcm()
+
+            assertContentEquals(ByteArray(quiet.size), withDefault)
+            assertContentEquals(quiet, withOff)
+        }
+
+    @Test
     fun `確定のあとに同じ文字列の認識途中が来たら再び流す`() =
         runTest {
             recorder.chunks.addAll(listOf(SILENT_CHUNK, SILENT_CHUNK, SILENT_CHUNK))
@@ -303,6 +328,7 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
                     transcriberFactory = transcriberFactory,
                     recorderFactory = { blocking },
                     permissionRepository = permissionRepository,
+                    microphoneCutQuietSound = cutQuietSound,
                     ioDispatcher = Dispatchers.IO,
                 )
             val job = launch { repository.observeRecognition().collect {} }
@@ -356,6 +382,7 @@ private class FakeSpeechTranscriberFactory : SpeechTranscriberFactory {
     val transcripts = ArrayDeque<SpeechTranscript?>()
     var closeCount = 0
     val modes = mutableListOf<SpeechRecognitionMode>()
+    val acceptedPcm = mutableListOf<ByteArray>()
 
     override fun isAvailable(): Boolean = available
 
@@ -364,6 +391,7 @@ private class FakeSpeechTranscriberFactory : SpeechTranscriberFactory {
         linkError?.let { throw it }
         return object : SpeechTranscriber {
             override fun accept(pcm: ByteArray): SpeechTranscript? {
+                acceptedPcm += pcm.copyOf()
                 acceptError?.let { throw it }
                 return transcripts.removeFirstOrNull()
             }

@@ -407,10 +407,6 @@ private fun handleOtherListItemClick(
             onOverlayVisibleChange(!uiState.overlayVisible)
         }
 
-        OtherListItemType.MicrophoneCutQuietSound -> {
-            // 詳細ペインと保存先は未実装のため、タップしても何もしない。
-        }
-
         OtherListItemType.KeepScreenOn -> {
             onKeepScreenOnChange(!uiState.keepScreenOn)
         }
@@ -455,6 +451,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.OverlayTextSize,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
+        OtherListItemType.MicrophoneCutQuietSound,
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         OtherListItemType.ShowLogs,

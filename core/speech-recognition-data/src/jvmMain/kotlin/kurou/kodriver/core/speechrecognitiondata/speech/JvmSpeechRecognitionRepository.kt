@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -16,6 +17,7 @@ import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
@@ -31,6 +33,7 @@ internal class JvmSpeechRecognitionRepository(
     private val microphone: MicrophoneRepository,
     private val audioInputDevices: AudioInputDeviceRepository,
     private val selectedDevicePreferences: SelectedAudioInputDevicePreferencesRepository,
+    private val microphoneCutQuietSound: MicrophoneCutQuietSoundPreferencesRepository,
     private val transcriberFactory: SpeechTranscriberFactory,
     private val computeDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : SpeechRecognitionRepository {
@@ -48,7 +51,9 @@ internal class JvmSpeechRecognitionRepository(
             if (transcriber == null) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
             } else {
-                transcriber.use { recognize(it) }
+                transcriber.use {
+                    microphoneCutQuietSound.withVolumeGateThreshold { threshold -> recognize(it, threshold) }
+                }
             }
         }.failRecognitionOnError()
             .flowOn(computeDispatcher)
@@ -79,10 +84,13 @@ internal class JvmSpeechRecognitionRepository(
         return devices.firstOrNull { it.name == name } ?: devices.firstOrNull()
     }
 
-    private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(transcriber: SpeechTranscriber) {
+    private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(
+        transcriber: SpeechTranscriber,
+        volumeGateThreshold: StateFlow<Float>,
+    ) {
         val device = resolveDevice()
         emit(SpeechRecognitionEvent.Listening)
-        val pipeline = RecognitionPipeline(transcriber, mode)
+        val pipeline = RecognitionPipeline(transcriber, mode, volumeGateThreshold)
         microphone.observeAudio(device).collect { event ->
             when (event) {
                 is MicrophoneAudioEvent.Chunk -> {
