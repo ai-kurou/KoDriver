@@ -130,74 +130,74 @@ internal fun ManualReadoutItemsCard(
                 ) { index, itemKey, _ ->
                     key(itemKey) {
                         ReorderableItem {
-                            Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
-                                val name = manualReadoutItemName(uiState.simulatorId, itemKey).ifEmpty { itemKey }
-                                val moveActions =
-                                    manualReadoutMoveActions(index, uiState.selectedItemKeys.size, onMoveItem)
-                                Row(
-                                    Modifier.fillMaxWidth().semantics { customActions = moveActions },
-                                    horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Icon(
-                                        Icons.Default.DragIndicator,
-                                        stringResource(Res.string.manual_readout_drag_item, name),
+                            val name = manualReadoutItemName(uiState.simulatorId, itemKey).ifEmpty { itemKey }
+                            val moveActions =
+                                manualReadoutMoveActions(index, uiState.selectedItemKeys.size, onMoveItem)
+                            val category = manualReadoutItemDefinition(uiState.simulatorId, itemKey)?.category
+                            Row(Modifier.height(IntrinsicSize.Min)) {
+                                if (category != null) {
+                                    val categoryLabel = stringResource(category.label())
+                                    Box(
                                         Modifier
-                                            .onKeyEvent { event ->
-                                                handleColumnRowReorderKey(
-                                                    event = event,
-                                                    index = index,
-                                                    itemKeys = uiState.selectedItemKeys,
-                                                    focusState = reorderFocusState,
-                                                    onMove = onMoveItem,
-                                                )
-                                            }.focusable()
-                                            .draggableHandle(
-                                                onDragStarted = { _ ->
-                                                    haptic.performHapticFeedback(
-                                                        HapticFeedbackType.GestureThresholdActivate,
-                                                    )
-                                                },
-                                                onDragStopped = { _ ->
-                                                    haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
-                                                },
-                                            ).size(20.dp),
+                                            .semantics { contentDescription = categoryLabel }
+                                            .fillMaxHeight()
+                                            .width(4.dp)
+                                            .clip(MaterialTheme.shapes.extraSmall)
+                                            .background(manualReadoutCategoryColor(category)),
                                     )
-                                    Text(name, modifier = Modifier.weight(1f))
-                                    IconButton(onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                        onRemoveItem(itemKey)
-                                    }) {
-                                        Icon(
-                                            Icons.Default.Close,
-                                            stringResource(Res.string.manual_readout_remove_item, name),
-                                        )
-                                    }
+                                    Spacer(Modifier.width(KoDriverSpacing.small))
                                 }
-                                val category = manualReadoutItemDefinition(uiState.simulatorId, itemKey)?.category
-                                Row(Modifier.height(IntrinsicSize.Min)) {
-                                    if (category != null) {
-                                        val categoryLabel = stringResource(category.label())
-                                        Box(
+                                Column(
+                                    Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                                ) {
+                                    Row(
+                                        Modifier.fillMaxWidth().semantics { customActions = moveActions },
+                                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Icon(
+                                            Icons.Default.DragIndicator,
+                                            stringResource(Res.string.manual_readout_drag_item, name),
                                             Modifier
-                                                .semantics { contentDescription = categoryLabel }
-                                                .fillMaxHeight()
-                                                .width(4.dp)
-                                                .clip(MaterialTheme.shapes.extraSmall)
-                                                .background(manualReadoutCategoryColor(category)),
+                                                .onKeyEvent { event ->
+                                                    handleColumnRowReorderKey(
+                                                        event = event,
+                                                        index = index,
+                                                        itemKeys = uiState.selectedItemKeys,
+                                                        focusState = reorderFocusState,
+                                                        onMove = onMoveItem,
+                                                    )
+                                                }.focusable()
+                                                .draggableHandle(
+                                                    onDragStarted = { _ ->
+                                                        haptic.performHapticFeedback(
+                                                            HapticFeedbackType.GestureThresholdActivate,
+                                                        )
+                                                    },
+                                                    onDragStopped = { _ ->
+                                                        haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
+                                                    },
+                                                ).size(20.dp),
                                         )
-                                        Spacer(Modifier.width(KoDriverSpacing.small))
+                                        Text(name, modifier = Modifier.weight(1f))
+                                        IconButton(onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                            onRemoveItem(itemKey)
+                                        }) {
+                                            Icon(
+                                                Icons.Default.Close,
+                                                stringResource(Res.string.manual_readout_remove_item, name),
+                                            )
+                                        }
                                     }
-                                    Box(Modifier.weight(1f)) {
-                                        ManualReadoutItemTextField(
-                                            text =
-                                                uiState.itemTexts[itemKey] ?: manualReadoutItemText(uiState, itemKey),
-                                            defaultText = manualReadoutItemText(uiState, itemKey),
-                                            onTextChanged = { onItemTextChanged(itemKey, it) },
-                                            itemKey = itemKey,
-                                            simulatorId = uiState.simulatorId,
-                                        )
-                                    }
+                                    ManualReadoutItemTextField(
+                                        text = uiState.itemTexts[itemKey] ?: manualReadoutItemText(uiState, itemKey),
+                                        defaultText = manualReadoutItemText(uiState, itemKey),
+                                        onTextChanged = { onItemTextChanged(itemKey, it) },
+                                        itemKey = itemKey,
+                                        simulatorId = uiState.simulatorId,
+                                    )
                                 }
                             }
                         }
