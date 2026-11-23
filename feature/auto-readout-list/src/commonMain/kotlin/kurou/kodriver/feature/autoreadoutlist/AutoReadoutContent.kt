@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.Posture
@@ -37,6 +38,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
 import kurou.kodriver.core.designsystem.KoDriverListPaneWidth
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
@@ -126,6 +128,17 @@ internal fun AutoReadoutContent(
     val scope = rememberCoroutineScope()
     // 詳細を閉じて一覧へ戻ったとき、直前に開いた行へフォーカスを戻すために、開いた項目のキーを覚えておく
     var lastOpenedItemKey by remember { mutableStateOf<String?>(null) }
+    // 戻るときは選択がすぐ解除されるため、詳細の退場アニメーション中も描画できるよう、直前に選ばれた項目を覚えておく
+    var lastSelectedItem by remember { mutableStateOf<AutoReadoutListItemType?>(null) }
+    LaunchedEffect(uiState.selectedItem) {
+        uiState.selectedItem?.let { lastSelectedItem = it }
+    }
+    // 一覧ペインは詳細表示中に合成から外れるため、スクロール位置は外側で保持し、戻ったときに最上部へ戻らないようにする
+    val listState = rememberLazyListState()
+    // 一覧ペインの中で実行すると、詳細から戻ってペインが再び合成されるたびに過去のリクエスト値で再実行され、最上部へ戻ってしまう
+    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+        listState.animateScrollToItem(0)
+    }
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
         predictiveBackProgress = 0f
@@ -180,7 +193,7 @@ internal fun AutoReadoutContent(
                             lastOpenedItemKey = it.value
                             onItemSelected(it)
                         },
-                        scrollToTopRequest = scrollToTopRequest,
+                        listState = listState,
                         restoreFocusItemKey = lastOpenedItemKey.takeIf { uiState.selectedItem == null },
                         onFocusRestored = { lastOpenedItemKey = null },
                         sharedBounds =
@@ -189,7 +202,7 @@ internal fun AutoReadoutContent(
                 }
             },
             detailPane = {
-                uiState.selectedItem?.let { selectedItem ->
+                (uiState.selectedItem ?: lastSelectedItem.takeIf { it.hasBackTransition() })?.let { selectedItem ->
                     AnimatedPane(
                         enterTransition = PaneEnterTransition,
                         exitTransition = PaneExitTransition,
@@ -220,6 +233,15 @@ internal fun AutoReadoutContent(
         )
     }
 }
+
+/**
+ * 詳細から一覧へ戻るときにも共有要素のアニメーションを付ける項目か。
+ * 試験導入のため、現在はLMU・ACE・GT7の全項目。
+ */
+private fun AutoReadoutListItemType?.hasBackTransition(): Boolean =
+    this is LmuWindowsAutoReadoutListItemType ||
+        this is AceWindowsAutoReadoutListItemType ||
+        this is Gt7Ps5AutoReadoutListItemType
 
 private const val PANE_TRANSITION_MILLIS = 250
 
