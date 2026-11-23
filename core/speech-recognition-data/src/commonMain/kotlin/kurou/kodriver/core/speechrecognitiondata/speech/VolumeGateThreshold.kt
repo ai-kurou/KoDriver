@@ -5,12 +5,12 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_STEP
+import kurou.kodriver.domain.model.toMicrophoneCutQuietSoundThreshold
 import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kotlin.coroutines.coroutineContext
 
 /** 「小さい音をカット」の段階値を、音量ゲートの閾値（[pcmLevel] の 0.0〜1.0）にする。 */
-internal fun Int.toVolumeGateThreshold(): Float = this * MICROPHONE_CUT_QUIET_SOUND_LEVEL_STEP
+internal fun Int.toVolumeGateThreshold(): Float = toMicrophoneCutQuietSoundThreshold()
 
 /**
  * 保存済みの「小さい音をカット」の設定を音量ゲートの閾値として購読しながら [block] を実行する。

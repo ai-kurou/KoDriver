@@ -23,6 +23,7 @@ import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
@@ -37,11 +38,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@Suppress("TooManyFunctions")
 @OptIn(ExperimentalCoroutinesApi::class)
 class SpeechRecognitionViewModelTest {
     private val speechRepository: SpeechRecognitionRepository = mockk()
     private val permissionRepository: RecordAudioPermissionRepository = mockk()
     private val itemRequestRepository = FakeManualReadoutItemRequestRepository()
+    private val microphoneCutRepository = FakeMicrophoneCutQuietSoundPreferencesRepository()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
     private val dispatcher = UnconfinedTestDispatcher()
     private var viewModel: SpeechRecognitionViewModel? = null
@@ -65,6 +68,8 @@ class SpeechRecognitionViewModelTest {
             checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(permissionRepository),
             requestManualReadoutItem = RequestManualReadoutItemUseCase(itemRequestRepository),
             setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(FakeSpeechRecognitionModeRepository()),
+            observeMicrophoneCutQuietSoundLevel =
+                ObserveMicrophoneCutQuietSoundLevelUseCase(microphoneCutRepository),
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
             playChime = PlaySpeechRecognitionChimeUseCase(FakeSpeechRecognitionChimePlayer()),
@@ -117,6 +122,21 @@ class SpeechRecognitionViewModelTest {
 
         viewModel.onEnabledChange(false) {}
         assertEquals(null, viewModel.uiState.value.level)
+    }
+
+    @Test
+    fun `小さい音をカットの設定を閾値として保持し、変更に追従する`() {
+        val viewModel = createViewModel(granted = true)
+        assertEquals(0f, viewModel.uiState.value.cutThreshold)
+
+        microphoneCutRepository.level.value = 6
+        assertEquals(0.3f, viewModel.uiState.value.cutThreshold, 0.0001f)
+        microphoneCutRepository.level.value = 12
+        assertEquals(0.6f, viewModel.uiState.value.cutThreshold, 0.0001f)
+
+        viewModel.onEnabledChange(true) {}
+        viewModel.onEnabledChange(false) {}
+        assertEquals(0.6f, viewModel.uiState.value.cutThreshold, 0.0001f)
     }
 
     @Test

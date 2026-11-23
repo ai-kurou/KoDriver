@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.AudioInputDevice
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -62,6 +63,9 @@ class SpeechRecognitionModuleTest {
                         single<SpeechRecognitionTranscriptRepository> { FakeSpeechRecognitionTranscriptRepository() }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                         single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
+                        single<MicrophoneCutQuietSoundPreferencesRepository> {
+                            FakeMicrophoneCutQuietSoundPreferencesRepository()
+                        }
                     },
                 )
             }
@@ -100,6 +104,9 @@ class SpeechRecognitionModuleTest {
                         single<SpeechRecognitionTranscriptRepository> { FakeSpeechRecognitionTranscriptRepository() }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                         single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
+                        single<MicrophoneCutQuietSoundPreferencesRepository> {
+                            FakeMicrophoneCutQuietSoundPreferencesRepository()
+                        }
                         single<AudioInputDeviceRepository> { deviceRepository }
                         single<SelectedAudioInputDevicePreferencesRepository> {
                             FakeSelectedAudioInputDevicePreferencesRepository()

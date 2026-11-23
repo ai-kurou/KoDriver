@@ -37,6 +37,33 @@ class SpeechRecognitionCardTest {
     }
 
     @Test
+    fun `音量が閾値以上のときだけ認識に使われる`() {
+        assertEquals(true, isLevelUsed(level = 0.3f, cutThreshold = 0.3f))
+        assertEquals(true, isLevelUsed(level = 0.5f, cutThreshold = 0.3f))
+        assertEquals(false, isLevelUsed(level = 0.29f, cutThreshold = 0.3f))
+        assertEquals(true, isLevelUsed(level = 0f, cutThreshold = 0f))
+    }
+
+    @Test
+    fun `閾値があるときも閾値がないときも音量ゲージを表示する`() {
+        val uiState = mutableStateOf(SpeechRecognitionUiState(level = 0.2f, cutThreshold = 0.3f))
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionCard(uiState = uiState.value, onDeviceMenuOpen = {}, onDeviceSelected = {})
+            }
+        }
+        rule.onNodeWithContentDescription("マイクの入力音量").assertIsDisplayed()
+
+        uiState.value = SpeechRecognitionUiState(level = 0.5f, cutThreshold = 0.3f)
+        rule.waitForIdle()
+        rule.onNodeWithContentDescription("マイクの入力音量").assertIsDisplayed()
+
+        uiState.value = SpeechRecognitionUiState(level = 0.5f, cutThreshold = 0f)
+        rule.waitForIdle()
+        rule.onNodeWithContentDescription("マイクの入力音量").assertIsDisplayed()
+    }
+
+    @Test
     fun `認識結果の未知語記号は分かりやすい記号に置き換えて表示する`() {
         rule.setContent {
             KoDriverTheme {

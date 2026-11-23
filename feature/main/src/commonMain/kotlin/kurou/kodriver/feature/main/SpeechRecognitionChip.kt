@@ -35,6 +35,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -47,7 +48,10 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 private val CHIP_SIZE = 44.dp
 
@@ -68,8 +72,14 @@ private val CHIP_SHADOW_ELEVATION = 4.dp
 private val RING_INSET = 3.dp
 private val RING_STROKE_WIDTH = 3.dp
 private const val RING_TRACK_ALPHA = 0.2f
+
+/** 「小さい音をカット」の閾値より下の弧を、使われる音量の弧より薄くする不透明度。 */
+private const val RING_CUT_ALPHA = 0.45f
+private val RING_THRESHOLD_TICK_EXTENT = 2.dp
 private const val RING_START_ANGLE = -90f
 private const val FULL_CIRCLE_DEGREES = 360f
+private const val HALF_CIRCLE_DEGREES = 180f
+private val TICK_STROKE_WIDTH = 1.5.dp
 private const val CHIP_COLOR_ANIMATION_MILLIS = 200
 private const val RING_RISE_ANIMATION_MILLIS = 80
 private const val RING_FALL_ANIMATION_MILLIS = 250
@@ -97,6 +107,9 @@ internal fun volumeRingAnimationMillis(rising: Boolean): Int =
 
 /** 音量（0.0〜1.0）を、音量リングの段階（0〜[VOLUME_RING_STEPS]）へ変換する。範囲外は端に丸める。 */
 internal fun volumeRingStep(level: Float): Int = (level.coerceIn(0f, 1f) * VOLUME_RING_STEPS).roundToInt()
+
+/** 「小さい音をカット」の閾値（0.0〜1.0）に対応する、リングの目盛りの角度（度）。範囲外は端に丸める。 */
+internal fun volumeRingThresholdAngle(threshold: Float): Float = FULL_CIRCLE_DEGREES * threshold.coerceIn(0f, 1f)
 
 /** 音声認識のチップの見た目を決める、聞き取りの状態の大分類。 */
 internal enum class SpeechRecognitionChipState {
@@ -231,7 +244,11 @@ internal fun SpeechRecognitionChip(
         contentAlignment = Alignment.Center,
     ) {
         if (ringStep != null) {
-            VolumeRing(step = ringStep, color = animatedContentColor)
+            VolumeRing(
+                step = ringStep,
+                color = animatedContentColor,
+                thresholdAngle = volumeRingThresholdAngle(uiState.cutThreshold),
+            )
         }
         Icon(
             imageVector = icon,
@@ -251,6 +268,7 @@ internal fun SpeechRecognitionChip(
 private fun VolumeRing(
     step: Int,
     color: Color,
+    thresholdAngle: Float,
 ) {
     // 前回の段階は再コンポーズを起こさないよう、スナップショット状態ではなく単なる配列で持つ
     val previousStep = remember { intArrayOf(step) }
@@ -272,16 +290,57 @@ private fun VolumeRing(
             size = arcSize,
             style = Stroke(width = strokeWidth),
         )
-        if (sweepAngle > 0f) {
-            drawArc(
-                color = color,
-                startAngle = RING_START_ANGLE,
-                sweepAngle = sweepAngle,
-                useCenter = false,
-                topLeft = topLeft,
-                size = arcSize,
-                style = Stroke(width = strokeWidth, cap = StrokeCap.Butt),
-            )
-        }
+        // 閾値より下の弧は認識に使われないため薄く描き、閾値の位置に目盛りを付ける。閾値が 0 なら従来どおり全体を同じ濃さで描く
+        val cutSweep = minOf(sweepAngle, thresholdAngle)
+        drawRingArc(color.copy(alpha = RING_CUT_ALPHA), RING_START_ANGLE, cutSweep, topLeft, arcSize, strokeWidth)
+        drawRingArc(
+            color,
+            RING_START_ANGLE + cutSweep,
+            sweepAngle - cutSweep,
+            topLeft,
+            arcSize,
+            strokeWidth,
+        )
+        if (thresholdAngle > 0f) drawThresholdTick(color, thresholdAngle, arcSize.width / 2, strokeWidth)
     }
+}
+
+private fun DrawScope.drawRingArc(
+    color: Color,
+    startAngle: Float,
+    sweepAngle: Float,
+    topLeft: Offset,
+    size: Size,
+    strokeWidth: Float,
+) {
+    if (sweepAngle <= 0f) return
+    drawArc(
+        color = color,
+        startAngle = startAngle,
+        sweepAngle = sweepAngle,
+        useCenter = false,
+        topLeft = topLeft,
+        size = size,
+        style = Stroke(width = strokeWidth, cap = StrokeCap.Butt),
+    )
+}
+
+/** 弧の半径 [radius] の上で、[angle]（度、12時が起点）の位置に、弧の太さより少し長い放射状の目盛りを描く。 */
+private fun DrawScope.drawThresholdTick(
+    color: Color,
+    angle: Float,
+    radius: Float,
+    strokeWidth: Float,
+) {
+    val radians = (RING_START_ANGLE + angle) * PI.toFloat() / HALF_CIRCLE_DEGREES
+    val extent = strokeWidth / 2 + RING_THRESHOLD_TICK_EXTENT.toPx()
+    val center = Offset(size.width / 2, size.height / 2)
+    val direction = Offset(cos(radians), sin(radians))
+    drawLine(
+        color = color,
+        start = center + direction * (radius - extent),
+        end = center + direction * (radius + extent),
+        strokeWidth = TICK_STROKE_WIDTH.toPx(),
+        cap = StrokeCap.Round,
+    )
 }

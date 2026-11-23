@@ -15,7 +15,7 @@ AppScreen の UI 状態の合成は `AppScreenFlow` が cold Flow として担�
 
 ## 音声認識（ウェイクワード方式）
 
-`SpeechRecognitionViewModel` が `ObserveSpeechRecognitionUseCase` の聞き取りを開始・停止し、状態（停止中・準備中・ウェイクワード待ち・コマンド待ち・マイクの権限が許可されていません・この端末では音声認識を利用できません）、認識途中の文字列、確定結果の履歴（新しい順に最大5件）、入力音量（`level`、0.0〜1.0。Android は認識エンジンの通知、デスクトップは取得した音声の断片ごとの音量。届いた間だけカードにゲージを表示し、停止・失敗で消す。）、入力デバイスの一覧と選択中のデバイス名（デスクトップのみ。後述）を `SpeechRecognitionUiState` で保持します。アプリ全体で1つの ViewModel を共有するため、タブを切り替えても聞き取りは止まりません。
+`SpeechRecognitionViewModel` が `ObserveSpeechRecognitionUseCase` の聞き取りを開始・停止し、状態（停止中・準備中・ウェイクワード待ち・コマンド待ち・マイクの権限が許可されていません・この端末では音声認識を利用できません）、認識途中の文字列、確定結果の履歴（新しい順に最大5件）、入力音量（`level`、0.0〜1.0。Android は認識エンジンの通知、デスクトップは取得した音声の断片ごとの音量。届いた間だけカードにゲージを表示し、停止・失敗で消す。）、「小さい音をカット」の閾値（`cutThreshold`、0.0〜1.0で `level` と同じ尺度。設定の段階 × 0.05を `ObserveMicrophoneCutQuietSoundLevelUseCase` で購読し、0 はカットしない。カードのゲージは閾値の位置に縦線を引き、閾値未満は控えめな色にする。チップのリングは閾値より下の弧を薄くし、閾値の位置に目盛りを付ける）、入力デバイスの一覧と選択中のデバイス名（デスクトップのみ。後述）を `SpeechRecognitionUiState` で保持します。アプリ全体で1つの ViewModel を共有するため、タブを切り替えても聞き取りは止まりません。
 
 - `rememberSpeechRecognition()`: `AppScreen` から一度だけ呼ぶ。マイクの権限の要求（`rememberRecordAudioPermissionRequester`、Android のみ実行時ダイアログ）、アプリが見えなくなったとき（ON_STOP）の停止、前面に戻ったとき（ON_START）の再開を担い、右下に重ねるチップと音声タブに置く状態カード（詳細は後述）を `SpeechRecognitionSlots` として返す。`isSpeechRecognitionSupportedOnPlatform()` が true のプラットフォーム（Android とデスクトップ）でだけ描画し、false なら `SpeechRecognitionSlots.None`（何も出さない）。入力デバイスの一覧は、カードを表示するとき・ドロップダウンを開くときに取得する（デスクトップのみ）。
 - 見えなくなる前に聞き取り中だった場合だけ、前面に戻ったときに再開する（権限が外されていれば再開しない）。スイッチを OFF にした場合や失敗の後は再開しない。ON/OFF の状態はメモリ上にのみ持つため、アプリのプロセスが終了すると OFF に戻る。
