@@ -31,6 +31,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
+import kurou.kodriver.domain.usecase.ReportSpeechRecognitionTranscriptUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 import kotlin.test.AfterTest
@@ -78,6 +79,8 @@ class SpeechRecognitionViewModelWakeWordTest {
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(playbackRepository),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
             playChime = PlaySpeechRecognitionChimeUseCase(chimePlayer),
+            reportSpeechRecognitionTranscript =
+                ReportSpeechRecognitionTranscriptUseCase(FakeSpeechRecognitionTranscriptRepository()),
         ).also {
             viewModel = it
             it.onEnabledChange(true) {}

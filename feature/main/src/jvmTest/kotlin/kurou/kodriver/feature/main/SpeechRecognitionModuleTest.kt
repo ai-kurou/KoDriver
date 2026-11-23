@@ -22,6 +22,7 @@ import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepos
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
+import kurou.kodriver.domain.repository.SpeechRecognitionTranscriptRepository
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.AfterTest
@@ -58,6 +59,7 @@ class SpeechRecognitionModuleTest {
                         single<RecordAudioPermissionRepository> { permissionRepository }
                         single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
+                        single<SpeechRecognitionTranscriptRepository> { FakeSpeechRecognitionTranscriptRepository() }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                         single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
                     },
@@ -95,6 +97,7 @@ class SpeechRecognitionModuleTest {
                         single<RecordAudioPermissionRepository> { permissionRepository }
                         single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
+                        single<SpeechRecognitionTranscriptRepository> { FakeSpeechRecognitionTranscriptRepository() }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                         single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
                         single<AudioInputDeviceRepository> { deviceRepository }
