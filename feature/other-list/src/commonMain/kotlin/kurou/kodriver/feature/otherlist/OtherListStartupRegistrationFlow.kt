@@ -2,7 +2,6 @@ package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 
@@ -10,16 +9,16 @@ import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 public class OtherListStartupRegistrationFlow(
     private val startupRegistration: StartupRegistrationUseCases,
 ) {
-    private val _uiState = MutableStateFlow(OtherListStartupRegistrationUiState())
-    public val uiState: StateFlow<OtherListStartupRegistrationUiState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<OtherListStartupRegistrationUiState>
+        field = MutableStateFlow(OtherListStartupRegistrationUiState())
 
     public suspend fun checkStartupEnabled() {
         val enabled = startupRegistration.getEnabled()
-        _uiState.update { it.copy(startupEnabled = enabled) }
+        uiState.update { it.copy(startupEnabled = enabled) }
     }
 
     public suspend fun onStartupEnabledChange(enabled: Boolean) {
         startupRegistration.setEnabled(enabled)
-        _uiState.update { it.copy(startupEnabled = enabled) }
+        uiState.update { it.copy(startupEnabled = enabled) }
     }
 }

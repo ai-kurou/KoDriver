@@ -2,7 +2,6 @@ package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.runCapturingErrorsOrNull
 
@@ -13,34 +12,34 @@ import kurou.kodriver.domain.runCapturingErrorsOrNull
 public class OtherListResetFlow(
     private val reset: suspend () -> Unit,
 ) {
-    private val _uiState = MutableStateFlow(OtherListResetUiState())
-    public val uiState: StateFlow<OtherListResetUiState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<OtherListResetUiState>
+        field = MutableStateFlow(OtherListResetUiState())
 
     public fun onResetClick() {
-        if (_uiState.value.isResetting) return
-        _uiState.update { it.copy(showResetConfirmDialog = true) }
+        if (uiState.value.isResetting) return
+        uiState.update { it.copy(showResetConfirmDialog = true) }
     }
 
     public fun onResetDismiss() {
-        _uiState.update { it.copy(showResetConfirmDialog = false) }
+        uiState.update { it.copy(showResetConfirmDialog = false) }
     }
 
     public suspend fun onResetConfirm() {
-        if (!_uiState.value.showResetConfirmDialog || _uiState.value.isResetting) return
-        _uiState.update { it.copy(showResetConfirmDialog = false, isResetting = true, resetSucceeded = null) }
+        if (!uiState.value.showResetConfirmDialog || uiState.value.isResetting) return
+        uiState.update { it.copy(showResetConfirmDialog = false, isResetting = true, resetSucceeded = null) }
         try {
             val succeeded =
                 runCapturingErrorsOrNull {
                     reset()
                     true
                 } != null
-            _uiState.update { it.copy(resetSucceeded = succeeded) }
+            uiState.update { it.copy(resetSucceeded = succeeded) }
         } finally {
-            _uiState.update { it.copy(isResetting = false) }
+            uiState.update { it.copy(isResetting = false) }
         }
     }
 
     public fun consumeResetResult() {
-        _uiState.update { it.copy(resetSucceeded = null) }
+        uiState.update { it.copy(resetSucceeded = null) }
     }
 }
