@@ -18,32 +18,32 @@
 <!-- :core:ace&#45;windows&#45;domain -->
 <g id="node2" class="node">
 <title>:core:ace&#45;windows&#45;domain</title>
-<path fill="#e1bee7" stroke="#8e24aa" d="M4140,-108C4140,-108 3960.5,-108 3960.5,-108 3954.5,-108 3948.5,-102 3948.5,-96 3948.5,-96 3948.5,-84 3948.5,-84 3948.5,-78 3954.5,-72 3960.5,-72 3960.5,-72 4140,-72 4140,-72 4146,-72 4152,-78 4152,-84 4152,-84 4152,-96 4152,-96 4152,-102 4146,-108 4140,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="4050.25" y="-85.33" font-family="Times,serif" font-size="14.00">:core:ace&#45;windows&#45;domain</text>
+<path fill="#e1bee7" stroke="#8e24aa" d="M4102,-108C4102,-108 3922.5,-108 3922.5,-108 3916.5,-108 3910.5,-102 3910.5,-96 3910.5,-96 3910.5,-84 3910.5,-84 3910.5,-78 3916.5,-72 3922.5,-72 3922.5,-72 4102,-72 4102,-72 4108,-72 4114,-78 4114,-84 4114,-84 4114,-96 4114,-96 4114,-102 4108,-108 4102,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="4012.25" y="-85.33" font-family="Times,serif" font-size="14.00">:core:ace&#45;windows&#45;domain</text>
 </g>
 <!-- :core:ace&#45;windows&#45;data&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge5" class="edge">
 <title>:core:ace&#45;windows&#45;data&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M183,-144.82C185.78,-144.52 188.53,-144.24 191.25,-144 1003.83,-71.41 3047.45,-148.77 3862.25,-108 3886.52,-106.79 3912.5,-104.85 3937.17,-102.71"/>
-<polygon fill="black" stroke="black" points="3937.24,-106.22 3946.89,-101.85 3936.62,-99.24 3937.24,-106.22"/>
+<path fill="none" stroke="black" d="M183,-144.82C185.78,-144.52 188.53,-144.24 191.25,-144 1003.83,-71.41 3047.97,-158 3862.25,-108 3874.17,-107.27 3886.59,-106.26 3898.97,-105.09"/>
+<polygon fill="black" stroke="black" points="3899.19,-108.59 3908.8,-104.13 3898.5,-101.62 3899.19,-108.59"/>
 </g>
 <!-- :core:domain -->
 <g id="node5" class="node">
 <title>:core:domain</title>
-<path fill="#e1bee7" stroke="#8e24aa" stroke-width="2.5" d="M6515.38,-36C6515.38,-36 6431.12,-36 6431.12,-36 6425.12,-36 6419.12,-30 6419.12,-24 6419.12,-24 6419.12,-12 6419.12,-12 6419.12,-6 6425.12,0 6431.12,0 6431.12,0 6515.38,0 6515.38,0 6521.38,0 6527.38,-6 6527.38,-12 6527.38,-12 6527.38,-24 6527.38,-24 6527.38,-30 6521.38,-36 6515.38,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="6473.25" y="-13.32" font-family="Times,serif" font-size="14.00">:core:domain</text>
+<path fill="#e1bee7" stroke="#8e24aa" stroke-width="2.5" d="M6843.38,-36C6843.38,-36 6759.12,-36 6759.12,-36 6753.12,-36 6747.12,-30 6747.12,-24 6747.12,-24 6747.12,-12 6747.12,-12 6747.12,-6 6753.12,0 6759.12,0 6759.12,0 6843.38,0 6843.38,0 6849.38,0 6855.38,-6 6855.38,-12 6855.38,-12 6855.38,-24 6855.38,-24 6855.38,-30 6849.38,-36 6843.38,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="6801.25" y="-13.32" font-family="Times,serif" font-size="14.00">:core:domain</text>
 </g>
 <!-- :core:ace&#45;windows&#45;data&#45;&gt;:core:domain -->
 <g id="edge4" class="edge">
 <title>:core:ace&#45;windows&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M182.76,-145.14C185.62,-144.74 188.46,-144.36 191.25,-144 555.87,-97.16 648.06,-89.8 1015.25,-72 2137.43,-17.61 5863.46,-18.51 6406.89,-18.93"/>
-<polygon fill="black" stroke="black" points="6406.51,-22.43 6416.52,-18.94 6406.52,-15.43 6406.51,-22.43"/>
+<path fill="none" stroke="black" d="M182.76,-145.14C185.62,-144.74 188.46,-144.36 191.25,-144 555.87,-97.16 648.06,-89.7 1015.25,-72 2207.66,-14.53 6173.31,-18.09 6734.89,-18.89"/>
+<polygon fill="black" stroke="black" points="6734.48,-22.39 6744.49,-18.91 6734.49,-15.39 6734.48,-22.39"/>
 </g>
 <!-- :core:ace&#45;windows&#45;domain&#45;&gt;:core:domain -->
 <g id="edge6" class="edge">
 <title>:core:ace&#45;windows&#45;domain&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M4152.12,-78.54C4180.02,-76.02 4210.28,-73.59 4238.25,-72 5093.96,-23.22 6136.44,-19.16 6406.74,-18.96"/>
-<polygon fill="black" stroke="black" points="6406.39,-22.46 6416.39,-18.96 6406.39,-15.46 6406.39,-22.46"/>
+<path fill="none" stroke="black" d="M4114.26,-73.42C4119.32,-72.88 4124.34,-72.4 4129.25,-72 4657.9,-28.52 6373.74,-20.43 6734.36,-19.2"/>
+<polygon fill="black" stroke="black" points="6734.37,-22.7 6744.36,-19.16 6734.35,-15.7 6734.37,-22.7"/>
 </g>
 <!-- :core:data -->
 <g id="node3" class="node">
@@ -54,38 +54,38 @@
 <!-- :core:data&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge9" class="edge">
 <title>:core:data&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M3935.46,-143.52C3955.62,-134.29 3980.56,-122.89 4002.03,-113.06"/>
-<polygon fill="black" stroke="black" points="4003.24,-116.35 4010.88,-109.01 4000.33,-109.99 4003.24,-116.35"/>
+<path fill="none" stroke="black" d="M3925.97,-143.52C3940.63,-134.6 3958.64,-123.63 3974.41,-114.03"/>
+<polygon fill="black" stroke="black" points="3975.88,-117.24 3982.6,-109.05 3972.24,-111.26 3975.88,-117.24"/>
 </g>
 <!-- :core:data&#45;&gt;:core:domain -->
 <g id="edge8" class="edge">
 <title>:core:data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M3941.3,-145.72C3943.97,-145.06 3946.63,-144.48 3949.25,-144 4266.49,-85.36 4353.4,-141.76 4674.25,-108 4774.09,-97.49 4797.33,-81.71 4897.25,-72 5197.14,-42.87 6146.47,-24.65 6406.71,-20.11"/>
-<polygon fill="black" stroke="black" points="6406.77,-23.61 6416.71,-19.94 6406.65,-16.62 6406.77,-23.61"/>
+<path fill="none" stroke="black" d="M3941.29,-145.67C3943.96,-145.03 3946.63,-144.47 3949.25,-144 4382.73,-66.84 4502.76,-165.76 4939.25,-108 5009.79,-98.66 5024.69,-81.15 5095.25,-72 5420.8,-29.79 6460.77,-20.94 6734.63,-19.33"/>
+<polygon fill="black" stroke="black" points="6734.46,-22.83 6744.44,-19.27 6734.42,-15.83 6734.46,-22.83"/>
 </g>
 <!-- :core:gt7&#45;ps5&#45;domain -->
 <g id="node7" class="node">
 <title>:core:gt7&#45;ps5&#45;domain</title>
-<path fill="#e1bee7" stroke="#8e24aa" d="M5706.62,-108C5706.62,-108 5563.88,-108 5563.88,-108 5557.88,-108 5551.88,-102 5551.88,-96 5551.88,-96 5551.88,-84 5551.88,-84 5551.88,-78 5557.88,-72 5563.88,-72 5563.88,-72 5706.62,-72 5706.62,-72 5712.62,-72 5718.62,-78 5718.62,-84 5718.62,-84 5718.62,-96 5718.62,-96 5718.62,-102 5712.62,-108 5706.62,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="5635.25" y="-85.33" font-family="Times,serif" font-size="14.00">:core:gt7&#45;ps5&#45;domain</text>
+<path fill="#e1bee7" stroke="#8e24aa" d="M5646.62,-108C5646.62,-108 5503.88,-108 5503.88,-108 5497.88,-108 5491.88,-102 5491.88,-96 5491.88,-96 5491.88,-84 5491.88,-84 5491.88,-78 5497.88,-72 5503.88,-72 5503.88,-72 5646.62,-72 5646.62,-72 5652.62,-72 5658.62,-78 5658.62,-84 5658.62,-84 5658.62,-96 5658.62,-96 5658.62,-102 5652.62,-108 5646.62,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="5575.25" y="-85.33" font-family="Times,serif" font-size="14.00">:core:gt7&#45;ps5&#45;domain</text>
 </g>
 <!-- :core:data&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
 <g id="edge7" class="edge">
 <title>:core:data&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M3941.28,-145.64C3943.96,-145.01 3946.63,-144.45 3949.25,-144 4265.15,-89.62 5071.06,-123.14 5391.25,-108 5440.42,-105.67 5495.09,-101.97 5540.2,-98.61"/>
-<polygon fill="black" stroke="black" points="5540.24,-102.12 5549.95,-97.88 5539.71,-95.14 5540.24,-102.12"/>
+<path fill="none" stroke="black" d="M3941.29,-145.66C3943.96,-145.02 3946.63,-144.46 3949.25,-144 4200.21,-99.97 4840.6,-116.51 5095.25,-108 5228.93,-103.53 5383.53,-97.99 5480.35,-94.47"/>
+<polygon fill="black" stroke="black" points="5480.2,-97.98 5490.06,-94.12 5479.94,-90.99 5480.2,-97.98"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;domain -->
 <g id="node9" class="node">
 <title>:core:lmu&#45;windows&#45;domain</title>
-<path fill="#e1bee7" stroke="#8e24aa" d="M6942.5,-108C6942.5,-108 6760,-108 6760,-108 6754,-108 6748,-102 6748,-96 6748,-96 6748,-84 6748,-84 6748,-78 6754,-72 6760,-72 6760,-72 6942.5,-72 6942.5,-72 6948.5,-72 6954.5,-78 6954.5,-84 6954.5,-84 6954.5,-96 6954.5,-96 6954.5,-102 6948.5,-108 6942.5,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="6851.25" y="-85.33" font-family="Times,serif" font-size="14.00">:core:lmu&#45;windows&#45;domain</text>
+<path fill="#e1bee7" stroke="#8e24aa" d="M7232.5,-108C7232.5,-108 7050,-108 7050,-108 7044,-108 7038,-102 7038,-96 7038,-96 7038,-84 7038,-84 7038,-78 7044,-72 7050,-72 7050,-72 7232.5,-72 7232.5,-72 7238.5,-72 7244.5,-78 7244.5,-84 7244.5,-84 7244.5,-96 7244.5,-96 7244.5,-102 7238.5,-108 7232.5,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="7141.25" y="-85.33" font-family="Times,serif" font-size="14.00">:core:lmu&#45;windows&#45;domain</text>
 </g>
 <!-- :core:data&#45;&gt;:core:lmu&#45;windows&#45;domain -->
 <g id="edge10" class="edge">
 <title>:core:data&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M3941.28,-145.62C3943.96,-144.99 3946.63,-144.44 3949.25,-144 3984.21,-138.1 6202.29,-101.58 6736.46,-92.87"/>
-<polygon fill="black" stroke="black" points="6736.18,-96.37 6746.12,-92.71 6736.06,-89.37 6736.18,-96.37"/>
+<path fill="none" stroke="black" d="M3941.28,-145.61C3943.96,-144.99 3946.63,-144.44 3949.25,-144 4026.61,-131.02 6464.55,-99.53 7026.51,-92.44"/>
+<polygon fill="black" stroke="black" points="7026.37,-95.94 7036.33,-92.31 7026.28,-88.94 7026.37,-95.94"/>
 </g>
 <!-- :core:device&#45;volume&#45;data -->
 <g id="node4" class="node">
@@ -96,8 +96,8 @@
 <!-- :core:device&#45;volume&#45;data&#45;&gt;:core:domain -->
 <g id="edge11" class="edge">
 <title>:core:device&#45;volume&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M2754.62,-73.31C2759.22,-72.82 2763.78,-72.37 2768.25,-72 3143.94,-40.69 5938.11,-22.28 6406.67,-19.4"/>
-<polygon fill="black" stroke="black" points="6406.46,-22.9 6416.43,-19.34 6406.41,-15.9 6406.46,-22.9"/>
+<path fill="none" stroke="black" d="M2754.62,-73.31C2759.22,-72.81 2763.78,-72.37 2768.25,-72 3178.83,-38.03 6242.8,-21.73 6734.7,-19.32"/>
+<polygon fill="black" stroke="black" points="6734.68,-22.82 6744.66,-19.27 6734.65,-15.82 6734.68,-22.82"/>
 </g>
 <!-- :core:gt7&#45;ps5&#45;data -->
 <g id="node6" class="node">
@@ -108,20 +108,20 @@
 <!-- :core:gt7&#45;ps5&#45;data&#45;&gt;:core:domain -->
 <g id="edge12" class="edge">
 <title>:core:gt7&#45;ps5&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M4934.49,-145.33C4937.44,-144.85 4940.37,-144.4 4943.25,-144 5049.4,-129.09 5326.23,-151.37 5424.25,-108 5445.53,-98.59 5440.87,-81.17 5462.25,-72 5548.59,-34.95 6195.97,-22.82 6406.98,-19.82"/>
-<polygon fill="black" stroke="black" points="6406.71,-23.33 6416.66,-19.69 6406.61,-16.33 6406.71,-23.33"/>
+<path fill="none" stroke="black" d="M4934.49,-145.37C4937.45,-144.88 4940.37,-144.42 4943.25,-144 5125.99,-117.21 5186.97,-179.53 5357.25,-108 5379.92,-98.48 5376.36,-80.96 5399.25,-72 5524.26,-23.05 6473.81,-19.1 6734.96,-18.95"/>
+<polygon fill="black" stroke="black" points="6734.63,-22.45 6744.63,-18.95 6734.63,-15.45 6734.63,-22.45"/>
 </g>
 <!-- :core:gt7&#45;ps5&#45;data&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
 <g id="edge13" class="edge">
 <title>:core:gt7&#45;ps5&#45;data&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M4934.48,-145.31C4937.44,-144.84 4940.37,-144.4 4943.25,-144 5172.31,-112.46 5231.84,-127.31 5462.25,-108 5487.66,-105.87 5515.14,-103.29 5540.56,-100.8"/>
-<polygon fill="black" stroke="black" points="5540.59,-104.31 5550.19,-99.85 5539.9,-97.35 5540.59,-104.31"/>
+<path fill="none" stroke="black" d="M4934.49,-145.34C4937.44,-144.86 4940.37,-144.41 4943.25,-144 5144.51,-115.31 5196.73,-125.77 5399.25,-108 5425.61,-105.69 5454.16,-103 5480.46,-100.46"/>
+<polygon fill="black" stroke="black" points="5480.45,-103.98 5490.06,-99.53 5479.77,-97.01 5480.45,-103.98"/>
 </g>
 <!-- :core:gt7&#45;ps5&#45;domain&#45;&gt;:core:domain -->
 <g id="edge14" class="edge">
 <title>:core:gt7&#45;ps5&#45;domain&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M5719.05,-82C5885.6,-68.09 6255.19,-37.21 6406.6,-24.57"/>
-<polygon fill="black" stroke="black" points="6406.8,-28.06 6416.47,-23.74 6406.22,-21.09 6406.8,-28.06"/>
+<path fill="none" stroke="black" d="M5659.04,-84.22C5889.03,-71.08 6526.88,-34.67 6734.79,-22.79"/>
+<polygon fill="black" stroke="black" points="6734.82,-26.3 6744.6,-22.23 6734.42,-19.31 6734.82,-26.3"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;data -->
 <g id="node8" class="node">
@@ -132,20 +132,20 @@
 <!-- :core:lmu&#45;windows&#45;data&#45;&gt;:core:domain -->
 <g id="edge15" class="edge">
 <title>:core:lmu&#45;windows&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M7932.21,-144.95C7929.19,-144.6 7926.2,-144.29 7923.25,-144 7780.2,-130.15 6764.92,-158.2 6630.25,-108 6606.57,-99.18 6607.63,-85.47 6586.25,-72 6568.39,-60.75 6547.76,-50.38 6529.05,-41.86"/>
-<polygon fill="black" stroke="black" points="6530.53,-38.69 6519.97,-37.81 6527.68,-45.08 6530.53,-38.69"/>
+<path fill="none" stroke="black" d="M7932.21,-144.98C7929.19,-144.63 7926.2,-144.3 7923.25,-144 7812.3,-132.81 7023.88,-149.18 6920.25,-108 6897.71,-99.05 6898.43,-86.84 6879.25,-72 6866.56,-62.18 6852.15,-52.11 6839.2,-43.42"/>
+<polygon fill="black" stroke="black" points="6841.17,-40.52 6830.9,-37.91 6837.3,-46.35 6841.17,-40.52"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;data&#45;&gt;:core:lmu&#45;windows&#45;domain -->
 <g id="edge16" class="edge">
 <title>:core:lmu&#45;windows&#45;data&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M7932.2,-144.99C7929.19,-144.63 7926.2,-144.3 7923.25,-144 7500.69,-101 7391.24,-146.59 6968.25,-108 6967.56,-107.94 6966.87,-107.87 6966.18,-107.81"/>
-<polygon fill="black" stroke="black" points="6966.66,-104.34 6956.36,-106.8 6965.95,-111.3 6966.66,-104.34"/>
+<path fill="none" stroke="black" d="M7932.2,-145.05C7929.18,-144.68 7926.19,-144.32 7923.25,-144 7629.04,-111.62 7552.78,-137.31 7258.25,-108 7257.56,-107.93 7256.88,-107.86 7256.19,-107.79"/>
+<polygon fill="black" stroke="black" points="7256.68,-104.33 7246.36,-106.72 7255.93,-111.28 7256.68,-104.33"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;domain&#45;&gt;:core:domain -->
 <g id="edge17" class="edge">
 <title>:core:lmu&#45;windows&#45;domain&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M6756.84,-71.52C6689.25,-59 6599.92,-42.46 6539.73,-31.31"/>
-<polygon fill="black" stroke="black" points="6540.42,-27.88 6529.95,-29.5 6539.15,-34.76 6540.42,-27.88"/>
+<path fill="none" stroke="black" d="M7056.33,-71.52C6997.94,-59.49 6921.5,-43.76 6867.57,-32.65"/>
+<polygon fill="black" stroke="black" points="6868.41,-29.25 6857.91,-30.66 6866.99,-36.11 6868.41,-29.25"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;rest&#45;api&#45;data -->
 <g id="node10" class="node">
@@ -156,14 +156,14 @@
 <!-- :core:lmu&#45;windows&#45;rest&#45;api&#45;data&#45;&gt;:core:domain -->
 <g id="edge18" class="edge">
 <title>:core:lmu&#45;windows&#45;rest&#45;api&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M8135.56,-144.68C8132.77,-144.44 8129.99,-144.21 8127.25,-144 7965.57,-131.55 6820.89,-162.74 6668.25,-108 6643.81,-99.24 6645,-84.51 6622.25,-72 6596.35,-57.75 6565.88,-46.11 6539.27,-37.41"/>
-<polygon fill="black" stroke="black" points="6540.54,-34.14 6529.95,-34.44 6538.41,-40.81 6540.54,-34.14"/>
+<path fill="none" stroke="black" d="M8135.56,-144.71C8132.77,-144.46 8129.99,-144.22 8127.25,-144 7997.71,-133.63 7079.95,-153.57 6958.25,-108 6934.59,-99.14 6935.63,-85.47 6914.25,-72 6896.39,-60.75 6875.76,-50.38 6857.05,-41.86"/>
+<polygon fill="black" stroke="black" points="6858.53,-38.69 6847.97,-37.81 6855.68,-45.08 6858.53,-38.69"/>
 </g>
 <!-- :core:lmu&#45;windows&#45;rest&#45;api&#45;data&#45;&gt;:core:lmu&#45;windows&#45;domain -->
 <g id="edge19" class="edge">
 <title>:core:lmu&#45;windows&#45;rest&#45;api&#45;data&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M8135.56,-144.71C8132.77,-144.46 8129.99,-144.22 8127.25,-144 7613.54,-102.79 7481.63,-153.12 6968.25,-108 6967.56,-107.94 6966.87,-107.88 6966.18,-107.81"/>
-<polygon fill="black" stroke="black" points="6966.65,-104.34 6956.35,-106.84 6965.96,-111.31 6966.65,-104.34"/>
+<path fill="none" stroke="black" d="M8135.56,-144.75C8132.76,-144.48 8129.99,-144.23 8127.25,-144 7742.1,-111.1 7643.14,-143.84 7258.25,-108 7257.56,-107.94 7256.87,-107.87 7256.18,-107.8"/>
+<polygon fill="black" stroke="black" points="7256.66,-104.34 7246.36,-106.79 7255.94,-111.3 7256.66,-104.34"/>
 </g>
 <!-- :core:speech&#45;recognition&#45;data -->
 <g id="node11" class="node">
@@ -174,8 +174,8 @@
 <!-- :core:speech&#45;recognition&#45;data&#45;&gt;:core:domain -->
 <g id="edge20" class="edge">
 <title>:core:speech&#45;recognition&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M3188.85,-72.71C3191.67,-72.45 3194.48,-72.21 3197.25,-72 3853.43,-21.17 6000.1,-18.93 6406.52,-18.97"/>
-<polygon fill="black" stroke="black" points="6406.52,-22.47 6416.52,-18.97 6406.52,-15.47 6406.52,-22.47"/>
+<path fill="none" stroke="black" d="M3188.85,-72.7C3191.67,-72.45 3194.48,-72.21 3197.25,-72 3922.97,-16.32 6305.76,-18.07 6734.77,-18.85"/>
+<polygon fill="black" stroke="black" points="6734.49,-22.35 6744.5,-18.87 6734.51,-15.35 6734.49,-22.35"/>
 </g>
 <!-- :core:text&#45;to&#45;speech&#45;data -->
 <g id="node12" class="node">
@@ -186,8 +186,8 @@
 <!-- :core:text&#45;to&#45;speech&#45;data&#45;&gt;:core:domain -->
 <g id="edge21" class="edge">
 <title>:core:text&#45;to&#45;speech&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M3400.23,-72.88C3403.27,-72.56 3406.28,-72.26 3409.25,-72 4020.31,-17.99 6016.76,-18.28 6406.82,-18.87"/>
-<polygon fill="black" stroke="black" points="6406.64,-22.37 6416.64,-18.88 6406.65,-15.37 6406.64,-22.37"/>
+<path fill="none" stroke="black" d="M3400.23,-72.88C3403.27,-72.55 3406.28,-72.26 3409.25,-72 4089.35,-12.46 6319.48,-17.29 6734.46,-18.74"/>
+<polygon fill="black" stroke="black" points="6734.39,-22.24 6744.41,-18.77 6734.42,-15.24 6734.39,-22.24"/>
 </g>
 <!-- :core:windows&#45;hotkey&#45;data -->
 <g id="node13" class="node">
@@ -198,8 +198,8 @@
 <!-- :core:windows&#45;hotkey&#45;data&#45;&gt;:core:domain -->
 <g id="edge22" class="edge">
 <title>:core:windows&#45;hotkey&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M3624.93,-72.77C3627.73,-72.49 3630.51,-72.23 3633.25,-72 4197.26,-24.14 6033.48,-19.5 6406.7,-19.05"/>
-<polygon fill="black" stroke="black" points="6406.57,-22.55 6416.56,-19.04 6406.56,-15.55 6406.57,-22.55"/>
+<path fill="none" stroke="black" d="M3624.93,-72.76C3627.73,-72.49 3630.51,-72.23 3633.25,-72 4266.46,-18.89 6336.98,-18.47 6734.8,-18.9"/>
+<polygon fill="black" stroke="black" points="6734.56,-22.4 6744.57,-18.91 6734.57,-15.4 6734.56,-22.4"/>
 </g>
 <!-- :core:windows&#45;startup&#45;data -->
 <g id="node14" class="node">
@@ -210,8 +210,8 @@
 <!-- :core:windows&#45;startup&#45;data&#45;&gt;:core:domain -->
 <g id="edge23" class="edge">
 <title>:core:windows&#45;startup&#45;data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M3854.18,-73.29C3858.93,-72.81 3863.64,-72.37 3868.25,-72 4383.02,-30.45 6051.95,-20.86 6406.61,-19.27"/>
-<polygon fill="black" stroke="black" points="6406.44,-22.77 6416.43,-19.22 6406.41,-15.77 6406.44,-22.77"/>
+<path fill="none" stroke="black" d="M3854.18,-73.28C3858.93,-72.8 3863.64,-72.37 3868.25,-72 4452.06,-25.55 6354.2,-19.78 6734.66,-19.09"/>
+<polygon fill="black" stroke="black" points="6734.49,-22.59 6744.48,-19.07 6734.47,-15.59 6734.49,-22.59"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail -->
 <g id="node15" class="node">
@@ -222,14 +222,14 @@
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge25" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M540.29,-144.5C543.3,-144.32 546.29,-144.16 549.25,-144 2019.73,-66.32 2391.6,-182.37 3862.25,-108 3886.52,-106.77 3912.5,-104.83 3937.16,-102.69"/>
-<polygon fill="black" stroke="black" points="3937.23,-106.2 3946.89,-101.83 3936.62,-99.23 3937.23,-106.2"/>
+<path fill="none" stroke="black" d="M540.29,-144.5C543.3,-144.32 546.29,-144.16 549.25,-144 2019.73,-66.32 2392.54,-199.03 3862.25,-108 3874.17,-107.26 3886.59,-106.25 3898.97,-105.08"/>
+<polygon fill="black" stroke="black" points="3899.19,-108.58 3908.8,-104.12 3898.5,-101.61 3899.19,-108.58"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail&#45;&gt;:core:domain -->
 <g id="edge24" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M540.31,-144.72C543.31,-144.48 546.29,-144.23 549.25,-144 1050.91,-104.21 1176.36,-90.79 1679.25,-72 2659.77,-35.37 5900.44,-21.26 6406.53,-19.25"/>
-<polygon fill="black" stroke="black" points="6406.47,-22.75 6416.46,-19.22 6406.45,-15.75 6406.47,-22.75"/>
+<path fill="none" stroke="black" d="M540.31,-144.72C543.31,-144.48 546.29,-144.23 549.25,-144 1050.91,-104.21 1176.35,-90.61 1679.25,-72 2729.87,-33.12 6209.19,-20.85 6734.56,-19.2"/>
+<polygon fill="black" stroke="black" points="6734.56,-22.7 6744.55,-19.17 6734.54,-15.7 6734.56,-22.7"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail -->
 <g id="node16" class="node">
@@ -240,14 +240,14 @@
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge27" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M954.82,-144.42C957.65,-144.27 960.46,-144.13 963.25,-144 2250.36,-83.23 2575.4,-174.07 3862.25,-108 3886.52,-106.75 3912.5,-104.8 3937.16,-102.66"/>
-<polygon fill="black" stroke="black" points="3937.23,-106.17 3946.88,-101.8 3936.61,-99.2 3937.23,-106.17"/>
+<path fill="none" stroke="black" d="M954.82,-144.42C957.65,-144.27 960.46,-144.13 963.25,-144 2250.36,-83.23 2576.23,-188.65 3862.25,-108 3874.17,-107.25 3886.59,-106.23 3898.97,-105.06"/>
+<polygon fill="black" stroke="black" points="3899.19,-108.56 3908.79,-104.09 3898.5,-101.59 3899.19,-108.56"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:domain -->
 <g id="edge26" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M954.82,-144.55C957.65,-144.36 960.46,-144.18 963.25,-144 1315.79,-121.54 2198.15,-82.39 2551.25,-72 4114.21,-26.02 6028.73,-19.88 6406.69,-19.11"/>
-<polygon fill="black" stroke="black" points="6406.43,-22.61 6416.43,-19.09 6406.42,-15.61 6406.43,-22.61"/>
+<path fill="none" stroke="black" d="M954.82,-144.55C957.65,-144.36 960.46,-144.18 963.25,-144 1315.79,-121.54 2198.15,-82.2 2551.25,-72 4252.65,-22.83 6338.48,-19.24 6734.62,-19.01"/>
+<polygon fill="black" stroke="black" points="6734.6,-22.51 6744.6,-19 6734.6,-15.51 6734.6,-22.51"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail -->
 <g id="node17" class="node">
@@ -258,14 +258,14 @@
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge29" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M1390.27,-144.39C1392.95,-144.25 1395.61,-144.12 1398.25,-144 2492.3,-93.2 2768.52,-165.36 3862.25,-108 3886.52,-106.73 3912.5,-104.77 3937.16,-102.62"/>
-<polygon fill="black" stroke="black" points="3937.23,-106.13 3946.88,-101.76 3936.61,-99.16 3937.23,-106.13"/>
+<path fill="none" stroke="black" d="M1390.27,-144.39C1392.95,-144.25 1395.61,-144.12 1398.25,-144 2492.3,-93.2 2769.25,-177.75 3862.25,-108 3874.16,-107.24 3886.59,-106.21 3898.96,-105.04"/>
+<polygon fill="black" stroke="black" points="3899.19,-108.53 3908.79,-104.07 3898.5,-101.56 3899.19,-108.53"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:domain -->
 <g id="edge28" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M1390.27,-144.43C1392.95,-144.28 1395.61,-144.14 1398.25,-144 1474.01,-140.04 2694.22,-139.46 2763.25,-108 2783,-99 2776.45,-80.88 2796.25,-72 2881.91,-33.58 5915.9,-21.01 6406.55,-19.23"/>
-<polygon fill="black" stroke="black" points="6406.5,-22.73 6416.48,-19.19 6406.47,-15.73 6406.5,-22.73"/>
+<path fill="none" stroke="black" d="M1390.27,-144.43C1392.95,-144.28 1395.61,-144.14 1398.25,-144 1474.01,-140.04 2694.22,-139.46 2763.25,-108 2783,-99 2776.44,-80.87 2796.25,-72 2889.94,-30.04 6220.14,-20.39 6734.75,-19.15"/>
+<polygon fill="black" stroke="black" points="6734.53,-22.65 6744.52,-19.13 6734.51,-15.65 6734.53,-22.65"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail -->
 <g id="node18" class="node">
@@ -276,14 +276,14 @@
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge31" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M1858.99,-144.43C1862.1,-144.28 1865.19,-144.14 1868.25,-144 2753.71,-104.01 2977.18,-155.94 3862.25,-108 3886.51,-106.69 3912.49,-104.71 3937.16,-102.56"/>
-<polygon fill="black" stroke="black" points="3937.23,-106.07 3946.88,-101.69 3936.61,-99.09 3937.23,-106.07"/>
+<path fill="none" stroke="black" d="M1858.99,-144.43C1862.1,-144.28 1865.19,-144.14 1868.25,-144 2753.71,-104.01 2977.78,-165.97 3862.25,-108 3874.16,-107.22 3886.59,-106.18 3898.96,-104.99"/>
+<polygon fill="black" stroke="black" points="3899.18,-108.49 3908.79,-104.02 3898.49,-101.52 3899.18,-108.49"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail&#45;&gt;:core:domain -->
 <g id="edge30" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M1859,-144.52C1862.1,-144.34 1865.19,-144.17 1868.25,-144 1971.28,-138.28 2701.15,-148.05 2796.25,-108 2817.69,-98.97 2812.7,-80.77 2834.25,-72 2920.26,-37 5918.71,-21.58 6406.49,-19.3"/>
-<polygon fill="black" stroke="black" points="6406.38,-22.8 6416.37,-19.25 6406.35,-15.8 6406.38,-22.8"/>
+<path fill="none" stroke="black" d="M1859,-144.52C1862.1,-144.34 1865.19,-144.17 1868.25,-144 1971.28,-138.28 2701.15,-148.05 2796.25,-108 2817.69,-98.97 2812.7,-80.76 2834.25,-72 2928.43,-33.74 6224.14,-20.97 6735.01,-19.22"/>
+<polygon fill="black" stroke="black" points="6734.71,-22.72 6744.69,-19.18 6734.68,-15.72 6734.71,-22.72"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail -->
 <g id="node19" class="node">
@@ -294,14 +294,14 @@
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge33" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M2313.91,-144.42C2316.71,-144.28 2319.49,-144.14 2322.25,-144 3006.06,-110.42 3178.72,-146.85 3862.25,-108 3886.51,-106.62 3912.49,-104.61 3937.15,-102.46"/>
-<polygon fill="black" stroke="black" points="3937.22,-105.97 3946.87,-101.6 3936.6,-99 3937.22,-105.97"/>
+<path fill="none" stroke="black" d="M2313.91,-144.42C2316.71,-144.28 2319.49,-144.14 2322.25,-144 3006.06,-110.42 3179.21,-154.6 3862.25,-108 3874.16,-107.19 3886.58,-106.13 3898.96,-104.93"/>
+<polygon fill="black" stroke="black" points="3899.18,-108.42 3908.79,-103.95 3898.49,-101.46 3899.18,-108.42"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:domain -->
 <g id="edge32" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M2313.92,-144.61C2316.71,-144.4 2319.49,-144.2 2322.25,-144 2436.01,-135.74 2729.84,-153.91 2834.25,-108 2855.55,-98.64 2850.7,-80.77 2872.25,-72 2957.34,-37.37 5922.93,-21.65 6406.81,-19.31"/>
-<polygon fill="black" stroke="black" points="6406.61,-22.81 6416.59,-19.26 6406.57,-15.81 6406.61,-22.81"/>
+<path fill="none" stroke="black" d="M2313.92,-144.61C2316.71,-144.4 2319.49,-144.2 2322.25,-144 2436.01,-135.74 2729.84,-153.91 2834.25,-108 2855.55,-98.64 2850.7,-80.76 2872.25,-72 2965.48,-34.12 6226.24,-21.04 6734.84,-19.23"/>
+<polygon fill="black" stroke="black" points="6734.5,-22.73 6744.48,-19.19 6734.47,-15.73 6734.5,-22.73"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail -->
 <g id="node20" class="node">
@@ -312,14 +312,14 @@
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge35" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M2765.35,-144.49C2768.34,-144.32 2771.3,-144.16 2774.25,-144 3257.36,-117.85 3379.35,-137.8 3862.25,-108 3886.5,-106.5 3912.48,-104.45 3937.14,-102.28"/>
-<polygon fill="black" stroke="black" points="3937.21,-105.79 3946.86,-101.42 3936.59,-98.82 3937.21,-105.79"/>
+<path fill="none" stroke="black" d="M2765.35,-144.49C2768.34,-144.32 2771.3,-144.16 2774.25,-144 3257.36,-117.85 3379.72,-143.27 3862.25,-108 3874.16,-107.13 3886.58,-106.03 3898.95,-104.81"/>
+<polygon fill="black" stroke="black" points="3899.18,-108.31 3908.78,-103.82 3898.47,-101.34 3899.18,-108.31"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail&#45;&gt;:core:domain -->
 <g id="edge34" class="edge">
 <title>:feature:ace&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M2733.59,-143.51C2779.82,-135.68 2828.62,-124.36 2872.25,-108 2900.66,-97.35 2901.14,-80.54 2930.25,-72 3103.36,-21.24 5934.58,-19 6406.74,-18.99"/>
-<polygon fill="black" stroke="black" points="6406.58,-22.49 6416.58,-18.99 6406.58,-15.49 6406.58,-22.49"/>
+<path fill="none" stroke="black" d="M2733.59,-143.51C2779.82,-135.68 2828.62,-124.36 2872.25,-108 2900.66,-97.35 2901.13,-80.52 2930.25,-72 3120.21,-16.43 6238.71,-18.25 6734.93,-18.9"/>
+<polygon fill="black" stroke="black" points="6734.65,-22.4 6744.65,-18.91 6734.66,-15.4 6734.65,-22.4"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;debug&#45;state&#45;detail -->
 <g id="node21" class="node">
@@ -330,14 +330,14 @@
 <!-- :feature:ace&#45;windows&#45;debug&#45;state&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge37" class="edge">
 <title>:feature:ace&#45;windows&#45;debug&#45;state&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M3085.4,-144.7C3088.37,-144.46 3091.33,-144.22 3094.25,-144 3434.96,-117.94 3521.34,-131.39 3862.25,-108 3886.49,-106.34 3912.46,-104.21 3937.12,-102.03"/>
-<polygon fill="black" stroke="black" points="3937.2,-105.54 3946.85,-101.16 3936.57,-98.57 3937.2,-105.54"/>
+<path fill="none" stroke="black" d="M3085.4,-144.7C3088.37,-144.46 3091.33,-144.22 3094.25,-144 3434.96,-117.94 3521.63,-135.26 3862.25,-108 3874.15,-107.05 3886.57,-105.9 3898.94,-104.65"/>
+<polygon fill="black" stroke="black" points="3899.18,-108.14 3908.76,-103.63 3898.45,-101.18 3899.18,-108.14"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;debug&#45;state&#45;detail&#45;&gt;:core:domain -->
 <g id="edge36" class="edge">
 <title>:feature:ace&#45;windows&#45;debug&#45;state&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M2932.24,-143.75C2930.91,-123.1 2932.37,-89.15 2953.25,-72 3022.58,-15.04 5928.45,-17.99 6406.89,-18.86"/>
-<polygon fill="black" stroke="black" points="6406.55,-22.36 6416.56,-18.88 6406.56,-15.36 6406.55,-22.36"/>
+<path fill="none" stroke="black" d="M2932.24,-143.75C2930.9,-123.09 2932.36,-89.14 2953.25,-72 2991.32,-40.76 6226.49,-22.09 6734.47,-19.35"/>
+<polygon fill="black" stroke="black" points="6734.46,-22.85 6744.44,-19.3 6734.42,-15.85 6734.46,-22.85"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;narrator -->
 <g id="node22" class="node">
@@ -348,14 +348,14 @@
 <!-- :feature:ace&#45;windows&#45;narrator&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge39" class="edge">
 <title>:feature:ace&#45;windows&#45;narrator&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M3335.66,-144.9C3338.55,-144.58 3341.42,-144.28 3344.25,-144 3588.87,-119.42 3651.34,-129.49 3896.25,-108 3909.33,-106.85 3923.03,-105.52 3936.63,-104.12"/>
-<polygon fill="black" stroke="black" points="3936.92,-107.61 3946.5,-103.09 3936.19,-100.65 3936.92,-107.61"/>
+<path fill="none" stroke="black" d="M3335.66,-144.9C3338.55,-144.58 3341.42,-144.28 3344.25,-144 3588.87,-119.42 3651.76,-133.85 3896.25,-108 3897.1,-107.91 3897.96,-107.82 3898.82,-107.72"/>
+<polygon fill="black" stroke="black" points="3899.11,-111.21 3908.64,-106.6 3898.31,-104.26 3899.11,-111.21"/>
 </g>
 <!-- :feature:ace&#45;windows&#45;narrator&#45;&gt;:core:domain -->
 <g id="edge38" class="edge">
 <title>:feature:ace&#45;windows&#45;narrator&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M3335.66,-144.91C3338.55,-144.6 3341.42,-144.29 3344.25,-144 3459.04,-132.22 3757.93,-157.32 3862.25,-108 3882.15,-98.59 3876.13,-80.92 3896.25,-72 4014.27,-19.68 6013.96,-18.62 6406.64,-18.92"/>
-<polygon fill="black" stroke="black" points="6406.54,-22.42 6416.54,-18.93 6406.54,-15.42 6406.54,-22.42"/>
+<path fill="none" stroke="black" d="M3335.66,-144.91C3338.55,-144.6 3341.42,-144.29 3344.25,-144 3459.04,-132.22 3756.31,-153.72 3862.25,-108 3883.91,-98.65 3879.36,-80.79 3901.25,-72 4036.92,-17.52 6313.54,-18.27 6734.57,-18.88"/>
+<polygon fill="black" stroke="black" points="6734.39,-22.38 6744.4,-18.89 6734.4,-15.38 6734.39,-22.38"/>
 </g>
 <!-- :feature:auto&#45;readout&#45;list -->
 <g id="node23" class="node">
@@ -366,788 +366,788 @@
 <!-- :feature:auto&#45;readout&#45;list&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge42" class="edge">
 <title>:feature:auto&#45;readout&#45;list&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M4054.77,-143.7C4054.14,-136.41 4053.4,-127.73 4052.7,-119.54"/>
-<polygon fill="black" stroke="black" points="4056.19,-119.28 4051.85,-109.61 4049.21,-119.87 4056.19,-119.28"/>
+<path fill="none" stroke="black" d="M4045.37,-143.7C4040.47,-135.9 4034.57,-126.51 4029.11,-117.83"/>
+<polygon fill="black" stroke="black" points="4032.09,-115.99 4023.81,-109.39 4026.17,-119.71 4032.09,-115.99"/>
 </g>
 <!-- :feature:auto&#45;readout&#45;list&#45;&gt;:core:domain -->
 <g id="edge40" class="edge">
 <title>:feature:auto&#45;readout&#45;list&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M4154.16,-145.01C4157.22,-144.65 4160.26,-144.31 4163.25,-144 4488.12,-110.33 4574.79,-159.9 4897.25,-108 4956.44,-98.47 4968,-81.16 5027.25,-72 5298.51,-30.06 6160.35,-21.1 6406.82,-19.38"/>
-<polygon fill="black" stroke="black" points="6406.6,-22.88 6416.58,-19.31 6406.55,-15.88 6406.6,-22.88"/>
+<path fill="none" stroke="black" d="M4154.15,-144.97C4157.22,-144.62 4160.25,-144.29 4163.25,-144 4369.52,-123.7 4891.99,-148.57 5095.25,-108 5140.35,-99 5147.13,-80.87 5192.25,-72 5344.99,-41.97 6450.47,-24.07 6734.74,-19.93"/>
+<polygon fill="black" stroke="black" points="6734.62,-23.43 6744.57,-19.79 6734.52,-16.43 6734.62,-23.43"/>
 </g>
 <!-- :feature:auto&#45;readout&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
 <g id="edge43" class="edge">
 <title>:feature:auto&#45;readout&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M4154.15,-144.93C4157.21,-144.59 4160.25,-144.28 4163.25,-144 4706.88,-93.06 4845.9,-134.98 5391.25,-108 5440.42,-105.57 5495.09,-101.85 5540.2,-98.51"/>
-<polygon fill="black" stroke="black" points="5540.23,-102.02 5549.94,-97.79 5539.71,-95.04 5540.23,-102.02"/>
+<path fill="none" stroke="black" d="M4154.15,-144.95C4157.22,-144.61 4160.25,-144.29 4163.25,-144 4618.74,-100.02 4735,-126.15 5192.25,-108 5290.5,-104.1 5402.9,-99.04 5480.4,-95.46"/>
+<polygon fill="black" stroke="black" points="5480.24,-98.97 5490.07,-95.01 5479.92,-91.98 5480.24,-98.97"/>
 </g>
 <!-- :feature:auto&#45;readout&#45;list&#45;&gt;:core:lmu&#45;windows&#45;domain -->
 <g id="edge41" class="edge">
 <title>:feature:auto&#45;readout&#45;list&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M4154.14,-144.89C4157.21,-144.57 4160.25,-144.27 4163.25,-144 4292.92,-132.48 6238.39,-100.78 6736.02,-92.83"/>
-<polygon fill="black" stroke="black" points="6736.05,-96.33 6745.99,-92.67 6735.94,-89.33 6736.05,-96.33"/>
-</g>
-<!-- :feature:desktop&#45;splash -->
-<g id="node24" class="node">
-<title>:feature:desktop&#45;splash</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M5369.88,-108C5369.88,-108 5210.62,-108 5210.62,-108 5204.62,-108 5198.62,-102 5198.62,-96 5198.62,-96 5198.62,-84 5198.62,-84 5198.62,-78 5204.62,-72 5210.62,-72 5210.62,-72 5369.88,-72 5369.88,-72 5375.88,-72 5381.88,-78 5381.88,-84 5381.88,-84 5381.88,-96 5381.88,-96 5381.88,-102 5375.88,-108 5369.88,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="5290.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:desktop&#45;splash</text>
-</g>
-<!-- :feature:desktop&#45;splash&#45;&gt;:core:domain -->
-<g id="edge44" class="edge">
-<title>:feature:desktop&#45;splash&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M5382.09,-73.64C5386.88,-73.04 5391.62,-72.48 5396.25,-72 5777.14,-32.21 6237.02,-22.17 6406.43,-19.74"/>
-<polygon fill="black" stroke="black" points="6406.42,-23.24 6416.37,-19.6 6406.32,-16.24 6406.42,-23.24"/>
+<path fill="none" stroke="black" d="M4154.14,-144.89C4157.21,-144.56 4160.25,-144.26 4163.25,-144 4451.6,-118.65 6513.87,-97.1 7026.24,-92.09"/>
+<polygon fill="black" stroke="black" points="7026.22,-95.59 7036.18,-92 7026.15,-88.6 7026.22,-95.59"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail -->
-<g id="node25" class="node">
+<g id="node24" class="node">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M5743,-180C5743,-180 5407.5,-180 5407.5,-180 5401.5,-180 5395.5,-174 5395.5,-168 5395.5,-168 5395.5,-156 5395.5,-156 5395.5,-150 5401.5,-144 5407.5,-144 5407.5,-144 5743,-144 5743,-144 5749,-144 5755,-150 5755,-156 5755,-156 5755,-168 5755,-168 5755,-174 5749,-180 5743,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="5575.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail</text>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:domain -->
-<g id="edge45" class="edge">
+<g id="edge44" class="edge">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M5685.81,-143.52C5874.7,-113.65 6253.95,-53.68 6406.97,-29.48"/>
-<polygon fill="black" stroke="black" points="6407.2,-32.99 6416.54,-27.97 6406.11,-26.07 6407.2,-32.99"/>
+<path fill="none" stroke="black" d="M5705.67,-143.5C5846.72,-124.81 6078.25,-94.79 6278.25,-72 6442.23,-53.31 6635.52,-34.58 6734.88,-25.19"/>
+<polygon fill="black" stroke="black" points="6735.1,-28.69 6744.73,-24.26 6734.44,-21.72 6735.1,-28.69"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge46" class="edge">
+<g id="edge45" class="edge">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M5590.08,-143.7C5597.06,-135.56 5605.52,-125.69 5613.22,-116.7"/>
-<polygon fill="black" stroke="black" points="5615.75,-119.12 5619.6,-109.25 5610.44,-114.57 5615.75,-119.12"/>
+<path fill="none" stroke="black" d="M5575.25,-143.7C5575.25,-136.41 5575.25,-127.73 5575.25,-119.54"/>
+<polygon fill="black" stroke="black" points="5578.75,-119.62 5575.25,-109.62 5571.75,-119.62 5578.75,-119.62"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail -->
-<g id="node26" class="node">
+<g id="node25" class="node">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M6141.5,-180C6141.5,-180 5785,-180 5785,-180 5779,-180 5773,-174 5773,-168 5773,-168 5773,-156 5773,-156 5773,-150 5779,-144 5785,-144 5785,-144 6141.5,-144 6141.5,-144 6147.5,-144 6153.5,-150 6153.5,-156 6153.5,-156 6153.5,-168 6153.5,-168 6153.5,-174 6147.5,-180 6141.5,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="5963.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail</text>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:domain -->
-<g id="edge47" class="edge">
+<g id="edge46" class="edge">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M6026.04,-143.52C6122.95,-116.54 6308.08,-64.99 6407.02,-37.44"/>
-<polygon fill="black" stroke="black" points="6407.92,-40.82 6416.61,-34.77 6406.04,-34.08 6407.92,-40.82"/>
+<path fill="none" stroke="black" d="M6066.43,-143.52C6240.92,-113.95 6589.49,-54.88 6735.02,-30.22"/>
+<polygon fill="black" stroke="black" points="6735.21,-33.74 6744.48,-28.62 6734.04,-26.84 6735.21,-33.74"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge48" class="edge">
+<g id="edge47" class="edge">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M5881.33,-143.52C5834.77,-133.58 5776.31,-121.1 5728.06,-110.81"/>
-<polygon fill="black" stroke="black" points="5728.97,-107.42 5718.46,-108.76 5727.51,-114.27 5728.97,-107.42"/>
+<path fill="none" stroke="black" d="M5866.34,-143.52C5806.46,-132.71 5729.94,-118.91 5670.38,-108.16"/>
+<polygon fill="black" stroke="black" points="5671.04,-104.73 5660.58,-106.39 5669.8,-111.61 5671.04,-104.73"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail -->
-<g id="node27" class="node">
+<g id="node26" class="node">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M6573.38,-180C6573.38,-180 6183.12,-180 6183.12,-180 6177.12,-180 6171.12,-174 6171.12,-168 6171.12,-168 6171.12,-156 6171.12,-156 6171.12,-150 6177.12,-144 6183.12,-144 6183.12,-144 6573.38,-144 6573.38,-144 6579.38,-144 6585.38,-150 6585.38,-156 6585.38,-156 6585.38,-168 6585.38,-168 6585.38,-174 6579.38,-180 6573.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="6378.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail</text>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail&#45;&gt;:core:domain -->
-<g id="edge49" class="edge">
+<g id="edge48" class="edge">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M6379.57,-143.54C6381.73,-124.5 6387.42,-93.85 6402.25,-72 6409.67,-61.07 6420.1,-51.52 6430.68,-43.64"/>
-<polygon fill="black" stroke="black" points="6432.52,-46.62 6438.71,-38.02 6428.51,-40.88 6432.52,-46.62"/>
+<path fill="none" stroke="black" d="M6430.12,-143.59C6507.26,-117.69 6652.14,-69.06 6736.25,-40.82"/>
+<polygon fill="black" stroke="black" points="6737.15,-44.21 6745.52,-37.71 6734.92,-37.57 6737.15,-44.21"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge50" class="edge">
+<g id="edge49" class="edge">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;laps&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M6192.68,-143.52C6045.63,-129.66 5846.22,-110.88 5730.07,-99.93"/>
-<polygon fill="black" stroke="black" points="5730.54,-96.46 5720.26,-99.01 5729.89,-103.43 5730.54,-96.46"/>
+<path fill="none" stroke="black" d="M6177.69,-143.52C6015.63,-129.39 5794.73,-110.13 5670.41,-99.29"/>
+<polygon fill="black" stroke="black" points="5670.82,-95.82 5660.56,-98.44 5670.21,-102.79 5670.82,-95.82"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail -->
-<g id="node28" class="node">
+<g id="node27" class="node">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M6991.25,-180C6991.25,-180 6615.25,-180 6615.25,-180 6609.25,-180 6603.25,-174 6603.25,-168 6603.25,-168 6603.25,-156 6603.25,-156 6603.25,-150 6609.25,-144 6615.25,-144 6615.25,-144 6991.25,-144 6991.25,-144 6997.25,-144 7003.25,-150 7003.25,-156 7003.25,-156 7003.25,-168 7003.25,-168 7003.25,-174 6997.25,-180 6991.25,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="6803.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail</text>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:domain -->
-<g id="edge51" class="edge">
+<g id="edge50" class="edge">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M6608.93,-143.53C6529.14,-134.35 6452.42,-122.08 6440.25,-108 6425.04,-90.4 6436.63,-65.15 6450.1,-46.04"/>
-<polygon fill="black" stroke="black" points="6452.82,-48.24 6456.05,-38.15 6447.23,-44.03 6452.82,-48.24"/>
+<path fill="none" stroke="black" d="M6766.35,-143.69C6752.39,-135.08 6738,-123.21 6730.25,-108 6722.98,-93.75 6723.08,-86.3 6730.25,-72 6735.9,-60.74 6745.2,-51.25 6755.24,-43.57"/>
+<polygon fill="black" stroke="black" points="6757.17,-46.49 6763.35,-37.88 6753.15,-40.76 6757.17,-46.49"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge52" class="edge">
+<g id="edge51" class="edge">
 <title>:feature:gt7&#45;ps5&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M6602.75,-144.59C6599.9,-144.39 6597.06,-144.19 6594.25,-144 6277.99,-122.4 5902.6,-103.65 5730.3,-95.43"/>
-<polygon fill="black" stroke="black" points="5730.66,-91.95 5720.51,-94.97 5730.33,-98.94 5730.66,-91.95"/>
+<path fill="none" stroke="black" d="M6602.75,-144.58C6599.9,-144.38 6597.07,-144.19 6594.25,-144 6254.43,-121.35 5850.32,-102.83 5670.13,-95.01"/>
+<polygon fill="black" stroke="black" points="5670.5,-91.52 5660.36,-94.59 5670.2,-98.52 5670.5,-91.52"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;debug&#45;state&#45;detail -->
-<g id="node29" class="node">
+<g id="node28" class="node">
 <title>:feature:gt7&#45;ps5&#45;debug&#45;state&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M7274.75,-180C7274.75,-180 7033.75,-180 7033.75,-180 7027.75,-180 7021.75,-174 7021.75,-168 7021.75,-168 7021.75,-156 7021.75,-156 7021.75,-150 7027.75,-144 7033.75,-144 7033.75,-144 7274.75,-144 7274.75,-144 7280.75,-144 7286.75,-150 7286.75,-156 7286.75,-156 7286.75,-168 7286.75,-168 7286.75,-174 7280.75,-180 7274.75,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="7154.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:gt7&#45;ps5&#45;debug&#45;state&#45;detail</text>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;debug&#45;state&#45;detail&#45;&gt;:core:domain -->
-<g id="edge53" class="edge">
+<g id="edge52" class="edge">
 <title>:feature:gt7&#45;ps5&#45;debug&#45;state&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M7021.62,-144.9C7018.47,-144.59 7015.34,-144.29 7012.25,-144 6953.04,-138.46 6520.06,-150.28 6478.25,-108 6463.13,-92.71 6462.95,-67.8 6465.95,-48.21"/>
-<polygon fill="black" stroke="black" points="6469.34,-49.09 6467.77,-38.62 6462.47,-47.79 6469.34,-49.09"/>
+<path fill="none" stroke="black" d="M7021.28,-144.8C6911.34,-131.09 6772.53,-112.91 6768.25,-108 6752.96,-90.47 6764.57,-65.21 6778.05,-46.08"/>
+<polygon fill="black" stroke="black" points="6780.78,-48.27 6784.02,-38.18 6775.2,-44.05 6780.78,-48.27"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;debug&#45;state&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge54" class="edge">
+<g id="edge53" class="edge">
 <title>:feature:gt7&#45;ps5&#45;debug&#45;state&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M7021.25,-144.75C7018.22,-144.48 7015.22,-144.23 7012.25,-144 6531.39,-106.02 5953.84,-94.99 5730.16,-92.02"/>
-<polygon fill="black" stroke="black" points="5730.38,-88.52 5720.33,-91.89 5730.29,-95.52 5730.38,-88.52"/>
+<path fill="none" stroke="black" d="M7021.25,-144.74C7018.22,-144.48 7015.22,-144.23 7012.25,-144 6507.44,-104.54 5900.5,-94.34 5670.15,-91.8"/>
+<polygon fill="black" stroke="black" points="5670.36,-88.3 5660.32,-91.7 5670.28,-95.3 5670.36,-88.3"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;narrator -->
-<g id="node30" class="node">
+<g id="node29" class="node">
 <title>:feature:gt7&#45;ps5&#45;narrator</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M7487.88,-180C7487.88,-180 7316.62,-180 7316.62,-180 7310.62,-180 7304.62,-174 7304.62,-168 7304.62,-168 7304.62,-156 7304.62,-156 7304.62,-150 7310.62,-144 7316.62,-144 7316.62,-144 7487.88,-144 7487.88,-144 7493.88,-144 7499.88,-150 7499.88,-156 7499.88,-156 7499.88,-168 7499.88,-168 7499.88,-174 7493.88,-180 7487.88,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="7402.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:gt7&#45;ps5&#45;narrator</text>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;narrator&#45;&gt;:core:domain -->
-<g id="edge55" class="edge">
+<g id="edge54" class="edge">
 <title>:feature:gt7&#45;ps5&#45;narrator&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M7304.41,-144.9C7301.66,-144.58 7298.94,-144.28 7296.25,-144 7209.95,-135.12 6588.66,-155.79 6516.25,-108 6495.8,-94.5 6484.79,-68.38 6479.04,-47.91"/>
-<polygon fill="black" stroke="black" points="6482.49,-47.26 6476.67,-38.41 6475.7,-48.96 6482.49,-47.26"/>
+<path fill="none" stroke="black" d="M7304.4,-144.99C7301.65,-144.65 7298.93,-144.31 7296.25,-144 7242.03,-137.67 6844.52,-146.93 6806.25,-108 6791.18,-92.66 6790.99,-67.76 6793.98,-48.19"/>
+<polygon fill="black" stroke="black" points="6797.37,-49.07 6795.79,-38.6 6790.49,-47.77 6797.37,-49.07"/>
 </g>
 <!-- :feature:gt7&#45;ps5&#45;narrator&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge56" class="edge">
+<g id="edge55" class="edge">
 <title>:feature:gt7&#45;ps5&#45;narrator&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M7304.13,-144.81C7301.48,-144.52 7298.85,-144.25 7296.25,-144 6989.12,-114.59 6035.84,-97.33 5730.43,-92.44"/>
-<polygon fill="black" stroke="black" points="5730.54,-88.95 5720.48,-92.29 5730.42,-95.94 5730.54,-88.95"/>
+<path fill="none" stroke="black" d="M7304.13,-144.81C7301.48,-144.52 7298.85,-144.25 7296.25,-144 6976.76,-113.59 5982.48,-96.91 5670.14,-92.32"/>
+<polygon fill="black" stroke="black" points="5670.44,-88.82 5660.39,-92.17 5670.33,-95.82 5670.44,-88.82"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;temperature&#45;detail -->
-<g id="node31" class="node">
+<g id="node30" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;temperature&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M8837.75,-180C8837.75,-180 8410.75,-180 8410.75,-180 8404.75,-180 8398.75,-174 8398.75,-168 8398.75,-168 8398.75,-156 8398.75,-156 8398.75,-150 8404.75,-144 8410.75,-144 8410.75,-144 8837.75,-144 8837.75,-144 8843.75,-144 8849.75,-150 8849.75,-156 8849.75,-156 8849.75,-168 8849.75,-168 8849.75,-174 8843.75,-180 8837.75,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="8624.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;temperature&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;temperature&#45;detail&#45;&gt;:core:domain -->
-<g id="edge57" class="edge">
+<g id="edge56" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;temperature&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M8398.51,-144.45C8395.4,-144.29 8392.31,-144.14 8389.25,-144 8295.83,-139.62 6794.5,-138.97 6706.25,-108 6681.42,-99.29 6682.76,-83.81 6659.25,-72 6621.59,-53.08 6576.15,-39.97 6539.61,-31.52"/>
-<polygon fill="black" stroke="black" points="6540.57,-28.15 6530.05,-29.38 6539.04,-34.98 6540.57,-28.15"/>
+<path fill="none" stroke="black" d="M8398.51,-144.47C8395.4,-144.31 8392.31,-144.15 8389.25,-144 8234.61,-136.41 7141.96,-160.35 6996.25,-108 6971.82,-99.22 6973,-84.51 6950.25,-72 6924.35,-57.75 6893.88,-46.11 6867.27,-37.41"/>
+<polygon fill="black" stroke="black" points="6868.54,-34.14 6857.95,-34.44 6866.41,-40.81 6868.54,-34.14"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;temperature&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge58" class="edge">
+<g id="edge57" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;temperature&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M8398.51,-144.47C8395.4,-144.3 8392.31,-144.15 8389.25,-144 7758.24,-113.2 7597.74,-161.51 6968.25,-108 6967.56,-107.94 6966.87,-107.88 6966.18,-107.82"/>
-<polygon fill="black" stroke="black" points="6966.64,-104.35 6956.35,-106.87 6965.97,-111.32 6966.64,-104.35"/>
+<path fill="none" stroke="black" d="M8398.5,-144.49C8395.4,-144.32 8392.31,-144.16 8389.25,-144 7887.01,-117.85 7759.22,-152.23 7258.25,-108 7257.56,-107.94 7256.87,-107.88 7256.18,-107.81"/>
+<polygon fill="black" stroke="black" points="7256.65,-104.34 7246.35,-106.83 7255.96,-111.31 7256.65,-104.34"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;wear&#45;detail -->
-<g id="node32" class="node">
+<g id="node31" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;wear&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M9252.38,-180C9252.38,-180 8880.12,-180 8880.12,-180 8874.12,-180 8868.12,-174 8868.12,-168 8868.12,-168 8868.12,-156 8868.12,-156 8868.12,-150 8874.12,-144 8880.12,-144 8880.12,-144 9252.38,-144 9252.38,-144 9258.38,-144 9264.38,-150 9264.38,-156 9264.38,-156 9264.38,-168 9264.38,-168 9264.38,-174 9258.38,-180 9252.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="9066.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;wear&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;wear&#45;detail&#45;&gt;:core:domain -->
-<g id="edge59" class="edge">
+<g id="edge58" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;wear&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M8867.68,-144.44C8864.85,-144.28 8862.04,-144.14 8859.25,-144 8741.6,-138.18 6849.38,-149.8 6739.25,-108 6716.26,-99.27 6719.16,-83.14 6697.25,-72 6647.66,-46.78 6585.77,-33.32 6539.62,-26.28"/>
-<polygon fill="black" stroke="black" points="6540.14,-22.82 6529.74,-24.85 6539.13,-29.75 6540.14,-22.82"/>
+<path fill="none" stroke="black" d="M8867.68,-144.45C8864.85,-144.29 8862.04,-144.14 8859.25,-144 8757.69,-138.84 7124.27,-144.22 7029.25,-108 7006.28,-99.24 7008.91,-83.64 6987.25,-72 6949.99,-51.98 6904.37,-38.83 6867.63,-30.63"/>
+<polygon fill="black" stroke="black" points="6868.52,-27.25 6858.01,-28.57 6867.05,-34.09 6868.52,-27.25"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;wear&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge60" class="edge">
+<g id="edge59" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;brake&#45;wear&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M8867.68,-144.44C8864.85,-144.29 8862.04,-144.14 8859.25,-144 8019.72,-101.58 7806.05,-176.57 6968.25,-108 6967.56,-107.94 6966.87,-107.89 6966.18,-107.83"/>
-<polygon fill="black" stroke="black" points="6966.63,-104.35 6956.35,-106.9 6965.97,-111.32 6966.63,-104.35"/>
+<path fill="none" stroke="black" d="M8867.68,-144.46C8864.85,-144.3 8862.04,-144.15 8859.25,-144 8148.48,-106.86 7967.51,-167.28 7258.25,-108 7257.56,-107.94 7256.87,-107.88 7256.18,-107.82"/>
+<polygon fill="black" stroke="black" points="7256.64,-104.35 7246.35,-106.88 7255.97,-111.32 7256.64,-104.35"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail -->
-<g id="node33" class="node">
+<g id="node32" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M9612.38,-180C9612.38,-180 9294.12,-180 9294.12,-180 9288.12,-180 9282.12,-174 9282.12,-168 9282.12,-168 9282.12,-156 9282.12,-156 9282.12,-150 9288.12,-144 9294.12,-144 9294.12,-144 9612.38,-144 9612.38,-144 9618.38,-144 9624.38,-150 9624.38,-156 9624.38,-156 9624.38,-168 9624.38,-168 9624.38,-174 9618.38,-180 9612.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="9453.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail&#45;&gt;:core:domain -->
-<g id="edge61" class="edge">
+<g id="edge60" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M9281.78,-144.5C9278.92,-144.32 9276.07,-144.16 9273.25,-144 9147.48,-137.07 7124.29,-151.95 7006.25,-108 6982.89,-99.3 6986.18,-81.76 6963.25,-72 6888.56,-40.21 6655.43,-26.43 6539.74,-21.43"/>
-<polygon fill="black" stroke="black" points="6539.89,-17.93 6529.75,-21 6539.6,-24.92 6539.89,-17.93"/>
+<path fill="none" stroke="black" d="M9281.78,-144.5C9278.92,-144.33 9276.07,-144.16 9273.25,-144 9163.57,-137.83 7399.15,-146.45 7296.25,-108 7272.9,-99.28 7276.14,-81.86 7253.25,-72 7185.52,-42.81 6976.18,-28.01 6867.8,-22.13"/>
+<polygon fill="black" stroke="black" points="6868.05,-18.64 6857.88,-21.61 6867.68,-25.63 6868.05,-18.64"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge62" class="edge">
+<g id="edge61" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;flag&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M9281.78,-144.49C9278.92,-144.32 9276.07,-144.15 9273.25,-144 8250.22,-87.79 7989.55,-189.83 6968.25,-108 6967.56,-107.94 6966.87,-107.89 6966.18,-107.83"/>
-<polygon fill="black" stroke="black" points="6966.63,-104.36 6956.35,-106.91 6965.98,-111.33 6966.63,-104.36"/>
+<path fill="none" stroke="black" d="M9281.78,-144.5C9278.92,-144.33 9276.07,-144.16 9273.25,-144 8378.96,-93.85 8151.01,-180.54 7258.25,-108 7257.56,-107.94 7256.87,-107.89 7256.18,-107.83"/>
+<polygon fill="black" stroke="black" points="7256.63,-104.36 7246.35,-106.9 7255.98,-111.32 7256.63,-104.36"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail -->
-<g id="node34" class="node">
+<g id="node33" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M10029.88,-180C10029.88,-180 9654.62,-180 9654.62,-180 9648.62,-180 9642.62,-174 9642.62,-168 9642.62,-168 9642.62,-156 9642.62,-156 9642.62,-150 9648.62,-144 9654.62,-144 9654.62,-144 10029.88,-144 10029.88,-144 10035.88,-144 10041.88,-150 10041.88,-156 10041.88,-156 10041.88,-168 10041.88,-168 10041.88,-174 10035.88,-180 10029.88,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="9842.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:domain -->
-<g id="edge63" class="edge">
+<g id="edge62" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M9642.32,-144.45C9639.27,-144.29 9636.25,-144.14 9633.25,-144 9489.57,-137.17 7179.65,-156.56 7044.25,-108 7020.14,-99.35 7022.96,-81.68 6999.25,-72 6917.65,-38.69 6662.44,-25.53 6540.04,-21.03"/>
-<polygon fill="black" stroke="black" points="6540.25,-17.54 6530.13,-20.68 6540,-24.53 6540.25,-17.54"/>
+<path fill="none" stroke="black" d="M9642.32,-144.46C9639.27,-144.3 9636.25,-144.15 9633.25,-144 9505.66,-137.82 7454.45,-151.22 7334.25,-108 7310.15,-99.33 7312.92,-81.77 7289.25,-72 7214.61,-41.19 6983.09,-26.95 6867.84,-21.64"/>
+<polygon fill="black" stroke="black" points="6868.04,-18.14 6857.89,-21.19 6867.73,-25.13 6868.04,-18.14"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge64" class="edge">
+<g id="edge63" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;my&#45;best&#45;lap&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M9642.32,-144.45C9639.27,-144.29 9636.25,-144.14 9633.25,-144 8466.9,-88.64 8171.71,-179.73 7006.25,-108 6993.27,-107.2 6979.7,-106.1 6966.22,-104.85"/>
-<polygon fill="black" stroke="black" points="6966.73,-101.38 6956.44,-103.9 6966.06,-108.35 6966.73,-101.38"/>
+<path fill="none" stroke="black" d="M9642.32,-144.46C9639.27,-144.3 9636.25,-144.14 9633.25,-144 8595.67,-93.86 8333.02,-172.7 7296.25,-108 7283.27,-107.19 7269.7,-106.09 7256.22,-104.82"/>
+<polygon fill="black" stroke="black" points="7256.73,-101.36 7246.44,-103.88 7256.06,-108.33 7256.73,-101.36"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;pit&#45;timing&#45;detail -->
-<g id="node35" class="node">
+<g id="node34" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;pit&#45;timing&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M10434.5,-180C10434.5,-180 10072,-180 10072,-180 10066,-180 10060,-174 10060,-168 10060,-168 10060,-156 10060,-156 10060,-150 10066,-144 10072,-144 10072,-144 10434.5,-144 10434.5,-144 10440.5,-144 10446.5,-150 10446.5,-156 10446.5,-156 10446.5,-168 10446.5,-168 10446.5,-174 10440.5,-180 10434.5,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="10253.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;pit&#45;timing&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;pit&#45;timing&#45;detail&#45;&gt;:core:domain -->
-<g id="edge65" class="edge">
+<g id="edge64" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;pit&#45;timing&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M10059.75,-144.43C10056.9,-144.28 10054.06,-144.14 10051.25,-144 9886.48,-136.08 7237.87,-162.71 7082.25,-108 7057.76,-99.39 7060.37,-81.6 7036.25,-72 6947.49,-36.66 6668.28,-24.42 6539.51,-20.58"/>
-<polygon fill="black" stroke="black" points="6539.88,-17.09 6529.78,-20.3 6539.68,-24.09 6539.88,-17.09"/>
+<path fill="none" stroke="black" d="M10059.75,-144.43C10056.9,-144.28 10054.06,-144.14 10051.25,-144 9902.58,-136.75 7512.64,-157.46 7372.25,-108 7347.76,-99.37 7350.34,-81.69 7326.25,-72 7244.63,-39.18 6990,-25.77 6867.88,-21.13"/>
+<polygon fill="black" stroke="black" points="6868.12,-17.63 6858,-20.76 6867.86,-24.63 6868.12,-17.63"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;pit&#45;timing&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge66" class="edge">
+<g id="edge65" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;pit&#45;timing&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M10059.75,-144.43C10056.9,-144.28 10054.06,-144.13 10051.25,-144 8716.25,-79.92 8379.13,-174.68 7044.25,-108 7018.94,-106.74 6991.8,-104.74 6966.12,-102.56"/>
-<polygon fill="black" stroke="black" points="6966.59,-99.09 6956.33,-101.71 6965.99,-106.06 6966.59,-99.09"/>
+<path fill="none" stroke="black" d="M10059.75,-144.43C10056.9,-144.28 10054.06,-144.14 10051.25,-144 8845.01,-85.32 8540.37,-169.02 7334.25,-108 7308.94,-106.72 7281.81,-104.72 7256.12,-102.54"/>
+<polygon fill="black" stroke="black" points="7256.59,-99.06 7246.33,-101.69 7255.99,-106.04 7256.59,-99.06"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail -->
-<g id="node36" class="node">
+<g id="node35" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M10872.38,-180C10872.38,-180 10476.12,-180 10476.12,-180 10470.12,-180 10464.12,-174 10464.12,-168 10464.12,-168 10464.12,-156 10464.12,-156 10464.12,-150 10470.12,-144 10476.12,-144 10476.12,-144 10872.38,-144 10872.38,-144 10878.38,-144 10884.38,-150 10884.38,-156 10884.38,-156 10884.38,-168 10884.38,-168 10884.38,-174 10878.38,-180 10872.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="10674.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:domain -->
-<g id="edge67" class="edge">
+<g id="edge66" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M10463.88,-144.4C10460.99,-144.26 10458.11,-144.13 10455.25,-144 10362.7,-139.91 7207.83,-138.21 7120.25,-108 7095.38,-99.42 7097.77,-81.54 7073.25,-72 6977.48,-34.76 6675.16,-23.46 6539.86,-20.22"/>
-<polygon fill="black" stroke="black" points="6540.05,-16.73 6529.97,-19.99 6539.89,-23.72 6540.05,-16.73"/>
+<path fill="none" stroke="black" d="M10463.88,-144.4C10460.99,-144.26 10458.11,-144.13 10455.25,-144 10370.75,-140.22 7490.2,-135.63 7410.25,-108 7385.38,-99.41 7387.75,-81.61 7363.25,-72 7274.58,-37.22 6996.54,-24.7 6867.84,-20.69"/>
+<polygon fill="black" stroke="black" points="6868.22,-17.2 6858.12,-20.39 6868.01,-24.19 6868.22,-17.2"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge68" class="edge">
+<g id="edge67" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;fuel&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M10463.88,-144.4C10460.99,-144.26 10458.11,-144.13 10455.25,-144 8957.51,-77.95 8580.12,-171.05 7082.25,-108 7044.47,-106.41 7003.29,-103.69 6966.29,-100.9"/>
-<polygon fill="black" stroke="black" points="6966.7,-97.42 6956.46,-100.14 6966.16,-104.4 6966.7,-97.42"/>
+<path fill="none" stroke="black" d="M10463.88,-144.4C10460.99,-144.26 10458.11,-144.13 10455.25,-144 9086.3,-82.94 8741.32,-166.31 7372.25,-108 7334.47,-106.39 7293.29,-103.67 7256.29,-100.87"/>
+<polygon fill="black" stroke="black" points="7256.7,-97.39 7246.46,-100.12 7256.16,-104.37 7256.7,-97.39"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;virtual&#45;energy&#45;detail -->
-<g id="node37" class="node">
+<g id="node36" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;virtual&#45;energy&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M11384.5,-180C11384.5,-180 10914,-180 10914,-180 10908,-180 10902,-174 10902,-168 10902,-168 10902,-156 10902,-156 10902,-150 10908,-144 10914,-144 10914,-144 11384.5,-144 11384.5,-144 11390.5,-144 11396.5,-150 11396.5,-156 11396.5,-156 11396.5,-168 11396.5,-168 11396.5,-174 11390.5,-180 11384.5,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="11149.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;virtual&#45;energy&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;virtual&#45;energy&#45;detail&#45;&gt;:core:domain -->
-<g id="edge69" class="edge">
+<g id="edge68" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;virtual&#45;energy&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M10901.64,-144.33C10898.83,-144.22 10896.03,-144.11 10893.25,-144 10789.43,-140.06 7250.52,-144.51 7153.25,-108 7130.23,-99.36 7133.94,-81.48 7111.25,-72 7009.4,-29.45 6681.54,-21.02 6539.69,-19.38"/>
-<polygon fill="black" stroke="black" points="6540.13,-15.89 6530.09,-19.28 6540.05,-22.89 6540.13,-15.89"/>
+<path fill="none" stroke="black" d="M10901.64,-144.33C10898.83,-144.22 10896.03,-144.11 10893.25,-144 10797.48,-140.32 7532.96,-141.72 7443.25,-108 7420.24,-99.35 7423.91,-81.54 7401.25,-72 7306.54,-32.14 7003.66,-22.25 6868.03,-19.8"/>
+<polygon fill="black" stroke="black" points="6868.18,-16.3 6858.12,-19.63 6868.06,-23.3 6868.18,-16.3"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;virtual&#45;energy&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge70" class="edge">
+<g id="edge69" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;remaining&#45;virtual&#45;energy&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M10901.64,-144.33C10898.83,-144.22 10896.03,-144.11 10893.25,-144 9217.49,-80.42 8796.11,-168.91 7120.25,-108 7069.71,-106.16 7013.89,-102.85 6966.26,-99.63"/>
-<polygon fill="black" stroke="black" points="6966.7,-96.15 6956.48,-98.96 6966.22,-103.13 6966.7,-96.15"/>
+<path fill="none" stroke="black" d="M10901.64,-144.33C10898.83,-144.22 10896.03,-144.11 10893.25,-144 9346.3,-84.69 8957.29,-164.84 7410.25,-108 7359.71,-106.14 7303.89,-102.82 7256.26,-99.61"/>
+<polygon fill="black" stroke="black" points="7256.7,-96.13 7246.49,-98.94 7256.22,-103.11 7256.7,-96.13"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail -->
-<g id="node38" class="node">
+<g id="node37" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M11842.12,-180C11842.12,-180 11426.38,-180 11426.38,-180 11420.38,-180 11414.38,-174 11414.38,-168 11414.38,-168 11414.38,-156 11414.38,-156 11414.38,-150 11420.38,-144 11426.38,-144 11426.38,-144 11842.12,-144 11842.12,-144 11848.12,-144 11854.12,-150 11854.12,-156 11854.12,-156 11854.12,-168 11854.12,-168 11854.12,-174 11848.12,-180 11842.12,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="11634.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:domain -->
-<g id="edge71" class="edge">
+<g id="edge70" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M11413.97,-144.38C11411.05,-144.25 11408.14,-144.12 11405.25,-144 11297.53,-139.51 7625.41,-145.29 7524.25,-108 7500.86,-99.38 7504.44,-81.12 7481.25,-72 7394.17,-37.75 6750.73,-23.76 6539.92,-20.06"/>
-<polygon fill="black" stroke="black" points="6540,-16.56 6529.94,-19.89 6539.88,-23.56 6540,-16.56"/>
+<path fill="none" stroke="black" d="M11413.97,-144.38C11411.05,-144.25 11408.14,-144.12 11405.25,-144 11305.58,-139.81 7907.84,-142.54 7814.25,-108 7790.87,-99.37 7794.44,-81.15 7771.25,-72 7687.81,-39.08 7073.15,-24.27 6867.82,-20.21"/>
+<polygon fill="black" stroke="black" points="6867.91,-16.71 6857.85,-20.01 6867.78,-23.71 6867.91,-16.71"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge72" class="edge">
+<g id="edge71" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;temperature&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M11413.97,-144.38C11411.05,-144.25 11408.14,-144.12 11405.25,-144 9517.01,-66 9042.11,-169.12 7153.25,-108 7091.5,-106 7022.73,-102.25 6966.43,-98.78"/>
-<polygon fill="black" stroke="black" points="6966.68,-95.29 6956.49,-98.16 6966.25,-102.27 6966.68,-95.29"/>
+<path fill="none" stroke="black" d="M11413.97,-144.38C11411.05,-144.25 11408.14,-144.12 11405.25,-144 9645.81,-70.78 9203.27,-165.5 7443.25,-108 7381.5,-105.98 7312.73,-102.23 7256.43,-98.76"/>
+<polygon fill="black" stroke="black" points="7256.68,-95.27 7246.49,-98.14 7256.25,-102.26 7256.68,-95.27"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;wear&#45;detail -->
-<g id="node39" class="node">
+<g id="node38" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;wear&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M12244.75,-180C12244.75,-180 11883.75,-180 11883.75,-180 11877.75,-180 11871.75,-174 11871.75,-168 11871.75,-168 11871.75,-156 11871.75,-156 11871.75,-150 11877.75,-144 11883.75,-144 11883.75,-144 12244.75,-144 12244.75,-144 12250.75,-144 12256.75,-150 12256.75,-156 12256.75,-156 12256.75,-168 12256.75,-168 12256.75,-174 12250.75,-180 12244.75,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="12064.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;wear&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;wear&#45;detail&#45;&gt;:core:domain -->
-<g id="edge73" class="edge">
+<g id="edge72" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;wear&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M11871.44,-144.4C11868.69,-144.26 11865.96,-144.13 11863.25,-144 11743.76,-138.46 7668.75,-151.32 7557.25,-108 7534.96,-99.34 7539.36,-81.13 7517.25,-72 7427.33,-34.85 6755.58,-22.75 6539.78,-19.8"/>
-<polygon fill="black" stroke="black" points="6539.9,-16.3 6529.85,-19.67 6539.81,-23.3 6539.9,-16.3"/>
+<path fill="none" stroke="black" d="M11871.44,-144.4C11868.69,-144.26 11865.96,-144.13 11863.25,-144 11751.81,-138.8 7951.22,-148.43 7847.25,-108 7824.96,-99.33 7829.35,-81.15 7807.25,-72 7720.97,-36.26 7078.39,-23.26 6867.84,-19.94"/>
+<polygon fill="black" stroke="black" points="6867.93,-16.44 6857.88,-19.78 6867.82,-23.44 6867.93,-16.44"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;wear&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge74" class="edge">
+<g id="edge73" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;tyre&#45;wear&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M11871.44,-144.4C11868.69,-144.26 11865.96,-144.12 11863.25,-144 10817.66,-95.86 8199.41,-141.42 7153.25,-108 7091.5,-106.03 7022.73,-102.28 6966.43,-98.8"/>
-<polygon fill="black" stroke="black" points="6966.68,-95.31 6956.48,-98.18 6966.25,-102.3 6966.68,-95.31"/>
+<path fill="none" stroke="black" d="M11871.44,-144.4C11868.69,-144.26 11865.96,-144.13 11863.25,-144 9900.84,-53.15 9406.74,-171.22 7443.25,-108 7381.5,-106.01 7312.73,-102.26 7256.43,-98.79"/>
+<polygon fill="black" stroke="black" points="7256.68,-95.3 7246.48,-98.17 7256.25,-102.28 7256.68,-95.3"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail -->
-<g id="node40" class="node">
+<g id="node39" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M12699.62,-180C12699.62,-180 12286.88,-180 12286.88,-180 12280.88,-180 12274.88,-174 12274.88,-168 12274.88,-168 12274.88,-156 12274.88,-156 12274.88,-150 12280.88,-144 12286.88,-144 12286.88,-144 12699.62,-144 12699.62,-144 12705.62,-144 12711.62,-150 12711.62,-156 12711.62,-156 12711.62,-168 12711.62,-168 12711.62,-174 12705.62,-180 12699.62,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="12493.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail&#45;&gt;:core:domain -->
-<g id="edge75" class="edge">
+<g id="edge74" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M12274.59,-144.36C12271.8,-144.24 12269.01,-144.11 12266.25,-144 12143.18,-138.9 7947.84,-150.53 7832.25,-108 7808.86,-99.39 7812.5,-80.98 7789.25,-72 7672.39,-26.86 6791.23,-20.16 6539.95,-19.17"/>
-<polygon fill="black" stroke="black" points="6539.99,-15.67 6529.98,-19.13 6539.97,-22.67 6539.99,-15.67"/>
+<path fill="none" stroke="black" d="M12274.59,-144.36C12271.8,-144.24 12269.01,-144.12 12266.25,-144 12151.23,-139.2 8230.27,-147.78 8122.25,-108 8098.86,-99.39 8102.49,-81 8079.25,-72 7966.04,-28.19 7113.9,-20.55 6867.68,-19.26"/>
+<polygon fill="black" stroke="black" points="6867.95,-15.76 6857.93,-19.21 6867.91,-22.76 6867.95,-15.76"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge76" class="edge">
+<g id="edge75" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;approach&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M12274.59,-144.36C12271.8,-144.23 12269.01,-144.11 12266.25,-144 9995.65,-51.09 9424.61,-179.88 7153.25,-108 7091.5,-106.05 7022.73,-102.3 6966.43,-98.82"/>
-<polygon fill="black" stroke="black" points="6966.68,-95.33 6956.48,-98.2 6966.25,-102.31 6966.68,-95.33"/>
+<path fill="none" stroke="black" d="M12274.59,-144.36C12271.8,-144.23 12269.01,-144.11 12266.25,-144 10124.45,-55.91 9585.78,-176.26 7443.25,-108 7381.5,-106.03 7312.73,-102.28 7256.43,-98.81"/>
+<polygon fill="black" stroke="black" points="7256.68,-95.31 7246.48,-98.19 7256.25,-102.3 7256.68,-95.31"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;damage&#45;detail -->
-<g id="node41" class="node">
+<g id="node40" class="node">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;damage&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M13144.75,-180C13144.75,-180 12741.75,-180 12741.75,-180 12735.75,-180 12729.75,-174 12729.75,-168 12729.75,-168 12729.75,-156 12729.75,-156 12729.75,-150 12735.75,-144 12741.75,-144 12741.75,-144 13144.75,-144 13144.75,-144 13150.75,-144 13156.75,-150 13156.75,-156 13156.75,-156 13156.75,-168 13156.75,-168 13156.75,-174 13150.75,-180 13144.75,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="12943.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;damage&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;damage&#45;detail&#45;&gt;:core:domain -->
-<g id="edge77" class="edge">
+<g id="edge76" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;damage&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M12729.33,-144.4C12726.29,-144.26 12723.26,-144.13 12720.25,-144 12585.64,-138.38 7997.21,-153.07 7870.25,-108 7846.11,-99.43 7849.25,-80.95 7825.25,-72 7704.34,-26.91 6794.81,-20.18 6539.63,-19.17"/>
-<polygon fill="black" stroke="black" points="6539.86,-15.68 6529.85,-19.14 6539.84,-22.68 6539.86,-15.68"/>
+<path fill="none" stroke="black" d="M12729.33,-144.4C12726.29,-144.26 12723.26,-144.13 12720.25,-144 12593.69,-138.68 8279.61,-150.4 8160.25,-108 8136.11,-99.43 8139.24,-80.96 8115.25,-72 7998.08,-28.23 7118.61,-20.56 6867.82,-19.26"/>
+<polygon fill="black" stroke="black" points="6867.89,-15.76 6857.87,-19.21 6867.85,-22.76 6867.89,-15.76"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;damage&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge78" class="edge">
+<g id="edge77" class="edge">
 <title>:feature:lmu&#45;windows&#45;auto&#45;readout&#45;vehicle&#45;damage&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M12729.33,-144.4C12726.29,-144.26 12723.26,-144.12 12720.25,-144 11484.17,-92.95 8389.78,-146.78 7153.25,-108 7091.5,-106.06 7022.73,-102.32 6966.43,-98.83"/>
-<polygon fill="black" stroke="black" points="6966.68,-95.34 6956.48,-98.21 6966.25,-102.33 6966.68,-95.34"/>
+<path fill="none" stroke="black" d="M12729.33,-144.4C12726.29,-144.26 12723.26,-144.12 12720.25,-144 11548.56,-95.4 8615.36,-144.97 7443.25,-108 7381.5,-106.05 7312.73,-102.3 7256.43,-98.82"/>
+<polygon fill="black" stroke="black" points="7256.68,-95.33 7246.48,-98.2 7256.25,-102.32 7256.68,-95.33"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;debug&#45;state&#45;detail -->
-<g id="node42" class="node">
+<g id="node41" class="node">
 <title>:feature:lmu&#45;windows&#45;debug&#45;state&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M13467.62,-180C13467.62,-180 13186.88,-180 13186.88,-180 13180.88,-180 13174.88,-174 13174.88,-168 13174.88,-168 13174.88,-156 13174.88,-156 13174.88,-150 13180.88,-144 13186.88,-144 13186.88,-144 13467.62,-144 13467.62,-144 13473.62,-144 13479.62,-150 13479.62,-156 13479.62,-156 13479.62,-168 13479.62,-168 13479.62,-174 13473.62,-180 13467.62,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="13327.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;debug&#45;state&#45;detail</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;debug&#45;state&#45;detail&#45;&gt;:core:domain -->
-<g id="edge79" class="edge">
+<g id="edge78" class="edge">
 <title>:feature:lmu&#45;windows&#45;debug&#45;state&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M13174.74,-144.51C13171.89,-144.33 13169.06,-144.16 13166.25,-144 13020.28,-135.81 8039.88,-160.01 7903.25,-108 7880.59,-99.37 7884.78,-80.98 7862.25,-72 7738.82,-22.8 6799.72,-19.03 6539.76,-18.93"/>
-<polygon fill="black" stroke="black" points="6539.78,-15.43 6529.78,-18.93 6539.78,-22.43 6539.78,-15.43"/>
+<path fill="none" stroke="black" d="M13174.74,-144.51C13171.89,-144.33 13169.06,-144.16 13166.25,-144 13028.33,-136.24 8322.35,-157.17 8193.25,-108 8170.59,-99.37 8174.77,-80.99 8152.25,-72 8032.49,-24.18 7122.87,-19.41 6867.65,-19.01"/>
+<polygon fill="black" stroke="black" points="6867.87,-15.51 6857.86,-19 6867.86,-22.51 6867.87,-15.51"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;debug&#45;state&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge80" class="edge">
+<g id="edge79" class="edge">
 <title>:feature:lmu&#45;windows&#45;debug&#45;state&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M13174.74,-144.51C13171.89,-144.33 13169.06,-144.16 13166.25,-144 11832.07,-69.75 8488.85,-149.56 7153.25,-108 7091.5,-106.08 7022.73,-102.33 6966.42,-98.85"/>
-<polygon fill="black" stroke="black" points="6966.68,-95.35 6956.48,-98.22 6966.25,-102.34 6966.68,-95.35"/>
+<path fill="none" stroke="black" d="M13174.74,-144.51C13171.89,-144.33 13169.06,-144.16 13166.25,-144 11896.42,-73.14 8714.43,-147.75 7443.25,-108 7381.5,-106.07 7312.73,-102.32 7256.43,-98.84"/>
+<polygon fill="black" stroke="black" points="7256.68,-95.35 7246.48,-98.22 7256.25,-102.33 7256.68,-95.35"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;narrator -->
-<g id="node43" class="node">
+<g id="node42" class="node">
 <title>:feature:lmu&#45;windows&#45;narrator</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M13720.75,-180C13720.75,-180 13509.75,-180 13509.75,-180 13503.75,-180 13497.75,-174 13497.75,-168 13497.75,-168 13497.75,-156 13497.75,-156 13497.75,-150 13503.75,-144 13509.75,-144 13509.75,-144 13720.75,-144 13720.75,-144 13726.75,-144 13732.75,-150 13732.75,-156 13732.75,-156 13732.75,-168 13732.75,-168 13732.75,-174 13726.75,-180 13720.75,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="13615.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:lmu&#45;windows&#45;narrator</text>
 </g>
 <!-- :feature:lmu&#45;windows&#45;narrator&#45;&gt;:core:domain -->
-<g id="edge81" class="edge">
+<g id="edge80" class="edge">
 <title>:feature:lmu&#45;windows&#45;narrator&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M13497.34,-144.72C13494.28,-144.46 13491.25,-144.22 13488.25,-144 13404.69,-137.93 10549.9,-139.48 10472.25,-108 10450.69,-99.26 10455.8,-80.76 10434.25,-72 10340.24,-33.81 7051.22,-20.98 6539.79,-19.22"/>
-<polygon fill="black" stroke="black" points="6540.11,-15.72 6530.09,-19.19 6540.08,-22.72 6540.11,-15.72"/>
+<path fill="none" stroke="black" d="M13497.33,-144.73C13494.28,-144.46 13491.25,-144.22 13488.25,-144 13337.2,-132.93 10902.58,-164.99 10762.25,-108 10740.7,-99.25 10745.8,-80.76 10724.25,-72 10631.19,-34.19 7376.98,-21.05 6867.93,-19.23"/>
+<polygon fill="black" stroke="black" points="6867.94,-15.73 6857.93,-19.19 6867.92,-22.73 6867.94,-15.73"/>
 </g>
 <!-- :feature:lmu&#45;windows&#45;narrator&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge82" class="edge">
+<g id="edge81" class="edge">
 <title>:feature:lmu&#45;windows&#45;narrator&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M13497.34,-144.7C13494.28,-144.44 13491.25,-144.21 13488.25,-144 12786.04,-95.21 7856.81,-129.79 7153.25,-108 7091.5,-106.09 7022.73,-102.34 6966.42,-98.85"/>
-<polygon fill="black" stroke="black" points="6966.68,-95.36 6956.48,-98.23 6966.24,-102.35 6966.68,-95.36"/>
+<path fill="none" stroke="black" d="M13497.34,-144.7C13494.28,-144.44 13491.25,-144.21 13488.25,-144 12818.19,-97.35 8114.6,-128.88 7443.25,-108 7381.5,-106.08 7312.73,-102.33 7256.42,-98.85"/>
+<polygon fill="black" stroke="black" points="7256.68,-95.36 7246.48,-98.22 7256.25,-102.34 7256.68,-95.36"/>
 </g>
 <!-- :feature:main -->
-<g id="node44" class="node">
+<g id="node43" class="node">
 <title>:feature:main</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M4272.25,-180C4272.25,-180 4184.25,-180 4184.25,-180 4178.25,-180 4172.25,-174 4172.25,-168 4172.25,-168 4172.25,-156 4172.25,-156 4172.25,-150 4178.25,-144 4184.25,-144 4184.25,-144 4272.25,-144 4272.25,-144 4278.25,-144 4284.25,-150 4284.25,-156 4284.25,-156 4284.25,-168 4284.25,-168 4284.25,-174 4278.25,-180 4272.25,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="4228.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:main</text>
 </g>
 <!-- :feature:main&#45;&gt;:core:ace&#45;windows&#45;domain -->
-<g id="edge85" class="edge">
+<g id="edge84" class="edge">
 <title>:feature:main&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M4183.79,-143.52C4159.92,-134.13 4130.28,-122.47 4104.99,-112.53"/>
-<polygon fill="black" stroke="black" points="4106.44,-109.34 4095.86,-108.94 4103.88,-115.85 4106.44,-109.34"/>
+<path fill="none" stroke="black" d="M4174.3,-143.52C4144.68,-133.92 4107.75,-121.95 4076.63,-111.86"/>
+<polygon fill="black" stroke="black" points="4077.92,-108.6 4067.32,-108.85 4075.76,-115.26 4077.92,-108.6"/>
 </g>
 <!-- :feature:main&#45;&gt;:core:domain -->
-<g id="edge83" class="edge">
+<g id="edge82" class="edge">
 <title>:feature:main&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M4284.47,-145.54C4287.43,-144.96 4290.37,-144.44 4293.25,-144 4616.08,-94.41 4709.01,-181.49 5027.25,-108 5066.83,-98.86 5071.63,-80.94 5111.25,-72 5238.06,-43.39 6150.73,-24.84 6406.68,-20.17"/>
-<polygon fill="black" stroke="black" points="6406.56,-23.67 6416.49,-19.99 6406.43,-16.67 6406.56,-23.67"/>
+<path fill="none" stroke="black" d="M4284.47,-145.5C4287.42,-144.94 4290.37,-144.43 4293.25,-144 4491,-114.53 4999.37,-160.66 5192.25,-108 5224.86,-99.1 5226.61,-80.81 5259.25,-72 5402.82,-33.24 6457.55,-21.84 6734.7,-19.5"/>
+<polygon fill="black" stroke="black" points="6734.67,-23 6744.64,-19.42 6734.61,-16 6734.67,-23"/>
 </g>
 <!-- :feature:main&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge84" class="edge">
+<g id="edge83" class="edge">
 <title>:feature:main&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M4284.46,-145.48C4287.42,-144.92 4290.36,-144.42 4293.25,-144 4776.44,-73.79 4903.63,-132.97 5391.25,-108 5440.41,-105.48 5495.08,-101.76 5540.19,-98.44"/>
-<polygon fill="black" stroke="black" points="5540.23,-101.95 5549.94,-97.72 5539.71,-94.96 5540.23,-101.95"/>
+<path fill="none" stroke="black" d="M4284.46,-145.49C4287.42,-144.93 4290.37,-144.43 4293.25,-144 4718.28,-81.27 4830.06,-127.54 5259.25,-108 5333.39,-104.62 5417.28,-100.08 5479.98,-96.54"/>
+<polygon fill="black" stroke="black" points="5480.14,-100.03 5489.93,-95.97 5479.74,-93.04 5480.14,-100.03"/>
 </g>
 <!-- :feature:main&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge86" class="edge">
+<g id="edge85" class="edge">
 <title>:feature:main&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M4284.46,-145.44C4287.42,-144.89 4290.36,-144.4 4293.25,-144 4415.51,-126.99 6254.61,-99.55 6736.42,-92.63"/>
-<polygon fill="black" stroke="black" points="6736.42,-96.13 6746.37,-92.48 6736.32,-89.13 6736.42,-96.13"/>
+<path fill="none" stroke="black" d="M4284.46,-145.43C4287.42,-144.88 4290.36,-144.4 4293.25,-144 4430.51,-125.05 6510.98,-98.65 7026.4,-92.38"/>
+<polygon fill="black" stroke="black" points="7026.08,-95.88 7036.04,-92.26 7026,-88.88 7026.08,-95.88"/>
 </g>
 <!-- :feature:manual&#45;readout&#45;detail -->
-<g id="node45" class="node">
+<g id="node44" class="node">
 <title>:feature:manual&#45;readout&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M4524.38,-180C4524.38,-180 4314.12,-180 4314.12,-180 4308.12,-180 4302.12,-174 4302.12,-168 4302.12,-168 4302.12,-156 4302.12,-156 4302.12,-150 4308.12,-144 4314.12,-144 4314.12,-144 4524.38,-144 4524.38,-144 4530.38,-144 4536.38,-150 4536.38,-156 4536.38,-156 4536.38,-168 4536.38,-168 4536.38,-174 4530.38,-180 4524.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="4419.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:manual&#45;readout&#45;detail</text>
 </g>
 <!-- :feature:manual&#45;readout&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain -->
-<g id="edge89" class="edge">
+<g id="edge88" class="edge">
 <title>:feature:manual&#45;readout&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M4327.09,-143.52C4274.26,-133.5 4207.84,-120.89 4153.29,-110.55"/>
-<polygon fill="black" stroke="black" points="4154.16,-107.15 4143.68,-108.72 4152.86,-114.03 4154.16,-107.15"/>
+<path fill="none" stroke="black" d="M4317.6,-143.52C4258.97,-133.43 4185.15,-120.74 4124.77,-110.35"/>
+<polygon fill="black" stroke="black" points="4125.61,-106.94 4115.16,-108.7 4124.42,-113.84 4125.61,-106.94"/>
 </g>
 <!-- :feature:manual&#45;readout&#45;detail&#45;&gt;:core:domain -->
-<g id="edge87" class="edge">
+<g id="edge86" class="edge">
 <title>:feature:manual&#45;readout&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M4536.59,-144.89C4539.5,-144.58 4542.39,-144.28 4545.25,-144 4796.08,-119.13 4866.9,-169.86 5111.25,-108 5148.26,-98.63 5152.13,-80.96 5189.25,-72 5307.8,-43.39 6160.54,-24.99 6406.82,-20.23"/>
-<polygon fill="black" stroke="black" points="6406.63,-23.73 6416.57,-20.04 6406.5,-16.73 6406.63,-23.73"/>
+<path fill="none" stroke="black" d="M4536.58,-144.84C4539.5,-144.55 4542.39,-144.26 4545.25,-144 4703.44,-129.37 5108.62,-158.5 5259.25,-108 5286.25,-98.95 5285.19,-80.85 5312.25,-72 5448.43,-27.46 6464.27,-20.32 6735.08,-19.2"/>
+<polygon fill="black" stroke="black" points="6734.78,-22.7 6744.77,-19.16 6734.75,-15.7 6734.78,-22.7"/>
 </g>
 <!-- :feature:manual&#45;readout&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge88" class="edge">
+<g id="edge87" class="edge">
 <title>:feature:manual&#45;readout&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M4536.58,-144.81C4539.5,-144.52 4542.39,-144.25 4545.25,-144 4920.12,-110.81 5015.5,-129.08 5391.25,-108 5440.4,-105.24 5495.07,-101.5 5540.18,-98.22"/>
-<polygon fill="black" stroke="black" points="5540.21,-101.73 5549.93,-97.51 5539.7,-94.75 5540.21,-101.73"/>
+<path fill="none" stroke="black" d="M4536.58,-144.83C4539.5,-144.54 4542.39,-144.26 4545.25,-144 4885.12,-113.16 4971.52,-127.01 5312.25,-108 5367.88,-104.9 5430.09,-100.9 5480.03,-97.56"/>
+<polygon fill="black" stroke="black" points="5480.22,-101.06 5489.96,-96.89 5479.75,-94.07 5480.22,-101.06"/>
 </g>
 <!-- :feature:manual&#45;readout&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge90" class="edge">
+<g id="edge89" class="edge">
 <title>:feature:manual&#45;readout&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M4536.58,-144.74C4539.49,-144.47 4542.39,-144.23 4545.25,-144 4764.13,-126.77 6300.3,-100.17 6736.19,-92.89"/>
-<polygon fill="black" stroke="black" points="6736.07,-96.4 6746.01,-92.73 6735.95,-89.4 6736.07,-96.4"/>
+<path fill="none" stroke="black" d="M4536.57,-144.73C4539.49,-144.46 4542.39,-144.22 4545.25,-144 4794.21,-124.73 6556.97,-99.11 7026.55,-92.57"/>
+<polygon fill="black" stroke="black" points="7026.27,-96.08 7036.22,-92.44 7026.18,-89.08 7026.27,-96.08"/>
 </g>
 <!-- :feature:manual&#45;readout&#45;list -->
-<g id="node46" class="node">
+<g id="node45" class="node">
 <title>:feature:manual&#45;readout&#45;list</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M4758.38,-180C4758.38,-180 4566.12,-180 4566.12,-180 4560.12,-180 4554.12,-174 4554.12,-168 4554.12,-168 4554.12,-156 4554.12,-156 4554.12,-150 4560.12,-144 4566.12,-144 4566.12,-144 4758.38,-144 4758.38,-144 4764.38,-144 4770.38,-150 4770.38,-156 4770.38,-156 4770.38,-168 4770.38,-168 4770.38,-174 4764.38,-180 4758.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="4662.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:manual&#45;readout&#45;list</text>
 </g>
 <!-- :feature:manual&#45;readout&#45;list&#45;&gt;:core:ace&#45;windows&#45;domain -->
-<g id="edge93" class="edge">
+<g id="edge92" class="edge">
 <title>:feature:manual&#45;readout&#45;list&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M4553.9,-145.11C4550.99,-144.73 4548.1,-144.36 4545.25,-144 4414.59,-127.52 4264.1,-111.88 4163.68,-101.92"/>
-<polygon fill="black" stroke="black" points="4164.09,-98.44 4153.8,-100.94 4163.41,-105.41 4164.09,-98.44"/>
+<path fill="none" stroke="black" d="M4553.91,-145.08C4550.99,-144.71 4548.1,-144.35 4545.25,-144 4400.61,-126.31 4233.33,-110.42 4125.32,-100.75"/>
+<polygon fill="black" stroke="black" points="4125.86,-97.29 4115.59,-99.88 4125.24,-104.26 4125.86,-97.29"/>
 </g>
 <!-- :feature:manual&#45;readout&#45;list&#45;&gt;:core:domain -->
-<g id="edge91" class="edge">
+<g id="edge90" class="edge">
 <title>:feature:manual&#45;readout&#45;list&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M4770.57,-144.93C4773.5,-144.6 4776.39,-144.29 4779.25,-144 4914.78,-130.19 5268.21,-166.5 5391.25,-108 5410.85,-98.68 5404.61,-81.24 5424.25,-72 5512.76,-30.37 6189.73,-21.29 6406.62,-19.44"/>
-<polygon fill="black" stroke="black" points="6406.64,-22.94 6416.61,-19.36 6406.58,-15.94 6406.64,-22.94"/>
+<path fill="none" stroke="black" d="M4770.58,-144.96C4773.5,-144.62 4776.39,-144.3 4779.25,-144 4897.3,-131.46 5201.62,-151.05 5312.25,-108 5336.12,-98.71 5333.24,-80.92 5357.25,-72 5487.15,-23.74 6468.61,-19.3 6734.82,-18.99"/>
+<polygon fill="black" stroke="black" points="6734.7,-22.49 6744.7,-18.98 6734.69,-15.49 6734.7,-22.49"/>
 </g>
 <!-- :feature:manual&#45;readout&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge92" class="edge">
+<g id="edge91" class="edge">
 <title>:feature:manual&#45;readout&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M4770.57,-144.92C4773.49,-144.59 4776.39,-144.29 4779.25,-144 5064.93,-115.33 5137.8,-127.53 5424.25,-108 5462.3,-105.41 5504.17,-102.12 5540.51,-99.13"/>
-<polygon fill="black" stroke="black" points="5540.41,-102.65 5550.09,-98.34 5539.84,-95.68 5540.41,-102.65"/>
+<path fill="none" stroke="black" d="M4770.58,-144.94C4773.5,-144.61 4776.39,-144.3 4779.25,-144 5035.27,-117.47 5100.49,-126.01 5357.25,-108 5397.58,-105.17 5442.07,-101.76 5480.3,-98.73"/>
+<polygon fill="black" stroke="black" points="5480.22,-102.25 5489.91,-97.96 5479.67,-95.27 5480.22,-102.25"/>
 </g>
 <!-- :feature:manual&#45;readout&#45;list&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge94" class="edge">
+<g id="edge93" class="edge">
 <title>:feature:manual&#45;readout&#45;list&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M4770.56,-144.8C4773.49,-144.51 4776.39,-144.24 4779.25,-144 5163.95,-111.25 6359.59,-96.16 6736.34,-92.14"/>
-<polygon fill="black" stroke="black" points="6736.31,-95.64 6746.27,-92.04 6736.23,-88.64 6736.31,-95.64"/>
+<path fill="none" stroke="black" d="M4770.87,-144.76C4773.69,-144.48 4776.49,-144.23 4779.25,-144 5223.44,-106.89 6615.87,-94.59 7026.31,-91.72"/>
+<polygon fill="black" stroke="black" points="7026.09,-95.22 7036.06,-91.65 7026.04,-88.22 7026.09,-95.22"/>
 </g>
 <!-- :feature:narrator&#45;overlay -->
-<g id="node47" class="node">
+<g id="node46" class="node">
 <title>:feature:narrator&#45;overlay</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M3535.12,-180C3535.12,-180 3365.38,-180 3365.38,-180 3359.38,-180 3353.38,-174 3353.38,-168 3353.38,-168 3353.38,-156 3353.38,-156 3353.38,-150 3359.38,-144 3365.38,-144 3365.38,-144 3535.12,-144 3535.12,-144 3541.12,-144 3547.12,-150 3547.12,-156 3547.12,-156 3547.12,-168 3547.12,-168 3547.12,-174 3541.12,-180 3535.12,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="3450.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:narrator&#45;overlay</text>
 </g>
 <!-- :feature:narrator&#45;overlay&#45;&gt;:core:ace&#45;windows&#45;domain -->
-<g id="edge96" class="edge">
+<g id="edge95" class="edge">
 <title>:feature:narrator&#45;overlay&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M3547.54,-145.15C3550.48,-144.75 3553.38,-144.37 3556.25,-144 3723.65,-122.63 3766.71,-128.24 3934.25,-108 3935.1,-107.9 3935.96,-107.79 3936.82,-107.69"/>
-<polygon fill="black" stroke="black" points="3937.14,-111.17 3946.63,-106.45 3936.27,-104.23 3937.14,-111.17"/>
+<path fill="none" stroke="black" d="M3547.55,-145.19C3550.48,-144.78 3553.39,-144.38 3556.25,-144 3706.88,-123.96 3745.49,-127.02 3896.25,-108 3897.1,-107.89 3897.96,-107.78 3898.82,-107.67"/>
+<polygon fill="black" stroke="black" points="3899.16,-111.16 3908.62,-106.39 3898.25,-104.22 3899.16,-111.16"/>
 </g>
 <!-- :feature:narrator&#45;overlay&#45;&gt;:core:domain -->
-<g id="edge95" class="edge">
+<g id="edge94" class="edge">
 <title>:feature:narrator&#45;overlay&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M3547.55,-145.19C3550.48,-144.78 3553.39,-144.38 3556.25,-144 3706.88,-123.96 3756.36,-167.35 3896.25,-108 3919.19,-98.27 3915.91,-80.76 3939.25,-72 4057.97,-27.45 6017.97,-20.16 6406.59,-19.15"/>
-<polygon fill="black" stroke="black" points="6406.39,-22.65 6416.38,-19.12 6406.37,-15.65 6406.39,-22.65"/>
+<path fill="none" stroke="black" d="M3547.53,-145.03C3550.47,-144.66 3553.38,-144.32 3556.25,-144 3681.72,-129.99 4002.44,-144.68 4123.25,-108 4153.74,-98.74 4154.57,-80.6 4185.25,-72 4311.51,-36.63 6338.44,-21.95 6734.46,-19.41"/>
+<polygon fill="black" stroke="black" points="6734.47,-22.91 6744.45,-19.34 6734.43,-15.91 6734.47,-22.91"/>
 </g>
 <!-- :feature:other&#45;android&#45;audio&#45;usage&#45;detail -->
-<g id="node48" class="node">
+<g id="node47" class="node">
 <title>:feature:other&#45;android&#45;audio&#45;usage&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M7459.88,-108C7459.88,-108 7174.62,-108 7174.62,-108 7168.62,-108 7162.62,-102 7162.62,-96 7162.62,-96 7162.62,-84 7162.62,-84 7162.62,-78 7168.62,-72 7174.62,-72 7174.62,-72 7459.88,-72 7459.88,-72 7465.88,-72 7471.88,-78 7471.88,-84 7471.88,-84 7471.88,-96 7471.88,-96 7471.88,-102 7465.88,-108 7459.88,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="7317.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;android&#45;audio&#45;usage&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M7749.88,-108C7749.88,-108 7464.62,-108 7464.62,-108 7458.62,-108 7452.62,-102 7452.62,-96 7452.62,-96 7452.62,-84 7452.62,-84 7452.62,-78 7458.62,-72 7464.62,-72 7464.62,-72 7749.88,-72 7749.88,-72 7755.88,-72 7761.88,-78 7761.88,-84 7761.88,-84 7761.88,-96 7761.88,-96 7761.88,-102 7755.88,-108 7749.88,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="7607.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;android&#45;audio&#45;usage&#45;detail</text>
 </g>
 <!-- :feature:other&#45;android&#45;audio&#45;usage&#45;detail&#45;&gt;:core:domain -->
-<g id="edge97" class="edge">
+<g id="edge96" class="edge">
 <title>:feature:other&#45;android&#45;audio&#45;usage&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M7162.54,-73.3C7157.72,-72.86 7152.95,-72.42 7148.25,-72 6925.38,-52.04 6660.73,-32.46 6539.67,-23.73"/>
-<polygon fill="black" stroke="black" points="6540.14,-20.26 6529.92,-23.03 6539.64,-27.24 6540.14,-20.26"/>
+<path fill="none" stroke="black" d="M7452.54,-73.33C7447.72,-72.88 7442.95,-72.43 7438.25,-72 7230.18,-52.88 6983.6,-33.22 6867.71,-24.15"/>
+<polygon fill="black" stroke="black" points="6867.99,-20.66 6857.74,-23.37 6867.44,-27.64 6867.99,-20.66"/>
 </g>
 <!-- :feature:other&#45;console&#45;ip&#45;detail -->
-<g id="node49" class="node">
+<g id="node48" class="node">
 <title>:feature:other&#45;console&#45;ip&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M7742.12,-180C7742.12,-180 7530.38,-180 7530.38,-180 7524.38,-180 7518.38,-174 7518.38,-168 7518.38,-168 7518.38,-156 7518.38,-156 7518.38,-150 7524.38,-144 7530.38,-144 7530.38,-144 7742.12,-144 7742.12,-144 7748.12,-144 7754.12,-150 7754.12,-156 7754.12,-156 7754.12,-168 7754.12,-168 7754.12,-174 7748.12,-180 7742.12,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="7636.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:other&#45;console&#45;ip&#45;detail</text>
 </g>
 <!-- :feature:other&#45;console&#45;ip&#45;detail&#45;&gt;:core:domain -->
-<g id="edge98" class="edge">
+<g id="edge97" class="edge">
 <title>:feature:other&#45;console&#45;ip&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M7517.99,-144.79C7515.05,-144.51 7512.13,-144.25 7509.25,-144 7403.45,-134.95 6650.55,-152.75 6554.25,-108 6546.7,-104.49 6517.14,-70.84 6495.91,-45.94"/>
-<polygon fill="black" stroke="black" points="6498.64,-43.75 6489.5,-38.4 6493.31,-48.28 6498.64,-43.75"/>
+<path fill="none" stroke="black" d="M7517.98,-144.86C7515.04,-144.56 7512.13,-144.27 7509.25,-144 7435.58,-137.09 6905.84,-149.01 6844.25,-108 6823.86,-94.42 6812.84,-68.31 6807.08,-47.86"/>
+<polygon fill="black" stroke="black" points="6810.52,-47.22 6804.7,-38.38 6803.74,-48.93 6810.52,-47.22"/>
 </g>
 <!-- :feature:other&#45;console&#45;ip&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge99" class="edge">
+<g id="edge98" class="edge">
 <title>:feature:other&#45;console&#45;ip&#45;detail&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M7517.99,-144.76C7515.05,-144.49 7512.13,-144.23 7509.25,-144 7331.63,-129.64 6086.5,-101.06 5730.26,-93.1"/>
-<polygon fill="black" stroke="black" points="5730.56,-89.61 5720.48,-92.88 5730.4,-96.61 5730.56,-89.61"/>
+<path fill="none" stroke="black" d="M7517.99,-144.75C7515.05,-144.48 7512.13,-144.23 7509.25,-144 7145.72,-114.77 6007.29,-96.99 5670.2,-92.27"/>
+<polygon fill="black" stroke="black" points="5670.59,-88.78 5660.54,-92.14 5670.49,-95.78 5670.59,-88.78"/>
 </g>
 <!-- :feature:other&#45;feedback&#45;detail -->
-<g id="node50" class="node">
+<g id="node49" class="node">
 <title>:feature:other&#45;feedback&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M13967.38,-180C13967.38,-180 13763.12,-180 13763.12,-180 13757.12,-180 13751.12,-174 13751.12,-168 13751.12,-168 13751.12,-156 13751.12,-156 13751.12,-150 13757.12,-144 13763.12,-144 13763.12,-144 13967.38,-144 13967.38,-144 13973.38,-144 13979.38,-150 13979.38,-156 13979.38,-156 13979.38,-168 13979.38,-168 13979.38,-174 13973.38,-180 13967.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="13865.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:other&#45;feedback&#45;detail</text>
 </g>
 <!-- :feature:other&#45;feedback&#45;detail&#45;&gt;:core:domain -->
-<g id="edge100" class="edge">
+<g id="edge99" class="edge">
 <title>:feature:other&#45;feedback&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M13750.72,-144.74C13747.87,-144.47 13745.04,-144.23 13742.25,-144 13066.92,-89.53 11371.66,-84.25 10694.25,-72 9004.94,-41.44 6935,-22.94 6540.05,-19.56"/>
-<polygon fill="black" stroke="black" points="6540.13,-16.06 6530.1,-19.48 6540.07,-23.06 6540.13,-16.06"/>
+<path fill="none" stroke="black" d="M13750.72,-144.7C13747.87,-144.44 13745.04,-144.21 13742.25,-144 13591.55,-132.63 11162.27,-164.87 11022.25,-108 11000.7,-99.25 11005.81,-80.75 10984.25,-72 10884.72,-31.61 7395.27,-20.6 6867.77,-19.17"/>
+<polygon fill="black" stroke="black" points="6868.1,-15.67 6858.09,-19.14 6868.08,-22.67 6868.1,-15.67"/>
 </g>
 <!-- :feature:other&#45;feedback&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge101" class="edge">
+<g id="edge100" class="edge">
 <title>:feature:other&#45;feedback&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M13750.73,-144.67C13747.87,-144.42 13745.05,-144.2 13742.25,-144 13011.99,-91.77 7885.02,-130.58 7153.25,-108 7091.5,-106.09 7022.73,-102.35 6966.42,-98.86"/>
-<polygon fill="black" stroke="black" points="6966.68,-95.37 6956.48,-98.24 6966.24,-102.36 6966.68,-95.37"/>
+<path fill="none" stroke="black" d="M13750.73,-144.67C13747.87,-144.42 13745.05,-144.2 13742.25,-144 13044.14,-93.98 8142.81,-129.67 7443.25,-108 7381.5,-106.09 7312.73,-102.34 7256.42,-98.85"/>
+<polygon fill="black" stroke="black" points="7256.68,-95.36 7246.48,-98.23 7256.24,-102.35 7256.68,-95.36"/>
 </g>
 <!-- :feature:other&#45;license&#45;detail -->
-<g id="node51" class="node">
+<g id="node50" class="node">
 <title>:feature:other&#45;license&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M7768.25,-108C7768.25,-108 7578.25,-108 7578.25,-108 7572.25,-108 7566.25,-102 7566.25,-96 7566.25,-96 7566.25,-84 7566.25,-84 7566.25,-78 7572.25,-72 7578.25,-72 7578.25,-72 7768.25,-72 7768.25,-72 7774.25,-72 7780.25,-78 7780.25,-84 7780.25,-84 7780.25,-96 7780.25,-96 7780.25,-102 7774.25,-108 7768.25,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="7673.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;license&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M8058.25,-108C8058.25,-108 7868.25,-108 7868.25,-108 7862.25,-108 7856.25,-102 7856.25,-96 7856.25,-96 7856.25,-84 7856.25,-84 7856.25,-78 7862.25,-72 7868.25,-72 7868.25,-72 8058.25,-72 8058.25,-72 8064.25,-72 8070.25,-78 8070.25,-84 8070.25,-84 8070.25,-96 8070.25,-96 8070.25,-102 8064.25,-108 8058.25,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="7963.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;license&#45;detail</text>
 </g>
 <!-- :feature:other&#45;license&#45;detail&#45;&gt;:core:domain -->
-<g id="edge102" class="edge">
+<g id="edge101" class="edge">
 <title>:feature:other&#45;license&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M7565.77,-73.39C7561.21,-72.88 7556.68,-72.42 7552.25,-72 7170.05,-35.84 6709.22,-23.62 6539.85,-20.18"/>
-<polygon fill="black" stroke="black" points="6539.98,-16.68 6529.91,-19.98 6539.84,-23.68 6539.98,-16.68"/>
+<path fill="none" stroke="black" d="M7855.77,-73.4C7851.21,-72.89 7846.68,-72.42 7842.25,-72 7475.23,-36.94 7033.06,-24.12 6867.81,-20.34"/>
+<polygon fill="black" stroke="black" points="6867.98,-16.84 6857.91,-20.12 6867.83,-23.84 6867.98,-16.84"/>
 </g>
 <!-- :feature:other&#45;list -->
-<g id="node52" class="node">
+<g id="node51" class="node">
 <title>:feature:other&#45;list</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M7902.25,-180C7902.25,-180 7784.25,-180 7784.25,-180 7778.25,-180 7772.25,-174 7772.25,-168 7772.25,-168 7772.25,-156 7772.25,-156 7772.25,-150 7778.25,-144 7784.25,-144 7784.25,-144 7902.25,-144 7902.25,-144 7908.25,-144 7914.25,-150 7914.25,-156 7914.25,-156 7914.25,-168 7914.25,-168 7914.25,-174 7908.25,-180 7902.25,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="7843.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:other&#45;list</text>
 </g>
 <!-- :feature:other&#45;list&#45;&gt;:core:domain -->
-<g id="edge103" class="edge">
+<g id="edge102" class="edge">
 <title>:feature:other&#45;list&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M7771.83,-145.16C7768.94,-144.73 7766.07,-144.34 7763.25,-144 7634.01,-128.41 6713.35,-155.76 6592.25,-108 6569.69,-99.1 6570.43,-86.84 6551.25,-72 6538.56,-62.18 6524.15,-52.11 6511.2,-43.42"/>
-<polygon fill="black" stroke="black" points="6513.17,-40.52 6502.9,-37.91 6509.3,-46.35 6513.17,-40.52"/>
+<path fill="none" stroke="black" d="M7771.82,-145.2C7768.93,-144.76 7766.07,-144.35 7763.25,-144 7666.05,-131.77 6971.03,-149.43 6882.25,-108 6874.7,-104.48 6845.14,-70.83 6823.91,-45.94"/>
+<polygon fill="black" stroke="black" points="6826.65,-43.75 6817.51,-38.39 6821.31,-48.28 6826.65,-43.75"/>
 </g>
 <!-- :feature:other&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge104" class="edge">
+<g id="edge103" class="edge">
 <title>:feature:other&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M7771.83,-145.14C7768.94,-144.72 7766.07,-144.33 7763.25,-144 7661.21,-131.99 6130.07,-100.84 5730.2,-92.88"/>
-<polygon fill="black" stroke="black" points="5730.56,-89.38 5720.49,-92.68 5730.42,-96.38 5730.56,-89.38"/>
+<path fill="none" stroke="black" d="M7771.83,-145.14C7768.94,-144.71 7766.07,-144.33 7763.25,-144 7553.92,-119.44 6063.9,-97.64 5670.37,-92.26"/>
+<polygon fill="black" stroke="black" points="5670.61,-88.77 5660.56,-92.13 5670.51,-95.77 5670.61,-88.77"/>
 </g>
 <!-- :feature:other&#45;log&#45;detail -->
-<g id="node53" class="node">
+<g id="node52" class="node">
 <title>:feature:other&#45;log&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M3739.38,-180C3739.38,-180 3577.12,-180 3577.12,-180 3571.12,-180 3565.12,-174 3565.12,-168 3565.12,-168 3565.12,-156 3565.12,-156 3565.12,-150 3571.12,-144 3577.12,-144 3577.12,-144 3739.38,-144 3739.38,-144 3745.38,-144 3751.38,-150 3751.38,-156 3751.38,-156 3751.38,-168 3751.38,-168 3751.38,-174 3745.38,-180 3739.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="3658.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:other&#45;log&#45;detail</text>
 </g>
 <!-- :feature:other&#45;log&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain -->
-<g id="edge106" class="edge">
+<g id="edge105" class="edge">
 <title>:feature:other&#45;log&#45;detail&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M3751.65,-144.32C3808.67,-134.14 3881.84,-121.07 3941.47,-110.42"/>
-<polygon fill="black" stroke="black" points="3941.73,-113.93 3950.95,-108.73 3940.49,-107.04 3941.73,-113.93"/>
+<path fill="none" stroke="black" d="M3746.67,-143.52C3797.24,-133.52 3860.8,-120.95 3913.07,-110.61"/>
+<polygon fill="black" stroke="black" points="3913.43,-114.11 3922.56,-108.74 3912.07,-107.24 3913.43,-114.11"/>
 </g>
 <!-- :feature:other&#45;log&#45;detail&#45;&gt;:core:domain -->
-<g id="edge105" class="edge">
+<g id="edge104" class="edge">
 <title>:feature:other&#45;log&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M3751.87,-145.12C3754.69,-144.73 3757.49,-144.35 3760.25,-144 3937.74,-121.28 3986.24,-145.29 4161.25,-108 4209.5,-97.72 4217.69,-80.69 4266.25,-72 4481.15,-33.53 6061.82,-21.55 6406.86,-19.39"/>
-<polygon fill="black" stroke="black" points="6406.64,-22.89 6416.62,-19.33 6406.59,-15.89 6406.64,-22.89"/>
+<path fill="none" stroke="black" d="M3751.86,-145.08C3754.69,-144.7 3757.49,-144.34 3760.25,-144 3860.48,-131.69 4565.4,-77.25 4666.25,-72 5480.77,-29.56 6471.92,-20.92 6734.72,-19.33"/>
+<polygon fill="black" stroke="black" points="6734.46,-22.83 6744.44,-19.27 6734.42,-15.83 6734.46,-22.83"/>
 </g>
 <!-- :feature:other&#45;log&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge107" class="edge">
+<g id="edge106" class="edge">
 <title>:feature:other&#45;log&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M3751.84,-144.85C3754.67,-144.54 3757.48,-144.25 3760.25,-144 3835.73,-137.1 6185.79,-101.09 6736.56,-92.73"/>
-<polygon fill="black" stroke="black" points="6736.22,-96.24 6746.16,-92.59 6736.11,-89.24 6736.22,-96.24"/>
+<path fill="none" stroke="black" d="M3751.84,-144.84C3754.67,-144.53 3757.48,-144.25 3760.25,-144 3926.1,-128.96 6454.69,-98.94 7026.79,-92.31"/>
+<polygon fill="black" stroke="black" points="7026.45,-95.82 7036.4,-92.2 7026.36,-88.82 7026.45,-95.82"/>
 </g>
 <!-- :feature:other&#45;log&#45;list -->
-<g id="node54" class="node">
+<g id="node53" class="node">
 <title>:feature:other&#45;log&#45;list</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M5108.38,-180C5108.38,-180 4964.12,-180 4964.12,-180 4958.12,-180 4952.12,-174 4952.12,-168 4952.12,-168 4952.12,-156 4952.12,-156 4952.12,-150 4958.12,-144 4964.12,-144 4964.12,-144 5108.38,-144 5108.38,-144 5114.38,-144 5120.38,-150 5120.38,-156 5120.38,-156 5120.38,-168 5120.38,-168 5120.38,-174 5114.38,-180 5108.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="5036.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:other&#45;log&#45;list</text>
 </g>
 <!-- :feature:other&#45;log&#45;list&#45;&gt;:core:ace&#45;windows&#45;domain -->
-<g id="edge109" class="edge">
+<g id="edge108" class="edge">
 <title>:feature:other&#45;log&#45;list&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M4951.67,-145.09C4948.83,-144.7 4946.02,-144.33 4943.25,-144 4664.41,-110.37 4333.89,-97.8 4163.86,-93.33"/>
-<polygon fill="black" stroke="black" points="4163.99,-89.83 4153.91,-93.07 4163.81,-96.83 4163.99,-89.83"/>
+<path fill="none" stroke="black" d="M4951.67,-145.08C4948.83,-144.69 4946.02,-144.33 4943.25,-144 4649.69,-108.95 4301.2,-96.94 4125.53,-92.93"/>
+<polygon fill="black" stroke="black" points="4125.8,-89.43 4115.73,-92.71 4125.64,-96.43 4125.8,-89.43"/>
 </g>
 <!-- :feature:other&#45;log&#45;list&#45;&gt;:core:domain -->
-<g id="edge108" class="edge">
+<g id="edge107" class="edge">
 <title>:feature:other&#45;log&#45;list&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M5120.75,-145.43C5123.96,-144.93 5127.13,-144.45 5130.25,-144 5277.15,-122.78 5327.54,-170.3 5462.25,-108 5483.37,-98.23 5478.88,-81.2 5500.25,-72 5582.94,-36.41 6200.77,-23.36 6406.69,-19.98"/>
-<polygon fill="black" stroke="black" points="6406.46,-23.48 6416.41,-19.82 6406.35,-16.48 6406.46,-23.48"/>
+<path fill="none" stroke="black" d="M5120.77,-145.53C5123.97,-145 5127.14,-144.49 5130.25,-144 5249.41,-125.26 5289.76,-158.6 5399.25,-108 5420.96,-97.97 5417.09,-81 5439.25,-72 5559.76,-23.05 6477.96,-19.09 6734.72,-18.94"/>
+<polygon fill="black" stroke="black" points="6734.58,-22.44 6744.58,-18.94 6734.57,-15.44 6734.58,-22.44"/>
 </g>
 <!-- :feature:other&#45;log&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge111" class="edge">
+<g id="edge110" class="edge">
 <title>:feature:other&#45;log&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M5120.75,-145.38C5123.95,-144.9 5127.13,-144.43 5130.25,-144 5293.9,-121.28 5336.05,-126.32 5500.25,-108 5513.18,-106.56 5526.8,-104.95 5540.2,-103.31"/>
-<polygon fill="black" stroke="black" points="5540.4,-106.81 5549.89,-102.12 5539.54,-99.87 5540.4,-106.81"/>
+<path fill="none" stroke="black" d="M5120.76,-145.46C5123.96,-144.95 5127.13,-144.46 5130.25,-144 5267.01,-123.69 5301.98,-124.57 5439.25,-108 5452.45,-106.41 5466.36,-104.7 5480.05,-103"/>
+<polygon fill="black" stroke="black" points="5480.48,-106.48 5489.97,-101.77 5479.61,-99.53 5480.48,-106.48"/>
 </g>
 <!-- :feature:other&#45;log&#45;list&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge110" class="edge">
+<g id="edge109" class="edge">
 <title>:feature:other&#45;log&#45;list&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M5120.72,-145.11C5123.93,-144.7 5127.12,-144.33 5130.25,-144 5442.94,-111.09 6403.8,-96.48 6736.47,-92.32"/>
-<polygon fill="black" stroke="black" points="6736.09,-95.82 6746.05,-92.2 6736.01,-88.82 6736.09,-95.82"/>
+<path fill="none" stroke="black" d="M5120.71,-145.1C5123.93,-144.69 5127.12,-144.32 5130.25,-144 5501.84,-105.73 6656.61,-94.41 7026.22,-91.72"/>
+<polygon fill="black" stroke="black" points="7026.23,-95.22 7036.2,-91.65 7026.17,-88.22 7026.23,-95.22"/>
 </g>
 <!-- :feature:other&#45;overlay&#45;background&#45;opacity&#45;detail -->
-<g id="node55" class="node">
+<g id="node54" class="node">
 <title>:feature:other&#45;overlay&#45;background&#45;opacity&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M8262.12,-108C8262.12,-108 7924.38,-108 7924.38,-108 7918.38,-108 7912.38,-102 7912.38,-96 7912.38,-96 7912.38,-84 7912.38,-84 7912.38,-78 7918.38,-72 7924.38,-72 7924.38,-72 8262.12,-72 8262.12,-72 8268.12,-72 8274.12,-78 8274.12,-84 8274.12,-84 8274.12,-96 8274.12,-96 8274.12,-102 8268.12,-108 8262.12,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="8093.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;overlay&#45;background&#45;opacity&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M8552.12,-108C8552.12,-108 8214.38,-108 8214.38,-108 8208.38,-108 8202.38,-102 8202.38,-96 8202.38,-96 8202.38,-84 8202.38,-84 8202.38,-78 8208.38,-72 8214.38,-72 8214.38,-72 8552.12,-72 8552.12,-72 8558.12,-72 8564.12,-78 8564.12,-84 8564.12,-84 8564.12,-96 8564.12,-96 8564.12,-102 8558.12,-108 8552.12,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="8383.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;overlay&#45;background&#45;opacity&#45;detail</text>
 </g>
 <!-- :feature:other&#45;overlay&#45;background&#45;opacity&#45;detail&#45;&gt;:core:domain -->
-<g id="edge112" class="edge">
+<g id="edge111" class="edge">
 <title>:feature:other&#45;overlay&#45;background&#45;opacity&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M7911.89,-72.89C7907.3,-72.58 7902.74,-72.28 7898.25,-72 7375.3,-39.5 6743.07,-24.51 6539.67,-20.3"/>
-<polygon fill="black" stroke="black" points="6539.9,-16.8 6529.83,-20.09 6539.76,-23.8 6539.9,-16.8"/>
+<path fill="none" stroke="black" d="M8201.89,-72.89C8197.29,-72.58 8192.74,-72.28 8188.25,-72 7680.97,-40.21 7068.05,-24.83 6867.93,-20.39"/>
+<polygon fill="black" stroke="black" points="6868.06,-16.9 6857.98,-20.18 6867.9,-23.89 6868.06,-16.9"/>
 </g>
 <!-- :feature:other&#45;overlay&#45;text&#45;color&#45;detail -->
-<g id="node56" class="node">
+<g id="node55" class="node">
 <title>:feature:other&#45;overlay&#45;text&#45;color&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M8570.12,-108C8570.12,-108 8304.38,-108 8304.38,-108 8298.38,-108 8292.38,-102 8292.38,-96 8292.38,-96 8292.38,-84 8292.38,-84 8292.38,-78 8298.38,-72 8304.38,-72 8304.38,-72 8570.12,-72 8570.12,-72 8576.12,-72 8582.12,-78 8582.12,-84 8582.12,-84 8582.12,-96 8582.12,-96 8582.12,-102 8576.12,-108 8570.12,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="8437.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;overlay&#45;text&#45;color&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M8860.12,-108C8860.12,-108 8594.38,-108 8594.38,-108 8588.38,-108 8582.38,-102 8582.38,-96 8582.38,-96 8582.38,-84 8582.38,-84 8582.38,-78 8588.38,-72 8594.38,-72 8594.38,-72 8860.12,-72 8860.12,-72 8866.12,-72 8872.12,-78 8872.12,-84 8872.12,-84 8872.12,-96 8872.12,-96 8872.12,-102 8866.12,-108 8860.12,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="8727.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;overlay&#45;text&#45;color&#45;detail</text>
 </g>
 <!-- :feature:other&#45;overlay&#45;text&#45;color&#45;detail&#45;&gt;:core:domain -->
-<g id="edge113" class="edge">
+<g id="edge112" class="edge">
 <title>:feature:other&#45;overlay&#45;text&#45;color&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M8292.19,-72.66C8289.18,-72.43 8286.2,-72.21 8283.25,-72 7603.27,-24.59 6776.72,-19.47 6539.67,-19.01"/>
-<polygon fill="black" stroke="black" points="6540.02,-15.51 6530.01,-19 6540.01,-22.51 6540.02,-15.51"/>
+<path fill="none" stroke="black" d="M8582.19,-72.66C8579.18,-72.43 8576.2,-72.21 8573.25,-72 7909.01,-25.48 7101.9,-19.74 6867.81,-19.07"/>
+<polygon fill="black" stroke="black" points="6867.97,-15.57 6857.96,-19.05 6867.95,-22.57 6867.97,-15.57"/>
 </g>
 <!-- :feature:other&#45;overlay&#45;text&#45;size&#45;detail -->
-<g id="node57" class="node">
+<g id="node56" class="node">
 <title>:feature:other&#45;overlay&#45;text&#45;size&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M8870.38,-108C8870.38,-108 8612.12,-108 8612.12,-108 8606.12,-108 8600.12,-102 8600.12,-96 8600.12,-96 8600.12,-84 8600.12,-84 8600.12,-78 8606.12,-72 8612.12,-72 8612.12,-72 8870.38,-72 8870.38,-72 8876.38,-72 8882.38,-78 8882.38,-84 8882.38,-84 8882.38,-96 8882.38,-96 8882.38,-102 8876.38,-108 8870.38,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="8741.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;overlay&#45;text&#45;size&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M9160.38,-108C9160.38,-108 8902.12,-108 8902.12,-108 8896.12,-108 8890.12,-102 8890.12,-96 8890.12,-96 8890.12,-84 8890.12,-84 8890.12,-78 8896.12,-72 8902.12,-72 8902.12,-72 9160.38,-72 9160.38,-72 9166.38,-72 9172.38,-78 9172.38,-84 9172.38,-84 9172.38,-96 9172.38,-96 9172.38,-102 9166.38,-108 9160.38,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="9031.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;overlay&#45;text&#45;size&#45;detail</text>
 </g>
 <!-- :feature:other&#45;overlay&#45;text&#45;size&#45;detail&#45;&gt;:core:domain -->
-<g id="edge114" class="edge">
+<g id="edge113" class="edge">
 <title>:feature:other&#45;overlay&#45;text&#45;size&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M8599.96,-72.64C8597.03,-72.41 8594.13,-72.2 8591.25,-72 7784.49,-16.3 6801.29,-17.18 6539.74,-18.54"/>
-<polygon fill="black" stroke="black" points="6540.05,-15.04 6530.07,-18.59 6540.09,-22.04 6540.05,-15.04"/>
+<path fill="none" stroke="black" d="M8889.96,-72.64C8887.03,-72.41 8884.13,-72.2 8881.25,-72 8090.24,-17.2 7126.52,-17.41 6867.8,-18.58"/>
+<polygon fill="black" stroke="black" points="6867.87,-15.08 6857.89,-18.63 6867.9,-22.08 6867.87,-15.08"/>
 </g>
 <!-- :feature:other&#45;readout&#45;start&#45;sound&#45;detail -->
-<g id="node58" class="node">
+<g id="node57" class="node">
 <title>:feature:other&#45;readout&#45;start&#45;sound&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M9194.38,-108C9194.38,-108 8912.12,-108 8912.12,-108 8906.12,-108 8900.12,-102 8900.12,-96 8900.12,-96 8900.12,-84 8900.12,-84 8900.12,-78 8906.12,-72 8912.12,-72 8912.12,-72 9194.38,-72 9194.38,-72 9200.38,-72 9206.38,-78 9206.38,-84 9206.38,-84 9206.38,-96 9206.38,-96 9206.38,-102 9200.38,-108 9194.38,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="9053.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;readout&#45;start&#45;sound&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M9484.38,-108C9484.38,-108 9202.12,-108 9202.12,-108 9196.12,-108 9190.12,-102 9190.12,-96 9190.12,-96 9190.12,-84 9190.12,-84 9190.12,-78 9196.12,-72 9202.12,-72 9202.12,-72 9484.38,-72 9484.38,-72 9490.38,-72 9496.38,-78 9496.38,-84 9496.38,-84 9496.38,-96 9496.38,-96 9496.38,-102 9490.38,-108 9484.38,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="9343.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;readout&#45;start&#45;sound&#45;detail</text>
 </g>
 <!-- :feature:other&#45;readout&#45;start&#45;sound&#45;detail&#45;&gt;:core:domain -->
-<g id="edge115" class="edge">
+<g id="edge114" class="edge">
 <title>:feature:other&#45;readout&#45;start&#45;sound&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M8899.79,-72.57C8896.92,-72.37 8894.07,-72.18 8891.25,-72 8415.13,-41.85 6879.08,-23.47 6539.93,-19.72"/>
-<polygon fill="black" stroke="black" points="6540.16,-16.22 6530.12,-19.61 6540.08,-23.22 6540.16,-16.22"/>
+<path fill="none" stroke="black" d="M9189.79,-72.57C9186.92,-72.37 9184.07,-72.18 9181.25,-72 8713.11,-42.28 7203.92,-23.59 6867.95,-19.74"/>
+<polygon fill="black" stroke="black" points="6868.05,-16.24 6858.01,-19.63 6867.97,-23.24 6868.05,-16.24"/>
 </g>
 <!-- :feature:other&#45;server&#45;ip&#45;detail -->
-<g id="node59" class="node">
+<g id="node58" class="node">
 <title>:feature:other&#45;server&#45;ip&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M9440.38,-108C9440.38,-108 9236.12,-108 9236.12,-108 9230.12,-108 9224.12,-102 9224.12,-96 9224.12,-96 9224.12,-84 9224.12,-84 9224.12,-78 9230.12,-72 9236.12,-72 9236.12,-72 9440.38,-72 9440.38,-72 9446.38,-72 9452.38,-78 9452.38,-84 9452.38,-84 9452.38,-96 9452.38,-96 9452.38,-102 9446.38,-108 9440.38,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="9338.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;server&#45;ip&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M9730.38,-108C9730.38,-108 9526.12,-108 9526.12,-108 9520.12,-108 9514.12,-102 9514.12,-96 9514.12,-96 9514.12,-84 9514.12,-84 9514.12,-78 9520.12,-72 9526.12,-72 9526.12,-72 9730.38,-72 9730.38,-72 9736.38,-72 9742.38,-78 9742.38,-84 9742.38,-84 9742.38,-96 9742.38,-96 9742.38,-102 9736.38,-108 9730.38,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="9628.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;server&#45;ip&#45;detail</text>
 </g>
 <!-- :feature:other&#45;server&#45;ip&#45;detail&#45;&gt;:core:domain -->
-<g id="edge116" class="edge">
+<g id="edge115" class="edge">
 <title>:feature:other&#45;server&#45;ip&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M9223.72,-72.72C9220.87,-72.46 9218.04,-72.22 9215.25,-72 8671.57,-29.32 6905.34,-20.59 6539.82,-19.22"/>
-<polygon fill="black" stroke="black" points="6539.94,-15.72 6529.93,-19.18 6539.92,-22.72 6539.94,-15.72"/>
+<path fill="none" stroke="black" d="M9513.72,-72.72C9510.87,-72.46 9508.04,-72.22 9505.25,-72 8969.55,-29.88 7230.17,-20.71 6867.78,-19.24"/>
+<polygon fill="black" stroke="black" points="6867.99,-15.74 6857.98,-19.2 6867.96,-22.74 6867.99,-15.74"/>
 </g>
 <!-- :feature:other&#45;theme&#45;detail -->
-<g id="node60" class="node">
+<g id="node59" class="node">
 <title>:feature:other&#45;theme&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M9668,-108C9668,-108 9482.5,-108 9482.5,-108 9476.5,-108 9470.5,-102 9470.5,-96 9470.5,-96 9470.5,-84 9470.5,-84 9470.5,-78 9476.5,-72 9482.5,-72 9482.5,-72 9668,-72 9668,-72 9674,-72 9680,-78 9680,-84 9680,-84 9680,-96 9680,-96 9680,-102 9674,-108 9668,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="9575.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;theme&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M9958,-108C9958,-108 9772.5,-108 9772.5,-108 9766.5,-108 9760.5,-102 9760.5,-96 9760.5,-96 9760.5,-84 9760.5,-84 9760.5,-78 9766.5,-72 9772.5,-72 9772.5,-72 9958,-72 9958,-72 9964,-72 9970,-78 9970,-84 9970,-84 9970,-96 9970,-96 9970,-102 9964,-108 9958,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="9865.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;theme&#45;detail</text>
 </g>
 <!-- :feature:other&#45;theme&#45;detail&#45;&gt;:core:domain -->
-<g id="edge117" class="edge">
+<g id="edge116" class="edge">
 <title>:feature:other&#45;theme&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M9470.03,-72.8C9467.07,-72.51 9464.14,-72.24 9461.25,-72 8866.02,-22.55 6924.55,-19.18 6539.85,-19"/>
-<polygon fill="black" stroke="black" points="6539.91,-15.5 6529.91,-19 6539.91,-22.5 6539.91,-15.5"/>
+<path fill="none" stroke="black" d="M9760.03,-72.8C9757.07,-72.51 9754.14,-72.24 9751.25,-72 9164.07,-23.15 7249.9,-19.3 6867.92,-19.02"/>
+<polygon fill="black" stroke="black" points="6868.06,-15.52 6858.06,-19.01 6868.06,-22.52 6868.06,-15.52"/>
 </g>
 <!-- :feature:other&#45;voice&#45;detail -->
-<g id="node61" class="node">
+<g id="node60" class="node">
 <title>:feature:other&#45;voice&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M9886.88,-108C9886.88,-108 9709.62,-108 9709.62,-108 9703.62,-108 9697.62,-102 9697.62,-96 9697.62,-96 9697.62,-84 9697.62,-84 9697.62,-78 9703.62,-72 9709.62,-72 9709.62,-72 9886.88,-72 9886.88,-72 9892.88,-72 9898.88,-78 9898.88,-84 9898.88,-84 9898.88,-96 9898.88,-96 9898.88,-102 9892.88,-108 9886.88,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="9798.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;voice&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M10176.88,-108C10176.88,-108 9999.62,-108 9999.62,-108 9993.62,-108 9987.62,-102 9987.62,-96 9987.62,-96 9987.62,-84 9987.62,-84 9987.62,-78 9993.62,-72 9999.62,-72 9999.62,-72 10176.88,-72 10176.88,-72 10182.88,-72 10188.88,-78 10188.88,-84 10188.88,-84 10188.88,-96 10188.88,-96 10188.88,-102 10182.88,-108 10176.88,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="10088.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;voice&#45;detail</text>
 </g>
 <!-- :feature:other&#45;voice&#45;detail&#45;&gt;:core:domain -->
-<g id="edge118" class="edge">
+<g id="edge117" class="edge">
 <title>:feature:other&#45;voice&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M9697.35,-72.76C9694.63,-72.48 9691.92,-72.23 9689.25,-72 9046.04,-16.81 6941.2,-18.08 6539.74,-18.84"/>
-<polygon fill="black" stroke="black" points="6539.87,-15.34 6529.87,-18.86 6539.88,-22.34 6539.87,-15.34"/>
+<path fill="none" stroke="black" d="M9987.35,-72.76C9984.63,-72.48 9981.92,-72.23 9979.25,-72 9344.15,-17.44 7267.01,-18.19 6867.91,-18.86"/>
+<polygon fill="black" stroke="black" points="6868.1,-15.36 6858.11,-18.87 6868.11,-22.36 6868.1,-15.36"/>
 </g>
 <!-- :feature:other&#45;voice&#45;pitch&#45;detail -->
-<g id="node62" class="node">
+<g id="node61" class="node">
 <title>:feature:other&#45;voice&#45;pitch&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M10147.12,-108C10147.12,-108 9929.38,-108 9929.38,-108 9923.38,-108 9917.38,-102 9917.38,-96 9917.38,-96 9917.38,-84 9917.38,-84 9917.38,-78 9923.38,-72 9929.38,-72 9929.38,-72 10147.12,-72 10147.12,-72 10153.12,-72 10159.12,-78 10159.12,-84 10159.12,-84 10159.12,-96 10159.12,-96 10159.12,-102 10153.12,-108 10147.12,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="10038.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;voice&#45;pitch&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M10437.12,-108C10437.12,-108 10219.38,-108 10219.38,-108 10213.38,-108 10207.38,-102 10207.38,-96 10207.38,-96 10207.38,-84 10207.38,-84 10207.38,-78 10213.38,-72 10219.38,-72 10219.38,-72 10437.12,-72 10437.12,-72 10443.12,-72 10449.12,-78 10449.12,-84 10449.12,-84 10449.12,-96 10449.12,-96 10449.12,-102 10443.12,-108 10437.12,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="10328.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;voice&#45;pitch&#45;detail</text>
 </g>
 <!-- :feature:other&#45;voice&#45;pitch&#45;detail&#45;&gt;:core:domain -->
-<g id="edge119" class="edge">
+<g id="edge118" class="edge">
 <title>:feature:other&#45;voice&#45;pitch&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M9917.2,-72.71C9914.19,-72.45 9911.2,-72.22 9908.25,-72 9218,-21.71 6956.25,-19.04 6539.55,-18.98"/>
-<polygon fill="black" stroke="black" points="6539.85,-15.48 6529.85,-18.98 6539.85,-22.48 6539.85,-15.48"/>
+<path fill="none" stroke="black" d="M10207.2,-72.71C10204.19,-72.45 10201.2,-72.22 10198.25,-72 9516.17,-22.25 7282.39,-19.14 6867.79,-19"/>
+<polygon fill="black" stroke="black" points="6867.85,-15.5 6857.85,-18.99 6867.85,-22.5 6867.85,-15.5"/>
 </g>
 <!-- :feature:other&#45;voice&#45;speed&#45;detail -->
-<g id="node63" class="node">
+<g id="node62" class="node">
 <title>:feature:other&#45;voice&#45;speed&#45;detail</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M10413.12,-108C10413.12,-108 10189.38,-108 10189.38,-108 10183.38,-108 10177.38,-102 10177.38,-96 10177.38,-96 10177.38,-84 10177.38,-84 10177.38,-78 10183.38,-72 10189.38,-72 10189.38,-72 10413.12,-72 10413.12,-72 10419.12,-72 10425.12,-78 10425.12,-84 10425.12,-84 10425.12,-96 10425.12,-96 10425.12,-102 10419.12,-108 10413.12,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="10301.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;voice&#45;speed&#45;detail</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M10703.12,-108C10703.12,-108 10479.38,-108 10479.38,-108 10473.38,-108 10467.38,-102 10467.38,-96 10467.38,-96 10467.38,-84 10467.38,-84 10467.38,-78 10473.38,-72 10479.38,-72 10479.38,-72 10703.12,-72 10703.12,-72 10709.12,-72 10715.12,-78 10715.12,-84 10715.12,-84 10715.12,-96 10715.12,-96 10715.12,-102 10709.12,-108 10703.12,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="10591.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:other&#45;voice&#45;speed&#45;detail</text>
 </g>
 <!-- :feature:other&#45;voice&#45;speed&#45;detail&#45;&gt;:core:domain -->
-<g id="edge120" class="edge">
+<g id="edge119" class="edge">
 <title>:feature:other&#45;voice&#45;speed&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M10177.05,-72.68C10174.09,-72.43 10171.15,-72.21 10168.25,-72 9423.1,-19.2 6975.99,-18.6 6540,-18.93"/>
-<polygon fill="black" stroke="black" points="6540.09,-15.43 6530.1,-18.93 6540.1,-22.43 6540.09,-15.43"/>
+<path fill="none" stroke="black" d="M10467.05,-72.68C10464.09,-72.43 10461.15,-72.21 10458.25,-72 9720.96,-19.7 7300.1,-18.69 6867.66,-18.94"/>
+<polygon fill="black" stroke="black" points="6867.84,-15.44 6857.85,-18.94 6867.85,-22.44 6867.84,-15.44"/>
 </g>
 <!-- :feature:other&#45;volume&#45;detail -->
-<g id="node64" class="node">
+<g id="node63" class="node">
 <title>:feature:other&#45;volume&#45;detail</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M14201.38,-180C14201.38,-180 14009.12,-180 14009.12,-180 14003.12,-180 13997.12,-174 13997.12,-168 13997.12,-168 13997.12,-156 13997.12,-156 13997.12,-150 14003.12,-144 14009.12,-144 14009.12,-144 14201.38,-144 14201.38,-144 14207.38,-144 14213.38,-150 14213.38,-156 14213.38,-156 14213.38,-168 14213.38,-168 14213.38,-174 14207.38,-180 14201.38,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="14105.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:other&#45;volume&#45;detail</text>
 </g>
 <!-- :feature:other&#45;volume&#45;detail&#45;&gt;:core:domain -->
-<g id="edge121" class="edge">
+<g id="edge120" class="edge">
 <title>:feature:other&#45;volume&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M13996.93,-144.83C13994.01,-144.53 13991.11,-144.25 13988.25,-144 13027.07,-58.49 12783,-92.79 11818.25,-72 9652.53,-25.34 6992.3,-19.71 6540.06,-19.08"/>
-<polygon fill="black" stroke="black" points="6540.07,-15.58 6530.07,-19.06 6540.06,-22.58 6540.07,-15.58"/>
+<path fill="none" stroke="black" d="M13996.94,-144.8C13994.01,-144.51 13991.11,-144.24 13988.25,-144 12736.37,-37.48 12418.44,-95.63 11162.25,-72 9413.7,-39.1 7270.38,-22.42 6868.01,-19.48"/>
+<polygon fill="black" stroke="black" points="6868.15,-15.98 6858.13,-19.41 6868.1,-22.98 6868.15,-15.98"/>
 </g>
 <!-- :feature:other&#45;volume&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge122" class="edge">
+<g id="edge121" class="edge">
 <title>:feature:other&#45;volume&#45;detail&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M13996.63,-144.69C13993.81,-144.44 13991.01,-144.21 13988.25,-144 13230.92,-87.26 7912.35,-131.35 7153.25,-108 7091.5,-106.1 7022.73,-102.36 6966.42,-98.86"/>
-<polygon fill="black" stroke="black" points="6966.68,-95.37 6956.48,-98.24 6966.24,-102.36 6966.68,-95.37"/>
+<path fill="none" stroke="black" d="M13996.63,-144.69C13993.81,-144.44 13991.01,-144.21 13988.25,-144 13263.06,-89.58 8170.14,-130.44 7443.25,-108 7381.5,-106.09 7312.73,-102.35 7256.42,-98.86"/>
+<polygon fill="black" stroke="black" points="7256.68,-95.37 7246.48,-98.24 7256.24,-102.35 7256.68,-95.37"/>
 </g>
 <!-- :feature:server&#45;connection -->
-<g id="node65" class="node">
+<g id="node64" class="node">
 <title>:feature:server&#45;connection</title>
-<path fill="#c8e6c9" stroke="#43a047" d="M10673.38,-108C10673.38,-108 10493.12,-108 10493.12,-108 10487.12,-108 10481.12,-102 10481.12,-96 10481.12,-96 10481.12,-84 10481.12,-84 10481.12,-78 10487.12,-72 10493.12,-72 10493.12,-72 10673.38,-72 10673.38,-72 10679.38,-72 10685.38,-78 10685.38,-84 10685.38,-84 10685.38,-96 10685.38,-96 10685.38,-102 10679.38,-108 10673.38,-108"/>
-<text xml:space="preserve" text-anchor="middle" x="10583.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:server&#45;connection</text>
+<path fill="#c8e6c9" stroke="#43a047" d="M10963.38,-108C10963.38,-108 10783.12,-108 10783.12,-108 10777.12,-108 10771.12,-102 10771.12,-96 10771.12,-96 10771.12,-84 10771.12,-84 10771.12,-78 10777.12,-72 10783.12,-72 10783.12,-72 10963.38,-72 10963.38,-72 10969.38,-72 10975.38,-78 10975.38,-84 10975.38,-84 10975.38,-96 10975.38,-96 10975.38,-102 10969.38,-108 10963.38,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="10873.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:server&#45;connection</text>
 </g>
 <!-- :feature:server&#45;connection&#45;&gt;:core:domain -->
-<g id="edge123" class="edge">
+<g id="edge122" class="edge">
 <title>:feature:server&#45;connection&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M10480.86,-73.25C10476.27,-72.77 10471.71,-72.36 10467.25,-72 10060.75,-39.66 7029.48,-22.01 6539.92,-19.35"/>
-<polygon fill="black" stroke="black" points="6540.03,-15.85 6530.01,-19.3 6540,-22.85 6540.03,-15.85"/>
+<path fill="none" stroke="black" d="M10770.86,-73.25C10766.27,-72.78 10761.71,-72.36 10757.25,-72 10354.73,-39.95 7353.77,-22.06 6867.67,-19.36"/>
+<polygon fill="black" stroke="black" points="6867.86,-15.86 6857.84,-19.31 6867.82,-22.86 6867.86,-15.86"/>
 </g>
 <!-- :feature:speech&#45;recognition&#45;list -->
-<g id="node66" class="node">
+<g id="node65" class="node">
 <title>:feature:speech&#45;recognition&#45;list</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M5365.62,-180C5365.62,-180 5150.88,-180 5150.88,-180 5144.88,-180 5138.88,-174 5138.88,-168 5138.88,-168 5138.88,-156 5138.88,-156 5138.88,-150 5144.88,-144 5150.88,-144 5150.88,-144 5365.62,-144 5365.62,-144 5371.62,-144 5377.62,-150 5377.62,-156 5377.62,-156 5377.62,-168 5377.62,-168 5377.62,-174 5371.62,-180 5365.62,-180"/>
 <text xml:space="preserve" text-anchor="middle" x="5258.25" y="-157.32" font-family="Times,serif" font-size="14.00">:feature:speech&#45;recognition&#45;list</text>
 </g>
 <!-- :feature:speech&#45;recognition&#45;list&#45;&gt;:core:ace&#45;windows&#45;domain -->
-<g id="edge125" class="edge">
+<g id="edge124" class="edge">
 <title>:feature:speech&#45;recognition&#45;list&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M5138.46,-144.88C5135.36,-144.57 5132.29,-144.27 5129.25,-144 4778.07,-112.29 4360.76,-98.57 4163.85,-93.52"/>
-<polygon fill="black" stroke="black" points="4163.95,-90.02 4153.86,-93.27 4163.77,-97.02 4163.95,-90.02"/>
+<path fill="none" stroke="black" d="M5138.46,-144.87C5135.36,-144.56 5132.29,-144.27 5129.25,-144 4763.39,-111.27 4328.19,-97.97 4125.98,-93.26"/>
+<polygon fill="black" stroke="black" points="4126.07,-89.76 4115.99,-93.03 4125.9,-96.76 4126.07,-89.76"/>
 </g>
 <!-- :feature:speech&#45;recognition&#45;list&#45;&gt;:core:domain -->
-<g id="edge124" class="edge">
+<g id="edge123" class="edge">
 <title>:feature:speech&#45;recognition&#45;list&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M5361.04,-143.54C5415.28,-133.33 5475.59,-120.11 5500.25,-108 5522.62,-97.02 5520.08,-81.17 5543.25,-72 5622.86,-40.48 6207.22,-24.84 6406.72,-20.38"/>
-<polygon fill="black" stroke="black" points="6406.74,-23.88 6416.66,-20.16 6406.59,-16.88 6406.74,-23.88"/>
+<path fill="none" stroke="black" d="M5343.42,-143.57C5374.63,-135.27 5409.56,-123.66 5439.25,-108 5461.6,-96.21 5459.63,-80.97 5483.25,-72 5600.54,-27.45 6482.86,-20.34 6734.46,-19.21"/>
+<polygon fill="black" stroke="black" points="6734.46,-22.71 6744.45,-19.17 6734.43,-15.71 6734.46,-22.71"/>
 </g>
 <!-- :feature:speech&#45;recognition&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain -->
-<g id="edge126" class="edge">
+<g id="edge125" class="edge">
 <title>:feature:speech&#45;recognition&#45;list&#45;&gt;:core:gt7&#45;ps5&#45;domain</title>
-<path fill="none" stroke="black" d="M5352.41,-143.52C5409.76,-132.87 5482.81,-119.3 5540.31,-108.63"/>
-<polygon fill="black" stroke="black" points="5540.91,-112.08 5550.1,-106.81 5539.63,-105.19 5540.91,-112.08"/>
+<path fill="none" stroke="black" d="M5337.42,-143.52C5382.33,-133.6 5438.68,-121.16 5485.26,-110.87"/>
+<polygon fill="black" stroke="black" points="5485.77,-114.34 5494.78,-108.77 5484.26,-107.51 5485.77,-114.34"/>
 </g>
 <!-- :feature:speech&#45;recognition&#45;list&#45;&gt;:core:lmu&#45;windows&#45;domain -->
-<g id="edge127" class="edge">
+<g id="edge126" class="edge">
 <title>:feature:speech&#45;recognition&#45;list&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M5377.79,-144.76C5380.63,-144.49 5383.46,-144.24 5386.25,-144 5887.97,-101.71 6489.15,-93.13 6736.43,-91.41"/>
-<polygon fill="black" stroke="black" points="6736.09,-94.92 6746.07,-91.35 6736.05,-87.92 6736.09,-94.92"/>
+<path fill="none" stroke="black" d="M5377.78,-144.73C5380.63,-144.47 5383.46,-144.23 5386.25,-144 6003.2,-93.85 6745.61,-89.91 7026.29,-90.43"/>
+<polygon fill="black" stroke="black" points="7026.17,-93.93 7036.18,-90.45 7026.18,-86.93 7026.17,-93.93"/>
+</g>
+<!-- :feature:splash -->
+<g id="node66" class="node">
+<title>:feature:splash</title>
+<path fill="#c8e6c9" stroke="#43a047" d="M11141.5,-108C11141.5,-108 11043,-108 11043,-108 11037,-108 11031,-102 11031,-96 11031,-96 11031,-84 11031,-84 11031,-78 11037,-72 11043,-72 11043,-72 11141.5,-72 11141.5,-72 11147.5,-72 11153.5,-78 11153.5,-84 11153.5,-84 11153.5,-96 11153.5,-96 11153.5,-102 11147.5,-108 11141.5,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="11092.25" y="-85.33" font-family="Times,serif" font-size="14.00">:feature:splash</text>
+</g>
+<!-- :feature:splash&#45;&gt;:core:domain -->
+<g id="edge127" class="edge">
+<title>:feature:splash&#45;&gt;:core:domain</title>
+<path fill="none" stroke="black" d="M11030.63,-73.95C11026.12,-73.18 11021.63,-72.52 11017.25,-72 10588.78,-21.32 7373.57,-19.04 6868.05,-18.99"/>
+<polygon fill="black" stroke="black" points="6868.13,-15.49 6858.13,-18.99 6868.13,-22.49 6868.13,-15.49"/>
 </g>
 <!-- :server -->
 <g id="node67" class="node">
@@ -1158,20 +1158,20 @@
 <!-- :server&#45;&gt;:core:ace&#45;windows&#45;domain -->
 <g id="edge2" class="edge">
 <title>:server&#45;&gt;:core:ace&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M3835.57,-147.05C3838.49,-145.97 3841.41,-144.94 3844.25,-144 3882.08,-131.54 3924.59,-120.17 3961.13,-111.19"/>
-<polygon fill="black" stroke="black" points="3961.91,-114.6 3970.8,-108.84 3960.25,-107.8 3961.91,-114.6"/>
+<path fill="none" stroke="black" d="M3835.63,-147.21C3838.53,-146.1 3841.44,-145.01 3844.25,-144 3876.16,-132.53 3911.95,-121.05 3942.26,-111.72"/>
+<polygon fill="black" stroke="black" points="3943.18,-115.1 3951.72,-108.83 3941.14,-108.41 3943.18,-115.1"/>
 </g>
 <!-- :server&#45;&gt;:core:domain -->
 <g id="edge1" class="edge">
 <title>:server&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M3835.42,-146.53C3838.37,-145.56 3841.34,-144.7 3844.25,-144 4027.32,-100.2 4078.72,-124.27 4266.25,-108 4447.61,-92.26 4492.53,-82.68 4674.25,-72 5349.86,-32.28 6170.03,-21.83 6406.52,-19.56"/>
-<polygon fill="black" stroke="black" points="6406.51,-23.06 6416.48,-19.46 6406.45,-16.06 6406.51,-23.06"/>
+<path fill="none" stroke="black" d="M3835.86,-146.25C3838.66,-145.37 3841.48,-144.6 3844.25,-144 4022.91,-105.14 4484.11,-123.97 4666.25,-108 4788.17,-97.31 4817.26,-81.75 4939.25,-72 5298.92,-43.24 6446.29,-24.35 6734.88,-19.97"/>
+<polygon fill="black" stroke="black" points="6734.53,-23.48 6744.47,-19.83 6734.42,-16.48 6734.53,-23.48"/>
 </g>
 <!-- :server&#45;&gt;:core:lmu&#45;windows&#45;domain -->
 <g id="edge3" class="edge">
 <title>:server&#45;&gt;:core:lmu&#45;windows&#45;domain</title>
-<path fill="none" stroke="black" d="M3835.84,-146.17C3838.65,-145.31 3841.48,-144.57 3844.25,-144 3880.33,-136.64 6190.17,-101.06 6736.39,-92.74"/>
-<polygon fill="black" stroke="black" points="6736.34,-96.24 6746.29,-92.59 6736.23,-89.24 6736.34,-96.24"/>
+<path fill="none" stroke="black" d="M3835.84,-146.16C3838.65,-145.3 3841.47,-144.56 3844.25,-144 3923.82,-127.84 6453.09,-98.68 7026.45,-92.27"/>
+<polygon fill="black" stroke="black" points="7026.14,-95.77 7036.1,-92.16 7026.06,-88.77 7026.14,-95.77"/>
 </g>
 </g>
 </svg>

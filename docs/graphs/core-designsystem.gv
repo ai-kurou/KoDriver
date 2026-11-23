@@ -10,7 +10,6 @@ digraph G {
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:desktop-splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -50,6 +49,7 @@ digraph G {
   ":feature:other-voice-speed-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-flag-detail" -> ":core:designsystem"
   ":feature:ace-windows-auto-readout-my-best-lap-detail" -> ":core:designsystem"
   ":feature:ace-windows-auto-readout-remaining-fuel-detail" -> ":core:designsystem"
@@ -58,7 +58,6 @@ digraph G {
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:designsystem"
   ":feature:ace-windows-debug-state-detail" -> ":core:designsystem"
   ":feature:auto-readout-list" -> ":core:designsystem"
-  ":feature:desktop-splash" -> ":core:designsystem"
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" -> ":core:designsystem"
   ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" -> ":core:designsystem"
   ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" -> ":core:designsystem"
@@ -98,4 +97,5 @@ digraph G {
   ":feature:other-voice-speed-detail" -> ":core:designsystem"
   ":feature:other-volume-detail" -> ":core:designsystem"
   ":feature:speech-recognition-list" -> ":core:designsystem"
+  ":feature:splash" -> ":core:designsystem"
 }

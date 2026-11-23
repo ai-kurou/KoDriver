@@ -13,7 +13,6 @@ digraph G {
   ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:auto-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:desktop-splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-auto-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -56,9 +55,10 @@ digraph G {
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:server-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":app:androidApp" -> ":app:shared"
   ":app:desktopApp" -> ":app:shared"
-  ":app:shared" -> ":feature:desktop-splash"
+  ":app:shared" -> ":feature:splash"
   ":app:shared" -> ":feature:main"
   ":app:shared" -> ":feature:server-connection"
   ":app:shared" -> ":feature:lmu-windows-narrator"

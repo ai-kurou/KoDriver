@@ -1,0 +1,30 @@
+plugins {
+    id("feature-compose-screenshot")
+}
+
+kotlin {
+    android {
+        namespace = "kurou.kodriver.feature.splash"
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.core.designsystem)
+            implementation(libs.compose.animation)
+            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutinesCore)
+        }
+        jvmTest.dependencies {
+            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
+            implementation(libs.kotlinx.coroutinesTest)
+            implementation(libs.kotlin.testJunit)
+        }
+    }
+}
+
+compose.resources {
+    packageOfResClass = "kurou.kodriver.feature.splash.generated.resources"
+}
