@@ -21,6 +21,7 @@ import kurou.kodriver.data.preferences.createLowVolumeWarningEnabledPreferencesR
 import kurou.kodriver.data.preferences.createMainWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutPlayButtonLayoutPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutSetPreferencesRepository
+import kurou.kodriver.data.preferences.createMicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextColorPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
@@ -62,6 +63,7 @@ import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPref
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutSettingsResetter
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -117,10 +119,8 @@ public fun desktopDataModule(directory: String): Module =
         single<ManualReadoutItemSpokenRepository> { InMemoryManualReadoutItemSpokenRepository() }
         single<SpeechPlaybackStateRepository> { InMemorySpeechPlaybackStateRepository() }
         single<SpeechRecognitionTranscriptRepository> { InMemorySpeechRecognitionTranscriptRepository() }
-        single<ReadoutHotkeyPreferencesRepository> {
-            createReadoutHotkeyPreferencesRepository(directory)
-        }
         includes(desktopDataModuleWindowBounds(directory))
+        includes(desktopDataModuleInputSettings(directory))
         includes(desktopDataModuleCommonSimulatorPreferences(directory))
         includes(desktopDataModuleWindowsSimulatorPreferences(directory))
         // 設定永続化（DataStore。ファイルは directory 配下）
@@ -202,6 +202,17 @@ public fun desktopDataModule(directory: String): Module =
             createTelemetryLogRepository(directory = directory)
         }
         single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
+    }
+
+/** マイク・読み上げホットキーなど入力操作の設定の DataStore Repository バインド。 */
+private fun desktopDataModuleInputSettings(directory: String) =
+    module {
+        single<MicrophoneCutQuietSoundPreferencesRepository> {
+            createMicrophoneCutQuietSoundPreferencesRepository(directory = directory)
+        }
+        single<ReadoutHotkeyPreferencesRepository> {
+            createReadoutHotkeyPreferencesRepository(directory)
+        }
     }
 
 /** オーバーレイ・メインウィンドウの位置・サイズの DataStore Repository バインド。 */

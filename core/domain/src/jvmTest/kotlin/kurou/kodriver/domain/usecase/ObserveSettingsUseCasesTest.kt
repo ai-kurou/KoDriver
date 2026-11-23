@@ -29,6 +29,7 @@ import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -134,6 +135,12 @@ class ObserveSettingsUseCasesTest {
             Simulator.Gt7Ps5,
             observe = { selectedSimulator() },
             useCase = { ObserveSelectedSimulatorUseCase(it)() },
+        )
+        assertObserves<MicrophoneCutQuietSoundPreferencesRepository, Int>(
+            "ObserveMicrophoneCutQuietSoundLevelUseCase",
+            4,
+            observe = { observeMicrophoneCutQuietSoundLevel() },
+            useCase = { ObserveMicrophoneCutQuietSoundLevelUseCase(it)() },
         )
         assertObserves<OverlayBackgroundOpacityPreferencesRepository, Int>(
             "ObserveOverlayBackgroundOpacityUseCase",

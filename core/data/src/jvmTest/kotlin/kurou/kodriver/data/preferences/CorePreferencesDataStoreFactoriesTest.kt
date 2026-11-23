@@ -45,6 +45,10 @@ class CorePreferencesDataStoreFactoriesTest {
                 val dataStore = createManualReadoutPlayButtonLayoutPreferencesDataStore(dir)
                 dataStore.updateData { it.copy(enabled = true) }
             }
+            assertWritesTo("microphone_cut_quiet_sound_preferences.pb") { dir ->
+                val dataStore = createMicrophoneCutQuietSoundPreferencesDataStore(dir)
+                dataStore.updateData { it.copy(level = 3) }
+            }
             assertWritesTo("overlay_background_opacity_preferences.pb") { dir ->
                 val dataStore = createOverlayBackgroundOpacityPreferencesDataStore(dir)
                 dataStore.updateData { it.copy(opacity = 60) }
