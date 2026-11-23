@@ -35,6 +35,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_github_reposito
 import kurou.kodriver.feature.otherlist.generated.resources.item_haptic_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kurou.kodriver.feature.otherlist.generated.resources.item_license
+import kurou.kodriver.feature.otherlist.generated.resources.item_microphone_cut_quiet_sound
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_color
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_size
@@ -57,6 +58,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_data_log
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
+import kurou.kodriver.feature.otherlist.generated.resources.section_microphone_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_overlay_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_readout_settings
 import org.jetbrains.compose.resources.StringResource
@@ -66,6 +68,7 @@ internal enum class OtherListSection {
     ConnectionSettings,
     ReadoutSettings,
     OverlaySettings,
+    MicrophoneSettings,
     AppSettings,
     Information,
     DataLog,
@@ -76,6 +79,7 @@ internal val otherListSections =
         OtherListSection.ConnectionSettings,
         OtherListSection.ReadoutSettings,
         OtherListSection.OverlaySettings,
+        OtherListSection.MicrophoneSettings,
         OtherListSection.AppSettings,
         OtherListSection.Information,
         OtherListSection.DataLog,
@@ -109,6 +113,8 @@ internal fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.OverlayBackgroundOpacity,
         -> OtherListSection.OverlaySettings
 
+        OtherListItemType.MicrophoneCutQuietSound -> OtherListSection.MicrophoneSettings
+
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
         OtherListItemType.DynamicColor,
@@ -132,19 +138,12 @@ internal fun OtherListItemType.section(): OtherListSection =
     }
 
 @Composable
-private fun otherLogItemDisplayName(itemType: OtherListItemType): String =
-    if (itemType == OtherListItemType.ShowLogs) {
-        stringResource(Res.string.item_show_logs)
-    } else {
-        stringResource(Res.string.item_delete_all_logs)
-    }
-
-@Composable
-private fun otherReadoutSettingsResetItemDisplayName(itemType: OtherListItemType): String =
-    if (itemType == OtherListItemType.ResetManualReadoutSettings) {
-        stringResource(Res.string.manual_readout_settings_reset_item)
-    } else {
-        stringResource(Res.string.auto_readout_settings_reset_item)
+private fun otherDataLogItemDisplayName(itemType: OtherListItemType): String =
+    when (itemType) {
+        OtherListItemType.ShowLogs -> stringResource(Res.string.item_show_logs)
+        OtherListItemType.DeleteAllLogs -> stringResource(Res.string.item_delete_all_logs)
+        OtherListItemType.ResetManualReadoutSettings -> stringResource(Res.string.manual_readout_settings_reset_item)
+        else -> stringResource(Res.string.auto_readout_settings_reset_item)
     }
 
 @Composable
@@ -170,16 +169,16 @@ internal fun otherItemDisplayName(itemType: OtherListItemType): String =
             otherOverlaySettingsItemDisplayName(itemType)
         }
 
-        OtherListItemType.ResetAutoReadoutSettings,
-        OtherListItemType.ResetManualReadoutSettings,
-        -> {
-            otherReadoutSettingsResetItemDisplayName(itemType)
+        OtherListItemType.MicrophoneCutQuietSound -> {
+            stringResource(Res.string.item_microphone_cut_quiet_sound)
         }
 
         OtherListItemType.ShowLogs,
         OtherListItemType.DeleteAllLogs,
+        OtherListItemType.ResetAutoReadoutSettings,
+        OtherListItemType.ResetManualReadoutSettings,
         -> {
-            otherLogItemDisplayName(itemType)
+            otherDataLogItemDisplayName(itemType)
         }
 
         OtherListItemType.GitHubRepository -> {
@@ -246,6 +245,7 @@ internal fun otherListSectionTitle(section: OtherListSection): String =
         OtherListSection.ConnectionSettings -> stringResource(Res.string.section_connection_settings)
         OtherListSection.ReadoutSettings -> stringResource(Res.string.section_readout_settings)
         OtherListSection.OverlaySettings -> stringResource(Res.string.section_overlay_settings)
+        OtherListSection.MicrophoneSettings -> stringResource(Res.string.section_microphone_settings)
         OtherListSection.AppSettings -> stringResource(Res.string.section_app_settings)
         OtherListSection.DataLog -> stringResource(Res.string.section_data_log)
         OtherListSection.Information -> stringResource(Res.string.section_information)
@@ -333,6 +333,7 @@ internal fun OtherListItemTrailingIcon(
         OtherListItemType.ResetManualReadoutSettings,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
+        OtherListItemType.MicrophoneCutQuietSound,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
         OtherListItemType.HapticFeedback,

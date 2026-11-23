@@ -46,6 +46,7 @@ class OtherListItemsTest {
                 OtherListItemType.OverlayTextSize,
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
+                OtherListItemType.MicrophoneCutQuietSound,
                 OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,

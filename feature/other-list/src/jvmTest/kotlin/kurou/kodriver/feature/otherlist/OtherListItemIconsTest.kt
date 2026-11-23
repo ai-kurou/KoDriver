@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.FormatColorText
 import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.Layers
+import androidx.compose.material.icons.outlined.MicOff
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Palette
@@ -56,6 +57,7 @@ class OtherListItemIconsTest {
                 OtherListItemType.OverlayTextSize to Icons.Outlined.FormatSize,
                 OtherListItemType.OverlayTextColor to Icons.Outlined.FormatColorText,
                 OtherListItemType.OverlayBackgroundOpacity to Icons.Outlined.Opacity,
+                OtherListItemType.MicrophoneCutQuietSound to Icons.Outlined.MicOff,
                 OtherListItemType.KeepScreenOn to Icons.Outlined.BedtimeOff,
                 OtherListItemType.Theme to Icons.Outlined.BrightnessHigh,
                 OtherListItemType.DynamicColor to Icons.Outlined.Palette,

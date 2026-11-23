@@ -12,6 +12,7 @@ class OtherListItemTypeTest {
                 OtherListSection.ConnectionSettings,
                 OtherListSection.ReadoutSettings,
                 OtherListSection.OverlaySettings,
+                OtherListSection.MicrophoneSettings,
                 OtherListSection.AppSettings,
                 OtherListSection.Information,
                 OtherListSection.DataLog,
@@ -93,6 +94,7 @@ class OtherListItemTypeTest {
                 OtherListItemType.OverlayTextSize,
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
+                OtherListItemType.MicrophoneCutQuietSound,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.Startup,
@@ -189,6 +191,20 @@ class OtherListItemTypeTest {
                 OtherListItemType.OverlayBackgroundOpacity,
             ),
             OtherListItemType.entries.filterIsInstance<OtherListItemType.OverlaySettings>().toSet(),
+        )
+    }
+
+    @Test
+    fun `MicrophoneSettingsには小さい音をカットだけが所属しマイク設定セクションに表示する`() {
+        assertEquals(
+            setOf(OtherListItemType.MicrophoneCutQuietSound),
+            OtherListItemType.entries.filterIsInstance<OtherListItemType.MicrophoneSettings>().toSet(),
+        )
+        assertEquals(OtherListSection.MicrophoneSettings, OtherListItemType.MicrophoneCutQuietSound.section())
+        assertEquals("microphone_cut_quiet_sound", OtherListItemType.MicrophoneCutQuietSound.id)
+        assertEquals(
+            OtherListItemType.MicrophoneCutQuietSound,
+            OtherListItemType.fromId("microphone_cut_quiet_sound"),
         )
     }
 

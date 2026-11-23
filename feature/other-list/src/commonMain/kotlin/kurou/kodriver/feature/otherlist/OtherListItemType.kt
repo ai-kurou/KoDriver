@@ -13,6 +13,8 @@ public sealed interface OtherListItemType {
 
     public sealed interface OverlaySettings : OtherListItemType
 
+    public sealed interface MicrophoneSettings : OtherListItemType
+
     public sealed interface AppSettings : OtherListItemType
 
     public data object AccessLocalNetworkPermission : OtherListItemType {
@@ -87,6 +89,10 @@ public sealed interface OtherListItemType {
         override val id: String = "overlay_background_opacity"
     }
 
+    public data object MicrophoneCutQuietSound : MicrophoneSettings {
+        override val id: String = "microphone_cut_quiet_sound"
+    }
+
     public data object DynamicColor : AppSettings {
         override val id: String = "dynamic_color"
     }
@@ -157,6 +163,7 @@ public sealed interface OtherListItemType {
                 OverlayTextSize,
                 OverlayTextColor,
                 OverlayBackgroundOpacity,
+                MicrophoneCutQuietSound,
                 DynamicColor,
                 HapticFeedback,
                 Startup,
