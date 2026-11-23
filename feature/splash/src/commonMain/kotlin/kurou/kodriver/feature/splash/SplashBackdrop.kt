@@ -32,7 +32,7 @@ internal const val SHINE_PEAK_ALPHA = 0.35f
 private const val SHINE_BAND_SLANT_FRACTION = 0.5f
 
 /** スプラッシュに表示するアプリアイコンの標準の大きさ。 */
-public val SplashAppIconSize: Dp = 96.dp
+public val SplashAppIconSize: Dp = 144.dp
 
 /**
  * 光の帯の中心の x 座標（px）を返す。[progress] が 0 のとき帯は画面の左外、1 のとき右外にあり、
