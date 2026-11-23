@@ -2,7 +2,6 @@ package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 
@@ -11,14 +10,14 @@ public class OtherListAppUpdateFlow(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
 ) {
-    private val _uiState = MutableStateFlow(OtherListAppUpdateUiState())
-    public val uiState: StateFlow<OtherListAppUpdateUiState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<OtherListAppUpdateUiState>
+        field = MutableStateFlow(OtherListAppUpdateUiState())
     private var updateCheckStarted = false
 
     public suspend fun checkUpdate() {
         if (currentVersion.isBlank() || updateCheckStarted) return
         updateCheckStarted = true
         val hasUpdate = checkAppUpdateAvailable(currentVersion)
-        _uiState.update { it.copy(hasAppUpdate = hasUpdate) }
+        uiState.update { it.copy(hasAppUpdate = hasUpdate) }
     }
 }

@@ -2,7 +2,6 @@ package kurou.kodriver.data.manualreadout
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
 
 /**
@@ -10,8 +9,8 @@ import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
  */
 internal class InMemorySpeechPlaybackStateRepository : SpeechPlaybackStateRepository {
     private val activeSources = mutableSetOf<String>()
-    private val _isActive = MutableStateFlow(false)
-    override val isActive: StateFlow<Boolean> = _isActive.asStateFlow()
+    override val isActive: StateFlow<Boolean>
+        field = MutableStateFlow(false)
 
     override fun update(
         sourceId: String,
@@ -19,7 +18,7 @@ internal class InMemorySpeechPlaybackStateRepository : SpeechPlaybackStateReposi
     ) {
         synchronized(activeSources) {
             if (active) activeSources.add(sourceId) else activeSources.remove(sourceId)
-            _isActive.value = activeSources.isNotEmpty()
+            isActive.value = activeSources.isNotEmpty()
         }
     }
 }

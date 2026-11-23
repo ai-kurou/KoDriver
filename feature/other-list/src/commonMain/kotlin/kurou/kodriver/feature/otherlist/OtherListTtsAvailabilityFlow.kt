@@ -2,7 +2,6 @@ package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
@@ -14,12 +13,12 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 public class OtherListTtsAvailabilityFlow(
     private val checkUnavailableReason: CheckTextToSpeechUnavailableReasonUseCase,
 ) {
-    private val _uiState = MutableStateFlow(OtherListTtsAvailabilityUiState())
-    public val uiState: StateFlow<OtherListTtsAvailabilityUiState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<OtherListTtsAvailabilityUiState>
+        field = MutableStateFlow(OtherListTtsAvailabilityUiState())
 
     internal suspend fun checkAvailability() {
         val reason = checkUnavailableReason()
-        _uiState.update {
+        uiState.update {
             OtherListTtsAvailabilityUiState(
                 guidanceItems = reason.toGuidanceItems(),
                 ttsUnavailableGuidance = reason?.toGuidance(),

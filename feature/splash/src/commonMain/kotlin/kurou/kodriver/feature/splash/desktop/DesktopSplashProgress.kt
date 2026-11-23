@@ -2,7 +2,6 @@ package kurou.kodriver.feature.splash.desktop
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 /**
@@ -14,13 +13,12 @@ import kotlinx.coroutines.flow.update
  * 駆動される揮発的な状態のため、単純な [MutableStateFlow] ホルダーとする。
  */
 public class DesktopSplashProgress {
-    private val _uiState = MutableStateFlow(DesktopSplashUiState())
-
     /** スプラッシュ画面が購読する現在の表示状態。 */
-    public val uiState: StateFlow<DesktopSplashUiState> = _uiState.asStateFlow()
+    public val uiState: StateFlow<DesktopSplashUiState>
+        field = MutableStateFlow(DesktopSplashUiState())
 
     /** 現在の初期化フェーズを [step] に更新する。 */
     public fun update(step: DesktopSplashStep) {
-        _uiState.update { it.copy(step = step) }
+        uiState.update { it.copy(step = step) }
     }
 }
