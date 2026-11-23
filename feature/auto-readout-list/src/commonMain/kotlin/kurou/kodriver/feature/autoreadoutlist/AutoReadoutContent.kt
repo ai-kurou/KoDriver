@@ -126,6 +126,11 @@ internal fun AutoReadoutContent(
     val scope = rememberCoroutineScope()
     // 詳細を閉じて一覧へ戻ったとき、直前に開いた行へフォーカスを戻すために、開いた項目のキーを覚えておく
     var lastOpenedItemKey by remember { mutableStateOf<String?>(null) }
+    // 戻るときは選択がすぐ解除されるため、詳細の退場アニメーション中も描画できるよう、直前に選ばれた項目を覚えておく
+    var lastSelectedItem by remember { mutableStateOf<AutoReadoutListItemType?>(null) }
+    LaunchedEffect(uiState.selectedItem) {
+        uiState.selectedItem?.let { lastSelectedItem = it }
+    }
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
         predictiveBackProgress = 0f
@@ -189,7 +194,7 @@ internal fun AutoReadoutContent(
                 }
             },
             detailPane = {
-                uiState.selectedItem?.let { selectedItem ->
+                (uiState.selectedItem ?: lastSelectedItem.takeIf { it.hasBackTransition() })?.let { selectedItem ->
                     AnimatedPane(
                         enterTransition = PaneEnterTransition,
                         exitTransition = PaneExitTransition,
@@ -220,6 +225,12 @@ internal fun AutoReadoutContent(
         )
     }
 }
+
+/**
+ * 詳細から一覧へ戻るときにも共有要素のアニメーションを付ける項目か。
+ * 試験導入のため、現在はLMUの自己ベストラップのみ。
+ */
+private fun AutoReadoutListItemType?.hasBackTransition(): Boolean = this == LmuWindowsAutoReadoutListItemType.MyBestLap
 
 private const val PANE_TRANSITION_MILLIS = 250
 
