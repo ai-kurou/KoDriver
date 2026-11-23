@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,8 +24,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,6 +36,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -43,6 +49,7 @@ import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -129,6 +136,7 @@ internal fun ManualReadoutItemsCard(
                                     manualReadoutMoveActions(index, uiState.selectedItemKeys.size, onMoveItem)
                                 Row(
                                     Modifier.fillMaxWidth().semantics { customActions = moveActions },
+                                    horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Icon(
@@ -220,11 +228,38 @@ internal fun ManualReadoutItemsCard(
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
-                TextButton(onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    showPicker = true
-                }, enabled = remaining.isNotEmpty() && !atLimit) {
-                    Text(stringResource(Res.string.manual_readout_add_item))
+                val addEnabled = remaining.isNotEmpty() && !atLimit
+                val dashColor =
+                    if (addEnabled) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_DASH_ALPHA)
+                    }
+                val dashShape = MaterialTheme.shapes.medium
+                OutlinedButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        showPicker = true
+                    },
+                    enabled = addEnabled,
+                    modifier =
+                        Modifier.fillMaxWidth().drawBehind {
+                            val strokeWidth = 1.5.dp.toPx()
+                            val outline = dashShape.createOutline(size, layoutDirection, this)
+                            drawOutline(
+                                outline = outline,
+                                color = dashColor,
+                                style =
+                                    Stroke(
+                                        width = strokeWidth,
+                                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(8.dp.toPx(), 6.dp.toPx())),
+                                    ),
+                            )
+                        },
+                    shape = dashShape,
+                    border = BorderStroke(0.dp, Color.Transparent),
+                ) {
+                    Text(stringResource(Res.string.manual_readout_add_item), fontWeight = FontWeight.SemiBold)
                 }
                 ManualReadoutHotkeyAnimatedVisibility(visible = uiState.selectedItemKeys.isNotEmpty()) {
                     Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium)) {
@@ -299,3 +334,5 @@ private fun manualReadoutMoveActions(
         }
     }
 }
+
+private const val DISABLED_DASH_ALPHA = 0.12f
