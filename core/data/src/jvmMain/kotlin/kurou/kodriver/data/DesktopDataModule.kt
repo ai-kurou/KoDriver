@@ -8,6 +8,7 @@ import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemRequestReposit
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemSpokenRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.manualreadout.InMemorySpeechPlaybackStateRepository
+import kurou.kodriver.data.manualreadout.InMemorySpeechRecognitionTranscriptRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
@@ -74,6 +75,7 @@ import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepos
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
+import kurou.kodriver.domain.repository.SpeechRecognitionTranscriptRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
@@ -114,6 +116,7 @@ public fun desktopDataModule(directory: String): Module =
         single<ManualReadoutItemRequestRepository> { InMemoryManualReadoutItemRequestRepository() }
         single<ManualReadoutItemSpokenRepository> { InMemoryManualReadoutItemSpokenRepository() }
         single<SpeechPlaybackStateRepository> { InMemorySpeechPlaybackStateRepository() }
+        single<SpeechRecognitionTranscriptRepository> { InMemorySpeechRecognitionTranscriptRepository() }
         single<ReadoutHotkeyPreferencesRepository> {
             createReadoutHotkeyPreferencesRepository(directory)
         }

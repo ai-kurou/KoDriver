@@ -35,6 +35,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
+import kurou.kodriver.domain.usecase.ReportSpeechRecognitionTranscriptUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 import org.junit.After
@@ -103,6 +104,8 @@ class SpeechRecognitionChipHostTest {
                 observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
                 observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
                 playChime = PlaySpeechRecognitionChimeUseCase(FakeSpeechRecognitionChimePlayer()),
+                reportSpeechRecognitionTranscript =
+                    ReportSpeechRecognitionTranscriptUseCase(FakeSpeechRecognitionTranscriptRepository()),
                 audioInputDeviceSelector = deviceSelector,
             )
     }

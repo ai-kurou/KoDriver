@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -19,6 +22,7 @@ import kurou.kodriver.domain.model.SPEECH_RECOGNITION_HISTORY_MAX
 import kurou.kodriver.domain.model.SPEECH_RECOGNITION_RESUME_DELAY_MS
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.model.SpeechRecognitionTranscript
 import kurou.kodriver.domain.model.containsSpeechRecognitionWakeWord
 import kurou.kodriver.domain.runCapturingErrors
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
@@ -26,6 +30,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechRecognitionChimeUseCase
+import kurou.kodriver.domain.usecase.ReportSpeechRecognitionTranscriptUseCase
 import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.usecase.SetSpeechRecognitionModeUseCase
 
@@ -44,6 +49,7 @@ internal class SpeechRecognitionViewModel(
     private val observeSpeechPlaybackActive: ObserveSpeechPlaybackActiveUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     private val playChime: PlaySpeechRecognitionChimeUseCase,
+    private val reportSpeechRecognitionTranscript: ReportSpeechRecognitionTranscriptUseCase,
     /** 入力デバイスの一覧と選択。デバイスを選べないプラットフォーム（Android）では null。 */
     private val audioInputDeviceSelector: AudioInputDeviceSelector? = null,
 ) : ViewModel() {
@@ -81,6 +87,21 @@ internal class SpeechRecognitionViewModel(
                 restart = ::start,
             )
         }
+
+    /** 直近に確定した発話の先頭候補。次の発話が確定するか、聞き取りの開始・停止・失敗まで残す。 */
+    private val latestRecognizedText = MutableStateFlow<String?>(null)
+
+    init {
+        // オーバーレイなど他の画面へ、聞き取った文言を共有する。聞き取りを行っていない間は空にする
+        viewModelScope.launchCapturingErrors {
+            combine(
+                _uiState.map { it.enabled to it.partialText }.distinctUntilChanged(),
+                latestRecognizedText,
+            ) { (enabled, partialText), recognizedText ->
+                if (enabled) SpeechRecognitionTranscript(partialText, recognizedText) else SpeechRecognitionTranscript()
+            }.distinctUntilChanged().collect { reportSpeechRecognitionTranscript(it) }
+        }
+    }
 
     /** 読み上げの再生状態を購読し、再生中は聞き取りを止める。 */
     private var playbackJob: Job? = null
@@ -190,6 +211,7 @@ internal class SpeechRecognitionViewModel(
         resumeOnForeground = false
         permissionRequestPending = false
         cancelJobs()
+        latestRecognizedText.value = null
         _uiState.update {
             if (it.enabled) {
                 it.copy(enabled = false, status = SpeechRecognitionStatus.Stopped, partialText = "", level = null)
@@ -240,6 +262,7 @@ internal class SpeechRecognitionViewModel(
         // 待機中にキャンセルされた開始も含め、マイクを閉じ終えていない前の聞き取りをすべて待つ
         cancelJobs()
         val waits = startWaits
+        latestRecognizedText.value = null
         _uiState.update {
             it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "", level = null)
         }
@@ -290,6 +313,7 @@ internal class SpeechRecognitionViewModel(
             }
 
             is SpeechRecognitionEvent.Recognized -> {
+                latestRecognizedText.value = event.candidates.first()
                 _uiState.update {
                     it.copy(
                         partialText = "",
@@ -309,6 +333,7 @@ internal class SpeechRecognitionViewModel(
         playbackJob?.cancel()
         playbackJob = null
         commandWait.reset()
+        latestRecognizedText.value = null
         _uiState.update {
             it.copy(
                 enabled = false,
