@@ -60,22 +60,22 @@ class AutoReadoutContentBackTransitionTest {
     }
 
     @Test
+    fun `GT7の項目も詳細を閉じた直後は退場アニメーション中は詳細を描画する`() {
+        assertDetailAfterClear(
+            item = Gt7Ps5AutoReadoutListItemType.MyBestLap,
+            key = Gt7Ps5ReadoutItemKey.MyBestLap.Root,
+            expectedDetailCountDuringExit = 1,
+            simulator = Simulator.Gt7Ps5,
+        )
+    }
+
+    @Test
     fun `ACEの項目も詳細を閉じた直後は退場アニメーション中は詳細を描画する`() {
         assertDetailAfterClear(
             item = AceWindowsAutoReadoutListItemType.Flag,
             key = AceWindowsReadoutItemKey.Flag.Root,
             expectedDetailCountDuringExit = 1,
             simulator = Simulator.AceWindows,
-        )
-    }
-
-    @Test
-    fun `GT7の項目は詳細を閉じると直ちに詳細を描画しない`() {
-        assertDetailAfterClear(
-            item = Gt7Ps5AutoReadoutListItemType.MyBestLap,
-            key = Gt7Ps5ReadoutItemKey.MyBestLap.Root,
-            expectedDetailCountDuringExit = 0,
-            simulator = Simulator.Gt7Ps5,
         )
     }
 
