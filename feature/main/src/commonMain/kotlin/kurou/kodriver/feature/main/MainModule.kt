@@ -20,6 +20,7 @@ import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningUseCase
 import kurou.kodriver.domain.usecase.ObserveMainWindowBoundsUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
@@ -68,6 +69,7 @@ public val mainModule: Module =
                 observeSelectedSimulator = ObserveSelectedSimulatorUseCase(get()),
                 playChime = PlaySpeechRecognitionChimeUseCase(get()),
                 reportSpeechRecognitionTranscript = ReportSpeechRecognitionTranscriptUseCase(get()),
+                observeMicrophoneCutQuietSoundLevel = ObserveMicrophoneCutQuietSoundLevelUseCase(get()),
                 audioInputDeviceSelector =
                     if (deviceRepository != null && selectedDeviceRepository != null) {
                         AudioInputDeviceSelector(

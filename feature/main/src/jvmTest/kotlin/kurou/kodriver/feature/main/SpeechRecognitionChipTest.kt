@@ -15,6 +15,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
+@Suppress("TooManyFunctions")
 class SpeechRecognitionChipTest {
     @get:Rule
     val rule = createComposeRule()
@@ -152,6 +153,15 @@ class SpeechRecognitionChipTest {
     }
 
     @Test
+    fun `音量リングの閾値の目盛りは閾値に比例し範囲外は端に丸める`() {
+        assertEquals(0f, volumeRingThresholdAngle(0f))
+        assertEquals(108f, volumeRingThresholdAngle(0.3f), 0.0001f)
+        assertEquals(360f, volumeRingThresholdAngle(1f))
+        assertEquals(0f, volumeRingThresholdAngle(-1f))
+        assertEquals(360f, volumeRingThresholdAngle(2f))
+    }
+
+    @Test
     fun `音量リングは伸びるときより縮むときをゆっくり動かす`() {
         assertEquals(80, volumeRingAnimationMillis(rising = true))
         assertEquals(250, volumeRingAnimationMillis(rising = false))
@@ -199,6 +209,23 @@ class SpeechRecognitionChipTest {
             SpeechRecognitionUiState(status = SpeechRecognitionStatus.PermissionDenied, level = 0.6f),
         ).forEach { next ->
             uiState = next
+            rule.waitForIdle()
+            rule.onRoot().assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun `閾値があるときは音量が閾値の下でも上でも表示できる`() {
+        var uiState by mutableStateOf(SpeechRecognitionUiState())
+        rule.setContent { KoDriverTheme { SpeechRecognitionChip(uiState = uiState) } }
+        listOf(0.1f, 0.3f, 1f, 0f).forEach { level ->
+            uiState =
+                SpeechRecognitionUiState(
+                    enabled = true,
+                    status = SpeechRecognitionStatus.Listening,
+                    level = level,
+                    cutThreshold = 0.3f,
+                )
             rule.waitForIdle()
             rule.onRoot().assertIsDisplayed()
         }

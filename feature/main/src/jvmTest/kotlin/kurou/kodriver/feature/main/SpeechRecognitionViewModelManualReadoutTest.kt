@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionUseCase
@@ -65,6 +66,8 @@ class SpeechRecognitionViewModelManualReadoutTest {
             checkRecordAudioPermissionGranted = CheckRecordAudioPermissionGrantedUseCase(permissionRepository),
             requestManualReadoutItem = RequestManualReadoutItemUseCase(itemRequestRepository),
             setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(FakeSpeechRecognitionModeRepository()),
+            observeMicrophoneCutQuietSoundLevel =
+                ObserveMicrophoneCutQuietSoundLevelUseCase(FakeMicrophoneCutQuietSoundPreferencesRepository()),
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             playChime = PlaySpeechRecognitionChimeUseCase(FakeSpeechRecognitionChimePlayer()),

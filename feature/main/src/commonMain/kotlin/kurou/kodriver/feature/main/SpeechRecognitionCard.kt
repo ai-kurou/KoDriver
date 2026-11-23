@@ -10,11 +10,14 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -35,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -64,6 +68,10 @@ private val LEVEL_GAUGE_HEIGHT = 12.dp
 
 /** 入力音量ゲージの値変化を滑らかに見せるためのアニメーション時間(ミリ秒)。 */
 private const val LEVEL_ANIMATION_MILLIS = 100
+
+/** 閾値の線の太さと、バーの上下へはみ出す長さ。 */
+private val LEVEL_THRESHOLD_LINE_WIDTH = 2.dp
+private val LEVEL_THRESHOLD_LINE_OVERHANG = 3.dp
 
 /**
  * 音声タブの一覧に置く、音声認識の状態カード。聞き取りの状態・入力デバイス選択（デスクトップのみ）・入力音量・認識結果を並べる。
@@ -139,13 +147,10 @@ private fun SpeechRecognitionCardContent(
                 targetValue = level,
                 animationSpec = tween(durationMillis = LEVEL_ANIMATION_MILLIS),
             )
-            LinearProgressIndicator(
-                progress = { animatedLevel },
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(LEVEL_GAUGE_HEIGHT)
-                        .semantics { contentDescription = levelDescription },
+            LevelGauge(
+                level = animatedLevel,
+                cutThreshold = uiState.cutThreshold,
+                modifier = Modifier.semantics { contentDescription = levelDescription },
             )
         }
         val hasHistory = uiState.partialText.isNotEmpty() || uiState.recognized.isNotEmpty()
@@ -244,3 +249,38 @@ internal fun SpeechRecognitionStatus.label(): StringResource =
         SpeechRecognitionStatus.NoSignal -> Res.string.speech_recognition_status_no_signal
         SpeechRecognitionStatus.RecognitionFailed -> Res.string.speech_recognition_status_recognition_failed
     }
+
+/** 音量が「小さい音をカット」の閾値以上で、認識に使われるか。閾値が 0 のときは常に使われる。 */
+internal fun isLevelUsed(
+    level: Float,
+    cutThreshold: Float,
+): Boolean = level >= cutThreshold
+
+/**
+ * 入力音量のバー。閾値以上は主色（認識に使われる）、閾値未満は控えめな色（カットされる）で描き、閾値の位置に縦線を引く。
+ * 閾値が 0 のときは線を引かない。
+ */
+@Composable
+private fun LevelGauge(
+    level: Float,
+    cutThreshold: Float,
+    modifier: Modifier = Modifier,
+) {
+    val barColor =
+        if (isLevelUsed(level, cutThreshold)) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+    val lineColor = MaterialTheme.colorScheme.onSurface
+    Box(modifier = modifier.fillMaxWidth().height(LEVEL_GAUGE_HEIGHT)) {
+        LinearProgressIndicator(progress = { level }, modifier = Modifier.fillMaxSize(), color = barColor)
+        if (cutThreshold > 0f) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val x = size.width * cutThreshold.coerceIn(0f, 1f)
+                drawLine(
+                    color = lineColor,
+                    start = Offset(x, -LEVEL_THRESHOLD_LINE_OVERHANG.toPx()),
+                    end = Offset(x, size.height + LEVEL_THRESHOLD_LINE_OVERHANG.toPx()),
+                    strokeWidth = LEVEL_THRESHOLD_LINE_WIDTH.toPx(),
+                )
+            }
+        }
+    }
+}
