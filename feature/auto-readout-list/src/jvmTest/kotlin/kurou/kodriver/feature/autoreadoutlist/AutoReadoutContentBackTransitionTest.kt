@@ -92,6 +92,10 @@ class AutoReadoutContentBackTransitionTest {
         rule.mainClock.advanceTimeByFrame()
 
         rule.onAllNodesWithText(DETAIL_CONTENT_TEXT).assertCountEquals(expectedDetailCountDuringExit)
+
+        rule.mainClock.advanceTimeBy(1_000)
+
+        rule.onAllNodesWithText(DETAIL_CONTENT_TEXT).assertCountEquals(0)
     }
 
     private companion object {
