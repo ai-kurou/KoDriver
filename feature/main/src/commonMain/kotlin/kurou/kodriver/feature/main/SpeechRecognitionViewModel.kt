@@ -7,7 +7,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -53,8 +52,8 @@ internal class SpeechRecognitionViewModel(
     /** 入力デバイスの一覧と選択。デバイスを選べないプラットフォーム（Android）では null。 */
     private val audioInputDeviceSelector: AudioInputDeviceSelector? = null,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(SpeechRecognitionUiState())
-    val uiState: StateFlow<SpeechRecognitionUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<SpeechRecognitionUiState>
+        field = MutableStateFlow(SpeechRecognitionUiState())
 
     private var listenJob: Job? = null
 
@@ -66,10 +65,10 @@ internal class SpeechRecognitionViewModel(
             setMode = setSpeechRecognitionMode::invoke,
             playChime = playChime::invoke,
             onCommandWaitStarted = {
-                _uiState.update { it.copy(status = SpeechRecognitionStatus.CommandWaiting, partialText = "") }
+                uiState.update { it.copy(status = SpeechRecognitionStatus.CommandWaiting, partialText = "") }
             },
             onCommandWaitEnded = {
-                _uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
+                uiState.update { it.copy(status = SpeechRecognitionStatus.Listening, partialText = "") }
             },
         )
 
@@ -82,7 +81,7 @@ internal class SpeechRecognitionViewModel(
             SpeechRecognitionDeviceController(
                 scope = viewModelScope,
                 selector = it,
-                uiState = _uiState,
+                uiState = uiState,
                 cancelLaunch = ::cancelLaunch,
                 restart = ::start,
             )
@@ -95,7 +94,7 @@ internal class SpeechRecognitionViewModel(
         // オーバーレイなど他の画面へ、聞き取った文言を共有する。聞き取りを行っていない間は空にする
         viewModelScope.launchCapturingErrors {
             combine(
-                _uiState.map { it.enabled to it.partialText }.distinctUntilChanged(),
+                uiState.map { it.enabled to it.partialText }.distinctUntilChanged(),
                 latestRecognizedText,
             ) { (enabled, partialText), recognizedText ->
                 if (enabled) SpeechRecognitionTranscript(partialText, recognizedText) else SpeechRecognitionTranscript()
@@ -177,7 +176,7 @@ internal class SpeechRecognitionViewModel(
         if (granted) {
             start()
         } else {
-            _uiState.update { it.copy(enabled = false, status = SpeechRecognitionStatus.PermissionDenied) }
+            uiState.update { it.copy(enabled = false, status = SpeechRecognitionStatus.PermissionDenied) }
         }
     }
 
@@ -193,7 +192,7 @@ internal class SpeechRecognitionViewModel(
 
     /** アプリが見えなくなったときに聞き取りを止める。聞き取り中だった場合は [onAppForegrounded] で再開する。 */
     fun onAppBackgrounded() {
-        val wasEnabled = _uiState.value.enabled
+        val wasEnabled = uiState.value.enabled
         stop()
         resumeOnForeground = wasEnabled
     }
@@ -212,7 +211,7 @@ internal class SpeechRecognitionViewModel(
         permissionRequestPending = false
         cancelJobs()
         latestRecognizedText.value = null
-        _uiState.update {
+        uiState.update {
             if (it.enabled) {
                 it.copy(enabled = false, status = SpeechRecognitionStatus.Stopped, partialText = "", level = null)
             } else {
@@ -263,7 +262,7 @@ internal class SpeechRecognitionViewModel(
         cancelJobs()
         val waits = startWaits
         latestRecognizedText.value = null
-        _uiState.update {
+        uiState.update {
             it.copy(enabled = true, status = SpeechRecognitionStatus.Starting, partialText = "", level = null)
         }
         // 前の聞き取りのモードを引き継がず、ウェイクワード待ちから始める。読み上げ中なら observePlayback が続けて止める
@@ -295,16 +294,16 @@ internal class SpeechRecognitionViewModel(
                     } else {
                         SpeechRecognitionStatus.Listening
                     }
-                _uiState.update { it.copy(status = status, partialText = "") }
+                uiState.update { it.copy(status = status, partialText = "") }
             }
 
             is SpeechRecognitionEvent.Level -> {
                 // 入力音量は発話の証拠にならない（環境音でも届く）ため、無発話の自動停止の数え直しには使わない
-                _uiState.update { it.copy(level = event.level) }
+                uiState.update { it.copy(level = event.level) }
             }
 
             is SpeechRecognitionEvent.Partial -> {
-                _uiState.update { it.copy(partialText = event.text) }
+                uiState.update { it.copy(partialText = event.text) }
                 // 呼びかけを言い終える前の途中経過で検出し、続けて話すコマンドを取りこぼさない
                 val idle = !commandWait.paused && !commandWait.commandWaiting
                 if (idle && containsSpeechRecognitionWakeWord(listOf(event.text))) {
@@ -314,7 +313,7 @@ internal class SpeechRecognitionViewModel(
 
             is SpeechRecognitionEvent.Recognized -> {
                 latestRecognizedText.value = event.candidates.first()
-                _uiState.update {
+                uiState.update {
                     it.copy(
                         partialText = "",
                         recognized = (listOf(event.candidates) + it.recognized).take(SPEECH_RECOGNITION_HISTORY_MAX),
@@ -334,7 +333,7 @@ internal class SpeechRecognitionViewModel(
         playbackJob = null
         commandWait.reset()
         latestRecognizedText.value = null
-        _uiState.update {
+        uiState.update {
             it.copy(
                 enabled = false,
                 partialText = "",
