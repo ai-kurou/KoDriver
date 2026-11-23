@@ -70,11 +70,11 @@ class AutoReadoutContentBackTransitionTest {
     }
 
     @Test
-    fun `ACEの項目は詳細を閉じると直ちに詳細を描画しない`() {
+    fun `ACEの項目も詳細を閉じた直後は退場アニメーション中は詳細を描画する`() {
         assertDetailAfterClear(
             item = AceWindowsAutoReadoutListItemType.Flag,
             key = AceWindowsReadoutItemKey.Flag.Root,
-            expectedDetailCountDuringExit = 0,
+            expectedDetailCountDuringExit = 1,
             simulator = Simulator.AceWindows,
         )
     }
