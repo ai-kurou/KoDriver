@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.splash
+package kurou.kodriver.feature.splash.desktop
 
 import kurou.kodriver.feature.splash.generated.resources.Res
 import kurou.kodriver.feature.splash.generated.resources.desktop_splash_initializing_modules

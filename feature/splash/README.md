@@ -1,6 +1,15 @@
 # splash
 
-デスクトップアプリ起動中に表示するスプラッシュ画面の状態管理を担うモジュール。
+スプラッシュ画面を担うモジュール。パッケージで共通部分とデスクトップ専用部分に分けている。
+
+## 共通（`kurou.kodriver.feature.splash`）
+
+Android とデスクトップで同じ演出にするための部品。
+
+- `SplashBackdrop` … 自己ベストラップの背景画像（`ReadoutBackground.BEST_LAP`）を右側に置いて左へ溶かし、その上に光の帯を重ねる背景。光の位置は `shineProgress`（0〜1）で渡す。
+- `SplashAppIcon` … アプリアイコン。
+
+## デスクトップ専用（`kurou.kodriver.feature.splash.desktop`）
 
 JVM の起動から Compose 初期化・Koin モジュール構築・Ktor サーバー起動までには数秒かかるため、その間の初期化フェーズ（[DesktopSplashStep]）を保持・購読するためのプラットフォーム非依存のコアを提供する。
 
@@ -8,7 +17,7 @@ JVM の起動から Compose 初期化・Koin モジュール構築・Ktor サー
 - `DesktopSplashUiState` … スプラッシュ画面の表示状態（現在フェーズ・進捗率）。
 - `DesktopSplashProgress` … 起動処理から駆動される進捗状態ホルダー。
 - `runInitialization` … 進捗を更新しながら初期化処理を順に実行する `DesktopSplashProgress` 拡張関数。
-- `DesktopSplashScreen` … アプリアイコン・進捗バー・フェーズ名を左側に、自己ベストラップの背景画像（`ReadoutBackground.BEST_LAP`）を右側に表示する Composable。起動完了（`READY`）で光が画面を横切り、終わると `onReadyAnimationFinished` を一度通知する。
+- `DesktopSplashScreen` … `SplashBackdrop` の上に、アプリアイコン・進捗バー・フェーズ名を左側に表示する Composable。起動完了（`READY`）で光が画面を横切り、終わると `onReadyAnimationFinished` を一度通知する。
 - `DesktopSplashErrorDialog` … 初期化に失敗したことを通知するダイアログ。
 
 進捗ホルダーは Koin 起動前に生成する必要があるため、DI モジュールは提供せず、`:app:shared` の `DesktopSplashHost` から `DesktopSplashProgress` を直接生成して駆動する。`:app:desktopApp` の `main.kt` は `DesktopSplashHost` に Koin 構築・サーバー起動処理を渡して配線する。
