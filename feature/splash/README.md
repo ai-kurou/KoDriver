@@ -16,7 +16,7 @@ OS のスプラッシュ（`installSplashScreen`）が終わった直後に、�
 - `AndroidSplashOverlay` … `SplashBackdrop` とアイコンを重ね、光が横切ったあとフェードアウトして `onFinished` を一度通知する。表示中はタッチを消費し、背後のメイン画面を操作させない。縦横は `BoxWithConstraints` の描画領域で決め、縦長のときは写真を下端に置く。
 - `shouldShowAndroidSplashOverlay` … 表示の可否。コールドスタート（保存状態からの復元でなく、このプロセスで未表示）で、端末のアニメーション縮尺（`ANIMATOR_DURATION_SCALE`）が 0 でないときだけ表示する。
 
-`:app:shared` の `AndroidSplashHost` が表示の可否を判断し、`MainActivity` が判定に使う値を渡す。オーバーレイはアプリのテーマ（ダークテーマ・動的カラー）に合わせるため、`AppScreen` の `overlayContent` として渡す。
+`:app:shared` の `AndroidSplashHost` が表示の可否を判断し、`MainActivity` が判定に使う値を渡す。演出は OS のスプラッシュが外れたことを `MainActivity` が伝えてから始める（メイン画面の初回描画後も OS のスプラッシュはしばらく残るため）。通知が届かないときは一定時間後に始める。オーバーレイはアプリのテーマ（ダークテーマ・動的カラー）に合わせるため、`AppScreen` の `overlayContent` として渡す。
 
 ## デスクトップ専用（`kurou.kodriver.feature.splash.desktop`）
 

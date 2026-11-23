@@ -68,6 +68,7 @@ internal fun iconScale(shineProgress: Float): Float =
  * 写真の置き方は描画領域の縦横で決め、縦長のときは下端に置いて上へ溶かす。
  * 出だしは OS のスプラッシュと同じ背景色・同じ位置と大きさのアイコンで、切り替わりを目立たせない。
  * 光に合わせてアイコンが少し膨らむ。
+ * [started] が true になるまでは出だしの見た目のまま待つ。OS のスプラッシュが外れた後に演出を始めるために使う。
  *
  * 表示するかどうかは [shouldShowAndroidSplashOverlay] で呼び出し側が判断する。
  */
@@ -75,11 +76,14 @@ internal fun iconScale(shineProgress: Float): Float =
 public fun AndroidSplashOverlay(
     onFinished: () -> Unit,
     modifier: Modifier = Modifier,
+    started: Boolean = true,
 ) {
     val shineProgress = remember { Animatable(0f) }
     val overlayAlpha = remember { Animatable(1f) }
     val currentOnFinished by rememberUpdatedState(onFinished)
-    LaunchedEffect(Unit) {
+    LaunchedEffect(started) {
+        // OS のスプラッシュが外れる前に演出が進んで見えないまま終わらないよう、合図があるまで待つ。
+        if (!started) return@LaunchedEffect
         // 起動直後の重い処理でフレームが進まないうちに演出が終わらないよう、最初のフレームが描かれてから始める。
         withFrameNanos { }
         shineProgress.animateTo(1f, tween(ANDROID_SPLASH_SHINE_MILLIS, easing = LinearOutSlowInEasing))

@@ -9,6 +9,9 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import kotlinx.coroutines.CancellationException
 import kurou.kodriver.presentation.AndroidSplashHost
@@ -43,14 +46,19 @@ public class MainActivity : ComponentActivity() {
                 alreadyShown = alreadyShown,
                 animatorDurationScale = animatorDurationScale,
             )
+        var osSplashRemoved by mutableStateOf(false)
         if (showSplash) {
             // オーバーレイが同じ見た目で引き継ぐため、OS のスプラッシュの終了アニメーション（フェード）は省いて即座に取り除く。
-            splashScreen.setOnExitAnimationListener { provider -> provider.remove() }
+            // 演出は OS のスプラッシュが外れてから始めるので、外れたことをオーバーレイへ伝える。
+            splashScreen.setOnExitAnimationListener { provider ->
+                provider.remove()
+                osSplashRemoved = true
+            }
         }
         setContent {
             AppScreen(
                 overlayContent = {
-                    AndroidSplashHost(show = showSplash)
+                    AndroidSplashHost(show = showSplash, osSplashRemoved = osSplashRemoved)
                 },
                 backHandler = { enabled, onProgress, onBack ->
                     PredictiveBackHandler(enabled = enabled) { progress ->
