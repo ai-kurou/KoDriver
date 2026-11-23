@@ -124,6 +124,7 @@ public fun AppScreen(
     lowVolumeWarningViewModel: LowVolumeWarningViewModel = koinViewModel(),
     backHandler: AppBackHandler = { _, _, _ -> },
     onDarkThemeChanged: (Boolean) -> Unit = {},
+    overlayContent: @Composable () -> Unit = {},
     autoReadoutContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
         AutoReadoutContent(
             backHandler = backHandler,
@@ -231,6 +232,7 @@ public fun AppScreen(
         AppScreenContent(
             darkTheme = darkTheme,
             dynamicColorEnabled = uiState.dynamicColorEnabled,
+            overlayContent = overlayContent,
             bannerUiState = bannerUiState,
             ttsUnavailableGuidance = otherListUiState.ttsUnavailableGuidance,
             lowVolumeWarning = lowVolumeWarning,
@@ -334,6 +336,7 @@ internal fun ConnectionSnackbarEffect(
 internal fun AppScreenContent(
     darkTheme: Boolean = false,
     dynamicColorEnabled: Boolean = false,
+    overlayContent: @Composable () -> Unit = {},
     layoutType: NavigationSuiteType? = null,
     bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
     ttsUnavailableGuidance: TtsUnavailableGuidance? = null,
@@ -389,34 +392,37 @@ internal fun AppScreenContent(
             val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
             val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
             KeepScreenOnEffect(keepScreenOn)
-            AppScreenScaffold(
-                resolvedLayoutType = resolvedLayoutType,
-                hasAppUpdate = hasAppUpdate,
-                accessLocalNetworkPermissionGranted = accessLocalNetworkPermissionGranted,
-                selectedSimulatorId = selectedSimulatorId,
-                onSimulatorSelected = onSimulatorSelected,
-                bannerUiState = bannerUiState,
-                ttsUnavailableGuidance = ttsUnavailableGuidance,
-                lowVolumeWarning = lowVolumeWarning,
-                onLowVolumeBannerClickWithTabSwitch = onLowVolumeBannerClickWithTabSwitch,
-                onLowVolumeBannerDismiss = onLowVolumeBannerDismiss,
-                onTtsAction = onTtsAction,
-                snackbarHostState = snackbarHostState,
-                navigationState = navigationState,
-                onBannerTapWithTabSwitch = onBannerTapWithTabSwitch,
-                onManualReadoutTabReselected = onManualReadoutTabReselected,
-                manualReadoutTabReselectRequest = manualReadoutTabReselectRequest,
-                onAutoReadoutTabReselected = onAutoReadoutTabReselected,
-                onSpeechRecognitionTabReselected = onSpeechRecognitionTabReselected,
-                onOtherTabReselected = onOtherTabReselected,
-                autoReadoutContent = autoReadoutContent,
-                autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
-                manualReadoutContent = manualReadoutContent,
-                speechRecognitionContent = speechRecognitionContent,
-                otherContent = otherContent,
-                otherListScrollToTopRequest = otherListScrollToTopRequest,
-                speechRecognitionScrollToTopRequest = speechRecognitionScrollToTopRequest,
-            )
+            Box {
+                AppScreenScaffold(
+                    resolvedLayoutType = resolvedLayoutType,
+                    hasAppUpdate = hasAppUpdate,
+                    accessLocalNetworkPermissionGranted = accessLocalNetworkPermissionGranted,
+                    selectedSimulatorId = selectedSimulatorId,
+                    onSimulatorSelected = onSimulatorSelected,
+                    bannerUiState = bannerUiState,
+                    ttsUnavailableGuidance = ttsUnavailableGuidance,
+                    lowVolumeWarning = lowVolumeWarning,
+                    onLowVolumeBannerClickWithTabSwitch = onLowVolumeBannerClickWithTabSwitch,
+                    onLowVolumeBannerDismiss = onLowVolumeBannerDismiss,
+                    onTtsAction = onTtsAction,
+                    snackbarHostState = snackbarHostState,
+                    navigationState = navigationState,
+                    onBannerTapWithTabSwitch = onBannerTapWithTabSwitch,
+                    onManualReadoutTabReselected = onManualReadoutTabReselected,
+                    manualReadoutTabReselectRequest = manualReadoutTabReselectRequest,
+                    onAutoReadoutTabReselected = onAutoReadoutTabReselected,
+                    onSpeechRecognitionTabReselected = onSpeechRecognitionTabReselected,
+                    onOtherTabReselected = onOtherTabReselected,
+                    autoReadoutContent = autoReadoutContent,
+                    autoReadoutListScrollToTopRequest = autoReadoutListScrollToTopRequest,
+                    manualReadoutContent = manualReadoutContent,
+                    speechRecognitionContent = speechRecognitionContent,
+                    otherContent = otherContent,
+                    otherListScrollToTopRequest = otherListScrollToTopRequest,
+                    speechRecognitionScrollToTopRequest = speechRecognitionScrollToTopRequest,
+                )
+                overlayContent()
+            }
         }
     }
 }

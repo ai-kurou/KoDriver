@@ -37,41 +37,42 @@ public class MainActivity : ComponentActivity() {
         val alreadyShown = splashOverlayShown
         splashOverlayShown = true
         setContent {
-            AndroidSplashHost(
-                isRestored = savedInstanceState != null,
-                alreadyShown = alreadyShown,
-                animatorDurationScale = animatorDurationScale,
-            ) {
-                AppScreen(
-                    backHandler = { enabled, onProgress, onBack ->
-                        PredictiveBackHandler(enabled = enabled) { progress ->
-                            try {
-                                progress.collect { backEvent ->
-                                    onProgress(backEvent.progress)
-                                }
-                                onProgress(1f)
-                                onBack()
-                            } catch (e: CancellationException) {
-                                onProgress(0f)
-                                throw e
+            AppScreen(
+                overlayContent = {
+                    AndroidSplashHost(
+                        isRestored = savedInstanceState != null,
+                        alreadyShown = alreadyShown,
+                        animatorDurationScale = animatorDurationScale,
+                    )
+                },
+                backHandler = { enabled, onProgress, onBack ->
+                    PredictiveBackHandler(enabled = enabled) { progress ->
+                        try {
+                            progress.collect { backEvent ->
+                                onProgress(backEvent.progress)
                             }
+                            onProgress(1f)
+                            onBack()
+                        } catch (e: CancellationException) {
+                            onProgress(0f)
+                            throw e
                         }
-                    },
-                    onDarkThemeChanged = { darkTheme ->
-                        enableEdgeToEdge(
-                            statusBarStyle =
-                                if (darkTheme) {
-                                    SystemBarStyle.dark(Color.TRANSPARENT)
-                                } else {
-                                    SystemBarStyle.light(
-                                        scrim = Color.TRANSPARENT,
-                                        darkScrim = Color.TRANSPARENT,
-                                    )
-                                },
-                        )
-                    },
-                )
-            }
+                    }
+                },
+                onDarkThemeChanged = { darkTheme ->
+                    enableEdgeToEdge(
+                        statusBarStyle =
+                            if (darkTheme) {
+                                SystemBarStyle.dark(Color.TRANSPARENT)
+                            } else {
+                                SystemBarStyle.light(
+                                    scrim = Color.TRANSPARENT,
+                                    darkScrim = Color.TRANSPARENT,
+                                )
+                            },
+                    )
+                },
+            )
         }
     }
 }
