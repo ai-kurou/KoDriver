@@ -93,6 +93,24 @@ class DefaultOtherDetailContentTest {
     }
 
     @Test
+    fun `小さい音をカットは詳細ペインが未実装のため何も表示しない`() {
+        rule.setContent {
+            MaterialTheme {
+                DefaultOtherDetailContent(
+                    itemType = OtherListItemType.MicrophoneCutQuietSound,
+                    selectedSimulatorId = "",
+                    canNavigateBack = false,
+                    onBack = {},
+                    feedbackTelemetryLogId = null,
+                    feedbackAttachRequestId = 0L,
+                )
+            }
+        }
+
+        rule.onNodeWithText("小さい音をカット").assertDoesNotExist()
+    }
+
+    @Test
     fun `ログを表示でフィードバック送信を選ぶとonFeedbackSelectedにログIDを渡す`() {
         fakeTelemetryLogRepository.emit(
             listOf(

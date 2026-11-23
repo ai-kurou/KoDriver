@@ -341,6 +341,7 @@ internal fun OtherListItem(
                 OtherListItemType.OverlayTextSize,
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
+                OtherListItemType.MicrophoneCutQuietSound,
                 OtherListItemType.ShowLogs,
                 OtherListItemType.DeleteAllLogs,
                 OtherListItemType.ResetAutoReadoutSettings,
@@ -404,6 +405,10 @@ private fun handleOtherListItemClick(
 
         OtherListItemType.OverlayVisible -> {
             onOverlayVisibleChange(!uiState.overlayVisible)
+        }
+
+        OtherListItemType.MicrophoneCutQuietSound -> {
+            // 詳細ペインと保存先は未実装のため、タップしても何もしない。
         }
 
         OtherListItemType.KeepScreenOn -> {

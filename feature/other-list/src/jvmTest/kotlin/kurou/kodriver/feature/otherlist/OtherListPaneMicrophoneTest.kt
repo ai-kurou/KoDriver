@@ -1,0 +1,56 @@
+package kurou.kodriver.feature.otherlist
+
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import io.mockk.confirmVerified
+import io.mockk.mockk
+import org.junit.Rule
+import org.junit.Test
+
+class OtherListPaneMicrophoneTest {
+    @get:Rule
+    val rule = createComposeRule()
+
+    private val onItemClick: (OtherListItemType) -> Unit = mockk()
+
+    @Test
+    fun `マイク設定カテゴリに小さい音をカットを表示する`() {
+        setPane()
+
+        rule.onNodeWithText("マイク設定").assertIsDisplayed()
+        rule
+            .onNodeWithText("小さい音をカット")
+            .assertIsDisplayed()
+            .assertHasClickAction()
+            .assertIsNotSelected()
+        confirmVerified(onItemClick)
+    }
+
+    @Test
+    fun `小さい音をカットをクリックしても選択を通知せず選択状態にならない`() {
+        setPane()
+
+        rule.onNodeWithText("小さい音をカット").performClick()
+
+        rule.onNodeWithText("小さい音をカット").assertIsNotSelected()
+        confirmVerified(onItemClick)
+    }
+
+    private fun setPane() {
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.MicrophoneCutQuietSound)),
+                onItemClick = onItemClick,
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+    }
+}

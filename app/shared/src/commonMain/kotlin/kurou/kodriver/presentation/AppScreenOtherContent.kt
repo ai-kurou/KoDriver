@@ -182,6 +182,7 @@ internal fun DefaultOtherDetailContent(
         OtherListItemType.ResetManualReadoutSettings,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
+        OtherListItemType.MicrophoneCutQuietSound,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
