@@ -101,6 +101,8 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 
 `DebugReadoutRequest` と `DebugReadoutRequestRepository`、送信・購読用の `RequestDebugReadoutUseCase` / `ObserveDebugReadoutRequestUseCase` を提供する。`ReadoutItemKey.topLevelEntriesOf(simulator)` は一覧項目だけを entries 順に返す。`DebugReadoutText` は入力文言を置換せず音声経路へ渡すイベントで、本文の再解決には copy を使う。
 
+`SpeechRecognitionTranscript`（認識途中の文字列と、直近に確定した発話の先頭候補）と `SpeechRecognitionTranscriptRepository`（`StateFlow` で最新の状態を保持）、送信・購読用の `ReportSpeechRecognitionTranscriptUseCase` / `ObserveSpeechRecognitionTranscriptUseCase` を提供する。聞き取りを行う `:feature:main` が通知し、オーバーレイなど他の feature が購読する（認識エンジンの聞き取りを購読し直すとマイクを二重に開くため、結果だけを共有する）。
+
 `HotkeyRepository` は登録状態と押下の Flow、競合後の再試行を提供する。キーの取得・保存は `ReadoutHotkeyPreferencesRepository` が担う。
 永続化は `ReadoutHotkeyPreferencesRepository`、既定 F1 と固定修飾キーは `ReadoutHotkeyDefaults.kt` に定義する。
 ホットキー設定と登録状態の UseCase はデバッグペインで使用し、`ObserveReadoutHotkeyUseCase` の押下通知は従来どおり Narrator で使用する。

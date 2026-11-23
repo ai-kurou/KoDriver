@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.SpeechRecognitionTranscript
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Test
 
@@ -153,6 +154,69 @@ class NarratorOverlayContentScreenshotTest {
                         latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
                         overlayTextColor = 0xFFFFFFFFL,
                     ),
+            )
+        }
+
+    @Test
+    fun `マイク文言が認識途中の場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        speechRecognitionTranscript = SpeechRecognitionTranscript(partialText = "ピットに入"),
+                    ),
+            )
+        }
+
+    @Test
+    fun `マイク文言が確定した発話の場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        speechRecognitionTranscript = SpeechRecognitionTranscript(recognizedText = "ピットに入る"),
+                    ),
+            )
+        }
+
+    @Test
+    fun `読み上げ内容がなくマイク文言だけの場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        speechRecognitionTranscript = SpeechRecognitionTranscript(recognizedText = "ピットに入る"),
+                    ),
+            )
+        }
+
+    @Test
+    fun `マイク文言のunkは置換語で表示される`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        speechRecognitionTranscript = SpeechRecognitionTranscript(recognizedText = "[unk]に入る"),
+                    ),
+            )
+        }
+
+    @Test
+    fun `長いマイク文言は折り返して表示される`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        speechRecognitionTranscript =
+                            SpeechRecognitionTranscript(
+                                recognizedText = "次の周回でピットに入って燃料を補給しタイヤを交換してください",
+                            ),
+                    ),
+                hostHeight = LARGE_TEXT_HOST_HEIGHT,
             )
         }
 

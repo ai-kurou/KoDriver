@@ -10,8 +10,10 @@ import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
 import kurou.kodriver.domain.model.SpeechRecognitionChime
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.model.SpeechRecognitionTranscript
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
+import kurou.kodriver.domain.repository.SpeechRecognitionTranscriptRepository
 
 /** [SpeechRecognitionRepository.setMode] で渡されたモードを記録するフェイク。認識イベントは流さない。 */
 internal class FakeSpeechRecognitionModeRepository : SpeechRecognitionRepository {
@@ -68,5 +70,17 @@ internal class FakeSpeechRecognitionChimePlayer : SpeechRecognitionChimePlayer {
                 throw e
             }
         }
+    }
+}
+
+/** 通知された聞き取り状況を保持するフェイク。通知の履歴は [history] に残す。 */
+internal class FakeSpeechRecognitionTranscriptRepository : SpeechRecognitionTranscriptRepository {
+    private val state = MutableStateFlow(SpeechRecognitionTranscript())
+    override val transcript: StateFlow<SpeechRecognitionTranscript> = state
+    val history = mutableListOf<SpeechRecognitionTranscript>()
+
+    override fun update(transcript: SpeechRecognitionTranscript) {
+        history += transcript
+        state.value = transcript
     }
 }

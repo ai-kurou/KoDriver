@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.SpeechRecognitionTranscript
 import kurou.kodriver.domain.model.TelemetryLog
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,16 +23,18 @@ class NarratorOverlayFlowTest {
     fun `初期状態は入力されたログと表示設定を合成する`() =
         runTest {
             val log = createTelemetryLog()
+            val transcript = SpeechRecognitionTranscript(partialText = "ピット", recognizedText = "燃料")
             val flow =
                 NarratorOverlayFlow(
                     latestTelemetryLog = MutableStateFlow(log),
                     overlayTextSize = MutableStateFlow(OverlayTextSize.LARGE),
                     overlayTextColor = MutableStateFlow(0xFFFFFFFFL),
                     backgroundOpacity = MutableStateFlow(80),
+                    speechRecognitionTranscript = MutableStateFlow(transcript),
                 )
 
             assertEquals(
-                NarratorOverlayUiState(log, OverlayTextSize.LARGE, 0xFFFFFFFFL, 80),
+                NarratorOverlayUiState(log, OverlayTextSize.LARGE, 0xFFFFFFFFL, 80, transcript),
                 flow.uiState.first(),
             )
         }
@@ -43,7 +46,15 @@ class NarratorOverlayFlowTest {
             val overlayTextSize = MutableStateFlow(OverlayTextSize.MEDIUM)
             val overlayTextColor = MutableStateFlow(0xFFFFFFFFL)
             val backgroundOpacity = MutableStateFlow(50)
-            val flow = NarratorOverlayFlow(latestTelemetryLog, overlayTextSize, overlayTextColor, backgroundOpacity)
+            val speechRecognitionTranscript = MutableStateFlow(SpeechRecognitionTranscript())
+            val flow =
+                NarratorOverlayFlow(
+                    latestTelemetryLog,
+                    overlayTextSize,
+                    overlayTextColor,
+                    backgroundOpacity,
+                    speechRecognitionTranscript,
+                )
             val states = mutableListOf<NarratorOverlayUiState>()
             backgroundScope.launch { flow.uiState.collect { states.add(it) } }
             runCurrent()
@@ -69,6 +80,12 @@ class NarratorOverlayFlowTest {
             backgroundOpacity.update { 80 }
             runCurrent()
             expected = expected.copy(backgroundOpacity = 80)
+            assertEquals(expected, states.last())
+
+            val transcript = SpeechRecognitionTranscript(partialText = "ピット", recognizedText = "燃料")
+            speechRecognitionTranscript.update { transcript }
+            runCurrent()
+            expected = expected.copy(speechRecognitionTranscript = transcript)
             assertEquals(expected, states.last())
 
             latestTelemetryLog.update { null }
