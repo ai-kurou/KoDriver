@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.splash
+package kurou.kodriver.feature.splash.desktop
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

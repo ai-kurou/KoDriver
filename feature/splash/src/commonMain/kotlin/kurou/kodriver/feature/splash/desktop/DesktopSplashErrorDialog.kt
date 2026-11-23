@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.splash
+package kurou.kodriver.feature.splash.desktop
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text

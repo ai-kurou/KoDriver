@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.splash
+package kurou.kodriver.feature.splash.desktop
 
 /**
  * スプラッシュ画面の進捗を更新しながら、アプリの初期化を順に実行する。
