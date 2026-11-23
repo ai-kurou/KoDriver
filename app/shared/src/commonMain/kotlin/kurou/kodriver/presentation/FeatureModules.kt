@@ -39,6 +39,7 @@ import kurou.kodriver.feature.otherfeedbackdetail.otherFeedbackDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
 import kurou.kodriver.feature.otherlogdetail.telemetryLogDetailModule
 import kurou.kodriver.feature.otherloglist.telemetryLogListModule
+import kurou.kodriver.feature.othermicrophonecutquietsounddetail.otherMicrophoneCutQuietSoundDetailModule
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.otherOverlayBackgroundOpacityDetailModule
 import kurou.kodriver.feature.otheroverlaytextcolordetail.otherOverlayTextColorDetailModule
 import kurou.kodriver.feature.otheroverlaytextsizedetail.otherOverlayTextSizeDetailModule
@@ -83,6 +84,7 @@ public val featureModules: List<Module> =
         otherOverlayTextColorDetailModule,
         otherOverlayTextSizeDetailModule,
         otherOverlayBackgroundOpacityDetailModule,
+        otherMicrophoneCutQuietSoundDetailModule,
         otherServerIpDetailModule,
         otherConsoleIpDetailModule,
         otherVolumeDetailModule,

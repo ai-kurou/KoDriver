@@ -22,6 +22,7 @@ import kurou.kodriver.domain.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.repository.MicrophoneRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -31,9 +32,10 @@ class JvmSpeechRecognitionRepositoryTest {
     private val preferences = FakeSelectedDevicePreferences()
     private val microphone = FakeMicrophone()
     private val devices = FakeAudioInputDevices()
+    private val cutQuietSound = FakeMicrophoneCutQuietSoundPreferencesRepository()
 
     private fun repository(factory: SpeechTranscriberFactory) =
-        JvmSpeechRecognitionRepository(microphone, devices, preferences, factory, Dispatchers.Unconfined)
+        JvmSpeechRecognitionRepository(microphone, devices, preferences, cutQuietSound, factory, Dispatchers.Unconfined)
 
     private suspend fun observeWith(transcriber: SpeechTranscriber): List<SpeechRecognitionEvent> =
         repository(FakeTranscriberFactory(available = true, transcriber = transcriber))
@@ -89,6 +91,23 @@ class JvmSpeechRecognitionRepositoryTest {
             val events = repository(factory).observeRecognition().toList()
 
             assertEquals(listOf(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable)), events)
+        }
+
+    @Test
+    fun `小さい音をカットの設定に従って小さい断片を無音にし、0なら元の音声を渡す`() =
+        runTest {
+            val quiet = byteArrayOf(100, 0, 100, 0)
+            microphone.events = flowOf(MicrophoneAudioEvent.Chunk(quiet))
+            val defaultTranscriber = FakeTranscriber()
+            observeWith(defaultTranscriber)
+
+            cutQuietSound.level.value = 0
+            microphone.events = flowOf(MicrophoneAudioEvent.Chunk(quiet))
+            val offTranscriber = FakeTranscriber()
+            observeWith(offTranscriber)
+
+            assertContentEquals(ByteArray(quiet.size), defaultTranscriber.acceptedChunks.single())
+            assertContentEquals(quiet, offTranscriber.acceptedChunks.single())
         }
 
     @Test

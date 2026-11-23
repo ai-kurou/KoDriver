@@ -29,7 +29,8 @@ class RecognitionPipelineTest {
             override fun close() = Unit
         }
     private val mode = MutableStateFlow(SpeechRecognitionMode.WakeWord)
-    private val pipeline = RecognitionPipeline(transcriber, mode)
+    private val threshold = MutableStateFlow(0.3f)
+    private val pipeline = RecognitionPipeline(transcriber, mode, threshold)
 
     private suspend fun collectEvents(vararg steps: () -> Unit): List<SpeechRecognitionEvent> =
         flow<SpeechRecognitionEvent> {
@@ -103,9 +104,9 @@ class RecognitionPipelineTest {
             results += null
 
             mode.value = SpeechRecognitionMode.Paused
-            processOnce(RecognitionPipeline(transcriber, modeSync))
+            processOnce(RecognitionPipeline(transcriber, modeSync, threshold))
             mode.value = SpeechRecognitionMode.WakeWord
-            processOnce(RecognitionPipeline(transcriber, modeSync))
+            processOnce(RecognitionPipeline(transcriber, modeSync, threshold))
 
             assertEquals(listOf(SpeechRecognitionMode.Paused, SpeechRecognitionMode.WakeWord), modes)
         }
@@ -150,7 +151,44 @@ class RecognitionPipelineTest {
             val events = feed(quietPcm)
 
             assertEquals(SpeechRecognitionEvent.Level(quietPcm.pcmLevel()), events.single())
-            assertTrue(quietPcm.pcmLevel() < VOLUME_GATE_THRESHOLD)
+            assertTrue(quietPcm.pcmLevel() < threshold.value)
+        }
+
+    @Test
+    fun `閾値が0なら小さい断片も元の音声を認識器に渡す`() =
+        runTest {
+            results += null
+            threshold.value = 0f
+
+            feed(quietPcm)
+
+            assertContentEquals(quietPcm, accepted.single())
+        }
+
+    @Test
+    fun `閾値を上げると大きい断片でも閾値未満なら全ゼロを渡す`() =
+        runTest {
+            results += null
+            threshold.value = loudPcm.pcmLevel() + 0.001f
+
+            feed(loudPcm)
+
+            assertContentEquals(ByteArray(loudPcm.size), accepted.single())
+        }
+
+    @Test
+    fun `閾値を聞き取りの途中で変えると次の断片から反映する`() =
+        runTest {
+            repeat(2) { results += null }
+
+            flow<SpeechRecognitionEvent> {
+                with(pipeline) { process(quietPcm) }
+                threshold.value = 0f
+                with(pipeline) { process(quietPcm) }
+            }.toList()
+
+            assertContentEquals(ByteArray(quietPcm.size), accepted[0])
+            assertContentEquals(quietPcm, accepted[1])
         }
 
     private suspend fun feed(vararg chunks: ByteArray): List<SpeechRecognitionEvent> =

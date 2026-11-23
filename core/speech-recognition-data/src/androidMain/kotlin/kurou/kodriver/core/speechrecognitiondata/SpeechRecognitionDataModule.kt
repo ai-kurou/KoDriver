@@ -30,6 +30,7 @@ public val speechRecognitionDataModule: Module =
                 transcriberFactory = AndroidVoskSpeechTranscriberFactory(get<Context>()),
                 recorderFactory = { AudioRecordPcmRecorder() },
                 permissionRepository = get(),
+                microphoneCutQuietSound = get(),
             )
         }
         // ウェイクワード検出時の確認音（読み上げの開始音とは別の音）
