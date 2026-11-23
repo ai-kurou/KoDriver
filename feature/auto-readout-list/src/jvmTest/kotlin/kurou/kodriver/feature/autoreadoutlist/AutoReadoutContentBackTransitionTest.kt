@@ -12,6 +12,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.computeWindowSizeClass
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -49,11 +50,21 @@ class AutoReadoutContentBackTransitionTest {
     }
 
     @Test
-    fun `自己ベストラップ以外は詳細を閉じると直ちに詳細を描画しない`() {
+    fun `LMUの自己ベストラップ以外の項目も詳細を閉じた直後は退場アニメーション中は詳細を描画する`() {
         assertDetailAfterClear(
             item = LmuWindowsAutoReadoutListItemType.TyreWear,
             key = LmuWindowsReadoutItemKey.TyreWear.Root,
+            expectedDetailCountDuringExit = 1,
+        )
+    }
+
+    @Test
+    fun `LMU以外の項目は詳細を閉じると直ちに詳細を描画しない`() {
+        assertDetailAfterClear(
+            item = AceWindowsAutoReadoutListItemType.Flag,
+            key = AceWindowsReadoutItemKey.Flag.Root,
             expectedDetailCountDuringExit = 0,
+            simulator = Simulator.AceWindows,
         )
     }
 
@@ -61,6 +72,7 @@ class AutoReadoutContentBackTransitionTest {
         item: AutoReadoutListItemType,
         key: ReadoutItemKey,
         expectedDetailCountDuringExit: Int,
+        simulator: Simulator = Simulator.LmuWindows,
     ) {
         var selectedItem by mutableStateOf<AutoReadoutListItemType?>(item)
         rule.mainClock.autoAdvance = false
@@ -69,7 +81,7 @@ class AutoReadoutContentBackTransitionTest {
             AutoReadoutContent(
                 uiState =
                     AutoReadoutListUiState(
-                        selectedSimulator = Simulator.LmuWindows,
+                        selectedSimulator = simulator,
                         items = listOf(key),
                         autoReadoutEnabledStates = mapOf(key to true),
                         selectedItem = selectedItem,
