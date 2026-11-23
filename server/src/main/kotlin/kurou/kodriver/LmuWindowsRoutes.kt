@@ -1,7 +1,6 @@
 package kurou.kodriver
 
 import io.ktor.server.routing.Route
-import kotlinx.coroutines.flow.map
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 
@@ -29,12 +28,6 @@ internal fun Route.lmuWindowsRoutes(useCases: KoDriverServerUseCases) {
     }
     telemetryWebSocket(KoDriverServerFeature.TYRE_WEAR, Simulator.LmuWindows, distinct = false) {
         useCases.lmuWindows.observeLmuWindowsTyreWear()
-    }
-    telemetryWebSocket(KoDriverServerFeature.FUEL, Simulator.LmuWindows, distinct = false) {
-        useCases.lmuWindows.observeLmuWindows().map { it.fuel }
-    }
-    telemetryWebSocket(KoDriverServerFeature.MY_BEST_LAP, Simulator.LmuWindows) {
-        useCases.lmuWindows.observeLmuWindows().map { it.timing }
     }
     telemetryWebSocket(KoDriverServerFeature.VIRTUAL_ENERGY, Simulator.LmuWindows, distinct = false) {
         useCases.lmuWindows.observeLmuWindowsVirtualEnergy()
