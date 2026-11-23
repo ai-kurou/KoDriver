@@ -6,6 +6,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
@@ -21,6 +22,7 @@ import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.model.SpeechRecognitionMode
 import java.util.Collections
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -208,6 +210,41 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
         }
 
     @Test
+    fun `聞き取りを続けたまま小さい音をカットの設定を変えると、再開せずに次の断片から反映する`() =
+        runBlocking {
+            val quiet = ByteArray(VOSK_READ_CHUNK_BYTES) { i -> if (i % 2 == 0) 100 else 0 }
+            // 実スレッドで動かすため、収集をやめるまで小さい断片を読み取らせ続ける
+            recorder.beforeRead = {
+                if (recorder.chunks.isEmpty()) recorder.chunks.add(quiet)
+                Thread.sleep(1)
+            }
+            val repository =
+                AndroidVoskSpeechRecognitionRepository(
+                    transcriberFactory = transcriberFactory,
+                    recorderFactory = { recorder },
+                    permissionRepository = permissionRepository,
+                    microphoneCutQuietSound = cutQuietSound,
+                    ioDispatcher = Dispatchers.IO,
+                )
+            val job = launch { repository.observeRecognition().collect {} }
+            try {
+                withTimeout(WAIT_MILLIS) { while (transcriberFactory.acceptedPcm.isEmpty()) delay(10) }
+                cutQuietSound.level.value = 0
+                withTimeout(WAIT_MILLIS) {
+                    while (transcriberFactory.acceptedPcm.none { pcm -> pcm.any { it.toInt() != 0 } }) delay(10)
+                }
+            } finally {
+                job.cancel()
+                job.join()
+            }
+
+            // 設定を変える前の断片は無音、変えたあとの断片は元の音声で、マイクは開き直していない
+            assertContentEquals(ByteArray(quiet.size), transcriberFactory.acceptedPcm.first())
+            assertContentEquals(quiet, transcriberFactory.acceptedPcm.first { pcm -> pcm.any { it.toInt() != 0 } })
+            assertEquals(1, recorder.startCount)
+        }
+
+    @Test
     fun `確定のあとに同じ文字列の認識途中が来たら再び流す`() =
         runTest {
             recorder.chunks.addAll(listOf(SILENT_CHUNK, SILENT_CHUNK, SILENT_CHUNK))
@@ -382,7 +419,7 @@ private class FakeSpeechTranscriberFactory : SpeechTranscriberFactory {
     val transcripts = ArrayDeque<SpeechTranscript?>()
     var closeCount = 0
     val modes = mutableListOf<SpeechRecognitionMode>()
-    val acceptedPcm = mutableListOf<ByteArray>()
+    val acceptedPcm = CopyOnWriteArrayList<ByteArray>()
 
     override fun isAvailable(): Boolean = available
 
