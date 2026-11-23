@@ -228,9 +228,10 @@ internal fun AutoReadoutContent(
 
 /**
  * 詳細から一覧へ戻るときにも共有要素のアニメーションを付ける項目か。
- * 試験導入のため、現在はLMUの全項目のみ。
+ * 試験導入のため、現在はLMUとACEの全項目のみ。
  */
-private fun AutoReadoutListItemType?.hasBackTransition(): Boolean = this is LmuWindowsAutoReadoutListItemType
+private fun AutoReadoutListItemType?.hasBackTransition(): Boolean =
+    this is LmuWindowsAutoReadoutListItemType || this is AceWindowsAutoReadoutListItemType
 
 private const val PANE_TRANSITION_MILLIS = 250
 
