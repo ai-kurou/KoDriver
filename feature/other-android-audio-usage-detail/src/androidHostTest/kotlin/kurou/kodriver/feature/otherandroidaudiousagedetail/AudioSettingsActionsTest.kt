@@ -45,6 +45,16 @@ class AudioSettingsActionsTest {
     }
 
     @Test
+    @Config(sdk = [29])
+    fun `API29では音量パネルアクションを提供する`() {
+        rule.setContent {
+            val action = rememberOpenVolumePanel()
+            Text(if (action == null) "null" else "available")
+        }
+        rule.onNode(hasText("available")).assertExists()
+    }
+
+    @Test
     @Config(sdk = [36])
     fun `サウンド設定アクションは設定Intentを起動する`() {
         rule.setContent {
