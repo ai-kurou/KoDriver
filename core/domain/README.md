@@ -32,6 +32,13 @@ GT7・ACE・LMU はすべて移動済み。
 一時値を渡す。文字サイズと同様に `null` で解除し、`ObserveOverlayBackgroundOpacityUseCase` はプレビュー優先の現在値を配信する。
 永続化は `SaveOverlayBackgroundOpacityUseCase` が担当する。
 
+## 小さい音をカットする段階
+
+マイク設定の「小さい音をカット」は `MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN`〜`MAX`（0〜12、0はカットしない）の段階値として
+`MicrophoneCutQuietSoundPreferencesRepository` が保持する。既定値は6で、段階 × `MICROPHONE_CUT_QUIET_SOUND_LEVEL_STEP`（0.05）が
+音量ゲートのしきい値（現行の0.3）に当たる。`ObserveMicrophoneCutQuietSoundLevelUseCase` で購読し、
+`SaveMicrophoneCutQuietSoundLevelUseCase` が範囲外の値を拒否して保存する。音量ゲートへの反映は未実装。
+
 手動の「燃料残り周回数」は `LmuWindowsReadoutItemKey.RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`）に対応する。
 `RemainingFuel` 配下の手動専用項目で、TopLevel・自動タブ・スイッチには追加しない。手動項目定義の末尾（タイヤ摩耗の残り周回数の後）に並ぶ。
 `fuelLapsTrackingState` の蓄積値を `manualFuelRemainingLaps` で読み、1周以上は `formatLmuWindowsPitTimingReadoutText` で `{laps}` を置換する。

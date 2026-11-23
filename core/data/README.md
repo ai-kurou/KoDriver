@@ -38,6 +38,11 @@ nullable な `MutableStateFlow<Int?>` を `combine` し、プレビュー値を�
 プレビューはDataStoreへ書き込まず、`null` で解除すると最新の保存値へ戻る。
 Android／DesktopのDataModuleはRepositoryを `single` 登録し、設定ペインとオーバーレイで一時値を共有する。
 
+## 小さい音をカットする段階の永続化
+
+`MicrophoneCutQuietSoundPreferencesRepositoryImpl` は段階値（`microphone_cut_quiet_sound_preferences.pb`）をDataStoreへ保存する。
+プレビューは持たない。Android／DesktopのDataModuleがRepositoryを `single` 登録する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
