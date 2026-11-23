@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.computeWindowSizeClass
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -59,7 +60,17 @@ class AutoReadoutContentBackTransitionTest {
     }
 
     @Test
-    fun `LMU以外の項目は詳細を閉じると直ちに詳細を描画しない`() {
+    fun `GT7の項目も詳細を閉じた直後は退場アニメーション中は詳細を描画する`() {
+        assertDetailAfterClear(
+            item = Gt7Ps5AutoReadoutListItemType.MyBestLap,
+            key = Gt7Ps5ReadoutItemKey.MyBestLap.Root,
+            expectedDetailCountDuringExit = 1,
+            simulator = Simulator.Gt7Ps5,
+        )
+    }
+
+    @Test
+    fun `ACEの項目は詳細を閉じると直ちに詳細を描画しない`() {
         assertDetailAfterClear(
             item = AceWindowsAutoReadoutListItemType.Flag,
             key = AceWindowsReadoutItemKey.Flag.Root,
