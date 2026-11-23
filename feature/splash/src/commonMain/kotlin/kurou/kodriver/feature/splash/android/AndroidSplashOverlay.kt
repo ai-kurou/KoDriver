@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -79,6 +80,8 @@ public fun AndroidSplashOverlay(
     val overlayAlpha = remember { Animatable(1f) }
     val currentOnFinished by rememberUpdatedState(onFinished)
     LaunchedEffect(Unit) {
+        // 起動直後の重い処理でフレームが進まないうちに演出が終わらないよう、最初のフレームが描かれてから始める。
+        withFrameNanos { }
         shineProgress.animateTo(1f, tween(ANDROID_SPLASH_SHINE_MILLIS, easing = LinearOutSlowInEasing))
         overlayAlpha.animateTo(0f, tween(ANDROID_SPLASH_FADE_MILLIS))
         currentOnFinished()
