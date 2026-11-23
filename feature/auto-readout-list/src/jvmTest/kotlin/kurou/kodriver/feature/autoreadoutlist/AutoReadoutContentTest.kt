@@ -661,6 +661,9 @@ class AutoReadoutContentTest {
         val priorityHintLabelText = "読み上げ優先度"
         var lastItemText by mutableStateOf("")
         var scrollToTopRequest by mutableIntStateOf(0)
+        var selectedItem by mutableStateOf<AutoReadoutListItemType?>(null)
+        var backEnabled = false
+        var capturedOnBack: (() -> Unit)? = null
         val items =
             listOf(
                 LmuWindowsReadoutItemKey.Flag.Root,
@@ -680,18 +683,26 @@ class AutoReadoutContentTest {
         rule.setContent {
             lastItemText = autoReadoutItemDisplayName(LmuWindowsReadoutItemKey.MyBestLap.Root)
             Box(modifier = Modifier.height(240.dp)) {
-                AutoReadoutListPane(
+                AutoReadoutContent(
                     uiState =
                         AutoReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
                             items = items,
                             autoReadoutEnabledStates = items.associateWith { true },
+                            selectedItem = selectedItem,
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
                     onStartSoundEnabledChanged = { _, _ -> },
-                    onItemClick = {},
+                    onItemSelected = { selectedItem = AutoReadoutListItemType.fromId(Simulator.LmuWindows, it) },
+                    onClearSelectedItem = { selectedItem = null },
+                    scaffoldDirective = singlePaneDirective,
+                    windowSizeClass = compactWindowSizeClass,
+                    backHandler = { enabled, _, onBack ->
+                        backEnabled = enabled
+                        capturedOnBack = onBack
+                    },
                     scrollToTopRequest = scrollToTopRequest,
                 )
             }
