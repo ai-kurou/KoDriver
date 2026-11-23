@@ -25,8 +25,8 @@ public data class ExtendedColorScheme(
 
 internal val LightExtendedColorScheme =
     ExtendedColorScheme(
-        warningContainer = Color(0xFFFFF9C4),
-        onWarningContainer = Color(0xFF5F4B00),
+        warningContainer = Color(0xFFFFE0B2),
+        onWarningContainer = Color(0xFF7A3E00),
         heatCool = Color(0xFF4A8FD0),
         heatOk = Color(0xFF5A9A2A),
         heatWarm = Color(0xFFE0A020),
@@ -40,8 +40,8 @@ internal val LightExtendedColorScheme =
 
 internal val DarkExtendedColorScheme =
     ExtendedColorScheme(
-        warningContainer = Color(0xFF5C4700),
-        onWarningContainer = Color(0xFFFFE8A3),
+        warningContainer = Color(0xFF5C3300),
+        onWarningContainer = Color(0xFFFFD9B0),
         heatCool = Color(0xFF7DB4E6),
         heatOk = Color(0xFF8CC85A),
         heatWarm = Color(0xFFF0C050),
