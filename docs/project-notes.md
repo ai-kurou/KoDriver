@@ -27,6 +27,9 @@ feature の `companion object` や `Pane.kt` に仕様値を置かず、共通�
 
 ただし `*Defaults.kt` には、デフォルト値と組で使う仕様値（範囲の上限・下限の `_MIN` / `_MAX`、番兵値 `_UNSPECIFIED` / `_UNKNOWN_KEY`、代替値 `_ALTERNATE` など）も置いてよい。`_DEFAULT` を付けるのはデフォルト値だけとし、これらの仕様値には付けない。
 
-### Android の自動バックアップ
+### 設定のバックアップ・復元
 
-`allowBackup="true"` のため、DataStore（`filesDir/datastore/`）などの設定は Google の自動バックアップ対象になる。再生成できる、または大きいデータは、バックアップ上限（25MB）超過でバックアップ全体が失敗するのを避けるため、`app/androidApp/src/main/res/xml/backup_rules.xml`（Android 11 以下）と `data_extraction_rules.xml`（Android 12 以上のクラウドバックアップ・端末間転送）で除外している。除外対象は Vosk 日本語モデル（`filesDir/vosk-model-ja`）とテレメトリログDB（`databases/telemetry_logs.db` と WAL・SHM・ジャーナル）。`filesDir` や `databases/` に大きなファイルを新設する場合は、両 XML への除外追加を検討する。
+専用のバックアップ・復元機能（Exportable 等）は作らない。
+
+- **Android**: `allowBackup="true"` のため、DataStore（`filesDir/datastore/`）などは Google の自動バックアップ対象になる。バックアップ上限（25MB）超過で全体が失敗するのを避けるため、Vosk 日本語モデル（`filesDir/vosk-model-ja`）とテレメトリログDB（`databases/telemetry_logs.db` と WAL・SHM・ジャーナル）を `app/androidApp/src/main/res/xml/backup_rules.xml`（Android 11 以下）と `data_extraction_rules.xml`（Android 12 以上）で除外している。`filesDir` や `databases/` に大きなファイルを新設する場合は、両 XML への除外追加を検討する。サーバーIP の DataStore は意図的に除外していない。実機でのバックアップ・復元は未検証。ユーザー向けの案内は置かない。
+- **Windows（Desktop）**: 設定は `~/.kodriver`（DataStore の `.pb`、`anonymous_user_id`、`telemetry_logs.db` など）に保存される。ユーザーには保存先とフォルダコピーでの引き継ぎ方法のみを [docs/windows-install.md](windows-install.md#設定の保存先) で案内し、バージョン間の互換性は保証しない。読み込みに失敗した DataStore は `FallbackOnReadErrorDataStore` により既定値で動作を続けるが、破損ファイルの自動退避はしていない。
