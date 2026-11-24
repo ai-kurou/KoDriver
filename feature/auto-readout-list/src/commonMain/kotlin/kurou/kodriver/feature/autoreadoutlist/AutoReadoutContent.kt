@@ -101,29 +101,12 @@ internal fun AutoReadoutContent(
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Nothing>(
             scaffoldDirective =
-                when {
-                    uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
-                        scaffoldDirective.copy(maxHorizontalPartitions = 1)
-                    }
-
-                    uiState.selectedItem != null &&
-                        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
-                        scaffoldDirective.copy(maxHorizontalPartitions = 2)
-                    }
-
-                    else -> {
-                        scaffoldDirective
-                    }
-                }.withoutAutoFocusOnCurrentDestination(),
-            initialDestinationHistory =
-                if (uiState.selectedItem != null) {
-                    listOf(
-                        ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
-                        ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
-                    )
-                } else {
-                    listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
-                },
+                autoReadoutScaffoldDirective(
+                    hasSelectedItem = uiState.selectedItem != null,
+                    scaffoldDirective = scaffoldDirective,
+                    windowSizeClass = windowSizeClass,
+                ),
+            initialDestinationHistory = initialDestinationHistory(hasSelectedItem = uiState.selectedItem != null),
         )
     val scope = rememberCoroutineScope()
     // 詳細を閉じて一覧へ戻ったとき、直前に開いた行へフォーカスを戻すために、開いた項目のキーを覚えておく
@@ -208,28 +191,80 @@ internal fun AutoReadoutContent(
                         exitTransition = PaneExitTransition,
                         boundsAnimationSpec = PaneBoundsAnimationSpec,
                     ) {
-                        Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
-                            AutoReadoutDetailPane(
-                                title = autoReadoutItemDisplayName(selectedItem.id),
-                                rootItemName = autoReadoutItemDisplayName(selectedItem.id),
-                                background = autoReadoutBackground(selectedItem.id),
-                                canNavigateBack = navigator.canNavigateBack(),
-                                onBack = { navigateBack() },
-                                rootEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(selectedItem.id),
-                                onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
-                                topBarModifier =
-                                    if (useSharedBounds) {
-                                        AutoReadoutSharedBounds(this@SharedTransitionLayout, this@AnimatedPane)
-                                            .modifier(selectedItem.id)
-                                    } else {
-                                        Modifier
-                                    },
-                                content = { detailContent(selectedItem) },
-                            )
-                        }
+                        AutoReadoutSelectedDetailPane(
+                            selectedItem = selectedItem,
+                            uiState = uiState,
+                            canNavigateBack = navigator.canNavigateBack(),
+                            predictiveBackProgress = predictiveBackProgress,
+                            onBack = { navigateBack() },
+                            onReadoutEnabledChanged = onReadoutEnabledChanged,
+                            sharedBounds =
+                                if (useSharedBounds) {
+                                    AutoReadoutSharedBounds(this@SharedTransitionLayout, this@AnimatedPane)
+                                } else {
+                                    null
+                                },
+                            detailContent = detailContent,
+                        )
                     }
                 }
             },
+        )
+    }
+}
+
+private fun autoReadoutScaffoldDirective(
+    hasSelectedItem: Boolean,
+    scaffoldDirective: PaneScaffoldDirective,
+    windowSizeClass: WindowSizeClass,
+): PaneScaffoldDirective =
+    when {
+        !hasSelectedItem && scaffoldDirective.maxHorizontalPartitions > 1 -> {
+            scaffoldDirective.copy(maxHorizontalPartitions = 1)
+        }
+
+        hasSelectedItem && windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
+            scaffoldDirective.copy(maxHorizontalPartitions = 2)
+        }
+
+        else -> {
+            scaffoldDirective
+        }
+    }.withoutAutoFocusOnCurrentDestination()
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+private fun initialDestinationHistory(hasSelectedItem: Boolean): List<ThreePaneScaffoldDestinationItem<Nothing>> =
+    if (hasSelectedItem) {
+        listOf(
+            ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
+            ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
+        )
+    } else {
+        listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
+    }
+
+@Composable
+private fun AutoReadoutSelectedDetailPane(
+    selectedItem: AutoReadoutListItemType,
+    uiState: AutoReadoutListUiState,
+    canNavigateBack: Boolean,
+    predictiveBackProgress: Float,
+    onBack: () -> Unit,
+    onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    sharedBounds: AutoReadoutSharedBounds?,
+    detailContent: @Composable (AutoReadoutListItemType) -> Unit,
+) {
+    Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
+        AutoReadoutDetailPane(
+            title = autoReadoutItemDisplayName(selectedItem.id),
+            rootItemName = autoReadoutItemDisplayName(selectedItem.id),
+            background = autoReadoutBackground(selectedItem.id),
+            canNavigateBack = canNavigateBack,
+            onBack = onBack,
+            rootEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(selectedItem.id),
+            onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
+            topBarModifier = sharedBounds?.modifier(selectedItem.id) ?: Modifier,
+            content = { detailContent(selectedItem) },
         )
     }
 }
