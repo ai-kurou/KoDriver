@@ -156,10 +156,9 @@ public fun OtherServerIpDetailPaneContent(
         onShowDiscoveredServers()
     }
     val onSaveConfirmedByKeyboard: () -> Unit = {
-        if (uiState.connectivityWarning) {
-            onSaveAnywayWithHaptic()
-        } else if (uiState.isInputValid && uiState.inputIp.isNotEmpty() && !uiState.isCheckingConnectivity) {
-            onSaveWithHaptic()
+        when {
+            uiState.connectivityWarning -> onSaveAnywayWithHaptic()
+            uiState.canSave() -> onSaveWithHaptic()
         }
     }
     val currentOnDismiss by rememberUpdatedState(onDismiss)
@@ -195,49 +194,7 @@ public fun OtherServerIpDetailPaneContent(
                     .verticalScroll(rememberScrollState())
                     .padding(KoDriverSpacing.large),
         ) {
-            Text(
-                text =
-                    buildAnnotatedString {
-                        withLink(
-                            LinkAnnotation.Clickable(
-                                tag = "windows-install-guide",
-                                styles =
-                                    TextLinkStyles(
-                                        style =
-                                            SpanStyle(
-                                                color = MaterialTheme.colorScheme.primary,
-                                                textDecoration = TextDecoration.Underline,
-                                            ),
-                                    ),
-                                linkInteractionListener = { onOpenGuideWithHaptic() },
-                            ),
-                        ) {
-                            append(stringResource(Res.string.server_ip_description_link))
-                            appendInlineContent(WINDOWS_INSTALL_GUIDE_LINK_ICON_ID)
-                        }
-                        append(stringResource(Res.string.server_ip_description_suffix))
-                    },
-                style = MaterialTheme.typography.bodyMedium,
-                inlineContent =
-                    mapOf(
-                        WINDOWS_INSTALL_GUIDE_LINK_ICON_ID to
-                            InlineTextContent(
-                                placeholder =
-                                    Placeholder(
-                                        width = 12.sp,
-                                        height = 12.sp,
-                                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
-                                    ),
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(12.dp),
-                                )
-                            },
-                    ),
-            )
+            ServerIpDescription(onOpenGuide = onOpenGuideWithHaptic)
             Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
                 value = uiState.inputIp,
@@ -283,69 +240,13 @@ public fun OtherServerIpDetailPaneContent(
                 }
             }
             Spacer(modifier = Modifier.height(KoDriverSpacing.large))
-            AnimatedContent(
-                targetState = uiState.connectivityWarning,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-            ) { connectivityWarning ->
-                if (connectivityWarning) {
-                    Button(onClick = onSaveAnywayWithHaptic, modifier = Modifier.fillMaxWidth()) {
-                        Text(stringResource(Res.string.server_ip_save_anyway))
-                    }
-                } else {
-                    Button(
-                        onClick = onSaveWithHaptic,
-                        enabled =
-                            uiState.isInputValid && uiState.inputIp.isNotEmpty() && !uiState.isCheckingConnectivity,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.height(BUTTON_CONTENT_HEIGHT),
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                AnimatedVisibility(
-                                    visible = uiState.isCheckingConnectivity,
-                                    enter = expandHorizontally() + fadeIn(),
-                                    exit = shrinkHorizontally() + fadeOut(),
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(16.dp).testTag(SAVE_CHECKING_SPINNER_TEST_TAG),
-                                            strokeWidth = 2.dp,
-                                        )
-                                        Spacer(modifier = Modifier.width(KoDriverSpacing.small))
-                                    }
-                                }
-                                Text(stringResource(Res.string.server_ip_save))
-                            }
-                        }
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
-            Text(
-                text = stringResource(Res.string.server_ip_guide_description),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            ServerIpSaveButton(
+                uiState = uiState,
+                onSave = onSaveWithHaptic,
+                onSaveAnyway = onSaveAnywayWithHaptic,
             )
-            Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable(onClick = onOpenGuideWithHaptic),
-            ) {
-                Text(
-                    text = stringResource(Res.string.server_ip_guide_link),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(12.dp),
-                )
-            }
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
+            ServerIpGuideSection(onOpenGuide = onOpenGuideWithHaptic)
         }
     }
 }
@@ -478,5 +379,131 @@ private enum class DiscoveryButtonLabelState {
                 hasDiscoveredServers -> Found
                 else -> Discovering
             }
+    }
+}
+
+private fun OtherServerIpDetailUiState.canSave(): Boolean =
+    isInputValid && inputIp.isNotEmpty() && !isCheckingConnectivity
+
+/** Windows版インストールガイドへのリンク付き説明文。 */
+@Composable
+private fun ServerIpDescription(onOpenGuide: () -> Unit) {
+    Text(
+        text =
+            buildAnnotatedString {
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = "windows-install-guide",
+                        styles =
+                            TextLinkStyles(
+                                style =
+                                    SpanStyle(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        textDecoration = TextDecoration.Underline,
+                                    ),
+                            ),
+                        linkInteractionListener = { onOpenGuide() },
+                    ),
+                ) {
+                    append(stringResource(Res.string.server_ip_description_link))
+                    appendInlineContent(WINDOWS_INSTALL_GUIDE_LINK_ICON_ID)
+                }
+                append(stringResource(Res.string.server_ip_description_suffix))
+            },
+        style = MaterialTheme.typography.bodyMedium,
+        inlineContent =
+            mapOf(
+                WINDOWS_INSTALL_GUIDE_LINK_ICON_ID to
+                    InlineTextContent(
+                        placeholder =
+                            Placeholder(
+                                width = 12.sp,
+                                height = 12.sp,
+                                placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                            ),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(12.dp),
+                        )
+                    },
+            ),
+    )
+}
+
+/** 保存ボタン。接続警告中は「このまま保存」、それ以外は接続確認中のスピナー付き保存ボタンを出す。 */
+@Composable
+private fun ServerIpSaveButton(
+    uiState: OtherServerIpDetailUiState,
+    onSave: () -> Unit,
+    onSaveAnyway: () -> Unit,
+) {
+    AnimatedContent(
+        targetState = uiState.connectivityWarning,
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+    ) { connectivityWarning ->
+        if (connectivityWarning) {
+            Button(onClick = onSaveAnyway, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(Res.string.server_ip_save_anyway))
+            }
+        } else {
+            Button(
+                onClick = onSave,
+                enabled = uiState.canSave(),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.height(BUTTON_CONTENT_HEIGHT),
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AnimatedVisibility(
+                            visible = uiState.isCheckingConnectivity,
+                            enter = expandHorizontally() + fadeIn(),
+                            exit = shrinkHorizontally() + fadeOut(),
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp).testTag(SAVE_CHECKING_SPINNER_TEST_TAG),
+                                    strokeWidth = 2.dp,
+                                )
+                                Spacer(modifier = Modifier.width(KoDriverSpacing.small))
+                            }
+                        }
+                        Text(stringResource(Res.string.server_ip_save))
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** ガイドの説明文とリンク。 */
+@Composable
+private fun ServerIpGuideSection(onOpenGuide: () -> Unit) {
+    Text(
+        text = stringResource(Res.string.server_ip_guide_description),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable(onClick = onOpenGuide),
+    ) {
+        Text(
+            text = stringResource(Res.string.server_ip_guide_link),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(12.dp),
+        )
     }
 }
