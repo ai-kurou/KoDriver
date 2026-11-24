@@ -250,16 +250,13 @@ internal fun insertPlaceholder(
     itemKey: String,
 ): String = manualReadoutItemDefinition(simulatorId, itemKey)?.placeholder.orEmpty()
 
-/** 選択中の項目の文言を編集し、入力ごとに保存する。 */
+/** 手動読み上げの周回数項目に対応するヒント文言のリソースを返す。 */
 private fun lapsHintResource(itemKey: String): StringResource =
-    if (itemKey == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value) {
-        Res.string.manual_readout_virtual_energy_laps_hint
-    } else if (itemKey == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value) {
-        Res.string.manual_readout_fuel_laps_hint
-    } else if (itemKey == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value) {
-        Res.string.manual_readout_tyre_wear_laps_hint
-    } else {
-        Res.string.manual_readout_laps_hint
+    when (itemKey) {
+        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value -> Res.string.manual_readout_virtual_energy_laps_hint
+        LmuWindowsReadoutItemKey.RemainingFuel.Laps.value -> Res.string.manual_readout_fuel_laps_hint
+        LmuWindowsReadoutItemKey.PitTiming.TyreWear.value -> Res.string.manual_readout_tyre_wear_laps_hint
+        else -> Res.string.manual_readout_laps_hint
     }
 
 private fun isManualReadoutLapTimeItem(itemKey: String): Boolean =
