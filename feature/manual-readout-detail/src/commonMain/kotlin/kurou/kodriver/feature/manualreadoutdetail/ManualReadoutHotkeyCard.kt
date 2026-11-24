@@ -112,50 +112,13 @@ internal fun ManualReadoutHotkeyCard(
             Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
                     ManualReadoutHotkeyModifiersDropdown(state.hotkeyModifiers, onSelectModifiers)
-                    OutlinedTextField(
-                        value =
-                            state.hotkeyVirtualKeyCode?.let { manualReadoutHotkeyDisplayName(it) }
-                                ?: stringResource(Res.string.manual_readout_hotkey_none),
-                        onValueChange = {},
-                        readOnly = true,
-                        modifier =
-                            Modifier
-                                .weight(1f)
-                                .testTag("manual_readout_hotkey_key")
-                                .onPreviewKeyEvent { event ->
-                                    val code = manualReadoutHotkeyVirtualKeyCode(event.key)
-                                    if (event.type == KeyEventType.KeyDown && code != null) {
-                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                        onAssign(code)
-                                        true
-                                    } else {
-                                        false
-                                    }
-                                },
+                    ManualReadoutHotkeyKeyField(
+                        virtualKeyCode = state.hotkeyVirtualKeyCode,
+                        onAssign = onAssign,
+                        modifier = Modifier.weight(1f),
                     )
                 }
-                val conflictText =
-                    when (val conflict = state.hotkeyConflict) {
-                        is ManualReadoutHotkeyConflict.OtherSet -> {
-                            if (conflict.name.isBlank()) {
-                                stringResource(
-                                    Res.string.manual_readout_hotkey_other_set,
-                                    simulatorDisplayName(conflict.simulatorId),
-                                    conflict.setNumber,
-                                )
-                            } else {
-                                stringResource(
-                                    Res.string.manual_readout_hotkey_other_set_named,
-                                    simulatorDisplayName(conflict.simulatorId),
-                                    conflict.name,
-                                )
-                            }
-                        }
-
-                        null -> {
-                            null
-                        }
-                    }
+                val conflictText = manualReadoutHotkeyConflictText(state.hotkeyConflict)
                 if (conflictText != null) Text(conflictText, color = MaterialTheme.colorScheme.error)
                 TextButton(onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
@@ -171,31 +134,90 @@ internal fun ManualReadoutHotkeyCard(
                 }
                 Text(stringResource(Res.string.manual_readout_hotkey_hint))
                 ManualReadoutHotkeyAnimatedVisibility(visible = showGuideLink) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier =
-                            Modifier.clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                onOpenGuide()
-                            },
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.manual_readout_hotkey_guide_link),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(12.dp),
-                        )
-                    }
+                    ManualReadoutHotkeyGuideLink(onOpenGuide)
                 }
             }
         },
     )
+}
+
+@Composable
+private fun ManualReadoutHotkeyKeyField(
+    virtualKeyCode: Int?,
+    onAssign: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val haptic = LocalHapticFeedback.current
+    OutlinedTextField(
+        value =
+            virtualKeyCode?.let { manualReadoutHotkeyDisplayName(it) }
+                ?: stringResource(Res.string.manual_readout_hotkey_none),
+        onValueChange = {},
+        readOnly = true,
+        modifier =
+            modifier
+                .testTag("manual_readout_hotkey_key")
+                .onPreviewKeyEvent { event ->
+                    val code = manualReadoutHotkeyVirtualKeyCode(event.key)
+                    if (event.type == KeyEventType.KeyDown && code != null) {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onAssign(code)
+                        true
+                    } else {
+                        false
+                    }
+                },
+    )
+}
+
+@Composable
+private fun manualReadoutHotkeyConflictText(conflict: ManualReadoutHotkeyConflict?): String? =
+    when (conflict) {
+        is ManualReadoutHotkeyConflict.OtherSet -> {
+            if (conflict.name.isBlank()) {
+                stringResource(
+                    Res.string.manual_readout_hotkey_other_set,
+                    simulatorDisplayName(conflict.simulatorId),
+                    conflict.setNumber,
+                )
+            } else {
+                stringResource(
+                    Res.string.manual_readout_hotkey_other_set_named,
+                    simulatorDisplayName(conflict.simulatorId),
+                    conflict.name,
+                )
+            }
+        }
+
+        null -> {
+            null
+        }
+    }
+
+@Composable
+private fun ManualReadoutHotkeyGuideLink(onOpenGuide: () -> Unit) {
+    val haptic = LocalHapticFeedback.current
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier =
+            Modifier.clickable {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                onOpenGuide()
+            },
+    ) {
+        Text(
+            text = stringResource(Res.string.manual_readout_hotkey_guide_link),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(12.dp),
+        )
+    }
 }
 
 @Composable
