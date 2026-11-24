@@ -162,133 +162,15 @@ public fun OtherFeedbackDetailPaneContent(
                     .verticalScroll(rememberScrollState())
                     .padding(KoDriverSpacing.large),
         ) {
-            Text(
-                text =
-                    buildAnnotatedString {
-                        append(stringResource(Res.string.feedback_description_prefix))
-                        withLink(
-                            LinkAnnotation.Clickable(
-                                tag = "sentry",
-                                styles =
-                                    TextLinkStyles(
-                                        style =
-                                            SpanStyle(
-                                                color = MaterialTheme.colorScheme.primary,
-                                                textDecoration = TextDecoration.Underline,
-                                            ),
-                                    ),
-                                linkInteractionListener = { onOpenSentryWithHaptic() },
-                            ),
-                        ) {
-                            append(stringResource(Res.string.feedback_description_sentry_link))
-                            appendInlineContent(SENTRY_LINK_ICON_ID)
-                        }
-                        append(stringResource(Res.string.feedback_description_suffix))
-                    },
-                inlineContent =
-                    mapOf(
-                        SENTRY_LINK_ICON_ID to
-                            InlineTextContent(
-                                placeholder =
-                                    Placeholder(
-                                        width = 12.sp,
-                                        height = 12.sp,
-                                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
-                                    ),
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(12.dp),
-                                )
-                            },
-                    ),
-            )
+            FeedbackDescription(onOpenSentry = onOpenSentryWithHaptic)
             Spacer(modifier = Modifier.height(KoDriverSpacing.large))
-            Text(
-                text = stringResource(Res.string.feedback_type_label),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
-            FeedbackTypeOption(
-                type = FeedbackType.BugReport,
-                selectedType = uiState.type,
-                label = stringResource(Res.string.feedback_type_bug_report),
-                onTypeSelected = onTypeSelected,
-            )
-            FeedbackTypeOption(
-                type = FeedbackType.FeatureRequest,
-                selectedType = uiState.type,
-                label = stringResource(Res.string.feedback_type_feature_request),
-                onTypeSelected = onTypeSelected,
-            )
-            FeedbackTypeOption(
-                type = FeedbackType.Question,
-                selectedType = uiState.type,
-                label = stringResource(Res.string.feedback_type_question),
-                onTypeSelected = onTypeSelected,
-            )
-            FeedbackTypeOption(
-                type = FeedbackType.Other,
-                selectedType = uiState.type,
-                label = stringResource(Res.string.feedback_type_other),
-                onTypeSelected = onTypeSelected,
-            )
+            FeedbackTypeSelector(selectedType = uiState.type, onTypeSelected = onTypeSelected)
             Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
-            TextField(
-                value = uiState.message,
-                onValueChange = onMessageChanged,
-                label = { Text(stringResource(Res.string.feedback_message_label)) },
-                placeholder = { Text(stringResource(Res.string.feedback_message_placeholder)) },
-                isError = uiState.showMessageError,
-                supportingText =
-                    if (uiState.showMessageError) {
-                        { Text(stringResource(Res.string.feedback_message_required)) }
-                    } else {
-                        null
-                    },
-                minLines = 4,
-                modifier = Modifier.fillMaxWidth().animateContentSize(),
-            )
+            FeedbackMessageField(uiState = uiState, onMessageChanged = onMessageChanged)
             Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
-            TextField(
-                value = uiState.name,
-                onValueChange = onNameChanged,
-                label = { Text(stringResource(Res.string.feedback_name_label)) },
-                isError = uiState.showNameError,
-                supportingText =
-                    if (uiState.showNameError) {
-                        { Text(stringResource(Res.string.feedback_name_required)) }
-                    } else {
-                        null
-                    },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth().animateContentSize(),
-            )
+            FeedbackNameField(uiState = uiState, onNameChanged = onNameChanged)
             Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
-            TextField(
-                value = uiState.email,
-                onValueChange = onEmailChanged,
-                label = { Text(stringResource(Res.string.feedback_email_label)) },
-                isError = uiState.showEmailError,
-                supportingText =
-                    if (uiState.showEmailError) {
-                        val messageRes =
-                            if (uiState.showEmailFormatError) {
-                                Res.string.feedback_email_invalid
-                            } else {
-                                Res.string.feedback_email_required
-                            }
-                        { Text(stringResource(messageRes)) }
-                    } else {
-                        null
-                    },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                modifier = Modifier.fillMaxWidth().animateContentSize(),
-            )
+            FeedbackEmailField(uiState = uiState, onEmailChanged = onEmailChanged)
             Spacer(modifier = Modifier.height(KoDriverSpacing.small))
             Text(
                 text = stringResource(Res.string.feedback_diagnostics_description),
@@ -304,17 +186,180 @@ public fun OtherFeedbackDetailPaneContent(
             }
             Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             FeedbackStatus(uiState)
-            Button(
-                onClick = onSendWithHaptic,
-                enabled = uiState.canSend,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                if (uiState.sendStatus == FeedbackSendStatus.Sending) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                } else {
-                    Text(stringResource(Res.string.feedback_send))
+            FeedbackSendButton(uiState = uiState, onSend = onSendWithHaptic)
+        }
+    }
+}
+
+@Composable
+private fun FeedbackDescription(onOpenSentry: () -> Unit) {
+    Text(
+        text =
+            buildAnnotatedString {
+                append(stringResource(Res.string.feedback_description_prefix))
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = "sentry",
+                        styles =
+                            TextLinkStyles(
+                                style =
+                                    SpanStyle(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        textDecoration = TextDecoration.Underline,
+                                    ),
+                            ),
+                        linkInteractionListener = { onOpenSentry() },
+                    ),
+                ) {
+                    append(stringResource(Res.string.feedback_description_sentry_link))
+                    appendInlineContent(SENTRY_LINK_ICON_ID)
                 }
-            }
+                append(stringResource(Res.string.feedback_description_suffix))
+            },
+        inlineContent =
+            mapOf(
+                SENTRY_LINK_ICON_ID to
+                    InlineTextContent(
+                        placeholder =
+                            Placeholder(
+                                width = 12.sp,
+                                height = 12.sp,
+                                placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                            ),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(12.dp),
+                        )
+                    },
+            ),
+    )
+}
+
+@Composable
+private fun FeedbackTypeSelector(
+    selectedType: FeedbackType,
+    onTypeSelected: (FeedbackType) -> Unit,
+) {
+    Text(
+        text = stringResource(Res.string.feedback_type_label),
+        style = MaterialTheme.typography.bodyMedium,
+    )
+    Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
+    FeedbackTypeOption(
+        type = FeedbackType.BugReport,
+        selectedType = selectedType,
+        label = stringResource(Res.string.feedback_type_bug_report),
+        onTypeSelected = onTypeSelected,
+    )
+    FeedbackTypeOption(
+        type = FeedbackType.FeatureRequest,
+        selectedType = selectedType,
+        label = stringResource(Res.string.feedback_type_feature_request),
+        onTypeSelected = onTypeSelected,
+    )
+    FeedbackTypeOption(
+        type = FeedbackType.Question,
+        selectedType = selectedType,
+        label = stringResource(Res.string.feedback_type_question),
+        onTypeSelected = onTypeSelected,
+    )
+    FeedbackTypeOption(
+        type = FeedbackType.Other,
+        selectedType = selectedType,
+        label = stringResource(Res.string.feedback_type_other),
+        onTypeSelected = onTypeSelected,
+    )
+}
+
+@Composable
+private fun FeedbackMessageField(
+    uiState: OtherFeedbackDetailUiState,
+    onMessageChanged: (String) -> Unit,
+) {
+    TextField(
+        value = uiState.message,
+        onValueChange = onMessageChanged,
+        label = { Text(stringResource(Res.string.feedback_message_label)) },
+        placeholder = { Text(stringResource(Res.string.feedback_message_placeholder)) },
+        isError = uiState.showMessageError,
+        supportingText =
+            if (uiState.showMessageError) {
+                { Text(stringResource(Res.string.feedback_message_required)) }
+            } else {
+                null
+            },
+        minLines = 4,
+        modifier = Modifier.fillMaxWidth().animateContentSize(),
+    )
+}
+
+@Composable
+private fun FeedbackNameField(
+    uiState: OtherFeedbackDetailUiState,
+    onNameChanged: (String) -> Unit,
+) {
+    TextField(
+        value = uiState.name,
+        onValueChange = onNameChanged,
+        label = { Text(stringResource(Res.string.feedback_name_label)) },
+        isError = uiState.showNameError,
+        supportingText =
+            if (uiState.showNameError) {
+                { Text(stringResource(Res.string.feedback_name_required)) }
+            } else {
+                null
+            },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        modifier = Modifier.fillMaxWidth().animateContentSize(),
+    )
+}
+
+@Composable
+private fun FeedbackEmailField(
+    uiState: OtherFeedbackDetailUiState,
+    onEmailChanged: (String) -> Unit,
+) {
+    TextField(
+        value = uiState.email,
+        onValueChange = onEmailChanged,
+        label = { Text(stringResource(Res.string.feedback_email_label)) },
+        isError = uiState.showEmailError,
+        supportingText =
+            if (uiState.showEmailError) {
+                val messageRes =
+                    if (uiState.showEmailFormatError) {
+                        Res.string.feedback_email_invalid
+                    } else {
+                        Res.string.feedback_email_required
+                    }
+                { Text(stringResource(messageRes)) }
+            } else {
+                null
+            },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        modifier = Modifier.fillMaxWidth().animateContentSize(),
+    )
+}
+
+@Composable
+private fun FeedbackSendButton(
+    uiState: OtherFeedbackDetailUiState,
+    onSend: () -> Unit,
+) {
+    Button(
+        onClick = onSend,
+        enabled = uiState.canSend,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        if (uiState.sendStatus == FeedbackSendStatus.Sending) {
+            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+        } else {
+            Text(stringResource(Res.string.feedback_send))
         }
     }
 }
