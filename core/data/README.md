@@ -40,7 +40,7 @@ Android／DesktopのDataModuleはRepositoryを `single` 登録し、設定ペイ
 
 ## 小さい音をカットする段階の永続化
 
-`MicrophoneCutQuietSoundPreferencesRepositoryImpl` は段階値（`microphone_cut_quiet_sound_preferences.pb`）をDataStoreへ保存する。
+`MicrophoneCutQuietSoundPreferencesRepositoryImpl` は段階値（番号1）と「コマンド受付中もカットする」（番号2、既定はオフ）を `microphone_cut_quiet_sound_preferences.pb` としてDataStoreへ保存する。
 プレビューは持たない。Android／DesktopのDataModuleがRepositoryを `single` 登録する。
 
 <!-- MODULE-GRAPH-START -->

@@ -25,14 +25,17 @@ class OtherMicrophoneCutQuietSoundDetailPaneTest {
 
     private fun setPane(
         level: Int = 6,
+        cutInCommand: Boolean = false,
         onLevelChanged: (Int) -> Unit = {},
+        onCutInCommandChanged: (Boolean) -> Unit = {},
         onBack: () -> Unit = {},
     ) {
         rule.setContent {
             MaterialTheme {
                 OtherMicrophoneCutQuietSoundDetailPaneContent(
-                    uiState = OtherMicrophoneCutQuietSoundDetailUiState(level = level),
+                    uiState = OtherMicrophoneCutQuietSoundDetailUiState(level = level, cutInCommand = cutInCommand),
                     onLevelChanged = onLevelChanged,
+                    onCutInCommandChanged = onCutInCommandChanged,
                     onBack = onBack,
                 )
             }
@@ -73,6 +76,26 @@ class OtherMicrophoneCutQuietSoundDetailPaneTest {
         rule.onNode(hasContentDescription("既定のレベルに戻す")).performClick()
 
         assertEquals(6, changed)
+    }
+
+    @Test
+    fun `コマンド受付中もカットするカードをタップすると反転した値を通知する`() {
+        var changed: Boolean? = null
+        setPane(cutInCommand = false, onCutInCommandChanged = { changed = it })
+
+        rule.onNodeWithText("コマンド受付中もカットする").performClick()
+
+        assertEquals(true, changed)
+    }
+
+    @Test
+    fun `コマンド受付中もカットする設定がオンのときにカードをタップするとオフを通知する`() {
+        var changed: Boolean? = null
+        setPane(cutInCommand = true, onCutInCommandChanged = { changed = it })
+
+        rule.onNodeWithText("コマンド受付中もカットする").performClick()
+
+        assertEquals(false, changed)
     }
 
     @Test

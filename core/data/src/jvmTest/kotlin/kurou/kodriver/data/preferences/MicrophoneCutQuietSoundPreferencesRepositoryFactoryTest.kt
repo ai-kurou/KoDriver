@@ -36,4 +36,23 @@ class MicrophoneCutQuietSoundPreferencesRepositoryFactoryTest {
 
             assertEquals(9, repository.observeMicrophoneCutQuietSoundLevel().first())
         }
+
+    @Test
+    fun `コマンド受付中もカットする設定の既定値はオフ`() =
+        runTest {
+            val repository = createMicrophoneCutQuietSoundPreferencesRepository(tempDir.absolutePath)
+
+            assertEquals(false, repository.observeMicrophoneCutQuietSoundInCommand().first())
+        }
+
+    @Test
+    fun `保存したコマンド受付中もカットする設定を読み出せ、段階値は変わらない`() =
+        runTest {
+            val repository = createMicrophoneCutQuietSoundPreferencesRepository(tempDir.absolutePath)
+            repository.saveMicrophoneCutQuietSoundLevel(9)
+            repository.saveMicrophoneCutQuietSoundInCommand(true)
+
+            assertEquals(true, repository.observeMicrophoneCutQuietSoundInCommand().first())
+            assertEquals(9, repository.observeMicrophoneCutQuietSoundLevel().first())
+        }
 }

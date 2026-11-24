@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -21,6 +24,8 @@ import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_MAX
 import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN
 import kurou.kodriver.feature.othermicrophonecutquietsounddetail.generated.resources.Res
 import kurou.kodriver.feature.othermicrophonecutquietsounddetail.generated.resources.cut_quiet_sound_description
+import kurou.kodriver.feature.othermicrophonecutquietsounddetail.generated.resources.cut_quiet_sound_in_command_description
+import kurou.kodriver.feature.othermicrophonecutquietsounddetail.generated.resources.cut_quiet_sound_in_command_title
 import kurou.kodriver.feature.othermicrophonecutquietsounddetail.generated.resources.cut_quiet_sound_label
 import kurou.kodriver.feature.othermicrophonecutquietsounddetail.generated.resources.cut_quiet_sound_label_off
 import kurou.kodriver.feature.othermicrophonecutquietsounddetail.generated.resources.cut_quiet_sound_reset
@@ -43,6 +48,7 @@ public fun OtherMicrophoneCutQuietSoundDetailPane(
     OtherMicrophoneCutQuietSoundDetailPaneContent(
         uiState = uiState,
         onLevelChanged = viewModel::onLevelChanged,
+        onCutInCommandChanged = viewModel::onCutInCommandChanged,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -56,6 +62,7 @@ public fun OtherMicrophoneCutQuietSoundDetailPane(
 public fun OtherMicrophoneCutQuietSoundDetailPaneContent(
     uiState: OtherMicrophoneCutQuietSoundDetailUiState,
     onLevelChanged: (Int) -> Unit = {},
+    onCutInCommandChanged: (Boolean) -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -92,6 +99,19 @@ public fun OtherMicrophoneCutQuietSoundDetailPaneContent(
                 defaultValue = MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT.toFloat(),
                 onResetToDefault = { onLevelChanged(MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT) },
                 resetContentDescription = stringResource(Res.string.cut_quiet_sound_reset),
+            )
+            DetailPaneCard(
+                title = stringResource(Res.string.cut_quiet_sound_in_command_title),
+                checked = uiState.cutInCommand,
+                onCheckedChange = onCutInCommandChanged,
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.small),
+                bottomContent = {
+                    Text(
+                        text = stringResource(Res.string.cut_quiet_sound_in_command_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(KoDriverSpacing.large),
+                    )
+                },
             )
         }
     }

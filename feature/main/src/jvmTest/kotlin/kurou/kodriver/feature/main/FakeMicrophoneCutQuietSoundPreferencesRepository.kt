@@ -16,4 +16,12 @@ internal class FakeMicrophoneCutQuietSoundPreferencesRepository(
     override suspend fun saveMicrophoneCutQuietSoundLevel(level: Int) {
         this.level.value = level
     }
+
+    val cutInCommand = MutableStateFlow(false)
+
+    override fun observeMicrophoneCutQuietSoundInCommand(): Flow<Boolean> = cutInCommand
+
+    override suspend fun saveMicrophoneCutQuietSoundInCommand(enabled: Boolean) {
+        cutInCommand.value = enabled
+    }
 }
