@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
@@ -70,35 +71,7 @@ internal class Gt7Ps5UdpSource(
         listenPort: Int,
     ): Flow<ByteBuffer> =
         flow {
-            socketFactory(listenPort).use { socket ->
-                socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
-                var heartbeatCounter = 0
-
-                val buf = ByteArray(PACKET_MIN_SIZE)
-                val dgram = DatagramPacket(buf, buf.size)
-
-                while (true) {
-                    try {
-                        // receive は length を受信サイズへ書き換えるため、短いパケットの後も全長を受け取れるよう戻す。
-                        dgram.length = buf.size
-                        socket.receive(dgram)
-                        val decrypted = decrypt(buf.copyOf(dgram.length)) ?: continue
-                        val bb = ByteBuffer.wrap(decrypted).order(ByteOrder.LITTLE_ENDIAN)
-                        if (bb.getInt(MAGIC_OFFSET) != MAGIC) continue
-                        _lastPacketReceivedAt.set(currentTimeMillis())
-                        emit(bb)
-
-                        heartbeatCounter++
-                        if (heartbeatCounter >= HEARTBEAT_INTERVAL_PACKETS) {
-                            socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
-                            heartbeatCounter = 0
-                        }
-                    } catch (_: java.net.SocketTimeoutException) {
-                        yield()
-                        socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
-                    }
-                }
-            }
+            socketFactory(listenPort).use { socket -> receiveLoop(socket, ps5Address) }
         }.retryWhen { cause, attempt ->
             // Wi-Fi切り替え・スリープ復帰時のsend失敗、ポート競合(BindException)など、
             // 一時的なネットワーク起因のIOExceptionは再接続を試みる
@@ -109,6 +82,48 @@ internal class Gt7Ps5UdpSource(
                 false
             }
         }.flowOn(Dispatchers.IO)
+
+    private suspend fun FlowCollector<ByteBuffer>.receiveLoop(
+        socket: UdpSocket,
+        ps5Address: String,
+    ) {
+        socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
+        var heartbeatCounter = 0
+
+        val buf = ByteArray(PACKET_MIN_SIZE)
+        val dgram = DatagramPacket(buf, buf.size)
+
+        while (true) {
+            try {
+                val packet = receivePacket(socket, buf, dgram) ?: continue
+                _lastPacketReceivedAt.set(currentTimeMillis())
+                emit(packet)
+
+                heartbeatCounter++
+                if (heartbeatCounter >= HEARTBEAT_INTERVAL_PACKETS) {
+                    socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
+                    heartbeatCounter = 0
+                }
+            } catch (_: java.net.SocketTimeoutException) {
+                yield()
+                socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
+            }
+        }
+    }
+
+    /** 復号して GT7 のパケットと確認できた場合のみ返し、短いパケットやマジック不一致は null を返す。 */
+    private fun receivePacket(
+        socket: UdpSocket,
+        buf: ByteArray,
+        dgram: DatagramPacket,
+    ): ByteBuffer? {
+        // receive は length を受信サイズへ書き換えるため、短いパケットの後も全長を受け取れるよう戻す。
+        dgram.length = buf.size
+        socket.receive(dgram)
+        val decrypted = decrypt(buf.copyOf(dgram.length)) ?: return null
+        val bb = ByteBuffer.wrap(decrypted).order(ByteOrder.LITTLE_ENDIAN)
+        return if (bb.getInt(MAGIC_OFFSET) == MAGIC) bb else null
+    }
 
     private fun decrypt(data: ByteArray): ByteArray? {
         if (data.size < PACKET_MIN_SIZE) return null
