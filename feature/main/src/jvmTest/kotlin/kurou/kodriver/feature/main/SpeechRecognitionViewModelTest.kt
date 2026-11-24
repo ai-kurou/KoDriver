@@ -23,6 +23,7 @@ import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
 import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
@@ -70,6 +71,8 @@ class SpeechRecognitionViewModelTest {
             setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(FakeSpeechRecognitionModeRepository()),
             observeMicrophoneCutQuietSoundLevel =
                 ObserveMicrophoneCutQuietSoundLevelUseCase(microphoneCutRepository),
+            observeMicrophoneCutQuietSoundInCommand =
+                ObserveMicrophoneCutQuietSoundInCommandUseCase(microphoneCutRepository),
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
             playChime = PlaySpeechRecognitionChimeUseCase(FakeSpeechRecognitionChimePlayer()),
@@ -137,6 +140,17 @@ class SpeechRecognitionViewModelTest {
         viewModel.onEnabledChange(true) {}
         viewModel.onEnabledChange(false) {}
         assertEquals(0.6f, viewModel.uiState.value.cutThreshold, 0.0001f)
+    }
+
+    @Test
+    fun `コマンド受付中もカットするの設定を保持し、変更に追従する`() {
+        val viewModel = createViewModel(granted = true)
+        assertEquals(false, viewModel.uiState.value.cutInCommand)
+
+        microphoneCutRepository.cutInCommand.value = true
+        assertEquals(true, viewModel.uiState.value.cutInCommand)
+        microphoneCutRepository.cutInCommand.value = false
+        assertEquals(false, viewModel.uiState.value.cutInCommand)
     }
 
     @Test

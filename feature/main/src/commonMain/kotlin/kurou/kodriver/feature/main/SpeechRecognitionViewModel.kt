@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.containsSpeechRecognitionWakeWord
 import kurou.kodriver.domain.model.toMicrophoneCutQuietSoundThreshold
 import kurou.kodriver.domain.runCapturingErrors
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
 import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
@@ -52,6 +53,7 @@ internal class SpeechRecognitionViewModel(
     private val playChime: PlaySpeechRecognitionChimeUseCase,
     private val reportSpeechRecognitionTranscript: ReportSpeechRecognitionTranscriptUseCase,
     private val observeMicrophoneCutQuietSoundLevel: ObserveMicrophoneCutQuietSoundLevelUseCase,
+    private val observeMicrophoneCutQuietSoundInCommand: ObserveMicrophoneCutQuietSoundInCommandUseCase,
     /** 入力デバイスの一覧と選択。デバイスを選べないプラットフォーム（Android）では null。 */
     private val audioInputDeviceSelector: AudioInputDeviceSelector? = null,
 ) : ViewModel() {
@@ -98,6 +100,12 @@ internal class SpeechRecognitionViewModel(
         viewModelScope.launchCapturingErrors {
             observeMicrophoneCutQuietSoundLevel().collect { level ->
                 uiState.update { it.copy(cutThreshold = level.toMicrophoneCutQuietSoundThreshold()) }
+            }
+        }
+        // コマンド待ち中にカットしない設定のときは、ゲージの閾値を消すため、設定の変更を追う
+        viewModelScope.launchCapturingErrors {
+            observeMicrophoneCutQuietSoundInCommand().collect { enabled ->
+                uiState.update { it.copy(cutInCommand = enabled) }
             }
         }
         // オーバーレイなど他の画面へ、聞き取った文言を共有する。聞き取りを行っていない間は空にする
