@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12 以上のクラウドバックアップ・端末間転送の対象。除外内容は backup_rules.xml と同じ。 -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="vosk-model-ja" />
+        <exclude domain="database" path="telemetry_logs.db" />
+        <exclude domain="database" path="telemetry_logs.db-wal" />
+        <exclude domain="database" path="telemetry_logs.db-shm" />
+        <exclude domain="database" path="telemetry_logs.db-journal" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="vosk-model-ja" />
+        <exclude domain="database" path="telemetry_logs.db" />
+        <exclude domain="database" path="telemetry_logs.db-wal" />
+        <exclude domain="database" path="telemetry_logs.db-shm" />
+        <exclude domain="database" path="telemetry_logs.db-journal" />
+    </device-transfer>
+</data-extraction-rules>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 以下の自動バックアップ対象。DataStore 等の設定は残し、再生成できる/大きいデータを除外する。 -->
+<full-backup-content>
+    <!-- アプリ更新時に assets から再展開する Vosk 日本語モデル（バックアップ上限25MBを超え得る） -->
+    <exclude domain="file" path="vosk-model-ja" />
+    <!-- テレメトリログDB（WAL / SHM / ジャーナルを含む） -->
+    <exclude domain="database" path="telemetry_logs.db" />
+    <exclude domain="database" path="telemetry_logs.db-wal" />
+    <exclude domain="database" path="telemetry_logs.db-shm" />
+    <exclude domain="database" path="telemetry_logs.db-journal" />
+</full-backup-content>
