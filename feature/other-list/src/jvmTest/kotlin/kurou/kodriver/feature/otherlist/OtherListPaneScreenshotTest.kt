@@ -191,4 +191,54 @@ class OtherListPaneScreenshotTest {
             onNode(hasScrollAction()).performScrollToNode(hasText("ライセンス"))
             onRoot().captureRoboImage()
         }
+
+    @Test
+    fun `デフォルトを最下部までスクロール`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            OtherListPane(
+                                uiState = OtherListUiState(),
+                                onItemClick = {},
+                                onOverlayVisibleChange = {},
+                                onKeepScreenOnChange = {},
+                                onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
+                                onStartupEnabledChange = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onNode(hasScrollAction()).performScrollToNode(hasText("ログをすべて削除"))
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `アプリバージョン行を表示して最下部までスクロール`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            OtherListPane(
+                                uiState = OtherListUiState(appVersionLabel = "バージョン", appVersion = "1.2.3"),
+                                onItemClick = {},
+                                onOverlayVisibleChange = {},
+                                onKeepScreenOnChange = {},
+                                onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
+                                onStartupEnabledChange = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onNode(hasScrollAction()).performScrollToNode(hasText("ログをすべて削除"))
+            onRoot().captureRoboImage()
+        }
 }
