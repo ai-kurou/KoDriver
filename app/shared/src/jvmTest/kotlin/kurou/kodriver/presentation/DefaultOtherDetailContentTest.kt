@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.feature.otherandroidaudiousagedetail.otherAndroidAudioUsageDetailModule
 import kurou.kodriver.feature.otherlist.OtherListItemType
@@ -24,6 +25,7 @@ import kurou.kodriver.feature.otherlist.fakeOtherListModule
 import kurou.kodriver.feature.otherloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.otherloglist.fakeTelemetryLogRepository
 import kurou.kodriver.feature.otherloglist.telemetryLogListModule
+import kurou.kodriver.feature.othermicrophonecutquietsounddetail.otherMicrophoneCutQuietSoundDetailModule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -48,10 +50,18 @@ class DefaultOtherDetailContentTest {
                         startKoin {
                             modules(
                                 otherAndroidAudioUsageDetailModule,
+                                otherMicrophoneCutQuietSoundDetailModule,
                                 fakeOtherListModule,
                                 telemetryLogListModule,
                                 fakeTelemetryLogListModule,
                                 module {
+                                    single<MicrophoneCutQuietSoundPreferencesRepository> {
+                                        object : MicrophoneCutQuietSoundPreferencesRepository {
+                                            override fun observeMicrophoneCutQuietSoundLevel() = flowOf(6)
+
+                                            override suspend fun saveMicrophoneCutQuietSoundLevel(level: Int) = Unit
+                                        }
+                                    }
                                     single<SimulatorPreferencesRepository> {
                                         object : SimulatorPreferencesRepository {
                                             override fun selectedSimulator() = flowOf<Simulator>(Simulator.LmuWindows)
@@ -90,6 +100,25 @@ class DefaultOtherDetailContentTest {
         rule.onNodeWithText("メディア").assertIsDisplayed()
         rule.onNodeWithText("音声の用途").assertIsDisplayed()
         rule.onNodeWithText("読み上げ音声を、メディアや通話などどの用途の音声として扱うか設定します。右の再生ボタンで、その用途で試聴できます。").assertIsDisplayed()
+    }
+
+    @Test
+    fun `小さい音をカットを選択すると段階の設定を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DefaultOtherDetailContent(
+                    itemType = OtherListItemType.MicrophoneCutQuietSound,
+                    selectedSimulatorId = "",
+                    canNavigateBack = false,
+                    onBack = {},
+                    feedbackTelemetryLogId = null,
+                    feedbackAttachRequestId = 0L,
+                )
+            }
+        }
+
+        rule.onNodeWithText("小さい音をカット").assertIsDisplayed()
+        rule.onNodeWithText("レベル 6").assertIsDisplayed()
     }
 
     @Test

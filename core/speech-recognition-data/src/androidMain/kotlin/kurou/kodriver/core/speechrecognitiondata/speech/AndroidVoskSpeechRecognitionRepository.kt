@@ -12,6 +12,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 
@@ -50,6 +52,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
     private val transcriberFactory: SpeechTranscriberFactory,
     private val recorderFactory: () -> PcmRecorder,
     private val permissionRepository: RecordAudioPermissionRepository,
+    private val microphoneCutQuietSound: MicrophoneCutQuietSoundPreferencesRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SpeechRecognitionRepository {
     private val mode = MutableStateFlow(SpeechRecognitionMode.WakeWord)
@@ -70,7 +73,11 @@ internal class AndroidVoskSpeechRecognitionRepository(
             if (transcriber == null) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
             } else {
-                transcriber.use { recognizeWithRetry(it, TranscriberModeSync(it, mode)) }
+                transcriber.use {
+                    microphoneCutQuietSound.withVolumeGateThreshold { threshold ->
+                        recognizeWithRetry(it, TranscriberModeSync(it, mode), threshold)
+                    }
+                }
             }
         }.failRecognitionOnError()
             .flowOn(ioDispatcher)
@@ -78,10 +85,11 @@ internal class AndroidVoskSpeechRecognitionRepository(
     private suspend fun FlowCollector<SpeechRecognitionEvent>.recognizeWithRetry(
         transcriber: SpeechTranscriber,
         modeSync: TranscriberModeSync,
+        volumeGateThreshold: StateFlow<Float>,
     ) {
         var failures = 0
         while (true) {
-            recognize(transcriber, modeSync, onHealthy = { failures = 0 })
+            recognize(transcriber, modeSync, volumeGateThreshold, onHealthy = { failures = 0 })
             failures++
             if (failures >= VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.MicrophoneUnavailable))
@@ -101,6 +109,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
     private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(
         transcriber: SpeechTranscriber,
         modeSync: TranscriberModeSync,
+        volumeGateThreshold: StateFlow<Float>,
         onHealthy: () -> Unit,
     ) {
         val recorder = recorderFactory()
@@ -125,7 +134,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
                         }
                     }
                 try {
-                    readChunks(recorder, RecognitionPipeline(transcriber, modeSync), onHealthy)
+                    readChunks(recorder, RecognitionPipeline(transcriber, modeSync, volumeGateThreshold), onHealthy)
                 } finally {
                     watcher.cancel()
                 }

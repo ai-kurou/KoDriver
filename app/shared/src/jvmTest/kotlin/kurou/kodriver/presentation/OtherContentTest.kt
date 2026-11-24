@@ -481,6 +481,9 @@ class OtherContentTest {
         // OverlayBackgroundOpacity
         navigateToDetailAndBack("背景の透明度", "Detail: overlay_background_opacity")
 
+        // MicrophoneCutQuietSound
+        navigateToDetailAndBack("小さい音をカット", "Detail: microphone_cut_quiet_sound")
+
         // ReadoutStartSound（ダイアログを開く）
         clickListItem("読み上げ開始音")
 

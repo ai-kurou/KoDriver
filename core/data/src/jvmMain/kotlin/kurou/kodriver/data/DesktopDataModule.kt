@@ -21,6 +21,7 @@ import kurou.kodriver.data.preferences.createLowVolumeWarningEnabledPreferencesR
 import kurou.kodriver.data.preferences.createMainWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutPlayButtonLayoutPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutSetPreferencesRepository
+import kurou.kodriver.data.preferences.createMicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextColorPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
@@ -62,6 +63,7 @@ import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPref
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutSettingsResetter
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -142,6 +144,9 @@ private fun desktopDataModuleAudioPreferences(directory: String) =
     module {
         single<ReadoutHotkeyPreferencesRepository> {
             createReadoutHotkeyPreferencesRepository(directory)
+        }
+        single<MicrophoneCutQuietSoundPreferencesRepository> {
+            createMicrophoneCutQuietSoundPreferencesRepository(directory = directory)
         }
         // 設定永続化（DataStore。ファイルは directory 配下）
         single<AutoReadoutPreferencesRepository> {

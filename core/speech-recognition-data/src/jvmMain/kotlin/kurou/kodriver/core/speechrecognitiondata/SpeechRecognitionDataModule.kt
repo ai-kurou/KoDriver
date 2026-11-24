@@ -40,6 +40,7 @@ public val speechRecognitionDataModule: Module =
                 microphone = get(),
                 audioInputDevices = get(),
                 selectedDevicePreferences = get(),
+                microphoneCutQuietSound = get(),
                 transcriberFactory = get(),
             )
         }

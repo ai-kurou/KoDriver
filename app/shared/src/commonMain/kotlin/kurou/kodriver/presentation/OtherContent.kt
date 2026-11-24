@@ -180,6 +180,7 @@ private fun handleOtherItemClick(
         // TtsLanguageDataMissingはOtherListPane側でOS設定画面を直接開くため、ここには到達しない。
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.OverlayBackgroundOpacity,
+        OtherListItemType.MicrophoneCutQuietSound,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,

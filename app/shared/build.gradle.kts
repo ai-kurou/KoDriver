@@ -42,6 +42,7 @@ kotlin {
             implementation(projects.feature.otherOverlayTextColorDetail)
             implementation(projects.feature.otherOverlayTextSizeDetail)
             implementation(projects.feature.otherOverlayBackgroundOpacityDetail)
+            implementation(projects.feature.otherMicrophoneCutQuietSoundDetail)
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.otherVoiceDetail)
             implementation(projects.feature.otherVoiceSpeedDetail)

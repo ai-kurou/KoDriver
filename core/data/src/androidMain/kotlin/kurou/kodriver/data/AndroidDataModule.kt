@@ -28,6 +28,7 @@ import kurou.kodriver.data.preferences.createLowVolumeWarningEnabledPreferencesR
 import kurou.kodriver.data.preferences.createMainWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutPlayButtonLayoutPreferencesRepository
 import kurou.kodriver.data.preferences.createManualReadoutSetPreferencesRepository
+import kurou.kodriver.data.preferences.createMicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextColorPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
@@ -71,6 +72,7 @@ import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPref
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ManualReadoutSettingsResetter
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -246,6 +248,9 @@ private fun androidDataModuleAppSettings(context: Context) =
         // オーバーレイの背景透明度設定
         single<OverlayBackgroundOpacityPreferencesRepository> {
             createOverlayBackgroundOpacityPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<MicrophoneCutQuietSoundPreferencesRepository> {
+            createMicrophoneCutQuietSoundPreferencesRepository(context.filesDir.absolutePath)
         }
         // オーバーレイの表示ON/OFF設定
         single<OverlayVisiblePreferencesRepository> {

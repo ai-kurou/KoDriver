@@ -1,0 +1,7 @@
+package kurou.kodriver.domain.model
+
+/** 小さい音をカットする強さの段階。0 はカットしない。段階 × [MICROPHONE_CUT_QUIET_SOUND_LEVEL_STEP] が音量ゲートのしきい値（0.0〜1.0）になる。 */
+public const val MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT: Int = 6
+public const val MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN: Int = 0
+public const val MICROPHONE_CUT_QUIET_SOUND_LEVEL_MAX: Int = 12
+public const val MICROPHONE_CUT_QUIET_SOUND_LEVEL_STEP: Float = 0.05f

@@ -10,6 +10,7 @@
     <string name="item_windows_speech_unavailable">Windowsの日本語音声を設定</string>
     <string name="item_overlay_visible">オーバーレイを表示</string>
     <string name="item_overlay_visible_summary">読み上げ内容（順番待ちを含む）を、最前面の小さなウィンドウに表示します</string>
+    <string name="item_microphone_cut_quiet_sound">小さい音をカット</string>
     <string name="item_overlay_text_size">文字サイズ</string>
     <string name="item_overlay_background_opacity">背景の透明度</string>
     <string name="item_overlay_background_opacity_summary">%1$d%</string>
@@ -39,6 +40,7 @@
     <string name="section_connection_settings">接続設定</string>
     <string name="section_readout_settings">読み上げ設定</string>
     <string name="section_overlay_settings">オーバーレイ設定</string>
+    <string name="section_microphone_settings">マイク設定</string>
     <string name="section_app_settings">アプリ設定</string>
     <string name="section_information">情報</string>
     <string name="voice_system_default">システム既定</string>

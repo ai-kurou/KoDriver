@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.FormatColorText
 import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.Layers
+import androidx.compose.material.icons.outlined.MicOff
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Palette
@@ -41,15 +42,15 @@ internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageV
 
         is OtherListItemType.OverlaySettings -> otherOverlaySettingsItemLeadingIconVector(itemType)
 
+        OtherListItemType.MicrophoneCutQuietSound -> Icons.Outlined.MicOff
+
         is OtherListItemType.AppSettings -> otherAppSettingsItemLeadingIconVector(itemType)
 
         OtherListItemType.ShowLogs,
         OtherListItemType.DeleteAllLogs,
-        -> otherLogItemLeadingIconVector(itemType)
-
         OtherListItemType.ResetAutoReadoutSettings,
         OtherListItemType.ResetManualReadoutSettings,
-        -> Icons.Outlined.RestartAlt
+        -> otherDataLogItemLeadingIconVector(itemType)
 
         OtherListItemType.GitHubRepository -> Icons.Outlined.Star
 
@@ -98,9 +99,9 @@ private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType.Ap
         OtherListItemType.Startup -> Icons.Outlined.PowerSettingsNew
     }
 
-private fun otherLogItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
-    if (itemType == OtherListItemType.ShowLogs) {
-        Icons.AutoMirrored.Outlined.ListAlt
-    } else {
-        Icons.Outlined.DeleteSweep
+private fun otherDataLogItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
+    when (itemType) {
+        OtherListItemType.ShowLogs -> Icons.AutoMirrored.Outlined.ListAlt
+        OtherListItemType.DeleteAllLogs -> Icons.Outlined.DeleteSweep
+        else -> Icons.Outlined.RestartAlt
     }
