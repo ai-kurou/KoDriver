@@ -26,3 +26,7 @@ feature の `companion object` や `Pane.kt` に仕様値を置かず、共通�
 定数名は `XXX_DEFAULT` のように末尾に `DEFAULT` を付けて統一すること（例: `LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT`）。
 
 ただし `*Defaults.kt` には、デフォルト値と組で使う仕様値（範囲の上限・下限の `_MIN` / `_MAX`、番兵値 `_UNSPECIFIED` / `_UNKNOWN_KEY`、代替値 `_ALTERNATE` など）も置いてよい。`_DEFAULT` を付けるのはデフォルト値だけとし、これらの仕様値には付けない。
+
+### Android の自動バックアップ
+
+`allowBackup="true"` のため、DataStore（`filesDir/datastore/`）などの設定は Google の自動バックアップ対象になる。再生成できる、または大きいデータは、バックアップ上限（25MB）超過でバックアップ全体が失敗するのを避けるため、`app/androidApp/src/main/res/xml/backup_rules.xml`（Android 11 以下）と `data_extraction_rules.xml`（Android 12 以上のクラウドバックアップ・端末間転送）で除外している。除外対象は Vosk 日本語モデル（`filesDir/vosk-model-ja`）とテレメトリログDB（`databases/telemetry_logs.db` と WAL・SHM・ジャーナル）。`filesDir` や `databases/` に大きなファイルを新設する場合は、両 XML への除外追加を検討する。
