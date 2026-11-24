@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -148,98 +149,142 @@ internal fun TelemetryLogListPane(
         }
 
         key(uiState.selectedSimulator) {
-            val listState = rememberLazyListState()
-            val coroutineScope = rememberCoroutineScope()
-            val firstLogId = uiState.logs.first().id
-            var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
-            var showNewLogsButton by rememberSaveable { mutableStateOf(false) }
-            val isAtTop by remember {
-                derivedStateOf {
-                    listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
-                }
-            }
+            TelemetryLogListContent(
+                uiState = uiState,
+                onLogClick = onLogClick,
+                onFeedbackClick = onFeedbackClick,
+                onDeleteClick = onDeleteClick,
+                scrollToTopRequest = scrollToTopRequest,
+            )
+        }
+    }
+}
 
-            LaunchedEffect(firstLogId) {
-                if (previousFirstLogId != firstLogId) {
-                    if (listState.firstVisibleItemIndex <= FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL) {
+@Composable
+private fun TelemetryLogListContent(
+    uiState: TelemetryLogListUiState,
+    onLogClick: (Long) -> Unit,
+    onFeedbackClick: (Long) -> Unit,
+    onDeleteClick: (Long) -> Unit,
+    scrollToTopRequest: Int,
+) {
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    var showNewLogsButton by rememberSaveable { mutableStateOf(false) }
+    val isAtTop by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+        }
+    }
+
+    NewLogsAutoScrollEffect(
+        firstLogId = uiState.logs.first().id,
+        listState = listState,
+        onNewLogsOutOfView = { showNewLogsButton = true },
+    )
+
+    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+        listState.animateScrollToItem(0)
+        showNewLogsButton = false
+    }
+
+    LaunchedEffect(isAtTop) {
+        if (isAtTop) {
+            showNewLogsButton = false
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        TelemetryLogLazyList(
+            uiState = uiState,
+            listState = listState,
+            onLogClick = onLogClick,
+            onFeedbackClick = onFeedbackClick,
+            onDeleteClick = onDeleteClick,
+        )
+
+        AnimatedVisibility(
+            visible = showNewLogsButton,
+            enter =
+                slideInVertically(
+                    initialOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 300),
+                ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+            exit =
+                slideOutVertically(
+                    targetOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 200),
+                ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+            modifier =
+                Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = KoDriverSpacing.large),
+        ) {
+            NewTelemetryLogsButton(
+                onClick = {
+                    coroutineScope.launch {
                         listState.animateScrollToItem(0)
-                    } else {
-                        showNewLogsButton = true
+                        showNewLogsButton = false
                     }
-                    previousFirstLogId = firstLogId
-                }
-            }
+                },
+            )
+        }
+    }
+}
 
-            ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+@Composable
+private fun NewLogsAutoScrollEffect(
+    firstLogId: Long,
+    listState: LazyListState,
+    onNewLogsOutOfView: () -> Unit,
+) {
+    var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
+    LaunchedEffect(firstLogId) {
+        if (previousFirstLogId != firstLogId) {
+            if (listState.firstVisibleItemIndex <= FIRST_VISIBLE_ITEM_INDEX_WITH_HINT_ROW_FOR_AUTO_SCROLL) {
                 listState.animateScrollToItem(0)
-                showNewLogsButton = false
+            } else {
+                onNewLogsOutOfView()
             }
+            previousFirstLogId = firstLogId
+        }
+    }
+}
 
-            LaunchedEffect(isAtTop) {
-                if (isAtTop) {
-                    showNewLogsButton = false
-                }
-            }
-
-            Box(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    state = listState,
-                    modifier =
-                        Modifier
-                            .testTag(TELEMETRY_LOG_LIST_TEST_TAG)
-                            .fillMaxSize()
-                            .padding(vertical = KoDriverSpacing.small),
-                ) {
-                    item(key = NARRATION_OUTCOME_HINT_ITEM_KEY) {
-                        TelemetryLogNarrationOutcomeHintRow(
-                            modifier =
-                                Modifier
-                                    .padding(horizontal = KoDriverSpacing.small),
-                        )
-                    }
-                    items(
-                        items = uiState.logs,
-                        key = { it.id },
-                    ) { log ->
-                        TelemetryLogListItem(
-                            log = log,
-                            isSelected = log.id == uiState.selectedLogId,
-                            modifier = Modifier.animateItem(),
-                            onClick = { onLogClick(log.id) },
-                            onFeedbackClick = { onFeedbackClick(log.id) },
-                            onDeleteClick = { onDeleteClick(log.id) },
-                        )
-                        HorizontalDivider()
-                    }
-                }
-
-                AnimatedVisibility(
-                    visible = showNewLogsButton,
-                    enter =
-                        slideInVertically(
-                            initialOffsetY = { -it },
-                            animationSpec = tween(durationMillis = 300),
-                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                    exit =
-                        slideOutVertically(
-                            targetOffsetY = { -it },
-                            animationSpec = tween(durationMillis = 200),
-                        ) + fadeOut(animationSpec = tween(durationMillis = 200)),
-                    modifier =
-                        Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(top = KoDriverSpacing.large),
-                ) {
-                    NewTelemetryLogsButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                listState.animateScrollToItem(0)
-                                showNewLogsButton = false
-                            }
-                        },
-                    )
-                }
-            }
+@Composable
+private fun TelemetryLogLazyList(
+    uiState: TelemetryLogListUiState,
+    listState: LazyListState,
+    onLogClick: (Long) -> Unit,
+    onFeedbackClick: (Long) -> Unit,
+    onDeleteClick: (Long) -> Unit,
+) {
+    LazyColumn(
+        state = listState,
+        modifier =
+            Modifier
+                .testTag(TELEMETRY_LOG_LIST_TEST_TAG)
+                .fillMaxSize()
+                .padding(vertical = KoDriverSpacing.small),
+    ) {
+        item(key = NARRATION_OUTCOME_HINT_ITEM_KEY) {
+            TelemetryLogNarrationOutcomeHintRow(
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.small),
+            )
+        }
+        items(
+            items = uiState.logs,
+            key = { it.id },
+        ) { log ->
+            TelemetryLogListItem(
+                log = log,
+                isSelected = log.id == uiState.selectedLogId,
+                modifier = Modifier.animateItem(),
+                onClick = { onLogClick(log.id) },
+                onFeedbackClick = { onFeedbackClick(log.id) },
+                onDeleteClick = { onDeleteClick(log.id) },
+            )
+            HorizontalDivider()
         }
     }
 }
