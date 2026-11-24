@@ -98,6 +98,19 @@ import org.koin.dsl.module
  */
 public fun desktopDataModule(directory: String): Module =
     module {
+        includes(desktopDataModuleResetters())
+        includes(desktopDataModuleInMemoryRepositories())
+        includes(desktopDataModuleWindowBounds(directory))
+        includes(desktopDataModuleCommonSimulatorPreferences(directory))
+        includes(desktopDataModuleWindowsSimulatorPreferences(directory))
+        includes(desktopDataModuleAudioPreferences(directory))
+        includes(desktopDataModuleAppPreferences(directory))
+        includes(desktopDataModulePlatform(directory))
+    }
+
+/** 設定リセット（Core 側の Resetter 実装を、各種 Repository を get() で解決して束ねる）。 */
+private fun desktopDataModuleResetters() =
+    module {
         single {
             CoreAutoReadoutSettingsResetter(
                 autoReadoutPreferencesRepository = get(),
@@ -113,20 +126,29 @@ public fun desktopDataModule(directory: String): Module =
                 manualReadoutPlayButtonLayoutEnabledPreferencesRepository = get(),
             )
         } bind ManualReadoutSettingsResetter::class
+    }
+
+/** メモリ上のみで保持する手動読み上げ・デバッグ・音声認識の状態 Repository バインド（永続化しない）。 */
+private fun desktopDataModuleInMemoryRepositories() =
+    module {
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<ManualReadoutItemRequestRepository> { InMemoryManualReadoutItemRequestRepository() }
         single<ManualReadoutItemSpokenRepository> { InMemoryManualReadoutItemSpokenRepository() }
         single<SpeechPlaybackStateRepository> { InMemorySpeechPlaybackStateRepository() }
         single<SpeechRecognitionTranscriptRepository> { InMemorySpeechRecognitionTranscriptRepository() }
-        includes(desktopDataModuleWindowBounds(directory))
-        includes(desktopDataModuleInputSettings(directory))
-        includes(desktopDataModuleCommonSimulatorPreferences(directory))
-        includes(desktopDataModuleWindowsSimulatorPreferences(directory))
-        // 設定永続化（DataStore。ファイルは directory 配下）
-        single<SimulatorPreferencesRepository> {
-            createSimulatorPreferencesRepository(directory = directory)
+    }
+
+/** 音声・読み上げ関連の DataStore Repository バインド（ファイルは directory 配下）。 */
+private fun desktopDataModuleAudioPreferences(directory: String) =
+    module {
+        single<ReadoutHotkeyPreferencesRepository> {
+            createReadoutHotkeyPreferencesRepository(directory)
         }
+        single<MicrophoneCutQuietSoundPreferencesRepository> {
+            createMicrophoneCutQuietSoundPreferencesRepository(directory = directory)
+        }
+        // 設定永続化（DataStore。ファイルは directory 配下）
         single<AutoReadoutPreferencesRepository> {
             createAutoReadoutPreferencesRepository(directory = directory)
         }
@@ -158,6 +180,14 @@ public fun desktopDataModule(directory: String): Module =
         single<ReadoutStartSoundPreferencesRepository> {
             createReadoutStartSoundPreferencesRepository(directory = directory)
         }
+    }
+
+/** アプリ全体・オーバーレイ・接続先などの DataStore Repository バインド（ファイルは directory 配下）。 */
+private fun desktopDataModuleAppPreferences(directory: String) =
+    module {
+        single<SimulatorPreferencesRepository> {
+            createSimulatorPreferencesRepository(directory = directory)
+        }
         single<ThemePreferencesRepository> {
             createThemePreferencesRepository(directory = directory)
         }
@@ -186,6 +216,11 @@ public fun desktopDataModule(directory: String): Module =
         single<FeedbackCooldownPreferencesRepository> {
             createFeedbackCooldownPreferencesRepository(directory = directory)
         }
+    }
+
+/** プラットフォーム依存・ネットワーク・ログ・フィードバック送信の Repository バインド。 */
+private fun desktopDataModulePlatform(directory: String) =
+    module {
         // アプリ更新確認（GitHub リリース API を叩くネットワーク実装）
         single<AppUpdateRepository> { GitHubAppReleaseRepository() }
         // 画面スリープ抑止（プラットフォーム固有実装。Desktop は no-op 相当）
@@ -202,17 +237,6 @@ public fun desktopDataModule(directory: String): Module =
             createTelemetryLogRepository(directory = directory)
         }
         single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
-    }
-
-/** マイク・読み上げホットキーなど入力操作の設定の DataStore Repository バインド。 */
-private fun desktopDataModuleInputSettings(directory: String) =
-    module {
-        single<MicrophoneCutQuietSoundPreferencesRepository> {
-            createMicrophoneCutQuietSoundPreferencesRepository(directory = directory)
-        }
-        single<ReadoutHotkeyPreferencesRepository> {
-            createReadoutHotkeyPreferencesRepository(directory)
-        }
     }
 
 /** オーバーレイ・メインウィンドウの位置・サイズの DataStore Repository バインド。 */

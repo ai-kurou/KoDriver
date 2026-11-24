@@ -526,7 +526,8 @@ roborazziAggregateTasks.forEach { roborazziTask ->
 // Android lint、Android 実機テスト（androidTest）のコンパイル、Android / デスクトップアプリのビルド、デスクトップアプリの統合テスト。
 val preSubmitChecks = tasks.register("preSubmitChecks") {
     group = "verification"
-    description = "Runs all mandatory pre-merge checks (detekt, ktlint, Android lint, Android test compilation, module graph, tests with coverage, app builds)."
+    description = "Runs all mandatory pre-merge checks (detekt, ktlint, Android lint, Android test compilation, " +
+        "module graph, tests with coverage, app builds)."
     dependsOn(
         ":assertModuleGraph",
         ":assertArchitectureDocModuleList",
@@ -574,4 +575,3 @@ kover {
         }
     }
 }
-
