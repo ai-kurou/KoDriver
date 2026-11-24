@@ -131,14 +131,7 @@ internal class AndroidTextToSpeechRepository(
         val engine = ensureInitialized() ?: return
         // 用途の解決はDataStoreを読むsuspendポイントのため、発話の登録（pendingUtterances）や
         // 既存発話の完了処理より前に行い、ここでキャンセルされても中途半端な状態を残さない。
-        val resolvedAudioUsage =
-            audioUsage ?: try {
-                audioUsageProvider()
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
-                ANDROID_AUDIO_USAGE_DEFAULT
-            }
+        val resolvedAudioUsage = audioUsage ?: resolveAudioUsageOrDefault()
         val audioAttributes = audioAttributesFactory(resolvedAudioUsage)
         val utteranceId = "kodriver_tts_${utteranceIdSequence.incrementAndGet()}"
         val completed = CompletableDeferred<Unit>()
@@ -177,20 +170,39 @@ internal class AndroidTextToSpeechRepository(
         try {
             completed.await()
         } catch (e: CancellationException) {
-            // engine.stop()は全発話を止めるため、他の発話がpendingなら巻き添えにしない。
-            // voiceLockでspeak()と直列化し、停止判定後に別の発話がエンジンへ追加される競合も防ぐ。
-            synchronized(voiceLock) {
-                val shouldStop =
-                    synchronized(utteranceLock) {
-                        activeUtteranceId == utteranceId || pendingUtterances.keys.all { it == utteranceId }
-                    }
-                if (shouldStop) {
-                    engine.stop()
-                }
-            }
+            stopEngineIfNoOtherUtterance(engine, utteranceId)
             throw e
         } finally {
             synchronized(utteranceLock) { pendingUtterances.remove(utteranceId) }
+        }
+    }
+
+    /** 用途の取得に失敗した場合は既定の用途へフォールバックする。キャンセルは握りつぶさず再送出する。 */
+    private suspend fun resolveAudioUsageOrDefault(): AndroidAudioUsage =
+        try {
+            audioUsageProvider()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            ANDROID_AUDIO_USAGE_DEFAULT
+        }
+
+    /**
+     * engine.stop()は全発話を止めるため、他の発話がpendingなら巻き添えにしない。
+     * voiceLockでspeak()と直列化し、停止判定後に別の発話がエンジンへ追加される競合も防ぐ。
+     */
+    private fun stopEngineIfNoOtherUtterance(
+        engine: TextToSpeech,
+        utteranceId: String,
+    ) {
+        synchronized(voiceLock) {
+            val shouldStop =
+                synchronized(utteranceLock) {
+                    activeUtteranceId == utteranceId || pendingUtterances.keys.all { it == utteranceId }
+                }
+            if (shouldStop) {
+                engine.stop()
+            }
         }
     }
 
