@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -173,53 +175,71 @@ private fun SimulatorCard(
                 modifier = backgroundModifier,
             )
             if (logo != null) {
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.4f))
-                            .padding(KoDriverSpacing.medium),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Image(
-                        painter = logo,
-                        contentDescription = displayName,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize(SIMULATOR_CARD_LOGO_SIZE_FRACTION),
-                    )
-                }
+                SimulatorCardLogoOverlay(logo = logo, displayName = displayName)
             }
             if (platformLabel != null) {
-                // ロゴの有無にかかわらず、プラットフォーム名はカード下端に揃えて添える。
-                Text(
-                    text = platformLabel,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White,
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = KoDriverSpacing.small),
-                )
+                SimulatorCardPlatformLabel(platformLabel = platformLabel)
             }
             if (selected) {
-                Box(
-                    modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(top = KoDriverSpacing.extraLarge, end = KoDriverSpacing.extraLarge)
-                            .size(SimulatorCardCheckBadgeSize)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(18.dp),
-                    )
-                }
+                SimulatorCardCheckBadge()
             }
         }
+    }
+}
+
+@Composable
+private fun SimulatorCardLogoOverlay(
+    logo: Painter,
+    displayName: String,
+) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.4f))
+                .padding(KoDriverSpacing.medium),
+        contentAlignment = Alignment.Center,
+    ) {
+        Image(
+            painter = logo,
+            contentDescription = displayName,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.fillMaxSize(SIMULATOR_CARD_LOGO_SIZE_FRACTION),
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.SimulatorCardPlatformLabel(platformLabel: String) {
+    // ロゴの有無にかかわらず、プラットフォーム名はカード下端に揃えて添える。
+    Text(
+        text = platformLabel,
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.White,
+        modifier =
+            Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = KoDriverSpacing.small),
+    )
+}
+
+@Composable
+private fun BoxScope.SimulatorCardCheckBadge() {
+    Box(
+        modifier =
+            Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = KoDriverSpacing.extraLarge, end = KoDriverSpacing.extraLarge)
+                .size(SimulatorCardCheckBadgeSize)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Check,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(18.dp),
+        )
     }
 }
