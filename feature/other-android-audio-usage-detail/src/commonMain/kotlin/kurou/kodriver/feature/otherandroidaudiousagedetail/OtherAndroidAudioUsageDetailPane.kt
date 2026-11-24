@@ -258,61 +258,102 @@ private fun AndroidAudioUsageCard(
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
             modifier = Modifier.padding(KoDriverSpacing.medium),
         ) {
-            Box(modifier = Modifier.size(AVATAR_SIZE).clearAndSetSemantics {}) {
-                Surface(
-                    shape = MaterialTheme.shapes.extraLarge,
-                    color = if (selected) colors.primary else colors.surfaceContainerHighest,
-                    contentColor = if (selected) colors.onPrimary else colors.onSurfaceVariant,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(label.take(1), style = MaterialTheme.typography.titleMedium)
-                    }
-                }
-                if (selected) {
-                    Surface(
-                        shape = MaterialTheme.shapes.extraLarge,
-                        color = colors.onPrimaryContainer,
-                        contentColor = colors.primaryContainer,
-                        modifier = Modifier.size(CHECK_BADGE_SIZE).align(Alignment.BottomEnd),
-                    ) {
-                        Icon(
-                            Icons.Default.Check,
-                            contentDescription = null,
-                            modifier = Modifier.padding(CHECK_BADGE_PADDING),
-                        )
-                    }
-                }
-            }
-            Column(Modifier.weight(1f)) {
-                Text(label, style = MaterialTheme.typography.bodyLarge)
-                Text(
-                    description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (selected) colors.onPrimaryContainer else colors.onSurfaceVariant,
-                )
-            }
-            FilledTonalIconButton(
+            AndroidAudioUsageAvatar(label = label, selected = selected)
+            AndroidAudioUsageTexts(
+                label = label,
+                description = description,
+                selected = selected,
+                modifier = Modifier.weight(1f),
+            )
+            AndroidAudioUsagePreviewButton(
+                label = label,
+                selected = selected,
+                previewing = previewing,
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     onPreviewClicked(usage, previewSample)
                 },
-                shape = MaterialTheme.shapes.extraLarge,
-                colors =
-                    IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = if (selected) colors.primary else colors.surfaceContainerHighest,
-                        contentColor = if (selected) colors.onPrimary else colors.primary,
-                    ),
-            ) {
-                if (previewing) {
-                    PlayingEqualizer(stringResource(Res.string.audio_usage_preview_stop_description, label))
-                } else {
-                    Icon(
-                        Icons.Default.PlayArrow,
-                        contentDescription = stringResource(Res.string.audio_usage_preview_description, label),
-                    )
-                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun AndroidAudioUsageAvatar(
+    label: String,
+    selected: Boolean,
+) {
+    val colors = MaterialTheme.colorScheme
+    Box(modifier = Modifier.size(AVATAR_SIZE).clearAndSetSemantics {}) {
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            color = if (selected) colors.primary else colors.surfaceContainerHighest,
+            contentColor = if (selected) colors.onPrimary else colors.onSurfaceVariant,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Text(label.take(1), style = MaterialTheme.typography.titleMedium)
             }
+        }
+        if (selected) {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = colors.onPrimaryContainer,
+                contentColor = colors.primaryContainer,
+                modifier = Modifier.size(CHECK_BADGE_SIZE).align(Alignment.BottomEnd),
+            ) {
+                Icon(
+                    Icons.Default.Check,
+                    contentDescription = null,
+                    modifier = Modifier.padding(CHECK_BADGE_PADDING),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AndroidAudioUsageTexts(
+    label: String,
+    description: String,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val colors = MaterialTheme.colorScheme
+    Column(modifier) {
+        Text(label, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            description,
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (selected) colors.onPrimaryContainer else colors.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun AndroidAudioUsagePreviewButton(
+    label: String,
+    selected: Boolean,
+    previewing: Boolean,
+    onClick: () -> Unit,
+) {
+    val colors = MaterialTheme.colorScheme
+    FilledTonalIconButton(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.extraLarge,
+        colors =
+            IconButtonDefaults.filledTonalIconButtonColors(
+                containerColor = if (selected) colors.primary else colors.surfaceContainerHighest,
+                contentColor = if (selected) colors.onPrimary else colors.primary,
+            ),
+    ) {
+        if (previewing) {
+            PlayingEqualizer(stringResource(Res.string.audio_usage_preview_stop_description, label))
+        } else {
+            Icon(
+                Icons.Default.PlayArrow,
+                contentDescription = stringResource(Res.string.audio_usage_preview_description, label),
+            )
         }
     }
 }
