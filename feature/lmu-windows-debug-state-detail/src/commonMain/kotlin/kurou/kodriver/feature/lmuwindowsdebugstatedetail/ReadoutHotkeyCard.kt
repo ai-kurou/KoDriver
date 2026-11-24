@@ -45,57 +45,14 @@ internal fun ReadoutHotkeyCard(
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
-    var focused by remember { mutableStateOf(false) }
     DetailPaneCard(
         title = stringResource(Res.string.readout_hotkey_title),
         modifier = modifier.testTag("readout_hotkey_card"),
         bottomContent = {
             Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
                 Text(readoutHotkeyDisplayName(state.virtualKeyCode))
-                OutlinedTextField(
-                    value =
-                        if (focused) {
-                            stringResource(Res.string.readout_hotkey_prompt)
-                        } else {
-                            readoutHotkeyDisplayName(state.virtualKeyCode)
-                        },
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(Res.string.readout_hotkey_key)) },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .testTag("readout_hotkey_key")
-                            .onFocusChanged { focused = it.isFocused }
-                            .onPreviewKeyEvent { event ->
-                                val key = readoutHotkeyVirtualKeyCode(event.key)
-                                if (event.type == KeyEventType.KeyDown && key != null) {
-                                    onKeySelected(key)
-                                    true
-                                } else {
-                                    false
-                                }
-                            },
-                )
-                when (val registration = state.registrationState) {
-                    HotkeyRegistrationState.Unsupported -> {}
-
-                    HotkeyRegistrationState.Registering -> {
-                        Text(stringResource(Res.string.readout_hotkey_registering))
-                    }
-
-                    HotkeyRegistrationState.Registered -> {
-                        Text(stringResource(Res.string.readout_hotkey_registered))
-                    }
-
-                    HotkeyRegistrationState.Conflict -> {
-                        Text(stringResource(Res.string.readout_hotkey_conflict))
-                    }
-
-                    is HotkeyRegistrationState.Failed -> {
-                        Text(stringResource(Res.string.readout_hotkey_failed, registration.errorCode))
-                    }
-                }
+                ReadoutHotkeyKeyField(virtualKeyCode = state.virtualKeyCode, onKeySelected = onKeySelected)
+                ReadoutHotkeyRegistrationText(state.registrationState)
                 Button(
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
@@ -107,13 +64,74 @@ internal fun ReadoutHotkeyCard(
                 ) {
                     Text(stringResource(Res.string.readout_hotkey_check))
                 }
-                when (state.checkState) {
-                    HotkeyCheckState.Idle -> Unit
-                    HotkeyCheckState.Waiting -> Text(stringResource(Res.string.readout_hotkey_waiting))
-                    HotkeyCheckState.Detected -> Text(stringResource(Res.string.readout_hotkey_detected))
-                    HotkeyCheckState.TimedOut -> Text(stringResource(Res.string.readout_hotkey_timed_out))
-                }
+                ReadoutHotkeyCheckText(state.checkState)
             }
         },
     )
+}
+
+@Composable
+private fun ReadoutHotkeyKeyField(
+    virtualKeyCode: Int,
+    onKeySelected: (Int) -> Unit,
+) {
+    var focused by remember { mutableStateOf(false) }
+    OutlinedTextField(
+        value =
+            if (focused) {
+                stringResource(Res.string.readout_hotkey_prompt)
+            } else {
+                readoutHotkeyDisplayName(virtualKeyCode)
+            },
+        onValueChange = {},
+        readOnly = true,
+        label = { Text(stringResource(Res.string.readout_hotkey_key)) },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .testTag("readout_hotkey_key")
+                .onFocusChanged { focused = it.isFocused }
+                .onPreviewKeyEvent { event ->
+                    val key = readoutHotkeyVirtualKeyCode(event.key)
+                    if (event.type == KeyEventType.KeyDown && key != null) {
+                        onKeySelected(key)
+                        true
+                    } else {
+                        false
+                    }
+                },
+    )
+}
+
+@Composable
+private fun ReadoutHotkeyRegistrationText(registrationState: HotkeyRegistrationState) {
+    when (registrationState) {
+        HotkeyRegistrationState.Unsupported -> {}
+
+        HotkeyRegistrationState.Registering -> {
+            Text(stringResource(Res.string.readout_hotkey_registering))
+        }
+
+        HotkeyRegistrationState.Registered -> {
+            Text(stringResource(Res.string.readout_hotkey_registered))
+        }
+
+        HotkeyRegistrationState.Conflict -> {
+            Text(stringResource(Res.string.readout_hotkey_conflict))
+        }
+
+        is HotkeyRegistrationState.Failed -> {
+            Text(stringResource(Res.string.readout_hotkey_failed, registrationState.errorCode))
+        }
+    }
+}
+
+@Composable
+private fun ReadoutHotkeyCheckText(checkState: HotkeyCheckState) {
+    when (checkState) {
+        HotkeyCheckState.Idle -> Unit
+        HotkeyCheckState.Waiting -> Text(stringResource(Res.string.readout_hotkey_waiting))
+        HotkeyCheckState.Detected -> Text(stringResource(Res.string.readout_hotkey_detected))
+        HotkeyCheckState.TimedOut -> Text(stringResource(Res.string.readout_hotkey_timed_out))
+    }
 }
