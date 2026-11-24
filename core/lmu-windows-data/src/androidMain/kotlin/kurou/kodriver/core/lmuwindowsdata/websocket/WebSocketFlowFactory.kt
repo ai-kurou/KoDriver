@@ -7,6 +7,7 @@ import io.ktor.websocket.readText
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import kurou.kodriver.domain.captureError
@@ -36,30 +37,49 @@ internal fun <T> HttpClient.webSocketFlow(
 ): Flow<T> =
     flow {
         while (true) {
-            try {
-                webSocket(host = host, port = port, path = path) {
-                    for (frame in incoming) {
-                        if (frame is Frame.Text) {
-                            try {
-                                emit(decode(frame.readText()))
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (e: SerializationException) {
-                                captureException(e)
-                            }
-                        }
-                    }
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                if (!e.isExpectedNetworkFailure()) {
-                    captureException(e)
-                }
-            }
+            connectOnce(this, host, port, path, decode, captureException)
             delay(retryDelayMs)
         }
     }
+
+private suspend fun <T> HttpClient.connectOnce(
+    collector: FlowCollector<T>,
+    host: String,
+    port: Int,
+    path: String,
+    decode: (String) -> T,
+    captureException: (Throwable) -> Unit,
+) {
+    try {
+        webSocket(host = host, port = port, path = path) {
+            for (frame in incoming) {
+                if (frame is Frame.Text) {
+                    collector.emitDecoded(frame.readText(), decode, captureException)
+                }
+            }
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        if (!e.isExpectedNetworkFailure()) {
+            captureException(e)
+        }
+    }
+}
+
+private suspend fun <T> FlowCollector<T>.emitDecoded(
+    text: String,
+    decode: (String) -> T,
+    captureException: (Throwable) -> Unit,
+) {
+    try {
+        emit(decode(text))
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: SerializationException) {
+        captureException(e)
+    }
+}
 
 internal fun Throwable.isExpectedNetworkFailure(): Boolean =
     this is SocketTimeoutException ||
