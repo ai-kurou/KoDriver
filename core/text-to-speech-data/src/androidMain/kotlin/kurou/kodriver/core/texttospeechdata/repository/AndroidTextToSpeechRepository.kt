@@ -266,6 +266,43 @@ internal class AndroidTextToSpeechRepository(
         if (engine.setAudioAttributes(attributes) == TextToSpeech.SUCCESS) appliedAudioUsage = usage
     }
 
+    /** 再初期化したエンジンには前の声・速度・高さが引き継がれないため、適用済みの値を破棄する。 */
+    private fun resetAppliedState() {
+        synchronized(voiceLock) {
+            appliedVoiceId = null
+            appliedSpeed = null
+            appliedPitch = null
+            appliedAudioUsage = null
+            defaultVoiceIdValue = null
+        }
+    }
+
+    private fun readDefaultVoiceId(engine: TextToSpeech): String? =
+        try {
+            engine.voice?.name
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            null
+        }
+
+    private fun createUtteranceProgressListener(): UtteranceProgressListener =
+        object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {
+                synchronized(utteranceLock) { activeUtteranceId = utteranceId }
+            }
+
+            override fun onDone(utteranceId: String?) = completeUtterance(utteranceId)
+
+            override fun onStop(
+                utteranceId: String?,
+                interrupted: Boolean,
+            ) = completeUtterance(utteranceId)
+
+            @Deprecated("Deprecated in Java")
+            override fun onError(utteranceId: String?) = completeUtterance(utteranceId)
+        }
+
     /**
      * 初回呼び出し時のみ [TextToSpeech] を生成し、初期化完了を待つ。
      * 利用できない場合は `null` を返し、[unavailableReason] にその理由を記録する。以降の [speak] / [isAvailable] では再初期化せず、
@@ -285,14 +322,7 @@ internal class AndroidTextToSpeechRepository(
             unavailableReason = null
             val initStatus = CompletableDeferred<Int>()
             val engine = textToSpeechFactory { status -> initStatus.complete(status) }
-            // 再初期化したエンジンには前の声・速度・高さが引き継がれないため、適用済みの値を破棄する。
-            synchronized(voiceLock) {
-                appliedVoiceId = null
-                appliedSpeed = null
-                appliedPitch = null
-                appliedAudioUsage = null
-                defaultVoiceIdValue = null
-            }
+            resetAppliedState()
             val status =
                 try {
                     initStatus.await()
@@ -313,34 +343,9 @@ internal class AndroidTextToSpeechRepository(
                 textToSpeech = null
                 return@withLock null
             }
-            synchronized(voiceLock) {
-                defaultVoiceIdValue =
-                    try {
-                        engine.voice?.name
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (_: Exception) {
-                        null
-                    }
-            }
+            synchronized(voiceLock) { defaultVoiceIdValue = readDefaultVoiceId(engine) }
             val listenerRegistered =
-                engine.setOnUtteranceProgressListener(
-                    object : UtteranceProgressListener() {
-                        override fun onStart(utteranceId: String?) {
-                            synchronized(utteranceLock) { activeUtteranceId = utteranceId }
-                        }
-
-                        override fun onDone(utteranceId: String?) = completeUtterance(utteranceId)
-
-                        override fun onStop(
-                            utteranceId: String?,
-                            interrupted: Boolean,
-                        ) = completeUtterance(utteranceId)
-
-                        @Deprecated("Deprecated in Java")
-                        override fun onError(utteranceId: String?) = completeUtterance(utteranceId)
-                    },
-                ) == TextToSpeech.SUCCESS
+                engine.setOnUtteranceProgressListener(createUtteranceProgressListener()) == TextToSpeech.SUCCESS
             textToSpeech =
                 if (listenerRegistered) {
                     engine
