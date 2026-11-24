@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -28,6 +29,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -93,19 +95,18 @@ public fun DetailPaneCardTextField(
     val request = insertState?.request
     val currentOnValueChangeFinished by rememberUpdatedState(onValueChangeFinished)
     SideEffect(insertState, request) {
-        if (request != null) {
-            // 無効な入力欄や文言が変わらない挿入は、確定通知せず要求だけを消費する。
-            val inserted =
-                insertAtSelection(text, selection, request.text, maxLength)
-                    .takeIf { enabled }
-                    ?.takeIf { it.text != text }
-            insertState.consume(request)
-            if (inserted != null) {
-                text = inserted.text
-                selection = inserted.selection
-                composition = null
-                currentOnValueChangeFinished(text)
-            }
+        if (request == null) return@SideEffect
+        // 無効な入力欄や文言が変わらない挿入は、確定通知せず要求だけを消費する。
+        val inserted =
+            insertAtSelection(text, selection, request.text, maxLength)
+                .takeIf { enabled }
+                ?.takeIf { it.text != text }
+        insertState.consume(request)
+        if (inserted != null) {
+            text = inserted.text
+            selection = inserted.selection
+            composition = null
+            currentOnValueChangeFinished(text)
         }
     }
     val isResettable = enabled && defaultValue != null && text != defaultValue
@@ -125,85 +126,109 @@ public fun DetailPaneCardTextField(
         },
         enabled = enabled,
         placeholder = { Text(text = placeholder) },
-        supportingText = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                if (supportingText != null) {
-                    Text(text = supportingText, modifier = Modifier.weight(1f))
-                } else {
-                    Spacer(Modifier.weight(1f))
-                }
-                Text(text = "${text.length}/$maxLength")
-            }
-        },
+        supportingText = { CharacterCounterRow(supportingText, text.length, maxLength) },
         singleLine = true,
         // 入力のたびに確定通知しているため、Done はフォーカスを外してキーボードを閉じるだけにする。
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-        colors =
-            if (selected) {
-                TextFieldDefaults.colors(
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                )
-            } else {
-                TextFieldDefaults.colors()
-            },
+        colors = detailPaneTextFieldColors(selected),
         leadingIcon =
             if (selected) {
-                {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = selectedContentDescription,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(18.dp),
-                    )
-                }
+                { SelectedCheckIcon(selectedContentDescription) }
             } else {
                 null
             },
         trailingIcon = {
             Row {
                 if (onResetToDefault != null) {
-                    IconButton(
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onResetToDefault()
-                        },
+                    TextFieldActionButton(
+                        imageVector = Icons.Outlined.RestartAlt,
+                        contentDescription = resetContentDescription,
                         enabled = isResettable,
-                        modifier = Modifier.size(32.dp).graphicsLayer { alpha = resetButtonAlpha },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.RestartAlt,
-                            contentDescription = resetContentDescription,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(18.dp),
-                        )
-                    }
+                        onClick = onResetToDefault,
+                        modifier = Modifier.graphicsLayer { alpha = resetButtonAlpha },
+                    )
                 }
                 if (onPreviewClick != null) {
-                    IconButton(
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            onPreviewClick(text)
-                        },
+                    TextFieldActionButton(
+                        imageVector = Icons.Outlined.PlayArrow,
+                        contentDescription = previewContentDescription,
                         enabled = enabled,
-                        modifier = Modifier.size(32.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.PlayArrow,
-                            contentDescription = previewContentDescription,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(18.dp),
-                        )
-                    }
+                        onClick = { onPreviewClick(text) },
+                    )
                 }
             }
         },
         modifier = modifier.fillMaxWidth(),
     )
+}
+
+/** [supportingText]（なければ空白）の右端に、入力中の文字数と [maxLength] を「12/30」の形式で表示する。 */
+@Composable
+private fun CharacterCounterRow(
+    supportingText: String?,
+    length: Int,
+    maxLength: Int,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        if (supportingText != null) {
+            Text(text = supportingText, modifier = Modifier.weight(1f))
+        } else {
+            Spacer(Modifier.weight(1f))
+        }
+        Text(text = "$length/$maxLength")
+    }
+}
+
+@Composable
+private fun detailPaneTextFieldColors(selected: Boolean): TextFieldColors =
+    if (selected) {
+        TextFieldDefaults.colors(
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
+            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+        )
+    } else {
+        TextFieldDefaults.colors()
+    }
+
+@Composable
+private fun SelectedCheckIcon(contentDescription: String?) {
+    Icon(
+        imageVector = Icons.Default.Check,
+        contentDescription = contentDescription,
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.size(18.dp),
+    )
+}
+
+/** 押下時にハプティクスを実行してから [onClick] を呼ぶ、TextField 末尾用の小さなアイコンボタン。 */
+@Composable
+private fun TextFieldActionButton(
+    imageVector: ImageVector,
+    contentDescription: String?,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val haptic = LocalHapticFeedback.current
+    IconButton(
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            onClick()
+        },
+        enabled = enabled,
+        modifier = Modifier.size(32.dp).then(modifier),
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = contentDescription,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(18.dp),
+        )
+    }
 }
 
 @Preview(showBackground = true)
