@@ -17,6 +17,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,6 +32,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -73,6 +75,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
@@ -124,6 +127,7 @@ import kurou.kodriver.feature.autoreadoutlist.generated.resources.start_sound_hi
 import kurou.kodriver.feature.autoreadoutlist.generated.resources.start_sound_toggle_description
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -273,67 +277,16 @@ internal fun AutoReadoutListPane(
                                 )
                         }.padding(vertical = KoDriverSpacing.large),
             ) {
-                if (isAceSelected) {
-                    item(key = "acePreReleaseNotice") {
-                        AcePreReleaseNotice(
-                            modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
-                        )
-                    }
-                }
-                if (isGt7Ps5DesktopHintShown) {
-                    item(key = "gt7Ps5DesktopReadoutHint") {
-                        Gt7Ps5DesktopAutoReadoutHintRow(
-                            modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
-                        )
-                    }
-                }
-                item(key = "priorityHint") {
-                    PriorityHintRow(
-                        modifier =
-                            Modifier.padding(
-                                start = KoDriverSpacing.small,
-                                end = KoDriverSpacing.small,
-                            ),
-                    )
-                }
+                autoReadoutHeaderItems(isAceSelected, isGt7Ps5DesktopHintShown)
                 itemsIndexed(uiState.items, key = { _, item -> item.value }) { index, item ->
                     ReorderableItem(reorderableState, key = item.value) {
-                        val isSelected =
-                            AutoReadoutListItemType.fromId(uiState.selectedSimulator, item) == uiState.selectedItem
-                        val cardContainerColor by animateColorAsState(
-                            targetValue =
-                                if (isSelected) {
-                                    MaterialTheme.colorScheme.secondaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceContainerLow
-                                },
-                            animationSpec = tween(durationMillis = 500),
-                            label = "cardContainerColor",
-                        )
-                        val itemName = autoReadoutItemDisplayName(item)
-                        val readoutEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(item)
-                        AutoReadoutListItemCard(
-                            modifier =
-                                (sharedBounds?.modifier(item) ?: Modifier)
-                                    .onFocusChanged { rowFocusState.onRowFocusChanged(item.value, it.hasFocus) },
-                            rowFocusRequester = rowFocusState.requesterFor(item.value),
+                        AutoReadoutReorderableRow(
+                            uiState = uiState,
                             item = item,
                             index = index,
-                            itemName = itemName,
-                            dragHandleModifier =
-                                Modifier.draggableHandle(
-                                    onDragStarted = { _ ->
-                                        haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
-                                    },
-                                    onDragStopped = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
-                                    },
-                                ),
-                            readoutEnabled = readoutEnabled,
-                            queueEnabled = uiState.queueEnabledStates[item] ?: false,
-                            startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
-                            containerColor = cardContainerColor,
-                            isSelected = isSelected,
+                            sharedBounds = sharedBounds,
+                            rowFocusState = rowFocusState,
+                            haptic = haptic,
                             onItemClick = onItemClick,
                             onQueueEnabledChanged = onQueueEnabledChanged,
                             onReadoutEnabledChanged = onReadoutEnabledChanged,
@@ -343,32 +296,120 @@ internal fun AutoReadoutListPane(
                 }
             }
 
-            AnimatedVisibility(
+            AutoReadoutScrollToTopButton(
                 visible = !isAtTop,
-                enter =
-                    slideInVertically(
-                        initialOffsetY = { -it },
-                        animationSpec = tween(durationMillis = 300),
-                    ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                exit =
-                    slideOutVertically(
-                        targetOffsetY = { -it },
-                        animationSpec = tween(durationMillis = 200),
-                    ) + fadeOut(animationSpec = tween(durationMillis = 200)),
-                modifier =
-                    Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = KoDriverSpacing.large),
-            ) {
-                ScrollToTopButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            listState.animateScrollToItem(0)
-                        }
-                    },
-                )
-            }
+                onClick = {
+                    coroutineScope.launch {
+                        listState.animateScrollToItem(0)
+                    }
+                },
+            )
         }
+    }
+}
+
+private fun LazyListScope.autoReadoutHeaderItems(
+    isAceSelected: Boolean,
+    isGt7Ps5DesktopHintShown: Boolean,
+) {
+    if (isAceSelected) {
+        item(key = "acePreReleaseNotice") {
+            AcePreReleaseNotice(
+                modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+            )
+        }
+    }
+    if (isGt7Ps5DesktopHintShown) {
+        item(key = "gt7Ps5DesktopReadoutHint") {
+            Gt7Ps5DesktopAutoReadoutHintRow(
+                modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+            )
+        }
+    }
+    item(key = "priorityHint") {
+        PriorityHintRow(
+            modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+        )
+    }
+}
+
+@Composable
+private fun ReorderableCollectionItemScope.AutoReadoutReorderableRow(
+    uiState: AutoReadoutListUiState,
+    item: ReadoutItemKey,
+    index: Int,
+    sharedBounds: AutoReadoutSharedBounds?,
+    rowFocusState: ListRowFocusState,
+    haptic: HapticFeedback,
+    onItemClick: (ReadoutItemKey) -> Unit,
+    onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+) {
+    val isSelected =
+        AutoReadoutListItemType.fromId(uiState.selectedSimulator, item) == uiState.selectedItem
+    val cardContainerColor by animateColorAsState(
+        targetValue =
+            if (isSelected) {
+                MaterialTheme.colorScheme.secondaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceContainerLow
+            },
+        animationSpec = tween(durationMillis = 500),
+        label = "cardContainerColor",
+    )
+    AutoReadoutListItemCard(
+        modifier =
+            (sharedBounds?.modifier(item) ?: Modifier)
+                .onFocusChanged { rowFocusState.onRowFocusChanged(item.value, it.hasFocus) },
+        rowFocusRequester = rowFocusState.requesterFor(item.value),
+        item = item,
+        index = index,
+        itemName = autoReadoutItemDisplayName(item),
+        dragHandleModifier =
+            Modifier.draggableHandle(
+                onDragStarted = { _ ->
+                    haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+                },
+                onDragStopped = {
+                    haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
+                },
+            ),
+        readoutEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(item),
+        queueEnabled = uiState.queueEnabledStates[item] ?: false,
+        startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
+        containerColor = cardContainerColor,
+        isSelected = isSelected,
+        onItemClick = onItemClick,
+        onQueueEnabledChanged = onQueueEnabledChanged,
+        onReadoutEnabledChanged = onReadoutEnabledChanged,
+        onStartSoundEnabledChanged = onStartSoundEnabledChanged,
+    )
+}
+
+@Composable
+private fun BoxScope.AutoReadoutScrollToTopButton(
+    visible: Boolean,
+    onClick: () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter =
+            slideInVertically(
+                initialOffsetY = { -it },
+                animationSpec = tween(durationMillis = 300),
+            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+        exit =
+            slideOutVertically(
+                targetOffsetY = { -it },
+                animationSpec = tween(durationMillis = 200),
+            ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+        modifier =
+            Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = KoDriverSpacing.large),
+    ) {
+        ScrollToTopButton(onClick = onClick)
     }
 }
 
