@@ -471,137 +471,191 @@ private fun AutoReadoutListItemCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
-            Column(
-                modifier = Modifier.widthIn(min = 32.dp).padding(vertical = KoDriverSpacing.medium),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleLarge) {
-                    Text(
-                        text = "${index + 1}",
-                        style = koDriverNumericTextStyle(),
-                        color = rankColor,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-                Icon(
-                    imageVector = Icons.Filled.DragIndicator,
-                    contentDescription = stringResource(Res.string.drag_handle),
-                    modifier = dragHandleModifier.size(20.dp),
-                )
-            }
+            AutoReadoutListRankColumn(index = index, rankColor = rankColor, dragHandleModifier = dragHandleModifier)
             Column(
                 modifier = Modifier.weight(1f).padding(vertical = KoDriverSpacing.medium),
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
             ) {
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 48.dp)
-                            .semantics { contentDescription = itemName }
-                            .onFocusChanged { partsState.onPartFocusChanged(0, it.isFocused) }
-                            .focusRequester(rowFocusRequester)
-                            .clickable(
-                                indication = null,
-                                interactionSource = itemInteractionSource,
-                            ) {
-                                openDetail()
-                            },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    val itemContentColor by
-                        animateColorAsState(
-                            targetValue =
-                                if (readoutEnabled) {
-                                    MaterialTheme.colorScheme.onSurface
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                },
-                        )
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(40.dp)
-                                .background(tileColor, MaterialTheme.shapes.medium),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = itemIcon(item),
-                            contentDescription = null,
-                            tint = tileContentColor,
-                        )
-                    }
-                    Text(
-                        text = itemName,
-                        color = itemContentColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(start = KoDriverSpacing.medium).weight(1f),
-                    )
-                    AutoReadoutListReadoutSwitch(
-                        item = item,
-                        checked = readoutEnabled,
-                        trackColor = visualStyle.switchTrackColor,
-                        onCheckedChange = { onReadoutEnabledChanged(item, it) },
-                        modifier =
-                            Modifier
-                                .onFocusChanged { partsState.onPartFocusChanged(1, it.hasFocus) }
-                                .focusRequester(partsState.requesterFor(1)),
-                    )
-                }
+                AutoReadoutListMainRow(
+                    item = item,
+                    itemName = itemName,
+                    readoutEnabled = readoutEnabled,
+                    visualStyle = visualStyle,
+                    tileColor = tileColor,
+                    tileContentColor = tileContentColor,
+                    partsState = partsState,
+                    rowFocusRequester = rowFocusRequester,
+                    itemInteractionSource = itemInteractionSource,
+                    onReadoutEnabledChanged = onReadoutEnabledChanged,
+                    openDetail = openDetail,
+                )
                 if (item is ReadoutItemKey.TopLevel) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                    ) {
-                        AutoReadoutListStartSoundToggle(
-                            item = item,
-                            checked = startSoundEnabled,
-                            enabled = readoutEnabled,
-                            onCheckedChange = { onStartSoundEnabledChanged(item, it) },
-                            modifier =
-                                Modifier
-                                    .weight(1f)
-                                    .onFocusChanged { partsState.onPartFocusChanged(2, it.hasFocus) }
-                                    .focusRequester(partsState.requesterFor(2)),
-                        )
-                        if (item.supportsQueue) {
-                            AutoReadoutListQueueToggle(
-                                item = item,
-                                checked = queueEnabled,
-                                enabled = readoutEnabled,
-                                onCheckedChange = { onQueueEnabledChanged(item, it) },
-                                modifier =
-                                    Modifier
-                                        .weight(1f)
-                                        .onFocusChanged { partsState.onPartFocusChanged(3, it.hasFocus) }
-                                        .focusRequester(partsState.requesterFor(3)),
-                            )
-                        } else {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .weight(1f)
-                                        .heightIn(min = 40.dp)
-                                        .testTag("autoReadoutListQueueBlankTouchTarget:${item.value}")
-                                        .focusProperties { canFocus = false }
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = itemInteractionSource,
-                                        ) {
-                                            openDetail()
-                                        },
-                            )
-                        }
-                    }
+                    AutoReadoutListChipsRow(
+                        item = item,
+                        readoutEnabled = readoutEnabled,
+                        queueEnabled = queueEnabled,
+                        startSoundEnabled = startSoundEnabled,
+                        partsState = partsState,
+                        itemInteractionSource = itemInteractionSource,
+                        onQueueEnabledChanged = onQueueEnabledChanged,
+                        onStartSoundEnabledChanged = onStartSoundEnabledChanged,
+                        openDetail = openDetail,
+                    )
                 }
             }
+            AutoReadoutListChevronTarget(
+                item = item,
+                itemInteractionSource = itemInteractionSource,
+                openDetail = openDetail,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AutoReadoutListRankColumn(
+    index: Int,
+    rankColor: Color,
+    dragHandleModifier: Modifier,
+) {
+    Column(
+        modifier = Modifier.widthIn(min = 32.dp).padding(vertical = KoDriverSpacing.medium),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleLarge) {
+            Text(
+                text = "${index + 1}",
+                style = koDriverNumericTextStyle(),
+                color = rankColor,
+                textAlign = TextAlign.Center,
+            )
+        }
+        Icon(
+            imageVector = Icons.Filled.DragIndicator,
+            contentDescription = stringResource(Res.string.drag_handle),
+            modifier = dragHandleModifier.size(20.dp),
+        )
+    }
+}
+
+@Composable
+private fun AutoReadoutListMainRow(
+    item: ReadoutItemKey,
+    itemName: String,
+    readoutEnabled: Boolean,
+    visualStyle: AutoReadoutListItemVisualStyle,
+    tileColor: Color,
+    tileContentColor: Color,
+    partsState: ListRowPartsFocusState,
+    rowFocusRequester: FocusRequester,
+    itemInteractionSource: MutableInteractionSource,
+    onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    openDetail: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .semantics { contentDescription = itemName }
+                .onFocusChanged { partsState.onPartFocusChanged(0, it.isFocused) }
+                .focusRequester(rowFocusRequester)
+                .clickable(
+                    indication = null,
+                    interactionSource = itemInteractionSource,
+                ) {
+                    openDetail()
+                },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val itemContentColor by
+            animateColorAsState(
+                targetValue =
+                    if (readoutEnabled) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+            )
+        Box(
+            modifier =
+                Modifier
+                    .size(40.dp)
+                    .background(tileColor, MaterialTheme.shapes.medium),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = itemIcon(item),
+                contentDescription = null,
+                tint = tileContentColor,
+            )
+        }
+        Text(
+            text = itemName,
+            color = itemContentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(start = KoDriverSpacing.medium).weight(1f),
+        )
+        AutoReadoutListReadoutSwitch(
+            item = item,
+            checked = readoutEnabled,
+            trackColor = visualStyle.switchTrackColor,
+            onCheckedChange = { onReadoutEnabledChanged(item, it) },
+            modifier =
+                Modifier
+                    .onFocusChanged { partsState.onPartFocusChanged(1, it.hasFocus) }
+                    .focusRequester(partsState.requesterFor(1)),
+        )
+    }
+}
+
+@Composable
+private fun AutoReadoutListChipsRow(
+    item: ReadoutItemKey.TopLevel,
+    readoutEnabled: Boolean,
+    queueEnabled: Boolean,
+    startSoundEnabled: Boolean,
+    partsState: ListRowPartsFocusState,
+    itemInteractionSource: MutableInteractionSource,
+    onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    openDetail: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+    ) {
+        AutoReadoutListStartSoundToggle(
+            item = item,
+            checked = startSoundEnabled,
+            enabled = readoutEnabled,
+            onCheckedChange = { onStartSoundEnabledChanged(item, it) },
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .onFocusChanged { partsState.onPartFocusChanged(2, it.hasFocus) }
+                    .focusRequester(partsState.requesterFor(2)),
+        )
+        if (item.supportsQueue) {
+            AutoReadoutListQueueToggle(
+                item = item,
+                checked = queueEnabled,
+                enabled = readoutEnabled,
+                onCheckedChange = { onQueueEnabledChanged(item, it) },
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .onFocusChanged { partsState.onPartFocusChanged(3, it.hasFocus) }
+                        .focusRequester(partsState.requesterFor(3)),
+            )
+        } else {
             Box(
                 modifier =
                     Modifier
-                        .fillMaxHeight()
-                        .width(24.dp)
-                        .testTag("autoReadoutListChevronTouchTarget:${item.value}")
+                        .weight(1f)
+                        .heightIn(min = 40.dp)
+                        .testTag("autoReadoutListQueueBlankTouchTarget:${item.value}")
                         .focusProperties { canFocus = false }
                         .clickable(
                             indication = null,
@@ -609,14 +663,36 @@ private fun AutoReadoutListItemCard(
                         ) {
                             openDetail()
                         },
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.ChevronRight,
-                    contentDescription = null,
-                )
-            }
+            )
         }
+    }
+}
+
+@Composable
+private fun AutoReadoutListChevronTarget(
+    item: ReadoutItemKey,
+    itemInteractionSource: MutableInteractionSource,
+    openDetail: () -> Unit,
+) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxHeight()
+                .width(24.dp)
+                .testTag("autoReadoutListChevronTouchTarget:${item.value}")
+                .focusProperties { canFocus = false }
+                .clickable(
+                    indication = null,
+                    interactionSource = itemInteractionSource,
+                ) {
+                    openDetail()
+                },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.ChevronRight,
+            contentDescription = null,
+        )
     }
 }
 
