@@ -118,25 +118,31 @@ internal class MacSpeechSynthesizer(
                 synchronized(lock) {
                     if (token != requestToken) return null
                     val playing = current
-                    if (!queue && playing != null) {
-                        playing.destroy()
-                        // 打ち切った発話の音声が新しい発話と重ならないよう、終了を待つ。
-                        playing.waitFor(DESTROY_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                    }
+                    if (!queue && playing != null) destroyAndWait(playing)
                     if (queue && playing != null) {
                         playing
                     } else {
-                        return try {
-                            startProcess(ProcessBuilder(command)).also { current = it }
-                        } catch (e: IOException) {
-                            captureException(e)
-                            null
-                        }
+                        return startOrNull(command)
                     }
                 }
             blocker.waitFor()
         }
     }
+
+    /** 打ち切った発話の音声が新しい発話と重ならないよう、[process] を終了して終了を待つ。 */
+    private fun destroyAndWait(process: Process) {
+        process.destroy()
+        process.waitFor(DESTROY_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    }
+
+    /** [command] を起動して current に設定する。起動に失敗した場合は報告して `null`。[lock] を保持して呼ぶ。 */
+    private fun startOrNull(command: List<String>): Process? =
+        try {
+            startProcess(ProcessBuilder(command)).also { current = it }
+        } catch (e: IOException) {
+            captureException(e)
+            null
+        }
 
     private companion object {
         const val SAY = "say"
