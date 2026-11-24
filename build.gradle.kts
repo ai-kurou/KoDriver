@@ -544,6 +544,8 @@ gradle.projectsEvaluated {
     preSubmitChecks.configure {
         dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "detekt" } })
         dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "ktlintCheck" } })
+        // build-logic は includeBuild のため allprojects に含まれない。別途 ktlintCheck を依存に加える。
+        dependsOn(gradle.includedBuild("build-logic").task(":ktlintCheck"))
     }
 }
 
