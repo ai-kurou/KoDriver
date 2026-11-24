@@ -30,6 +30,7 @@ class DesktopSplashHostTest {
         rule.setContent {
             MaterialTheme {
                 DesktopSplashHost(
+                    appVersion = "1.0.0",
                     initializeModules = {},
                     startServer = { serverGate.await() },
                     onReady = { readyCalled = true },
@@ -40,6 +41,7 @@ class DesktopSplashHostTest {
         }
 
         rule.onNodeWithText("サーバーを起動しています…").assertIsDisplayed()
+        rule.onNodeWithText("v1.0.0").assertIsDisplayed()
         rule.onAllNodesWithText("メイン画面").assertCountEquals(0)
 
         serverGate.complete(Unit)
@@ -61,6 +63,7 @@ class DesktopSplashHostTest {
                 @Suppress("UNUSED_VARIABLE")
                 val observed = tick
                 DesktopSplashHost(
+                    appVersion = "1.0.0",
                     initializeModules = initializeModules,
                     startServer = startServer,
                 ) {
@@ -84,6 +87,7 @@ class DesktopSplashHostTest {
         rule.setContent {
             MaterialTheme {
                 DesktopSplashHost(
+                    appVersion = "1.0.0",
                     initializeModules = { error("初期化に失敗しました") },
                     startServer = {},
                     onError = { errored = it },

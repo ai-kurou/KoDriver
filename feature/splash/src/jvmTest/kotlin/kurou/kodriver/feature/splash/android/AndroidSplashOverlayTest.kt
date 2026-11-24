@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -53,7 +54,9 @@ class AndroidSplashOverlayTest {
     fun `演出が終わると一度だけ終了を通知する`() {
         var finishedCount = 0
         rule.mainClock.autoAdvance = false
-        rule.setContent { MaterialTheme { AndroidSplashOverlay(onFinished = { finishedCount++ }) } }
+        rule.setContent {
+            MaterialTheme { AndroidSplashOverlay(appVersion = "1.0.0", onFinished = { finishedCount++ }) }
+        }
 
         rule.onNodeWithContentDescription("KoDriver").assertExists()
         assertEquals(0, finishedCount)
@@ -71,7 +74,7 @@ class AndroidSplashOverlayTest {
             MaterialTheme {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Text("背後", modifier = Modifier.fillMaxSize().clickable { clicked = true })
-                    AndroidSplashOverlayContent(shineProgress = 0f, overlayAlpha = 1f)
+                    AndroidSplashOverlayContent(appVersion = "1.0.0", shineProgress = 0f, overlayAlpha = 1f)
                 }
             }
         }
@@ -95,5 +98,14 @@ class AndroidSplashOverlayTest {
         assertEquals(1f + ANDROID_SPLASH_ICON_POP, iconScale(0.5f), 0.0001f)
         assertEquals(1f, iconScale(1f), 0.0001f)
         assertEquals(1f, iconScale(2f), 0.0001f)
+    }
+
+    @Test
+    fun `光が進むとバージョンを表示する`() {
+        rule.setContent {
+            MaterialTheme { AndroidSplashOverlayContent(appVersion = "1.2.3", shineProgress = 1f, overlayAlpha = 1f) }
+        }
+
+        rule.onNodeWithText("v1.2.3").assertIsDisplayed()
     }
 }

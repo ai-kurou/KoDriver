@@ -24,6 +24,7 @@ class DesktopSplashScreenTest {
         rule.setContent {
             MaterialTheme {
                 DesktopSplashScreen(
+                    appVersion = "1.0.0",
                     uiState = DesktopSplashUiState(step = step),
                     modifier = Modifier,
                 )
@@ -54,6 +55,7 @@ class DesktopSplashScreenTest {
         rule.setContent {
             MaterialTheme {
                 DesktopSplashScreen(
+                    appVersion = "1.0.0",
                     uiState = DesktopSplashUiState(step = step),
                     onReadyAnimationFinished = { finishedCount++ },
                 )
@@ -80,7 +82,7 @@ class DesktopSplashScreenTest {
             MaterialTheme {
                 @Suppress("UNUSED_VARIABLE")
                 val observed = tick
-                DesktopSplashScreen(uiState = uiState, modifier = Modifier)
+                DesktopSplashScreen(appVersion = "1.0.0", uiState = uiState, modifier = Modifier)
             }
         }
 
@@ -90,5 +92,19 @@ class DesktopSplashScreenTest {
         rule.waitForIdle()
 
         rule.onNodeWithText("サーバーを起動しています…").assertIsDisplayed()
+    }
+
+    @Test
+    fun `バージョンを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DesktopSplashScreen(
+                    appVersion = "1.2.3",
+                    uiState = DesktopSplashUiState(step = DesktopSplashStep.STARTING_SERVER),
+                )
+            }
+        }
+
+        rule.onNodeWithText("v1.2.3").assertIsDisplayed()
     }
 }

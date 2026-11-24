@@ -24,7 +24,7 @@ class AndroidSplashHostTest {
         rule.setContent {
             MaterialTheme {
                 Text("メイン画面")
-                AndroidSplashHost(show = true, osSplashRemoved = true)
+                AndroidSplashHost(appVersion = "1.0.0", show = true, osSplashRemoved = true)
             }
         }
 
@@ -44,7 +44,7 @@ class AndroidSplashHostTest {
         var removed by mutableStateOf(false)
         rule.setContent {
             MaterialTheme {
-                AndroidSplashHost(show = true, osSplashRemoved = removed)
+                AndroidSplashHost(appVersion = "1.0.0", show = true, osSplashRemoved = removed)
             }
         }
 
@@ -63,7 +63,7 @@ class AndroidSplashHostTest {
         rule.mainClock.autoAdvance = false
         rule.setContent {
             MaterialTheme {
-                AndroidSplashHost(show = true, osSplashRemoved = false)
+                AndroidSplashHost(appVersion = "1.0.0", show = true, osSplashRemoved = false)
             }
         }
 
@@ -81,7 +81,7 @@ class AndroidSplashHostTest {
         rule.setContent {
             MaterialTheme {
                 Text("メイン画面")
-                AndroidSplashHost(show = false, osSplashRemoved = true)
+                AndroidSplashHost(appVersion = "1.0.0", show = false, osSplashRemoved = true)
             }
         }
 
