@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.isRoot
@@ -37,53 +38,52 @@ class DetailPaneCardTextFieldScreenshotTest {
         darkTheme: Boolean = false,
         showReset: Boolean = false,
     ) {
-        val selected = value.isNotEmpty()
         setContent {
             KoDriverTheme(darkTheme = darkTheme) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 260.dp)) {
-                        DetailPaneCard(
-                            title = "イエローフラッグ",
-                            checked = true,
-                            onCheckedChange = {},
-                            modifier = Modifier.padding(16.dp),
-                            bottomContent = {
-                                DetailPaneCardChips(
-                                    chipLabels = listOf("イエローフラッグ"),
-                                    selectedChipLabels = if (selected) emptySet() else setOf("イエローフラッグ"),
-                                    chipEnabled = true,
-                                    onChipClick = {},
-                                )
-                                DetailPaneCardTextField(
-                                    value = value,
-                                    defaultValue = "イエローフラッグ",
-                                    onResetToDefault =
-                                        if (showReset) {
-                                            {}
-                                        } else {
-                                            null
-                                        },
-                                    resetContentDescription = "デフォルトに戻す",
-                                    placeholder = "イエローフラッグ",
-                                    maxLength = 30,
-                                    onValueChangeFinished = {},
-                                    onPreviewClick = {},
-                                    enabled = enabled,
-                                    selected = selected,
-                                    supportingText =
-                                        if (selected) {
-                                            null
-                                        } else {
-                                            "空欄のままなら収録音声で読み上げます"
-                                        },
-                                    selectedContentDescription = "この文言を読み上げます",
-                                )
-                            },
-                        )
+                        CaptureCard(value = value, enabled = enabled, showReset = showReset)
                     }
                 }
             }
         }
         onAllNodes(isRoot()).get(0).captureRoboImage()
     }
+}
+
+@Composable
+private fun CaptureCard(
+    value: String,
+    enabled: Boolean,
+    showReset: Boolean,
+) {
+    val selected = value.isNotEmpty()
+    DetailPaneCard(
+        title = "イエローフラッグ",
+        checked = true,
+        onCheckedChange = {},
+        modifier = Modifier.padding(16.dp),
+        bottomContent = {
+            DetailPaneCardChips(
+                chipLabels = listOf("イエローフラッグ"),
+                selectedChipLabels = if (selected) emptySet() else setOf("イエローフラッグ"),
+                chipEnabled = true,
+                onChipClick = {},
+            )
+            DetailPaneCardTextField(
+                value = value,
+                defaultValue = "イエローフラッグ",
+                onResetToDefault = {}.takeIf { showReset },
+                resetContentDescription = "デフォルトに戻す",
+                placeholder = "イエローフラッグ",
+                maxLength = 30,
+                onValueChangeFinished = {},
+                onPreviewClick = {},
+                enabled = enabled,
+                selected = selected,
+                supportingText = "空欄のままなら収録音声で読み上げます".takeUnless { selected },
+                selectedContentDescription = "この文言を読み上げます",
+            )
+        },
+    )
 }
