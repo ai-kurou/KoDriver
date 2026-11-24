@@ -118,7 +118,6 @@ internal fun OtherVoiceDetailPaneContent(
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
 ) {
-    val haptic = LocalHapticFeedback.current
     val previewSample = stringResource(Res.string.voice_preview_sample)
     val voices = uiState.voices.filterNot { it.isDefault }
     val selectedId =
@@ -142,66 +141,14 @@ internal fun OtherVoiceDetailPaneContent(
                     if (loading) {
                         DetailPaneBodyText(text = stringResource(Res.string.voice_loading))
                     } else {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            DetailPaneSubtitle(text = stringResource(Res.string.voice_default_section))
-                            VoiceCards(
-                                voices =
-                                    listOf(
-                                        TextToSpeechVoice(
-                                            VOICE_ID_UNSPECIFIED,
-                                            stringResource(Res.string.voice_system_default),
-                                            stringResource(Res.string.voice_system_default_description),
-                                        ),
-                                    ),
-                                selectedId = selectedId,
-                                previewingId = uiState.previewingVoiceId,
-                                onVoiceSelected = onVoiceSelected,
-                                onPreviewClicked = { onPreviewClicked(it, previewSample) },
-                            )
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                                DetailPaneSubtitle(
-                                    text = stringResource(Res.string.voice_japanese_section),
-                                    modifier = Modifier.weight(1f),
-                                )
-                                Text(
-                                    text = stringResource(Res.string.voice_count, voices.size),
-                                    style = koDriverMonospaceTextStyle(),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                            VoiceCards(
-                                voices = voices,
-                                selectedId = selectedId,
-                                previewingId = uiState.previewingVoiceId,
-                                onVoiceSelected = onVoiceSelected,
-                                onPreviewClicked = { onPreviewClicked(it, previewSample) },
-                            )
-                            AnimatedVisibility(
-                                visible = voices.isEmpty(),
-                                modifier = Modifier.fillMaxWidth(),
-                                enter = expandVertically() + fadeIn(),
-                                exit = shrinkVertically() + fadeOut(),
-                            ) {
-                                Column {
-                                    DetailPaneBodyText(
-                                        text =
-                                            stringResource(
-                                                if (uiState.voices.isEmpty()) {
-                                                    Res.string.voice_empty
-                                                } else {
-                                                    Res.string.voice_alternatives_empty
-                                                },
-                                            ),
-                                    )
-                                    TextButton(onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                        onRetryClicked()
-                                    }) {
-                                        Text(stringResource(Res.string.voice_retry))
-                                    }
-                                }
-                            }
-                        }
+                        VoiceListSection(
+                            uiState = uiState,
+                            voices = voices,
+                            selectedId = selectedId,
+                            onVoiceSelected = onVoiceSelected,
+                            onRetryClicked = onRetryClicked,
+                            onPreviewClicked = { onPreviewClicked(it, previewSample) },
+                        )
                     }
                 }
                 AnimatedVisibility(
@@ -210,25 +157,112 @@ internal fun OtherVoiceDetailPaneContent(
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut(),
                 ) {
-                    Surface(
-                        shape = MaterialTheme.shapes.large,
-                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        modifier = Modifier.fillMaxWidth().padding(vertical = KoDriverSpacing.large),
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
-                            modifier = Modifier.padding(KoDriverSpacing.large),
-                        ) {
-                            Icon(Icons.Default.Warning, contentDescription = null)
-                            Text(
-                                stringResource(Res.string.voice_saved_missing),
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
-                    }
+                    SavedVoiceMissingNotice()
                 }
             }
+        }
+    }
+}
+
+/** 読み込み完了後の音声一覧（システム既定・日本語音声・空のときの再試行）。 */
+@Suppress("UnstableCollections")
+@Composable
+private fun VoiceListSection(
+    uiState: OtherVoiceDetailUiState,
+    voices: List<TextToSpeechVoice>,
+    selectedId: String,
+    onVoiceSelected: (String) -> Unit,
+    onRetryClicked: () -> Unit,
+    onPreviewClicked: (String) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        DetailPaneSubtitle(text = stringResource(Res.string.voice_default_section))
+        VoiceCards(
+            voices =
+                listOf(
+                    TextToSpeechVoice(
+                        VOICE_ID_UNSPECIFIED,
+                        stringResource(Res.string.voice_system_default),
+                        stringResource(Res.string.voice_system_default_description),
+                    ),
+                ),
+            selectedId = selectedId,
+            previewingId = uiState.previewingVoiceId,
+            onVoiceSelected = onVoiceSelected,
+            onPreviewClicked = onPreviewClicked,
+        )
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            DetailPaneSubtitle(
+                text = stringResource(Res.string.voice_japanese_section),
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                text = stringResource(Res.string.voice_count, voices.size),
+                style = koDriverMonospaceTextStyle(),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        VoiceCards(
+            voices = voices,
+            selectedId = selectedId,
+            previewingId = uiState.previewingVoiceId,
+            onVoiceSelected = onVoiceSelected,
+            onPreviewClicked = onPreviewClicked,
+        )
+        AnimatedVisibility(
+            visible = voices.isEmpty(),
+            modifier = Modifier.fillMaxWidth(),
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            VoiceEmptyRetry(isAllEmpty = uiState.voices.isEmpty(), onRetryClicked = onRetryClicked)
+        }
+    }
+}
+
+@Composable
+private fun VoiceEmptyRetry(
+    isAllEmpty: Boolean,
+    onRetryClicked: () -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    Column {
+        DetailPaneBodyText(
+            text =
+                stringResource(
+                    if (isAllEmpty) {
+                        Res.string.voice_empty
+                    } else {
+                        Res.string.voice_alternatives_empty
+                    },
+                ),
+        )
+        TextButton(onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            onRetryClicked()
+        }) {
+            Text(stringResource(Res.string.voice_retry))
+        }
+    }
+}
+
+@Composable
+private fun SavedVoiceMissingNotice() {
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        modifier = Modifier.fillMaxWidth().padding(vertical = KoDriverSpacing.large),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+            modifier = Modifier.padding(KoDriverSpacing.large),
+        ) {
+            Icon(Icons.Default.Warning, contentDescription = null)
+            Text(
+                stringResource(Res.string.voice_saved_missing),
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
     }
 }
