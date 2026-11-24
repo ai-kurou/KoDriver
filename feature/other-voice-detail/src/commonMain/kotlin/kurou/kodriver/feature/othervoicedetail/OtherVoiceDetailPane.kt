@@ -302,38 +302,64 @@ private fun VoiceCard(
             modifier = Modifier.padding(KoDriverSpacing.medium),
         ) {
             VoiceAvatar(voice = voice, selected = selected)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(voice.displayName, style = MaterialTheme.typography.bodyLarge)
-                Text(
-                    voice.cultureName,
-                    style = koDriverMonospaceTextStyle(),
-                    color = if (selected) colors.onPrimaryContainer else colors.onSurfaceVariant,
-                )
-            }
-            FilledTonalIconButton(
+            VoiceCardLabel(voice = voice, selected = selected, modifier = Modifier.weight(1f))
+            VoicePreviewButton(
+                voice = voice,
+                selected = selected,
+                previewing = previewing,
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     onPreview()
                 },
-                shape = MaterialTheme.shapes.extraLarge,
-                colors =
-                    IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = if (selected) colors.primary else colors.surfaceContainerHighest,
-                        contentColor = if (selected) colors.onPrimary else colors.primary,
-                    ),
-            ) {
-                if (previewing) {
-                    PlayingEqualizer(
-                        contentDescription =
-                            stringResource(Res.string.voice_preview_stop_description, voice.displayName),
-                    )
-                } else {
-                    Icon(
-                        Icons.Default.PlayArrow,
-                        contentDescription = stringResource(Res.string.voice_preview_description, voice.displayName),
-                    )
-                }
-            }
+            )
+        }
+    }
+}
+
+@Composable
+private fun VoiceCardLabel(
+    voice: TextToSpeechVoice,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val colors = MaterialTheme.colorScheme
+    Column(modifier = modifier) {
+        Text(voice.displayName, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            voice.cultureName,
+            style = koDriverMonospaceTextStyle(),
+            color = if (selected) colors.onPrimaryContainer else colors.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun VoicePreviewButton(
+    voice: TextToSpeechVoice,
+    selected: Boolean,
+    previewing: Boolean,
+    onClick: () -> Unit,
+) {
+    val colors = MaterialTheme.colorScheme
+    FilledTonalIconButton(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.extraLarge,
+        colors =
+            IconButtonDefaults.filledTonalIconButtonColors(
+                containerColor = if (selected) colors.primary else colors.surfaceContainerHighest,
+                contentColor = if (selected) colors.onPrimary else colors.primary,
+            ),
+    ) {
+        if (previewing) {
+            PlayingEqualizer(
+                contentDescription =
+                    stringResource(Res.string.voice_preview_stop_description, voice.displayName),
+            )
+        } else {
+            Icon(
+                Icons.Default.PlayArrow,
+                contentDescription = stringResource(Res.string.voice_preview_description, voice.displayName),
+            )
         }
     }
 }
