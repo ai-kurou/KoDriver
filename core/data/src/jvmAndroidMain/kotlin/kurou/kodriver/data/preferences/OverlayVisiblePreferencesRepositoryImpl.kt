@@ -2,11 +2,17 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.exportimport.Exportable
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 
 internal class OverlayVisiblePreferencesRepositoryImpl(
     private val dataStore: DataStore<OverlayVisiblePreferences>,
-) : OverlayVisiblePreferencesRepository {
+) : OverlayVisiblePreferencesRepository,
+    Exportable by DataStoreExportable(
+        key = "overlay_visible",
+        dataStore = dataStore,
+        serializer = OverlayVisiblePreferences.serializer(),
+    ) {
     override fun observeOverlayVisible(): Flow<Boolean> = dataStore.observeProperty { it.visible }
 
     override suspend fun saveOverlayVisible(visible: Boolean) {

@@ -1,9 +1,7 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
-
 /**
  * OverlayTextSizePreferences Repository の永続化実装を生成する。
  */
-internal fun createOverlayTextSizePreferencesRepository(directory: String): OverlayTextSizePreferencesRepository =
+internal fun createOverlayTextSizePreferencesRepository(directory: String): OverlayTextSizePreferencesRepositoryImpl =
     OverlayTextSizePreferencesRepositoryImpl(createOverlayTextSizePreferencesDataStore(directory))

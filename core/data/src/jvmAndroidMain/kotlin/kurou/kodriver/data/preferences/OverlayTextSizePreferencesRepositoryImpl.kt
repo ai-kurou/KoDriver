@@ -5,12 +5,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.exportimport.Exportable
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 
 internal class OverlayTextSizePreferencesRepositoryImpl(
     private val dataStore: DataStore<OverlayTextSizePreferences>,
-) : OverlayTextSizePreferencesRepository {
+) : OverlayTextSizePreferencesRepository,
+    Exportable by DataStoreExportable(
+        key = "overlay_text_size",
+        dataStore = dataStore,
+        serializer = OverlayTextSizePreferences.serializer(),
+    ) {
     // 保存値とは別の一時値をオーバーレイと共有する。null で解除した時点の最新の保存値へ戻す。
     private val previewOverlayTextSize = MutableStateFlow<OverlayTextSize?>(null)
 

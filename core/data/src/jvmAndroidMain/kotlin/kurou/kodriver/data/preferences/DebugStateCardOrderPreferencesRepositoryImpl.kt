@@ -2,11 +2,18 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.exportimport.Exportable
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 
 internal class DebugStateCardOrderPreferencesRepositoryImpl(
     private val dataStore: DataStore<DebugStateCardOrderPreferences>,
-) : DebugStateCardOrderPreferencesRepository {
+    key: String,
+) : DebugStateCardOrderPreferencesRepository,
+    Exportable by DataStoreExportable(
+        key = key,
+        dataStore = dataStore,
+        serializer = DebugStateCardOrderPreferences.serializer(),
+    ) {
     override fun observeCardOrder(): Flow<List<String>> =
         dataStore.observeProperty { prefs ->
             prefs.cardOrder

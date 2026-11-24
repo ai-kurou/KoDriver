@@ -1,9 +1,7 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.ThemePreferencesRepository
-
 /**
  * ThemePreferences Repository の永続化実装を生成する。
  */
-internal fun createThemePreferencesRepository(directory: String): ThemePreferencesRepository =
+internal fun createThemePreferencesRepository(directory: String): ThemePreferencesRepositoryImpl =
     ThemePreferencesRepositoryImpl(createThemePreferencesDataStore(directory))

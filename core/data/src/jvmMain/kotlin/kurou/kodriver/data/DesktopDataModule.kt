@@ -40,6 +40,7 @@ import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.preferences.createVoiceSpeedPreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
+import kurou.kodriver.domain.exportimport.Exportable
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
@@ -86,6 +87,7 @@ import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 /**
@@ -142,34 +144,34 @@ private fun desktopDataModuleInMemoryRepositories() =
 /** 音声・読み上げ関連の DataStore Repository バインド（ファイルは directory 配下）。 */
 private fun desktopDataModuleAudioPreferences(directory: String) =
     module {
-        single<ReadoutHotkeyPreferencesRepository> {
+        single {
             createReadoutHotkeyPreferencesRepository(directory)
-        }
-        single<MicrophoneCutQuietSoundPreferencesRepository> {
+        } binds arrayOf(ReadoutHotkeyPreferencesRepository::class, Exportable::class)
+        single {
             createMicrophoneCutQuietSoundPreferencesRepository(directory = directory)
-        }
+        } binds arrayOf(MicrophoneCutQuietSoundPreferencesRepository::class, Exportable::class)
         // 設定永続化（DataStore。ファイルは directory 配下）
         single<AutoReadoutPreferencesRepository> {
             createAutoReadoutPreferencesRepository(directory = directory)
         }
-        single<QueuePreferencesRepository> {
+        single {
             createQueuePreferencesRepository(directory = directory)
-        }
-        single<AndroidAudioUsagePreferencesRepository> {
+        } binds arrayOf(QueuePreferencesRepository::class, Exportable::class)
+        single {
             createAndroidAudioUsagePreferencesRepository(directory = directory)
-        }
-        single<ReadoutStartSoundEnabledPreferencesRepository> {
+        } binds arrayOf(AndroidAudioUsagePreferencesRepository::class, Exportable::class)
+        single {
             createReadoutStartSoundEnabledPreferencesRepository(directory = directory)
-        }
-        single<SoundVolumePreferencesRepository> {
+        } binds arrayOf(ReadoutStartSoundEnabledPreferencesRepository::class, Exportable::class)
+        single {
             createSoundVolumePreferencesRepository(directory = directory)
-        }
-        single<VoiceSpeedPreferencesRepository> {
+        } binds arrayOf(SoundVolumePreferencesRepository::class, Exportable::class)
+        single {
             createVoiceSpeedPreferencesRepository(directory = directory)
-        }
-        single<VoicePitchPreferencesRepository> {
+        } binds arrayOf(VoiceSpeedPreferencesRepository::class, Exportable::class)
+        single {
             createVoicePitchPreferencesRepository(directory = directory)
-        }
+        } binds arrayOf(VoicePitchPreferencesRepository::class, Exportable::class)
         // 選択したマイク（音声入力デバイス）名
         single<SelectedAudioInputDevicePreferencesRepository> {
             createSelectedAudioInputDevicePreferencesRepository(directory = directory)
@@ -177,9 +179,9 @@ private fun desktopDataModuleAudioPreferences(directory: String) =
         single<VoicePreferencesRepository> {
             createVoicePreferencesRepository(directory = directory)
         }
-        single<ReadoutStartSoundPreferencesRepository> {
+        single {
             createReadoutStartSoundPreferencesRepository(directory = directory)
-        }
+        } binds arrayOf(ReadoutStartSoundPreferencesRepository::class, Exportable::class)
     }
 
 /** アプリ全体・オーバーレイ・接続先などの DataStore Repository バインド（ファイルは directory 配下）。 */
@@ -188,28 +190,28 @@ private fun desktopDataModuleAppPreferences(directory: String) =
         single<SimulatorPreferencesRepository> {
             createSimulatorPreferencesRepository(directory = directory)
         }
-        single<ThemePreferencesRepository> {
+        single {
             createThemePreferencesRepository(directory = directory)
-        }
-        single<OverlayTextSizePreferencesRepository> {
+        } binds arrayOf(ThemePreferencesRepository::class, Exportable::class)
+        single {
             createOverlayTextSizePreferencesRepository(directory = directory)
-        }
+        } binds arrayOf(OverlayTextSizePreferencesRepository::class, Exportable::class)
         // オーバーレイの文字色設定
-        single<OverlayTextColorPreferencesRepository> {
+        single {
             createOverlayTextColorPreferencesRepository(directory = directory)
-        }
-        single<OverlayBackgroundOpacityPreferencesRepository> {
+        } binds arrayOf(OverlayTextColorPreferencesRepository::class, Exportable::class)
+        single {
             createOverlayBackgroundOpacityPreferencesRepository(directory = directory)
-        }
-        single<OverlayVisiblePreferencesRepository> {
+        } binds arrayOf(OverlayBackgroundOpacityPreferencesRepository::class, Exportable::class)
+        single {
             createOverlayVisiblePreferencesRepository(directory = directory)
-        }
-        single<LowVolumeWarningEnabledPreferencesRepository> {
+        } binds arrayOf(OverlayVisiblePreferencesRepository::class, Exportable::class)
+        single {
             createLowVolumeWarningEnabledPreferencesRepository(directory = directory)
-        }
-        single<ManualReadoutPlayButtonLayoutEnabledPreferencesRepository> {
+        } binds arrayOf(LowVolumeWarningEnabledPreferencesRepository::class, Exportable::class)
+        single {
             createManualReadoutPlayButtonLayoutPreferencesRepository(directory = directory)
-        }
+        } binds arrayOf(ManualReadoutPlayButtonLayoutEnabledPreferencesRepository::class, Exportable::class)
         single<ConsoleAddressPreferencesRepository> {
             createConsoleAddressPreferencesRepository(directory = directory)
         }
@@ -253,39 +255,39 @@ private fun desktopDataModuleWindowBounds(directory: String) =
 /** GT7 向けの共通 DataStore Repository バインド。 */
 private fun desktopDataModuleCommonSimulatorPreferences(directory: String) =
     module {
-        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+        single(named(Simulator.Gt7Ps5.id)) {
             createDebugStateCardOrderPreferencesRepository(directory, Simulator.Gt7Ps5)
-        }
-        single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+        } binds arrayOf(DebugStateCardOrderPreferencesRepository::class, Exportable::class)
+        single(named(Simulator.Gt7Ps5.id)) {
             createManualReadoutSetPreferencesRepository(directory, Simulator.Gt7Ps5)
-        }
+        } binds arrayOf(ManualReadoutSetPreferencesRepository::class, Exportable::class)
     }
 
 /** LMU・ACE 向けの共通 DataStore Repository バインド。 */
 private fun desktopDataModuleWindowsSimulatorPreferences(directory: String) =
     module {
-        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+        single(named(Simulator.LmuWindows.id)) {
             createDebugStateCardOrderPreferencesRepository(
                 directory = directory,
                 simulator = Simulator.LmuWindows,
             )
-        }
-        single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+        } binds arrayOf(DebugStateCardOrderPreferencesRepository::class, Exportable::class)
+        single(named(Simulator.LmuWindows.id)) {
             createManualReadoutSetPreferencesRepository(
                 directory = directory,
                 simulator = Simulator.LmuWindows,
             )
-        }
-        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
+        } binds arrayOf(ManualReadoutSetPreferencesRepository::class, Exportable::class)
+        single(named(Simulator.AceWindows.id)) {
             createDebugStateCardOrderPreferencesRepository(
                 directory = directory,
                 simulator = Simulator.AceWindows,
             )
-        }
-        single<ManualReadoutSetPreferencesRepository>(named(Simulator.AceWindows.id)) {
+        } binds arrayOf(DebugStateCardOrderPreferencesRepository::class, Exportable::class)
+        single(named(Simulator.AceWindows.id)) {
             createManualReadoutSetPreferencesRepository(
                 directory = directory,
                 simulator = Simulator.AceWindows,
             )
-        }
+        } binds arrayOf(ManualReadoutSetPreferencesRepository::class, Exportable::class)
     }

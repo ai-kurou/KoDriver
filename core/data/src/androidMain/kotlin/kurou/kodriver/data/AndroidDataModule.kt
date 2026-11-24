@@ -47,6 +47,7 @@ import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.release.HttpServerVersionRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
+import kurou.kodriver.domain.exportimport.Exportable
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
@@ -96,6 +97,7 @@ import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
@@ -133,9 +135,9 @@ public fun androidDataModule(context: Context): Module =
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutHotkeyRepository> { UnsupportedManualReadoutHotkeyRepository() }
         single<HotkeyRepository> { UnsupportedHotkeyRepository() }
-        single<ReadoutHotkeyPreferencesRepository> {
+        single {
             createReadoutHotkeyPreferencesRepository(context.filesDir.absolutePath)
-        }
+        } binds arrayOf(ReadoutHotkeyPreferencesRepository::class, Exportable::class)
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<ManualReadoutItemRequestRepository> { InMemoryManualReadoutItemRequestRepository() }
         single<ManualReadoutItemSpokenRepository> { InMemoryManualReadoutItemSpokenRepository() }
@@ -150,12 +152,12 @@ public fun androidDataModule(context: Context): Module =
         single<AutoReadoutPreferencesRepository> {
             AndroidAutoReadoutPreferencesRepository(context.readoutDataStore)
         }
-        single<QueuePreferencesRepository> {
+        single {
             createQueuePreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<AndroidAudioUsagePreferencesRepository> {
+        } binds arrayOf(QueuePreferencesRepository::class, Exportable::class)
+        single {
             createAndroidAudioUsagePreferencesRepository(context.filesDir.absolutePath)
-        }
+        } binds arrayOf(AndroidAudioUsagePreferencesRepository::class, Exportable::class)
         // :core:lmu-windows-data / :core:ace-windows-data の Android WebSocket リポジトリは、このバインドを get() で解決して共有する（WebSockets プラグインと ping 間隔の設定を含むため、削除すると WebSocket が動かなくなる）。
         single<HttpClient> { createWebSocketHttpClient() }
         includes(androidDataModuleCommonSimulatorPreferences(context))
@@ -169,36 +171,36 @@ public fun androidDataModule(context: Context): Module =
  */
 private fun androidDataModuleMisc(context: Context) =
     module {
-        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+        single(named(Simulator.LmuWindows.id)) {
             createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath, Simulator.LmuWindows)
-        }
-        single<ManualReadoutSetPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+        } binds arrayOf(DebugStateCardOrderPreferencesRepository::class, Exportable::class)
+        single(named(Simulator.LmuWindows.id)) {
             createManualReadoutSetPreferencesRepository(context.filesDir.absolutePath, Simulator.LmuWindows)
-        }
-        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
+        } binds arrayOf(ManualReadoutSetPreferencesRepository::class, Exportable::class)
+        single(named(Simulator.AceWindows.id)) {
             createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath, Simulator.AceWindows)
-        }
-        single<ManualReadoutSetPreferencesRepository>(named(Simulator.AceWindows.id)) {
+        } binds arrayOf(DebugStateCardOrderPreferencesRepository::class, Exportable::class)
+        single(named(Simulator.AceWindows.id)) {
             createManualReadoutSetPreferencesRepository(context.filesDir.absolutePath, Simulator.AceWindows)
-        }
-        single<SoundVolumePreferencesRepository> {
+        } binds arrayOf(ManualReadoutSetPreferencesRepository::class, Exportable::class)
+        single {
             createSoundVolumePreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<VoiceSpeedPreferencesRepository> {
+        } binds arrayOf(SoundVolumePreferencesRepository::class, Exportable::class)
+        single {
             createVoiceSpeedPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<VoicePitchPreferencesRepository> {
+        } binds arrayOf(VoiceSpeedPreferencesRepository::class, Exportable::class)
+        single {
             createVoicePitchPreferencesRepository(context.filesDir.absolutePath)
-        }
+        } binds arrayOf(VoicePitchPreferencesRepository::class, Exportable::class)
         single<VoicePreferencesRepository> {
             createVoicePreferencesRepository(context.filesDir.absolutePath)
         }
-        single<ReadoutStartSoundPreferencesRepository> {
+        single {
             createReadoutStartSoundPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<ThemePreferencesRepository> {
+        } binds arrayOf(ReadoutStartSoundPreferencesRepository::class, Exportable::class)
+        single {
             createThemePreferencesRepository(context.filesDir.absolutePath)
-        }
+        } binds arrayOf(ThemePreferencesRepository::class, Exportable::class)
         single<ServerIpPreferencesRepository> {
             AndroidServerIpPreferencesRepository(context.serverIpDataStore)
         }
@@ -238,30 +240,30 @@ private fun androidDataModuleAppSettings(context: Context) =
             AndroidAccessLocalNetworkPermissionRepository(context)
         }
         // オーバーレイの文字サイズ設定
-        single<OverlayTextSizePreferencesRepository> {
+        single {
             createOverlayTextSizePreferencesRepository(context.filesDir.absolutePath)
-        }
+        } binds arrayOf(OverlayTextSizePreferencesRepository::class, Exportable::class)
         // オーバーレイの文字色設定
-        single<OverlayTextColorPreferencesRepository> {
+        single {
             createOverlayTextColorPreferencesRepository(context.filesDir.absolutePath)
-        }
+        } binds arrayOf(OverlayTextColorPreferencesRepository::class, Exportable::class)
         // オーバーレイの背景透明度設定
-        single<OverlayBackgroundOpacityPreferencesRepository> {
+        single {
             createOverlayBackgroundOpacityPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<MicrophoneCutQuietSoundPreferencesRepository> {
+        } binds arrayOf(OverlayBackgroundOpacityPreferencesRepository::class, Exportable::class)
+        single {
             createMicrophoneCutQuietSoundPreferencesRepository(context.filesDir.absolutePath)
-        }
+        } binds arrayOf(MicrophoneCutQuietSoundPreferencesRepository::class, Exportable::class)
         // オーバーレイの表示ON/OFF設定
-        single<OverlayVisiblePreferencesRepository> {
+        single {
             createOverlayVisiblePreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LowVolumeWarningEnabledPreferencesRepository> {
+        } binds arrayOf(OverlayVisiblePreferencesRepository::class, Exportable::class)
+        single {
             createLowVolumeWarningEnabledPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<ManualReadoutPlayButtonLayoutEnabledPreferencesRepository> {
+        } binds arrayOf(LowVolumeWarningEnabledPreferencesRepository::class, Exportable::class)
+        single {
             createManualReadoutPlayButtonLayoutPreferencesRepository(context.filesDir.absolutePath)
-        }
+        } binds arrayOf(ManualReadoutPlayButtonLayoutEnabledPreferencesRepository::class, Exportable::class)
         // オーバーレイウィンドウの位置・サイズ（デスクトップ版のみ使用するが、Koin の定義は両プラットフォームで揃える）
         single<OverlayWindowBoundsPreferencesRepository> {
             createOverlayWindowBoundsPreferencesRepository(context.filesDir.absolutePath)
@@ -276,9 +278,9 @@ private fun androidDataModuleAppSettings(context: Context) =
  */
 private fun androidDataModuleCommonPreferences(context: Context) =
     module {
-        single<ReadoutStartSoundEnabledPreferencesRepository> {
+        single {
             createReadoutStartSoundEnabledPreferencesRepository(context.filesDir.absolutePath)
-        }
+        } binds arrayOf(ReadoutStartSoundEnabledPreferencesRepository::class, Exportable::class)
         single<FeedbackCooldownPreferencesRepository> {
             createFeedbackCooldownPreferencesRepository(context.filesDir.absolutePath)
         }
@@ -291,10 +293,10 @@ private fun androidDataModuleCommonPreferences(context: Context) =
 /** GT7 向けの共通 DataStore Repository バインド。 */
 private fun androidDataModuleCommonSimulatorPreferences(context: Context) =
     module {
-        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+        single(named(Simulator.Gt7Ps5.id)) {
             createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath, Simulator.Gt7Ps5)
-        }
-        single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
+        } binds arrayOf(DebugStateCardOrderPreferencesRepository::class, Exportable::class)
+        single(named(Simulator.Gt7Ps5.id)) {
             createManualReadoutSetPreferencesRepository(context.filesDir.absolutePath, Simulator.Gt7Ps5)
-        }
+        } binds arrayOf(ManualReadoutSetPreferencesRepository::class, Exportable::class)
     }

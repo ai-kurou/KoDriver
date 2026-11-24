@@ -2,14 +2,21 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.exportimport.Exportable
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 
 internal class ManualReadoutSetPreferencesRepositoryImpl(
     private val dataStore: DataStore<ManualReadoutSetPreferences>,
+    key: String,
     private val migrateLegacySet: () -> (ManualReadoutSet) -> ManualReadoutSet = { { it } },
-) : ManualReadoutSetPreferencesRepository {
+) : ManualReadoutSetPreferencesRepository,
+    Exportable by DataStoreExportable(
+        key = key,
+        dataStore = dataStore,
+        serializer = ManualReadoutSetPreferences.serializer(),
+    ) {
     override fun observeSets(): Flow<List<ManualReadoutSet>> =
         dataStore.observeProperty { prefs ->
             val migrate = migrateLegacySet()

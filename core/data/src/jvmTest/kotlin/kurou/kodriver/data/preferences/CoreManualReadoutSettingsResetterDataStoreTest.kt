@@ -29,9 +29,21 @@ class CoreManualReadoutSettingsResetterDataStoreTest {
         )
     private val resetter =
         CoreManualReadoutSettingsResetter(
-            lmuWindowsManualReadoutSetPreferencesRepository = ManualReadoutSetPreferencesRepositoryImpl(lmuDataStore),
-            aceWindowsManualReadoutSetPreferencesRepository = ManualReadoutSetPreferencesRepositoryImpl(aceDataStore),
-            gt7Ps5ManualReadoutSetPreferencesRepository = ManualReadoutSetPreferencesRepositoryImpl(gt7DataStore),
+            lmuWindowsManualReadoutSetPreferencesRepository =
+                ManualReadoutSetPreferencesRepositoryImpl(
+                    lmuDataStore,
+                    key = "lmu",
+                ),
+            aceWindowsManualReadoutSetPreferencesRepository =
+                ManualReadoutSetPreferencesRepositoryImpl(
+                    aceDataStore,
+                    key = "ace",
+                ),
+            gt7Ps5ManualReadoutSetPreferencesRepository =
+                ManualReadoutSetPreferencesRepositoryImpl(
+                    gt7DataStore,
+                    key = "gt7",
+                ),
             manualReadoutPlayButtonLayoutEnabledPreferencesRepository =
                 ManualReadoutPlayButtonLayoutPreferencesRepositoryImpl(playButtonDataStore),
         )

@@ -1,9 +1,7 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
-
 /**
  * SoundVolumePreferences Repository の永続化実装を生成する。
  */
-internal fun createSoundVolumePreferencesRepository(directory: String): SoundVolumePreferencesRepository =
+internal fun createSoundVolumePreferencesRepository(directory: String): SoundVolumePreferencesRepositoryImpl =
     SoundVolumePreferencesRepositoryImpl(createSoundVolumePreferencesDataStore(directory))

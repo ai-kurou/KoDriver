@@ -2,12 +2,18 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.exportimport.Exportable
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 
 internal class ReadoutStartSoundEnabledPreferencesRepositoryImpl(
     private val dataStore: DataStore<ReadoutStartSoundEnabledPreferences>,
-) : ReadoutStartSoundEnabledPreferencesRepository {
+) : ReadoutStartSoundEnabledPreferencesRepository,
+    Exportable by DataStoreExportable(
+        key = "readout_start_sound_enabled",
+        dataStore = dataStore,
+        serializer = ReadoutStartSoundEnabledPreferences.serializer(),
+    ) {
     override suspend fun resetToDefault() {
         dataStore.updateData { ReadoutStartSoundEnabledPreferences() }
     }

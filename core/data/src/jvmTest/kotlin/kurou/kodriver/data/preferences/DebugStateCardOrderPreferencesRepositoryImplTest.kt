@@ -24,7 +24,7 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
             scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
-    private val repository = DebugStateCardOrderPreferencesRepositoryImpl(dataStore)
+    private val repository = DebugStateCardOrderPreferencesRepositoryImpl(dataStore, key = "test")
 
     @AfterTest
     fun tearDown() {

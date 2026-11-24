@@ -1,9 +1,7 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
-
 /**
  * OverlayTextColorPreferences Repository の永続化実装を生成する。
  */
-internal fun createOverlayTextColorPreferencesRepository(directory: String): OverlayTextColorPreferencesRepository =
+internal fun createOverlayTextColorPreferencesRepository(directory: String): OverlayTextColorPreferencesRepositoryImpl =
     OverlayTextColorPreferencesRepositoryImpl(createOverlayTextColorPreferencesDataStore(directory))

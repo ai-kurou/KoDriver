@@ -2,11 +2,17 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.exportimport.Exportable
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
 
 internal class LowVolumeWarningEnabledPreferencesRepositoryImpl(
     private val dataStore: DataStore<LowVolumeWarningEnabledPreferences>,
-) : LowVolumeWarningEnabledPreferencesRepository {
+) : LowVolumeWarningEnabledPreferencesRepository,
+    Exportable by DataStoreExportable(
+        key = "low_volume_warning_enabled",
+        dataStore = dataStore,
+        serializer = LowVolumeWarningEnabledPreferences.serializer(),
+    ) {
     override fun observeLowVolumeWarningEnabled(): Flow<Boolean> = dataStore.observeProperty { it.enabled }
 
     override suspend fun saveLowVolumeWarningEnabled(enabled: Boolean) {

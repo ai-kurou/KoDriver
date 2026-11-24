@@ -2,11 +2,17 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.exportimport.Exportable
 import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 
 internal class ReadoutHotkeyPreferencesRepositoryImpl(
     private val dataStore: DataStore<ReadoutHotkeyPreferences>,
-) : ReadoutHotkeyPreferencesRepository {
+) : ReadoutHotkeyPreferencesRepository,
+    Exportable by DataStoreExportable(
+        key = "readout_hotkey",
+        dataStore = dataStore,
+        serializer = ReadoutHotkeyPreferences.serializer(),
+    ) {
     override fun observeVirtualKeyCode(): Flow<Int> =
         dataStore.observeProperty { prefs ->
             prefs.virtualKeyCode

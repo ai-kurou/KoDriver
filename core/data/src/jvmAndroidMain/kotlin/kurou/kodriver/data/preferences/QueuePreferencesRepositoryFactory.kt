@@ -1,9 +1,7 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.QueuePreferencesRepository
-
 /**
  * QueuePreferences Repository の永続化実装を生成する。
  */
-internal fun createQueuePreferencesRepository(directory: String): QueuePreferencesRepository =
+internal fun createQueuePreferencesRepository(directory: String): QueuePreferencesRepositoryImpl =
     QueuePreferencesRepositoryImpl(createQueuePreferencesDataStore(directory))

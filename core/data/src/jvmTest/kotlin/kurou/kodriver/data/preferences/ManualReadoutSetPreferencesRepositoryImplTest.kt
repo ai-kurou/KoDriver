@@ -29,7 +29,7 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
-    private val repository = ManualReadoutSetPreferencesRepositoryImpl(dataStore)
+    private val repository = ManualReadoutSetPreferencesRepositoryImpl(dataStore, key = "test")
 
     @AfterTest
     fun tearDown() {
@@ -42,7 +42,8 @@ class ManualReadoutSetPreferencesRepositoryImplTest {
             val renameOld: (ManualReadoutSet) -> ManualReadoutSet = { set ->
                 set.copy(itemKeys = set.itemKeys.map { key -> key.replace("old", "new") })
             }
-            val migrating = ManualReadoutSetPreferencesRepositoryImpl(dataStore, migrateLegacySet = { renameOld })
+            val migrating =
+                ManualReadoutSetPreferencesRepositoryImpl(dataStore, key = "test", migrateLegacySet = { renameOld })
             dataStore.updateData {
                 ManualReadoutSetPreferences(
                     listOf(ManualReadoutSetPreference("legacy", itemKeys = listOf("old", "keep"))),
