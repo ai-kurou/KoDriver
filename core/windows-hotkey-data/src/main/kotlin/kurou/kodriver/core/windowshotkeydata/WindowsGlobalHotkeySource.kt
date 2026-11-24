@@ -4,6 +4,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
@@ -26,73 +27,117 @@ internal class WindowsGlobalHotkeySource internal constructor(
     override fun observe(hotkey: GlobalHotkey): Flow<GlobalHotkeyEvent> =
         callbackFlow {
             val ready = CompletableDeferred<Int?>()
-            val lifecycleLock = Any()
-            var finished = false
+            val lifecycle = MessageThreadLifecycle()
             val messageThread =
                 thread(name = "KoDriver-global-hotkey", isDaemon = true) {
-                    var registered = false
-                    try {
-                        val threadId = nativeApi.prepareMessageQueue()
-                        val errorCode = nativeApi.register(hotkey)
-                        registered = errorCode == 0
-                        if (!registered) {
-                            val state =
-                                if (errorCode == 1409) {
-                                    HotkeyRegistrationState.Conflict
-                                } else {
-                                    HotkeyRegistrationState.Failed(errorCode)
-                                }
-                            trySend(GlobalHotkeyEvent.Registration(state))
-                            captureError(
-                                IllegalStateException(
-                                    "WindowsGlobalHotkeySource: RegisterHotKey failed for '$hotkey': $errorCode",
-                                ),
-                            )
-                            return@thread
-                        }
-                        trySend(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Registered))
-                        ready.complete(threadId)
-                        while (true) {
-                            val message = nativeApi.nextMessage() ?: break
-                            if (message.message == WM_HOTKEY && message.hotkeyId == HOTKEY_ID) {
-                                trySend(GlobalHotkeyEvent.Pressed)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        close(e)
-                    } finally {
-                        synchronized(lifecycleLock) {
-                            finished = true
-                            if (registered) nativeApi.unregister()
-                        }
-                        ready.complete(null)
-                        close()
-                    }
+                    runMessageThread(hotkey, ready, lifecycle)
                 }
             try {
                 awaitClose { }
             } finally {
-                withContext(NonCancellable + Dispatchers.IO) {
-                    val threadId = ready.await()
-                    val quitPosted =
-                        synchronized(lifecycleLock) {
-                            if (threadId == null || finished) {
-                                true
-                            } else {
-                                try {
-                                    nativeApi.postQuit(threadId)
-                                    true
-                                } catch (e: Exception) {
-                                    captureError(e)
-                                    false
-                                }
-                            }
-                        }
-                    // WM_QUIT を投稿できないとスレッドは終了しないため、join せず daemon スレッドに任せる。
-                    if (quitPosted) messageThread.join()
-                }
+                shutdownMessageThread(messageThread, ready, lifecycle)
             }
         }.buffer(Channel.UNLIMITED)
+
+    private fun ProducerScope<GlobalHotkeyEvent>.runMessageThread(
+        hotkey: GlobalHotkey,
+        ready: CompletableDeferred<Int?>,
+        lifecycle: MessageThreadLifecycle,
+    ) {
+        var registered = false
+        try {
+            val threadId = nativeApi.prepareMessageQueue()
+            val errorCode = nativeApi.register(hotkey)
+            registered = errorCode == 0
+            if (registered) {
+                trySend(GlobalHotkeyEvent.Registration(HotkeyRegistrationState.Registered))
+                ready.complete(threadId)
+                pumpHotkeyMessages()
+            } else {
+                reportRegistrationFailure(hotkey, errorCode)
+            }
+        } catch (e: Exception) {
+            close(e)
+        } finally {
+            lifecycle.finish { if (registered) nativeApi.unregister() }
+            ready.complete(null)
+            close()
+        }
+    }
+
+    private fun ProducerScope<GlobalHotkeyEvent>.pumpHotkeyMessages() {
+        while (true) {
+            val message = nativeApi.nextMessage() ?: break
+            if (message.message == WM_HOTKEY && message.hotkeyId == HOTKEY_ID) {
+                trySend(GlobalHotkeyEvent.Pressed)
+            }
+        }
+    }
+
+    private fun ProducerScope<GlobalHotkeyEvent>.reportRegistrationFailure(
+        hotkey: GlobalHotkey,
+        errorCode: Int,
+    ) {
+        val state =
+            if (errorCode == ERROR_HOTKEY_ALREADY_REGISTERED) {
+                HotkeyRegistrationState.Conflict
+            } else {
+                HotkeyRegistrationState.Failed(errorCode)
+            }
+        trySend(GlobalHotkeyEvent.Registration(state))
+        captureError(
+            IllegalStateException(
+                "WindowsGlobalHotkeySource: RegisterHotKey failed for '$hotkey': $errorCode",
+            ),
+        )
+    }
+
+    private suspend fun shutdownMessageThread(
+        messageThread: Thread,
+        ready: CompletableDeferred<Int?>,
+        lifecycle: MessageThreadLifecycle,
+    ) {
+        withContext(NonCancellable + Dispatchers.IO) {
+            val threadId = ready.await()
+            val quitPosted = lifecycle.requestQuit(threadId) { nativeApi.postQuit(it) }
+            // WM_QUIT を投稿できないとスレッドは終了しないため、join せず daemon スレッドに任せる。
+            if (quitPosted) messageThread.join()
+        }
+    }
+
+    /** メッセージスレッドの終了済みフラグと、解除・WM_QUIT 投稿を排他するロック。 */
+    private class MessageThreadLifecycle {
+        private val lock = Any()
+        private var finished = false
+
+        fun finish(unregister: () -> Unit) =
+            synchronized(lock) {
+                finished = true
+                unregister()
+            }
+
+        /** WM_QUIT を投稿できた（または投稿不要だった）場合に true を返す。 */
+        fun requestQuit(
+            threadId: Int?,
+            postQuit: (Int) -> Unit,
+        ): Boolean =
+            synchronized(lock) {
+                if (threadId == null || finished) {
+                    true
+                } else {
+                    runCatchingQuit { postQuit(threadId) }
+                }
+            }
+
+        private inline fun runCatchingQuit(block: () -> Unit): Boolean =
+            try {
+                block()
+                true
+            } catch (e: Exception) {
+                captureError(e)
+                false
+            }
+    }
 
     companion object {
         /** 非 Windows 環境ではネイティブ API を生成せず、即座に完了する実装を返す。 */
@@ -113,3 +158,6 @@ internal class WindowsGlobalHotkeySource internal constructor(
             }
     }
 }
+
+/** RegisterHotKey が他アプリの登録済みホットキーと衝突したときの GetLastError コード。 */
+private const val ERROR_HOTKEY_ALREADY_REGISTERED = 1409
