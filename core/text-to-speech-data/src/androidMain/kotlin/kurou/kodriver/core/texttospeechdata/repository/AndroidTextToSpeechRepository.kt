@@ -323,39 +323,54 @@ internal class AndroidTextToSpeechRepository(
             val initStatus = CompletableDeferred<Int>()
             val engine = textToSpeechFactory { status -> initStatus.complete(status) }
             resetAppliedState()
-            val status =
-                try {
-                    initStatus.await()
-                } catch (e: CancellationException) {
-                    engine.shutdown()
-                    initialized = false
-                    throw e
-                }
-            if (status != TextToSpeech.SUCCESS) {
-                unavailableReason = TextToSpeechUnavailableReason.EngineMissing
-                engine.shutdown()
-                textToSpeech = null
-                return@withLock null
-            }
-            if (engine.setLanguage(locale) < TextToSpeech.LANG_AVAILABLE) {
-                unavailableReason = TextToSpeechUnavailableReason.LanguageDataMissing
-                engine.shutdown()
-                textToSpeech = null
-                return@withLock null
-            }
-            synchronized(voiceLock) { defaultVoiceIdValue = readDefaultVoiceId(engine) }
-            val listenerRegistered =
-                engine.setOnUtteranceProgressListener(createUtteranceProgressListener()) == TextToSpeech.SUCCESS
-            textToSpeech =
-                if (listenerRegistered) {
-                    engine
-                } else {
-                    unavailableReason = TextToSpeechUnavailableReason.EngineMissing
-                    engine.shutdown()
-                    null
-                }
+            val status = awaitInitStatus(initStatus, engine)
+            textToSpeech = prepareEngine(engine, status)
             textToSpeech
         }
+
+    /** 初期化完了を待つ。待機中にキャンセルされた場合はエンジンを解放し、次回呼び出しで再初期化できるようにする。 */
+    private suspend fun awaitInitStatus(
+        initStatus: CompletableDeferred<Int>,
+        engine: TextToSpeech,
+    ): Int =
+        try {
+            initStatus.await()
+        } catch (e: CancellationException) {
+            engine.shutdown()
+            initialized = false
+            throw e
+        }
+
+    /**
+     * 初期化結果に応じてエンジンを使える状態にして返す。失敗した場合は [unavailableReason] を記録し、エンジンを解放して `null` を返す。
+     */
+    private fun prepareEngine(
+        engine: TextToSpeech,
+        status: Int,
+    ): TextToSpeech? {
+        val failure =
+            when {
+                status != TextToSpeech.SUCCESS -> {
+                    TextToSpeechUnavailableReason.EngineMissing
+                }
+
+                engine.setLanguage(locale) < TextToSpeech.LANG_AVAILABLE -> {
+                    TextToSpeechUnavailableReason.LanguageDataMissing
+                }
+
+                else -> {
+                    synchronized(voiceLock) { defaultVoiceIdValue = readDefaultVoiceId(engine) }
+                    val listenerRegistered =
+                        engine.setOnUtteranceProgressListener(createUtteranceProgressListener()) ==
+                            TextToSpeech.SUCCESS
+                    if (listenerRegistered) null else TextToSpeechUnavailableReason.EngineMissing
+                }
+            }
+        if (failure == null) return engine
+        unavailableReason = failure
+        engine.shutdown()
+        return null
+    }
 
     /**
      * [onDone] / [onError] / [onStop][UtteranceProgressListener.onStop] のコールバックスレッドから呼ばれ、
