@@ -1,5 +1,15 @@
 plugins {
     `kotlin-dsl`
+    alias(libs.plugins.ktlint)
+}
+
+ktlint {
+    version.set(libs.versions.ktlintCore.get())
+    // kotlin-dsl が生成するアクセサ類（build/generated-sources 配下）は検査対象から除く
+    filter {
+        exclude("**/generated-sources/**")
+        exclude { it.file.invariantSeparatorsPath.contains("/build/") }
+    }
 }
 
 dependencies {

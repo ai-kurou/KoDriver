@@ -8,14 +8,19 @@ plugins {
 
 private val libs = versionCatalogs.named("libs")
 
+private fun versionAsInt(alias: String): Int {
+    val version = libs.findVersion(alias).get()
+    return version.requiredVersion.toInt()
+}
+
 kotlin {
     explicitApi()
 
     jvm()
 
     android {
-        compileSdk = libs.findVersion("android-compileSdk").get().requiredVersion.toInt()
-        minSdk = libs.findVersion("android-minSdk").get().requiredVersion.toInt()
+        compileSdk = versionAsInt("android-compileSdk")
+        minSdk = versionAsInt("android-minSdk")
 
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
