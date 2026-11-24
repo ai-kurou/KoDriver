@@ -62,61 +62,80 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         longitudinalThresholdMeters: Double,
         lateralMaximumMeters: Double,
     ): LmuWindowsVehicleApproachData {
+        val player = readPlayerPose(buffer, playerIdx)
+
+        // インデックスは Narrator の接近継続時間を車両ごとに追跡するキーとして渡す。
+        val sideBySideVehicles =
+            (0 until activeVehicles)
+                .filter { it != playerIdx }
+                .mapNotNull { i ->
+                    sideBySideRelX(buffer, i, player, longitudinalThresholdMeters, lateralMaximumMeters)
+                        ?.let { relX -> i to relX }
+                }
+        val (leftVehicles, rightVehicles) = sideBySideVehicles.partition { (_, relX) -> relX < 0 }
+
+        return LmuWindowsVehicleApproachData(
+            sideBySideLeftVehicleIds = leftVehicles.mapTo(mutableSetOf()) { (id, _) -> id },
+            sideBySideRightVehicleIds = rightVehicles.mapTo(mutableSetOf()) { (id, _) -> id },
+            lateralDistanceLeftMeters = LateralDistanceMeters(nearestLateralMeters(leftVehicles)),
+            lateralDistanceRightMeters = LateralDistanceMeters(nearestLateralMeters(rightVehicles)),
+        )
+    }
+
+    private fun nearestLateralMeters(vehicles: List<Pair<Int, Double>>): Double =
+        vehicles.fold(Double.MAX_VALUE) { nearest, (_, relX) ->
+            val absRelX = abs(relX)
+            if (absRelX < nearest) absRelX else nearest
+        }
+
+    private fun readPlayerPose(
+        buffer: ByteBuffer,
+        playerIdx: Int,
+    ): PlayerPose {
         val plrBase = LmuWindowsMapper.vehicleTelemetryBase(playerIdx)
         // LMU の地面上の座標 (X, Z) を (X, -Z) に投影し、姿勢行列の第3行から自車の yaw を求める。
-        val plrPosX = buffer.getDouble(plrBase + OFF_POS_X)
-        val plrPosY = -buffer.getDouble(plrBase + OFF_POS_Z)
-        val plrOriYaw =
+        val yaw =
             atan2(
                 buffer.getDouble(plrBase + OFF_ORI_ROW2_X),
                 buffer.getDouble(plrBase + OFF_ORI_ROW2_Z),
             ) - PI
-
-        val sinYaw = sin(plrOriYaw)
-        val cosYaw = cos(plrOriYaw)
-        val sideBySideThreshold = longitudinalThresholdMeters
-
-        var nearestLeftMeters = Double.MAX_VALUE
-        var nearestRightMeters = Double.MAX_VALUE
-        val leftVehicleIds = mutableSetOf<Int>()
-        val rightVehicleIds = mutableSetOf<Int>()
-
-        for (i in 0 until activeVehicles) {
-            if (i == playerIdx) continue
-
-            val optBase = LmuWindowsMapper.vehicleTelemetryBase(i)
-            val optPosX = buffer.getDouble(optBase + OFF_POS_X)
-            val optPosY = -buffer.getDouble(optBase + OFF_POS_Z)
-
-            val dx = optPosX - plrPosX
-            val dy = optPosY - plrPosY
-
-            // 自車基準へ回転した relX は左右（負が左）、relY は前後。高さ方向は並走判定に使わない。
-            val relX = cosYaw * dx - sinYaw * dy
-            val relY = cosYaw * dy + sinYaw * dx
-
-            if (abs(relY) >= sideBySideThreshold) continue
-
-            val absRelX = abs(relX)
-            if (absRelX < lateralMinimumMeters) continue
-            if (absRelX > lateralMaximumMeters) continue
-            if (relX < 0) {
-                // インデックスは Narrator の接近継続時間を車両ごとに追跡するキーとして渡す。
-                leftVehicleIds.add(i)
-                if (absRelX < nearestLeftMeters) nearestLeftMeters = absRelX
-            } else {
-                rightVehicleIds.add(i)
-                if (absRelX < nearestRightMeters) nearestRightMeters = absRelX
-            }
-        }
-
-        return LmuWindowsVehicleApproachData(
-            sideBySideLeftVehicleIds = leftVehicleIds,
-            sideBySideRightVehicleIds = rightVehicleIds,
-            lateralDistanceLeftMeters = LateralDistanceMeters(nearestLeftMeters),
-            lateralDistanceRightMeters = LateralDistanceMeters(nearestRightMeters),
+        return PlayerPose(
+            posX = buffer.getDouble(plrBase + OFF_POS_X),
+            posY = -buffer.getDouble(plrBase + OFF_POS_Z),
+            sinYaw = sin(yaw),
+            cosYaw = cos(yaw),
         )
     }
+
+    /** 並走と判定した場合は自車基準の左右位置 relX（負が左）を返し、対象外なら null を返す。 */
+    private fun sideBySideRelX(
+        buffer: ByteBuffer,
+        vehicleIdx: Int,
+        player: PlayerPose,
+        longitudinalThresholdMeters: Double,
+        lateralMaximumMeters: Double,
+    ): Double? {
+        val optBase = LmuWindowsMapper.vehicleTelemetryBase(vehicleIdx)
+        val dx = buffer.getDouble(optBase + OFF_POS_X) - player.posX
+        val dy = -buffer.getDouble(optBase + OFF_POS_Z) - player.posY
+
+        // 自車基準へ回転した relX は左右（負が左）、relY は前後。高さ方向は並走判定に使わない。
+        val relX = player.cosYaw * dx - player.sinYaw * dy
+        val relY = player.cosYaw * dy + player.sinYaw * dx
+
+        if (abs(relY) >= longitudinalThresholdMeters) return null
+
+        val absRelX = abs(relX)
+        if (absRelX < lateralMinimumMeters || absRelX > lateralMaximumMeters) return null
+        return relX
+    }
+
+    private data class PlayerPose(
+        val posX: Double,
+        val posY: Double,
+        val sinYaw: Double,
+        val cosYaw: Double,
+    )
 
     companion object {
         private const val OFF_POS_X = 160
