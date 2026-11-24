@@ -34,7 +34,7 @@ Android の `WebSocketLmuWindowsRepository` は `/ws/lmu_windows/telemetry` か�
 | `/ws/ace_windows/fuel` | `ObserveAceWindowsFuelUseCase`（`AceWindowsFuelRepository`） | `AceWindowsFuelData`（同一値も継続配信） |
 | `/ws/ace_windows/flags` | `ObserveAceWindowsFlagUseCase`（`AceWindowsFlagRepository`） | `AceWindowsFlagData` |
 | `/ws/ace_windows/status` | `ObserveAceWindowsStatusUseCase`（`AceWindowsStatusRepository`） | `AceWindowsStatusData` |
-| `/ws/ace_windows/tyre_carcass_temperature` | `ObserveAceWindowsTyreCarcassTemperatureUseCase`（`AceWindowsTyreCarcassTemperatureRepository`） | `AceWindowsTyreCarcassTemperatureData` |
+| `/ws/ace_windows/tyre_carcass_temperature` | `ObserveAceWindowsTyreCarcassTemperatureUseCase`（`AceWindowsTyreCarcassTemperatureRepository`） | `AceWindowsTyreCarcassTemperatureData`（同一値も継続配信） |
 | `/ws/ace_windows/vehicle_approach` | `ObserveAceWindowsVehicleApproachUseCase`（`AceWindowsVehicleApproachRepository`） | `AceWindowsVehicleApproachData` |
 | `/ws/ace_windows/my_best_lap` | `ObserveAceWindowsBestLapTimeUseCase`（`AceWindowsBestLapTimeRepository`） | `AceWindowsBestLapTimeData` |
 | `/ws/ace_windows/remaining_fuel_laps` | `ObserveAceWindowsRemainingFuelLapsUseCase`（`AceWindowsRemainingFuelLapsRepository`） | `AceWindowsRemainingFuelLapsData`（同一値も継続配信） |
