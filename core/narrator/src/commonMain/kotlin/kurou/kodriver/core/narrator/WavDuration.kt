@@ -24,30 +24,58 @@ internal fun wavDurationMs(bytes: ByteArray): Long? {
         val bodyOffset = offset + CHUNK_HEADER_SIZE
         when {
             bytes.matchesChunkId(offset, FMT_CHUNK_ID) -> {
-                // 宣言サイズが byteRate フィールドに届かない fmt では、後続チャンクの識別子を byteRate として
-                // 読んでしまうため、ファイル境界とは別に宣言サイズも検証する。
-                if (chunkSize < FMT_BYTE_RATE_OFFSET + INT32_SIZE) return null
-                if (bodyOffset + FMT_BYTE_RATE_OFFSET + INT32_SIZE > bytes.size) return null
-                byteRate = bytes.readInt32LE(bodyOffset + FMT_BYTE_RATE_OFFSET)
+                byteRate = bytes.readFmtByteRate(bodyOffset, chunkSize) ?: return null
             }
 
             bytes.matchesChunkId(offset, DATA_CHUNK_ID) -> {
-                if (byteRate <= 0) return null
-                // 途中で切れた WAV では data のチャンクサイズが実バイト数を超える。
-                // そのまま使うと実際の音声より長い再生時間になるため、実バイト数で抑える。
-                val dataSize = chunkSize.coerceAtMost(bytes.size - bodyOffset)
-                // 本文が空の data は再生すべき音声が無く、0 を返すと即座に停止して無音になるため不明として扱う。
-                if (dataSize <= 0) return null
-                return dataSize.toLong() * MILLIS_PER_SECOND / byteRate
+                return bytes.dataDurationMs(bodyOffset, chunkSize, byteRate)
             }
         }
-        // 奇数サイズのチャンクには 1 バイトのパディングが続く。
-        val advance = CHUNK_HEADER_SIZE.toLong() + chunkSize + (chunkSize % 2)
-        val nextOffset = offset + advance
-        if (nextOffset > bytes.size) return null
-        offset = nextOffset.toInt()
+        offset = bytes.nextChunkOffset(offset, chunkSize) ?: return null
     }
     return null
+}
+
+/**
+ * `fmt ` チャンク本体から `byteRate` を読む。読めない場合は `null`。
+ *
+ * 宣言サイズが byteRate フィールドに届かない fmt では、後続チャンクの識別子を byteRate として
+ * 読んでしまうため、ファイル境界とは別に宣言サイズも検証する。
+ */
+private fun ByteArray.readFmtByteRate(
+    bodyOffset: Int,
+    chunkSize: Int,
+): Int? {
+    if (chunkSize < FMT_BYTE_RATE_OFFSET + INT32_SIZE) return null
+    if (bodyOffset + FMT_BYTE_RATE_OFFSET + INT32_SIZE > size) return null
+    return readInt32LE(bodyOffset + FMT_BYTE_RATE_OFFSET)
+}
+
+/** `data` チャンクの再生時間（ミリ秒）。`byteRate` が不明、または本文が空の場合は `null`。 */
+private fun ByteArray.dataDurationMs(
+    bodyOffset: Int,
+    chunkSize: Int,
+    byteRate: Int,
+): Long? {
+    if (byteRate <= 0) return null
+    // 途中で切れた WAV では data のチャンクサイズが実バイト数を超える。
+    // そのまま使うと実際の音声より長い再生時間になるため、実バイト数で抑える。
+    val dataSize = chunkSize.coerceAtMost(size - bodyOffset)
+    // 本文が空の data は再生すべき音声が無く、0 を返すと即座に停止して無音になるため不明として扱う。
+    if (dataSize <= 0) return null
+    return dataSize.toLong() * MILLIS_PER_SECOND / byteRate
+}
+
+/** 次のチャンクの先頭位置。ファイル末尾を超える場合は `null`。 */
+private fun ByteArray.nextChunkOffset(
+    offset: Int,
+    chunkSize: Int,
+): Int? {
+    // 奇数サイズのチャンクには 1 バイトのパディングが続く。
+    val advance = CHUNK_HEADER_SIZE.toLong() + chunkSize + (chunkSize % 2)
+    val nextOffset = offset + advance
+    if (nextOffset > size) return null
+    return nextOffset.toInt()
 }
 
 private fun ByteArray.hasRiffWaveHeader(): Boolean =
