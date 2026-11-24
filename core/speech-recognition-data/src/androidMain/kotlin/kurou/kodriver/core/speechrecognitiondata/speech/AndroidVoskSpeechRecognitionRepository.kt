@@ -74,8 +74,8 @@ internal class AndroidVoskSpeechRecognitionRepository(
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
             } else {
                 transcriber.use {
-                    microphoneCutQuietSound.withVolumeGateThreshold { threshold ->
-                        recognizeWithRetry(it, TranscriberModeSync(it, mode), threshold)
+                    microphoneCutQuietSound.withVolumeGate { threshold, cutInCommand ->
+                        recognizeWithRetry(it, TranscriberModeSync(it, mode), threshold, cutInCommand)
                     }
                 }
             }
@@ -86,10 +86,11 @@ internal class AndroidVoskSpeechRecognitionRepository(
         transcriber: SpeechTranscriber,
         modeSync: TranscriberModeSync,
         volumeGateThreshold: StateFlow<Float>,
+        cutQuietSoundInCommand: StateFlow<Boolean>,
     ) {
         var failures = 0
         while (true) {
-            recognize(transcriber, modeSync, volumeGateThreshold, onHealthy = { failures = 0 })
+            recognize(transcriber, modeSync, volumeGateThreshold, cutQuietSoundInCommand, onHealthy = { failures = 0 })
             failures++
             if (failures >= VOSK_MAX_CONSECUTIVE_MICROPHONE_FAILURES) {
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.MicrophoneUnavailable))
@@ -110,6 +111,7 @@ internal class AndroidVoskSpeechRecognitionRepository(
         transcriber: SpeechTranscriber,
         modeSync: TranscriberModeSync,
         volumeGateThreshold: StateFlow<Float>,
+        cutQuietSoundInCommand: StateFlow<Boolean>,
         onHealthy: () -> Unit,
     ) {
         val recorder = recorderFactory()
@@ -134,7 +136,9 @@ internal class AndroidVoskSpeechRecognitionRepository(
                         }
                     }
                 try {
-                    readChunks(recorder, RecognitionPipeline(transcriber, modeSync, volumeGateThreshold), onHealthy)
+                    val pipeline =
+                        RecognitionPipeline(transcriber, modeSync, volumeGateThreshold, cutQuietSoundInCommand)
+                    readChunks(recorder, pipeline, onHealthy)
                 } finally {
                     watcher.cancel()
                 }

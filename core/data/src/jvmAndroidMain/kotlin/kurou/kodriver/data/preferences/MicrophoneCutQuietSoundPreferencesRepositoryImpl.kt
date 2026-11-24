@@ -12,4 +12,11 @@ internal class MicrophoneCutQuietSoundPreferencesRepositoryImpl(
     override suspend fun saveMicrophoneCutQuietSoundLevel(level: Int) {
         dataStore.saveProperty(level) { prefs, value -> prefs.copy(level = value) }
     }
+
+    override fun observeMicrophoneCutQuietSoundInCommand(): Flow<Boolean> =
+        dataStore.observeProperty { it.cutInCommand }
+
+    override suspend fun saveMicrophoneCutQuietSoundInCommand(enabled: Boolean) {
+        dataStore.saveProperty(enabled) { prefs, value -> prefs.copy(cutInCommand = value) }
+    }
 }

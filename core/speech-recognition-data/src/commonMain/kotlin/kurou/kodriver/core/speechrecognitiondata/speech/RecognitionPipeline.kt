@@ -21,18 +21,20 @@ import kotlin.coroutines.cancellation.CancellationException
  * 同じ [SpeechTranscriber] を使い続ける間は聞き取りをまたいで同じものを渡す。
  *
  * 音量ゲートの閾値（[pcmLevel] の 0.0〜1.0）は [volumeGateThreshold] の現在値で、これ未満の断片は無音として認識器に渡し、
- * 小さい音による誤反応を防ぐ。ゲートはウェイクワード検出中だけ適用し、コマンド受付中などは使わない。0.0 ならゲートは常に開く。設定の変更は次の断片から反映される。
+ * 小さい音による誤反応を防ぐ。ゲートはウェイクワード検出中に適用し、コマンド受付中などは [cutQuietSoundInCommand] が true のときだけ適用する。0.0 ならゲートは常に開く。設定の変更は次の断片から反映される。
  */
 internal class RecognitionPipeline(
     private val transcriber: SpeechTranscriber,
     private val modeSync: TranscriberModeSync,
     private val volumeGateThreshold: StateFlow<Float>,
+    private val cutQuietSoundInCommand: StateFlow<Boolean>,
 ) {
     constructor(
         transcriber: SpeechTranscriber,
         mode: StateFlow<SpeechRecognitionMode>,
         volumeGateThreshold: StateFlow<Float>,
-    ) : this(transcriber, TranscriberModeSync(transcriber, mode), volumeGateThreshold)
+        cutQuietSoundInCommand: StateFlow<Boolean>,
+    ) : this(transcriber, TranscriberModeSync(transcriber, mode), volumeGateThreshold, cutQuietSoundInCommand)
 
     private var lastPartial = ""
     private var lastMode = SpeechRecognitionMode.WakeWord
@@ -63,15 +65,24 @@ internal class RecognitionPipeline(
     }
 
     /**
-     * 音量ゲートの開閉を決める。ゲートはウェイクワード検出中（[SpeechRecognitionMode.WakeWord]）だけ適用し、
-     * それ以外のモード（コマンド受付中など）では常に開き、ホールドも捨てる。閾値以上の断片でホールドを [VOLUME_GATE_HOLD_CHUNKS] に戻し、
+     * 音量ゲートの開閉を決める。ゲートはウェイクワード検出中（[SpeechRecognitionMode.WakeWord]）と、
+     * [cutQuietSoundInCommand] が true のときのコマンド受付中（[SpeechRecognitionMode.Command]）に適用する。
+     * 適用しないモードでは常に開き、ホールドも捨てる。
+     * 閾値以上の断片でホールドを [VOLUME_GATE_HOLD_CHUNKS] に戻し、
      * 閾値未満の断片はホールドが残っている間だけ開のまま、残数を1つ減らす。
      */
+    private fun isVolumeGateApplied(mode: SpeechRecognitionMode): Boolean =
+        when (mode) {
+            SpeechRecognitionMode.WakeWord -> true
+            SpeechRecognitionMode.Command -> cutQuietSoundInCommand.value
+            SpeechRecognitionMode.Paused -> false
+        }
+
     private fun isVolumeGateOpen(
         level: Float,
         mode: SpeechRecognitionMode,
     ): Boolean {
-        if (mode != SpeechRecognitionMode.WakeWord) {
+        if (!isVolumeGateApplied(mode)) {
             volumeGateHoldChunks = 0
             return true
         }

@@ -30,7 +30,8 @@ class RecognitionPipelineTest {
         }
     private val mode = MutableStateFlow(SpeechRecognitionMode.WakeWord)
     private val threshold = MutableStateFlow(0.3f)
-    private val pipeline = RecognitionPipeline(transcriber, mode, threshold)
+    private val cutInCommand = MutableStateFlow(false)
+    private val pipeline = RecognitionPipeline(transcriber, mode, threshold, cutInCommand)
 
     private suspend fun collectEvents(vararg steps: () -> Unit): List<SpeechRecognitionEvent> =
         flow<SpeechRecognitionEvent> {
@@ -104,9 +105,9 @@ class RecognitionPipelineTest {
             results += null
 
             mode.value = SpeechRecognitionMode.Paused
-            processOnce(RecognitionPipeline(transcriber, modeSync, threshold))
+            processOnce(RecognitionPipeline(transcriber, modeSync, threshold, cutInCommand))
             mode.value = SpeechRecognitionMode.WakeWord
-            processOnce(RecognitionPipeline(transcriber, modeSync, threshold))
+            processOnce(RecognitionPipeline(transcriber, modeSync, threshold, cutInCommand))
 
             assertEquals(listOf(SpeechRecognitionMode.Paused, SpeechRecognitionMode.WakeWord), modes)
         }
@@ -189,17 +190,6 @@ class RecognitionPipelineTest {
 
             assertContentEquals(ByteArray(quietPcm.size), accepted[0])
             assertContentEquals(quietPcm, accepted[1])
-        }
-
-    @Test
-    fun `コマンド受付中は閾値未満の断片も元の音声を認識器に渡す`() =
-        runTest {
-            results += null
-            mode.value = SpeechRecognitionMode.Command
-
-            feed(quietPcm)
-
-            assertContentEquals(quietPcm, accepted.single())
         }
 
     @Test

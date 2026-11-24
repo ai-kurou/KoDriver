@@ -5,3 +5,6 @@ public const val MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT: Int = 6
 public const val MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN: Int = 0
 public const val MICROPHONE_CUT_QUIET_SOUND_LEVEL_MAX: Int = 12
 public const val MICROPHONE_CUT_QUIET_SOUND_LEVEL_STEP: Float = 0.05f
+
+/** コマンド受付中にも小さい音をカットするか。既定はカットしない（ウェイクワード検出中だけカットする）。 */
+public const val MICROPHONE_CUT_QUIET_SOUND_IN_COMMAND_DEFAULT: Boolean = false

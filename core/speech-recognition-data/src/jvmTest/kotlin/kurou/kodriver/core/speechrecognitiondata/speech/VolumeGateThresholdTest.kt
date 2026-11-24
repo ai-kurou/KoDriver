@@ -21,7 +21,7 @@ class VolumeGateThresholdTest {
     fun `保存済みの設定を閾値として渡し、設定の変更を反映する`() =
         runTest(UnconfinedTestDispatcher()) {
             val result =
-                repository.withVolumeGateThreshold { threshold ->
+                repository.withVolumeGate { threshold, _ ->
                     val initial = threshold.value
                     repository.saveMicrophoneCutQuietSoundLevel(12)
                     initial to threshold.value
@@ -32,10 +32,24 @@ class VolumeGateThresholdTest {
         }
 
     @Test
+    fun `保存済みのコマンド受付中もカットする設定を渡し、設定の変更を反映する`() =
+        runTest(UnconfinedTestDispatcher()) {
+            val result =
+                repository.withVolumeGate { _, cutInCommand ->
+                    val initial = cutInCommand.value
+                    repository.saveMicrophoneCutQuietSoundInCommand(true)
+                    initial to cutInCommand.value
+                }
+
+            assertEquals(false to true, result)
+        }
+
+    @Test
     fun `ブロックを抜けたら設定の購読をやめる`() =
         runTest(UnconfinedTestDispatcher()) {
-            repository.withVolumeGateThreshold { }
+            repository.withVolumeGate { _, _ -> }
 
             assertEquals(0, repository.level.subscriptionCount.value)
+            assertEquals(0, repository.cutInCommand.subscriptionCount.value)
         }
 }

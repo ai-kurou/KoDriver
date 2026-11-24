@@ -13,16 +13,17 @@ import kotlin.coroutines.coroutineContext
 internal fun Int.toVolumeGateThreshold(): Float = toMicrophoneCutQuietSoundThreshold()
 
 /**
- * 保存済みの「小さい音をカット」の設定を音量ゲートの閾値として購読しながら [block] を実行する。
- * 設定を変えると、聞き取りを続けたまま次の断片から新しい閾値になる。[block] を抜けたら購読をやめる。
+ * 保存済みの「小さい音をカット」の設定を音量ゲートの閾値と「コマンド受付中もカットするか」として購読しながら [block] を実行する。
+ * 設定を変えると、聞き取りを続けたまま次の断片から新しい値になる。[block] を抜けたら購読をやめる。
  */
-internal suspend fun <T> MicrophoneCutQuietSoundPreferencesRepository.withVolumeGateThreshold(
-    block: suspend (StateFlow<Float>) -> T,
+internal suspend fun <T> MicrophoneCutQuietSoundPreferencesRepository.withVolumeGate(
+    block: suspend (threshold: StateFlow<Float>, cutInCommand: StateFlow<Boolean>) -> T,
 ): T =
     coroutineScope {
         val threshold = observeMicrophoneCutQuietSoundLevel().map { it.toVolumeGateThreshold() }.stateIn(this)
+        val cutInCommand = observeMicrophoneCutQuietSoundInCommand().stateIn(this)
         try {
-            block(threshold)
+            block(threshold, cutInCommand)
         } finally {
             coroutineContext.cancelChildren()
         }

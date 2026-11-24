@@ -8,6 +8,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import io.mockk.confirmVerified
@@ -57,6 +58,7 @@ class OtherMicrophoneCutQuietSoundDetailPaneWiringTest {
     fun `PaneはKoinの段階値を表示し保存と戻る操作を通知する`() {
         every { viewModel.uiState } returns MutableStateFlow(OtherMicrophoneCutQuietSoundDetailUiState(level = 6))
         every { viewModel.onLevelChanged(9) } returns Unit
+        every { viewModel.onCutInCommandChanged(true) } returns Unit
         every { onBack() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
@@ -76,10 +78,12 @@ class OtherMicrophoneCutQuietSoundDetailPaneWiringTest {
                         it.config.contains(SemanticsProperties.ProgressBarRangeInfo)
                     },
                 ).performSemanticsAction(SemanticsActions.SetProgress) { it(9f) }
+            rule.onNodeWithText("コマンド受付中もカットする").performClick()
             rule.onNodeWithContentDescription("戻る").performClick()
 
             verify(exactly = 1) { viewModel.uiState }
             verify(exactly = 1) { viewModel.onLevelChanged(9) }
+            verify(exactly = 1) { viewModel.onCutInCommandChanged(true) }
             verify(exactly = 1) { onBack() }
             confirmVerified(viewModel, onBack)
         } finally {

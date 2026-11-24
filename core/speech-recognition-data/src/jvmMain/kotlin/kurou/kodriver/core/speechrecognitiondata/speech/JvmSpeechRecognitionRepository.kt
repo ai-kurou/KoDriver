@@ -52,7 +52,9 @@ internal class JvmSpeechRecognitionRepository(
                 emit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
             } else {
                 transcriber.use {
-                    microphoneCutQuietSound.withVolumeGateThreshold { threshold -> recognize(it, threshold) }
+                    microphoneCutQuietSound.withVolumeGate { threshold, cutInCommand ->
+                        recognize(it, threshold, cutInCommand)
+                    }
                 }
             }
         }.failRecognitionOnError()
@@ -87,10 +89,11 @@ internal class JvmSpeechRecognitionRepository(
     private suspend fun FlowCollector<SpeechRecognitionEvent>.recognize(
         transcriber: SpeechTranscriber,
         volumeGateThreshold: StateFlow<Float>,
+        cutQuietSoundInCommand: StateFlow<Boolean>,
     ) {
         val device = resolveDevice()
         emit(SpeechRecognitionEvent.Listening)
-        val pipeline = RecognitionPipeline(transcriber, mode, volumeGateThreshold)
+        val pipeline = RecognitionPipeline(transcriber, mode, volumeGateThreshold, cutQuietSoundInCommand)
         microphone.observeAudio(device).collect { event ->
             when (event) {
                 is MicrophoneAudioEvent.Chunk -> {

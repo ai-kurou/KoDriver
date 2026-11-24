@@ -142,6 +142,12 @@ class ObserveSettingsUseCasesTest {
             observe = { observeMicrophoneCutQuietSoundLevel() },
             useCase = { ObserveMicrophoneCutQuietSoundLevelUseCase(it)() },
         )
+        assertObserves<MicrophoneCutQuietSoundPreferencesRepository, Boolean>(
+            "ObserveMicrophoneCutQuietSoundInCommandUseCase",
+            true,
+            observe = { observeMicrophoneCutQuietSoundInCommand() },
+            useCase = { ObserveMicrophoneCutQuietSoundInCommandUseCase(it)() },
+        )
         assertObserves<OverlayBackgroundOpacityPreferencesRepository, Int>(
             "ObserveOverlayBackgroundOpacityUseCase",
             80,

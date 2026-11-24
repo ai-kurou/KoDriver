@@ -56,11 +56,7 @@ class DefaultOtherDetailContentTest {
                                 fakeTelemetryLogListModule,
                                 module {
                                     single<MicrophoneCutQuietSoundPreferencesRepository> {
-                                        object : MicrophoneCutQuietSoundPreferencesRepository {
-                                            override fun observeMicrophoneCutQuietSoundLevel() = flowOf(6)
-
-                                            override suspend fun saveMicrophoneCutQuietSoundLevel(level: Int) = Unit
-                                        }
+                                        FakeCutQuietSoundRepository()
                                     }
                                     single<SimulatorPreferencesRepository> {
                                         object : SimulatorPreferencesRepository {
@@ -160,4 +156,14 @@ class DefaultOtherDetailContentTest {
 
         assertEquals(7L, selectedLogId)
     }
+}
+
+private class FakeCutQuietSoundRepository : MicrophoneCutQuietSoundPreferencesRepository {
+    override fun observeMicrophoneCutQuietSoundLevel() = flowOf(6)
+
+    override suspend fun saveMicrophoneCutQuietSoundLevel(level: Int) = Unit
+
+    override fun observeMicrophoneCutQuietSoundInCommand() = flowOf(false)
+
+    override suspend fun saveMicrophoneCutQuietSoundInCommand(enabled: Boolean) = Unit
 }

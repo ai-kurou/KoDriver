@@ -10,8 +10,13 @@ import kotlin.test.assertEquals
 
 class OtherMicrophoneCutQuietSoundDetailFlowTest {
     private val levelFlow = MutableStateFlow(MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT)
+    private val cutInCommandFlow = MutableStateFlow(false)
 
-    private fun createFlow() = OtherMicrophoneCutQuietSoundDetailFlow(observedLevel = levelFlow)
+    private fun createFlow() =
+        OtherMicrophoneCutQuietSoundDetailFlow(
+            observedLevel = levelFlow,
+            observedCutInCommand = cutInCommandFlow,
+        )
 
     @Test
     fun `初期値から画面状態を生成する`() =
@@ -28,5 +33,15 @@ class OtherMicrophoneCutQuietSoundDetailFlowTest {
                 levelFlow.update { level }
                 assertEquals(OtherMicrophoneCutQuietSoundDetailUiState(level = level), flow.uiState.first())
             }
+        }
+
+    @Test
+    fun `コマンド受付中もカットする設定の更新を画面状態に反映する`() =
+        runTest {
+            val flow = createFlow()
+
+            cutInCommandFlow.update { true }
+
+            assertEquals(OtherMicrophoneCutQuietSoundDetailUiState(cutInCommand = true), flow.uiState.first())
         }
 }

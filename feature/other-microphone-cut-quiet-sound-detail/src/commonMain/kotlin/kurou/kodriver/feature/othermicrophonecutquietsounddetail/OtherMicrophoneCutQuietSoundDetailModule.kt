@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.othermicrophonecutquietsounddetail
 
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
 import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
+import kurou.kodriver.domain.usecase.SaveMicrophoneCutQuietSoundInCommandUseCase
 import kurou.kodriver.domain.usecase.SaveMicrophoneCutQuietSoundLevelUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
@@ -18,4 +20,6 @@ public val otherMicrophoneCutQuietSoundDetailModule: Module =
 
         factory { ObserveMicrophoneCutQuietSoundLevelUseCase(get()) }
         factory { SaveMicrophoneCutQuietSoundLevelUseCase(get()) }
+        factory { ObserveMicrophoneCutQuietSoundInCommandUseCase(get()) }
+        factory { SaveMicrophoneCutQuietSoundInCommandUseCase(get()) }
     }
