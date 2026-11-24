@@ -1,6 +1,6 @@
 <resources>
     <string name="cut_quiet_sound_title">小さい音をカット</string>
-    <string name="cut_quiet_sound_description">マイクが拾った小さい音を、声として認識しないようにカットします。数値を大きくするほど大きな声でないと認識されなくなります。周りの音や車内のノイズで誤反応するときは上げ、声が認識されないときは下げてください。</string>
+    <string name="cut_quiet_sound_description">マイクが拾った小さい音を、ウェイクワードとして認識しないようにカットします。コマンドの聞き取り中はカットしません。数値を大きくするほど大きな声でないと認識されなくなります。周りの音や車内のノイズで誤反応するときは上げ、声が認識されないときは下げてください。</string>
     <string name="cut_quiet_sound_label">レベル %1$d</string>
     <string name="cut_quiet_sound_label_off">オフ（カットしない）</string>
     <string name="cut_quiet_sound_reset">既定のレベルに戻す</string>
