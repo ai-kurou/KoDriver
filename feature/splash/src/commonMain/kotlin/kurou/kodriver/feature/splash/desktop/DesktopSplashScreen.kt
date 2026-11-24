@@ -31,6 +31,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.splash.SplashAppIcon
 import kurou.kodriver.feature.splash.SplashBackdrop
+import kurou.kodriver.feature.splash.SplashVersionLabel
 import org.jetbrains.compose.resources.stringResource
 
 private const val PROGRESS_INDICATOR_WIDTH_DP = 200
@@ -43,12 +44,14 @@ internal const val SHINE_DURATION_MILLIS = 900
  *
  * 初期化がどのフェーズまで進んでいるかを [DesktopSplashUiState] から受け取り、
  * アプリアイコン・進捗バー・現在のフェーズ名を左側に、自己ベストラップの背景画像を右側に表示する。
+ * フェーズ名の下にバージョン（[appVersion]）を表示する。
  * 起動が完了すると光が画面を横切り、終わったところで [onReadyAnimationFinished] を一度呼ぶ。
  * 呼び出し側はこの通知を受けてからメイン画面へ切り替えると、光を最後まで見せられる。
  */
 @Composable
 public fun DesktopSplashScreen(
     uiState: DesktopSplashUiState,
+    appVersion: String,
     modifier: Modifier = Modifier,
     onReadyAnimationFinished: () -> Unit = {},
 ) {
@@ -60,13 +63,19 @@ public fun DesktopSplashScreen(
             currentOnFinished()
         }
     }
-    DesktopSplashContent(uiState = uiState, shineProgress = shineProgress.value, modifier = modifier)
+    DesktopSplashContent(
+        uiState = uiState,
+        appVersion = appVersion,
+        shineProgress = shineProgress.value,
+        modifier = modifier,
+    )
 }
 
 /** [DesktopSplashScreen] の状態を持たない本体。[shineProgress]（0〜1）は光の位置で、スクリーンショットテストから固定して撮れる。 */
 @Composable
 internal fun DesktopSplashContent(
     uiState: DesktopSplashUiState,
+    appVersion: String,
     shineProgress: Float,
     modifier: Modifier = Modifier,
 ) {
@@ -94,6 +103,8 @@ internal fun DesktopSplashContent(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
+                Spacer(modifier = Modifier.height(KoDriverSpacing.small))
+                SplashVersionLabel(appVersion = appVersion)
             }
         }
     }
@@ -106,7 +117,7 @@ private fun DesktopSplashScreenPreview(
     uiState: DesktopSplashUiState,
 ) {
     KoDriverTheme {
-        DesktopSplashScreen(uiState = uiState)
+        DesktopSplashScreen(uiState = uiState, appVersion = "5.3.0")
     }
 }
 

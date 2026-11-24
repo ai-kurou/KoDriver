@@ -26,6 +26,7 @@ internal const val ANDROID_SPLASH_START_TIMEOUT_MILLIS = 2_000L
 /**
  * Android アプリで、メイン画面の上に重ねるスプラッシュのオーバーレイ。[AppScreen] の `overlayContent` に渡す。
  *
+ * [appVersion] はオーバーレイ下部に表示するアプリのバージョン。
  * [show] が true のときだけ表示し、演出が終わると取り除く。表示の可否は [shouldShowAndroidSplash] で決める。
  * アプリのテーマ（ダークテーマ・動的カラー）を使うため、テーマを適用した [AppScreen] の内側で描かれる。
  *
@@ -35,6 +36,7 @@ internal const val ANDROID_SPLASH_START_TIMEOUT_MILLIS = 2_000L
  */
 @Composable
 public fun AndroidSplashHost(
+    appVersion: String,
     show: Boolean,
     osSplashRemoved: Boolean,
 ) {
@@ -47,6 +49,10 @@ public fun AndroidSplashHost(
         }
     }
     if (show && !finished) {
-        AndroidSplashOverlay(onFinished = { finished = true }, started = osSplashRemoved || timedOut)
+        AndroidSplashOverlay(
+            appVersion = appVersion,
+            onFinished = { finished = true },
+            started = osSplashRemoved || timedOut,
+        )
     }
 }

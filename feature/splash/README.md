@@ -8,6 +8,7 @@ Android とデスクトップで同じ演出にするための部品。
 
 - `SplashBackdrop` … 自己ベストラップの背景画像（`ReadoutBackground.BEST_LAP`）を右側に置いて左へ溶かし、その上に光の帯を重ねる背景。光の位置は `shineProgress`（0〜1）で渡す。
 - `SplashAppIcon` … アプリアイコン。
+- `SplashVersionLabel` … アプリのバージョン（`v5.3.0` 形式）。デスクトップはフェーズ名の下、Android は画面下部中央に表示する。バージョン文字列は `:app:desktopApp` の `APP_VERSION`・`:app:androidApp` の `BuildConfig.VERSION_NAME` を各ホストの `appVersion` 引数で渡す。
 
 ## Android 専用（`kurou.kodriver.feature.splash.android`）
 

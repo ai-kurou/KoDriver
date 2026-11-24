@@ -58,7 +58,11 @@ public class MainActivity : ComponentActivity() {
         setContent {
             AppScreen(
                 overlayContent = {
-                    AndroidSplashHost(show = showSplash, osSplashRemoved = osSplashRemoved)
+                    AndroidSplashHost(
+                        appVersion = BuildConfig.VERSION_NAME,
+                        show = showSplash,
+                        osSplashRemoved = osSplashRemoved,
+                    )
                 },
                 backHandler = { enabled, onProgress, onBack ->
                     PredictiveBackHandler(enabled = enabled) { progress ->

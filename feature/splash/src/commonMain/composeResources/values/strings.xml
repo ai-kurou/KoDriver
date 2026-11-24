@@ -4,4 +4,5 @@
     <string name="desktop_splash_initializing_modules">モジュールを初期化しています…</string>
     <string name="desktop_splash_starting_server">サーバーを起動しています…</string>
     <string name="desktop_splash_ready">起動が完了しました</string>
+    <string name="splash_version">v%1$s</string>
 </resources>

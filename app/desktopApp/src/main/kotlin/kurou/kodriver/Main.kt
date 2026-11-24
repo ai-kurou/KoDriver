@@ -73,6 +73,7 @@ public fun main() {
             ) {
                 SideEffect { window.minimumSize = Dimension(600, 500) }
                 DesktopSplashHost(
+                    appVersion = APP_VERSION,
                     initializeModules = {
                         withContext(Dispatchers.Default) {
                             koin =

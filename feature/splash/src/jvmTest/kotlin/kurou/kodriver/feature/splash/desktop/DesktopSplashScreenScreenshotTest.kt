@@ -37,6 +37,7 @@ class DesktopSplashScreenScreenshotTest {
                 KoDriverTheme {
                     Box(modifier = Modifier.requiredSize(600.dp, 500.dp)) {
                         DesktopSplashContent(
+                            appVersion = "1.0.0",
                             uiState = DesktopSplashUiState(step = DesktopSplashStep.READY),
                             shineProgress = 0.5f,
                         )
@@ -50,7 +51,7 @@ class DesktopSplashScreenScreenshotTest {
         setContent {
             KoDriverTheme {
                 Box(modifier = Modifier.requiredSize(600.dp, 500.dp)) {
-                    DesktopSplashScreen(uiState = DesktopSplashUiState(step = step))
+                    DesktopSplashScreen(appVersion = "1.0.0", uiState = DesktopSplashUiState(step = step))
                 }
             }
         }

@@ -7,6 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,11 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.splash.SplashAppIcon
 import kurou.kodriver.feature.splash.SplashBackdrop
+import kurou.kodriver.feature.splash.SplashVersionLabel
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -43,6 +50,10 @@ public val AndroidSplashStartColor: Color = Color(0xFFBFFF00)
  * オーバーレイのアイコンを同じ大きさにして、同じアイコンが出続けているように見せる。
  */
 public const val ANDROID_SPLASH_ICON_SIZE_DP: Float = 172.8f
+
+/** 写真の上でバージョンを読みやすくするための影。 */
+private val ANDROID_SPLASH_VERSION_SHADOW =
+    Shadow(color = Color.Black.copy(alpha = 0.6f), offset = Offset(0f, 2f), blurRadius = 6f)
 
 /** 出だしの背景色が消えきる光の進捗。 */
 internal const val ANDROID_SPLASH_START_COLOR_FADE_FRACTION = 0.3f
@@ -68,12 +79,14 @@ internal fun iconScale(shineProgress: Float): Float =
  * 写真の置き方は描画領域の縦横で決め、縦長のときは下端に置いて上へ溶かす。
  * 出だしは OS のスプラッシュと同じ背景色・同じ位置と大きさのアイコンで、切り替わりを目立たせない。
  * 光に合わせてアイコンが少し膨らむ。
+ * 下部の中央にバージョン（[appVersion]）を重ねる。OS のスプラッシュには出せないので、出だしの背景色が消えるのに合わせて現れる。
  * [started] が true になるまでは出だしの見た目のまま待つ。OS のスプラッシュが外れた後に演出を始めるために使う。
  *
  * 表示するかどうかは [shouldShowAndroidSplashOverlay] で呼び出し側が判断する。
  */
 @Composable
 public fun AndroidSplashOverlay(
+    appVersion: String,
     onFinished: () -> Unit,
     modifier: Modifier = Modifier,
     started: Boolean = true,
@@ -91,6 +104,7 @@ public fun AndroidSplashOverlay(
         currentOnFinished()
     }
     AndroidSplashOverlayContent(
+        appVersion = appVersion,
         shineProgress = shineProgress.value,
         overlayAlpha = overlayAlpha.value,
         modifier = modifier,
@@ -100,6 +114,7 @@ public fun AndroidSplashOverlay(
 /** [AndroidSplashOverlay] の状態を持たない本体。[shineProgress]（0〜1）は光の位置、[overlayAlpha] は全体の不透明度。 */
 @Composable
 internal fun AndroidSplashOverlayContent(
+    appVersion: String,
     shineProgress: Float,
     overlayAlpha: Float,
     modifier: Modifier = Modifier,
@@ -129,6 +144,17 @@ internal fun AndroidSplashOverlayContent(
                 SplashAppIcon(
                     modifier = Modifier.align(Alignment.Center).scale(iconScale(shineProgress)),
                     size = ANDROID_SPLASH_ICON_SIZE_DP.dp,
+                )
+                SplashVersionLabel(
+                    appVersion = appVersion,
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomCenter)
+                            .navigationBarsPadding()
+                            .padding(bottom = KoDriverSpacing.extraLarge)
+                            .alpha(1f - startColorAlpha(shineProgress)),
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelMedium.copy(shadow = ANDROID_SPLASH_VERSION_SHADOW),
                 )
             }
         }

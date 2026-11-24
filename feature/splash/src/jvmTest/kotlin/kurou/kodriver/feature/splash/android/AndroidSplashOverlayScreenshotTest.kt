@@ -46,7 +46,7 @@ class AndroidSplashOverlayScreenshotTest {
         setContent {
             KoDriverTheme {
                 Box(modifier = Modifier.requiredSize(width, height)) {
-                    AndroidSplashOverlayContent(shineProgress = shineProgress, overlayAlpha = 1f)
+                    AndroidSplashOverlayContent(appVersion = "1.0.0", shineProgress = shineProgress, overlayAlpha = 1f)
                 }
             }
         }

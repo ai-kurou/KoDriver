@@ -26,6 +26,7 @@ import kurou.kodriver.feature.splash.desktop.runInitialization
  * エラーダイアログを表示する。ダイアログを閉じると [onError] を通知し、アプリ終了などの
  * 後処理を呼び出し側に委ねる。
  *
+ * @param appVersion スプラッシュ画面に表示するアプリのバージョン。
  * @param initializeModules Koin モジュール構築など、依存グラフの初期化処理。
  * @param startServer Ktor サーバーの起動処理。
  * @param onReady 初期化完了時に一度だけ呼ばれるコールバック。
@@ -34,6 +35,7 @@ import kurou.kodriver.feature.splash.desktop.runInitialization
  */
 @Composable
 public fun DesktopSplashHost(
+    appVersion: String,
     initializeModules: suspend () -> Unit,
     startServer: suspend () -> Unit,
     modifier: Modifier = Modifier,
@@ -66,6 +68,7 @@ public fun DesktopSplashHost(
     } else {
         DesktopSplashScreen(
             uiState = uiState,
+            appVersion = appVersion,
             modifier = modifier,
             onReadyAnimationFinished = { readyAnimationFinished = true },
         )
