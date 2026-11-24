@@ -13,4 +13,9 @@
     <string name="speech_recognition_level_description">マイクの入力音量</string>
     <string name="speech_recognition_device_label">入力デバイス</string>
     <string name="speech_recognition_unknown_word">？</string>
+    <string name="speech_recognition_corrections_info_description">認識の補正について</string>
+    <string name="speech_recognition_corrections_title">認識の補正について</string>
+    <string name="speech_recognition_corrections_body">実機で取り違えやすい語を、読み上げ項目と照合する前に自動で置き換えています。</string>
+    <string name="speech_recognition_corrections_arrow">→</string>
+    <string name="speech_recognition_corrections_close">閉じる</string>
 </resources>

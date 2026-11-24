@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.util.SPEECH_RECOGNITION_CORRECTIONS
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -224,5 +225,49 @@ class SpeechRecognitionCardTest {
         rule.onNodeWithTag("speech_recognition_device").assertDoesNotExist()
         uiState.value = SpeechRecognitionUiState(deviceName = "Mic A")
         rule.onNodeWithTag("speech_recognition_device").assertDoesNotExist()
+    }
+
+    @Test
+    fun `情報アイコンを押すと補正の一覧のダイアログを開き、閉じるで閉じる`() {
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionCard(
+                    uiState = SpeechRecognitionUiState(),
+                    onDeviceMenuOpen = {},
+                    onDeviceSelected = {},
+                    corrections = listOf("まーも" to "摩耗", "方法" to "後方"),
+                )
+            }
+        }
+        rule.onNodeWithText("認識の補正について").assertDoesNotExist()
+
+        rule.onNodeWithContentDescription("認識の補正について").performClick()
+        rule.onNodeWithText("認識の補正について").assertIsDisplayed()
+        rule.onNodeWithText("まーも").assertIsDisplayed()
+        rule.onNodeWithText("摩耗").assertIsDisplayed()
+        rule.onNodeWithText("方法").assertIsDisplayed()
+        rule.onNodeWithText("後方").assertIsDisplayed()
+
+        rule.onNodeWithText("閉じる").performClick()
+        rule.onNodeWithText("まーも").assertDoesNotExist()
+    }
+
+    @Test
+    fun `既定では実際の補正リストを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionCard(
+                    uiState = SpeechRecognitionUiState(),
+                    onDeviceMenuOpen = {},
+                    onDeviceSelected = {},
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("認識の補正について").performClick()
+        SPEECH_RECOGNITION_CORRECTIONS.forEach { (wrong, right) ->
+            rule.onNodeWithText(wrong).assertExists()
+            rule.onNodeWithText(right).assertExists()
+        }
     }
 }

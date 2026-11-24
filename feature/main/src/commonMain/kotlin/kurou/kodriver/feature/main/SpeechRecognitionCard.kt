@@ -26,7 +26,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +47,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverPhraseChip
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.util.SPEECH_RECOGNITION_CORRECTIONS
 import kurou.kodriver.feature.main.generated.resources.Res
+import kurou.kodriver.feature.main.generated.resources.speech_recognition_corrections_info_description
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_level_description
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_command_waiting
 import kurou.kodriver.feature.main.generated.resources.speech_recognition_status_listening
@@ -83,14 +88,25 @@ internal fun SpeechRecognitionCard(
     onDeviceMenuOpen: () -> Unit,
     onDeviceSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
+    corrections: List<Pair<String, String>> = SPEECH_RECOGNITION_CORRECTIONS,
 ) {
     val levelDescription = stringResource(Res.string.speech_recognition_level_description)
+    var showCorrections by rememberSaveable { mutableStateOf(false) }
+    if (showCorrections) {
+        SpeechRecognitionCorrectionsDialog(corrections = corrections, onDismiss = { showCorrections = false })
+    }
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        SpeechRecognitionCardContent(uiState, levelDescription, onDeviceMenuOpen, onDeviceSelected)
+        SpeechRecognitionCardContent(
+            uiState = uiState,
+            levelDescription = levelDescription,
+            onDeviceMenuOpen = onDeviceMenuOpen,
+            onDeviceSelected = onDeviceSelected,
+            onInfoClick = { showCorrections = true },
+        )
     }
 }
 
@@ -101,38 +117,13 @@ private fun SpeechRecognitionCardContent(
     levelDescription: String,
     onDeviceMenuOpen: () -> Unit,
     onDeviceSelected: (String) -> Unit,
+    onInfoClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier.padding(KoDriverSpacing.medium),
         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Mic,
-                contentDescription = null,
-                tint =
-                    if (uiState.enabled) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-            )
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(Res.string.speech_recognition_title),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = stringResource(uiState.status.label()),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
+        SpeechRecognitionCardHeader(uiState, onInfoClick)
         // 入力デバイスを選べるのはデスクトップだけ。Android では一覧が空のままなので表示しない
         if (uiState.devices.isNotEmpty() && uiState.deviceName != null) {
             AudioInputDeviceDropdown(
@@ -163,6 +154,48 @@ private fun SpeechRecognitionCardContent(
         }
         SpeechRecognitionHistoryAnimatedVisibility(visible = hasHistory) {
             SpeechRecognitionHistory(partialText = lastPartialText, recognized = lastRecognized)
+        }
+    }
+}
+
+/** カードの先頭行。マイク・タイトル・状態に加え、右端に補正の説明を開く小さな ⓘ を置く。 */
+@Composable
+private fun SpeechRecognitionCardHeader(
+    uiState: SpeechRecognitionUiState,
+    onInfoClick: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Mic,
+            contentDescription = null,
+            tint =
+                if (uiState.enabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(Res.string.speech_recognition_title),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = stringResource(uiState.status.label()),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        IconButton(onClick = onInfoClick) {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = stringResource(Res.string.speech_recognition_corrections_info_description),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
