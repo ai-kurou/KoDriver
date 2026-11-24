@@ -293,36 +293,14 @@ private fun trackPitTimingValue(
             val refilled = if (delta >= PIT_TIMING_REFILL_DETECTION_MIN_RATIO) delta else 0.0
             val refillBaselineValue = nextRefillBaselineValue(state.refillBaselineValue, currentValue, refilled)
             if (currentLap != state.currentLap) {
-                // ラップが変わるタイミングで、直前のラップがバーチャルエネルギー補充・タイヤ交換なしで完走していれば
-                // その消費量を今後の残り周回数推定の基準として採用する。
-                // 境界直後の現在値ではなく前回観測値までを前周の消費とし、境界をまたぐ補充も除外する。
-                val completedLapConsumption = state.currentLapStartValue - state.currentValue
-                val lastValidLapConsumption =
-                    if (
-                        state.currentLapStartedAtBoundary &&
-                        currentLap == state.currentLap + 1 &&
-                        !state.currentLapHasRefilled &&
-                        refilled == 0.0 &&
-                        completedLapConsumption > 0.0
-                    ) {
-                        completedLapConsumption
-                    } else {
-                        state.lastValidLapConsumption
-                    }
-                state.copy(
-                    session = session,
+                trackPitTimingLapChange(
+                    state = state,
                     currentLap = currentLap,
-                    currentLapStartedAtMs = observedAtMs,
-                    currentLapStartValue = currentValue,
-                    currentLapHasRefilled = refilled > 0.0,
-                    currentLapStartedAtBoundary = currentLap == state.currentLap + 1,
-                    currentValue = currentValue,
-                    refillBaselineValue = refillBaselineValue,
-                    lastValidLapConsumption = lastValidLapConsumption,
                     bestLapTimeMs = bestLapTimeMs,
-                    hasRefilled = refilled > 0.0,
-                    isNewSession = false,
+                    currentValue = currentValue,
+                    session = session,
                     observedAtMs = observedAtMs,
+                    refilled = refilled,
                 )
             } else {
                 state.copy(
@@ -338,6 +316,51 @@ private fun trackPitTimingValue(
             }
         }
     }
+
+/**
+ * ラップが変わった観測時の追跡状態更新。
+ * 直前のラップがバーチャルエネルギー補充・タイヤ交換なしで完走していれば、その消費量を今後の残り周回数推定の基準として採用する。
+ * 境界直後の現在値ではなく前回観測値までを前周の消費とし、境界をまたぐ補充も除外する。
+ */
+private fun trackPitTimingLapChange(
+    state: LmuWindowsPitTimingTrackingState,
+    currentLap: Int,
+    bestLapTimeMs: Long,
+    currentValue: Double,
+    session: Int?,
+    observedAtMs: Long,
+    refilled: Double,
+): LmuWindowsPitTimingTrackingState {
+    val refillBaselineValue = nextRefillBaselineValue(state.refillBaselineValue, currentValue, refilled)
+    val completedLapConsumption = state.currentLapStartValue - state.currentValue
+    val lastValidLapConsumption =
+        if (
+            state.currentLapStartedAtBoundary &&
+            currentLap == state.currentLap + 1 &&
+            !state.currentLapHasRefilled &&
+            refilled == 0.0 &&
+            completedLapConsumption > 0.0
+        ) {
+            completedLapConsumption
+        } else {
+            state.lastValidLapConsumption
+        }
+    return state.copy(
+        session = session,
+        currentLap = currentLap,
+        currentLapStartedAtMs = observedAtMs,
+        currentLapStartValue = currentValue,
+        currentLapHasRefilled = refilled > 0.0,
+        currentLapStartedAtBoundary = currentLap == state.currentLap + 1,
+        currentValue = currentValue,
+        refillBaselineValue = refillBaselineValue,
+        lastValidLapConsumption = lastValidLapConsumption,
+        bestLapTimeMs = bestLapTimeMs,
+        hasRefilled = refilled > 0.0,
+        isNewSession = false,
+        observedAtMs = observedAtMs,
+    )
+}
 
 // 時刻・有効な完走周の消費量が揃うまでは再試行し、推定後は設定無効などで読まなくても周回を評価済みにする。
 // 読み上げ履歴の確定はここでは行わず、recordPitTimingAnnounced に委ねる。
