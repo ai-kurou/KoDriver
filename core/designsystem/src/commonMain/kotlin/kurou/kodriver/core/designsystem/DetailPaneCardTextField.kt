@@ -139,28 +139,50 @@ public fun DetailPaneCardTextField(
                 null
             },
         trailingIcon = {
-            Row {
-                if (onResetToDefault != null) {
-                    TextFieldActionButton(
-                        imageVector = Icons.Outlined.RestartAlt,
-                        contentDescription = resetContentDescription,
-                        enabled = isResettable,
-                        onClick = onResetToDefault,
-                        modifier = Modifier.graphicsLayer { alpha = resetButtonAlpha },
-                    )
-                }
-                if (onPreviewClick != null) {
-                    TextFieldActionButton(
-                        imageVector = Icons.Outlined.PlayArrow,
-                        contentDescription = previewContentDescription,
-                        enabled = enabled,
-                        onClick = { onPreviewClick(text) },
-                    )
-                }
-            }
+            TextFieldTrailingActions(
+                enabled = enabled,
+                isResettable = isResettable,
+                resetButtonAlpha = resetButtonAlpha,
+                resetContentDescription = resetContentDescription,
+                previewContentDescription = previewContentDescription,
+                onResetToDefault = onResetToDefault,
+                onPreviewClick = onPreviewClick?.let { preview -> { preview(text) } },
+            )
         },
         modifier = modifier.fillMaxWidth(),
     )
+}
+
+/** 入力欄の右端に並べる、既定値へ戻すボタンとプレビューボタン。どちらも対応するコールバックがあるときだけ表示する。 */
+@Composable
+private fun TextFieldTrailingActions(
+    enabled: Boolean,
+    isResettable: Boolean,
+    resetButtonAlpha: Float,
+    resetContentDescription: String?,
+    previewContentDescription: String?,
+    onResetToDefault: (() -> Unit)?,
+    onPreviewClick: (() -> Unit)?,
+) {
+    Row {
+        if (onResetToDefault != null) {
+            TextFieldActionButton(
+                imageVector = Icons.Outlined.RestartAlt,
+                contentDescription = resetContentDescription,
+                enabled = isResettable,
+                onClick = onResetToDefault,
+                modifier = Modifier.graphicsLayer { alpha = resetButtonAlpha },
+            )
+        }
+        if (onPreviewClick != null) {
+            TextFieldActionButton(
+                imageVector = Icons.Outlined.PlayArrow,
+                contentDescription = previewContentDescription,
+                enabled = enabled,
+                onClick = onPreviewClick,
+            )
+        }
+    }
 }
 
 /** [supportingText]（なければ空白）の右端に、入力中の文字数と [maxLength] を「12/30」の形式で表示する。 */
