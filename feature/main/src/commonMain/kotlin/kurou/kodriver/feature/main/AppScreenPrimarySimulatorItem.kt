@@ -164,27 +164,53 @@ private fun SimulatorCard(
             },
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            // ロゴ画像を前面に重ねるカードのみ背景をぼかす。ロゴを持たないカードは背景画像自体がロゴなのでぼかさない。
-            val backgroundModifier =
-                if (logo != null) Modifier.fillMaxSize().blur(SimulatorCardImageBlur) else Modifier.fillMaxSize()
-            Image(
-                painter = simulatorLargeImage(simulatorId),
-                contentDescription = if (logo == null) displayName else null,
-                contentScale = ContentScale.Crop,
-                modifier = backgroundModifier,
-            )
-            if (logo != null) {
-                SimulatorCardLogoOverlay(logo = logo, displayName = displayName)
-            }
-            if (platformLabel != null) {
-                SimulatorCardPlatformLabel(platformLabel = platformLabel)
-            }
-            if (selected) {
-                SimulatorCardCheckBadge()
-            }
+        SimulatorCardContent(
+            simulatorId = simulatorId,
+            selected = selected,
+            displayName = displayName,
+            logo = logo,
+            platformLabel = platformLabel,
+        )
+    }
+}
+
+@Composable
+private fun SimulatorCardContent(
+    simulatorId: String,
+    selected: Boolean,
+    displayName: String,
+    logo: Painter?,
+    platformLabel: String?,
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        SimulatorCardBackground(simulatorId = simulatorId, displayName = displayName, hasLogo = logo != null)
+        if (logo != null) {
+            SimulatorCardLogoOverlay(logo = logo, displayName = displayName)
+        }
+        if (platformLabel != null) {
+            SimulatorCardPlatformLabel(platformLabel = platformLabel)
+        }
+        if (selected) {
+            SimulatorCardCheckBadge()
         }
     }
+}
+
+@Composable
+private fun SimulatorCardBackground(
+    simulatorId: String,
+    displayName: String,
+    hasLogo: Boolean,
+) {
+    // ロゴ画像を前面に重ねるカードのみ背景をぼかす。ロゴを持たないカードは背景画像自体がロゴなのでぼかさない。
+    val backgroundModifier =
+        if (hasLogo) Modifier.fillMaxSize().blur(SimulatorCardImageBlur) else Modifier.fillMaxSize()
+    Image(
+        painter = simulatorLargeImage(simulatorId),
+        contentDescription = if (hasLogo) null else displayName,
+        contentScale = ContentScale.Crop,
+        modifier = backgroundModifier,
+    )
 }
 
 @Composable
