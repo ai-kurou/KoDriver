@@ -27,6 +27,19 @@ feature の `companion object` や `Pane.kt` に仕様値を置かず、共通�
 
 ただし `*Defaults.kt` には、デフォルト値と組で使う仕様値（範囲の上限・下限の `_MIN` / `_MAX`、番兵値 `_UNSPECIFIED` / `_UNKNOWN_KEY`、代替値 `_ALTERNATE` など）も置いてよい。`_DEFAULT` を付けるのはデフォルト値だけとし、これらの仕様値には付けない。
 
-### Android の自動バックアップ
+### 設定のバックアップ・復元
 
-`allowBackup="true"` のため、DataStore（`filesDir/datastore/`）などの設定は Google の自動バックアップ対象になる。再生成できる、または大きいデータは、バックアップ上限（25MB）超過でバックアップ全体が失敗するのを避けるため、`app/androidApp/src/main/res/xml/backup_rules.xml`（Android 11 以下）と `data_extraction_rules.xml`（Android 12 以上のクラウドバックアップ・端末間転送）で除外している。除外対象は Vosk 日本語モデル（`filesDir/vosk-model-ja`）とテレメトリログDB（`databases/telemetry_logs.db` と WAL・SHM・ジャーナル）。`filesDir` や `databases/` に大きなファイルを新設する場合は、両 XML への除外追加を検討する。
+設定の保存先と復元方針の正はこの節とする。ユーザー向けの案内は [Windows 版のインストール手順](windows-install.md#設定のバックアップと復元) と [Android 版のインストール手順](android-install.md#設定のバックアップと復元) に置く。
+
+#### Android
+
+`allowBackup="true"` のため、DataStore（`filesDir/datastore/`）などの設定は Google の自動バックアップ対象になる。再生成できる、または大きいデータは、バックアップ上限（25MB）超過でバックアップ全体が失敗するのを避けるため、`app/androidApp/src/main/res/xml/backup_rules.xml`（Android 11 以下）と `data_extraction_rules.xml`（Android 12 以上のクラウドバックアップ・端末間転送）で除外している。除外対象は Vosk 日本語モデル（`filesDir/vosk-model-ja`）とテレメトリログDB（`databases/telemetry_logs.db` と WAL・SHM・ジャーナル）。`filesDir` や `databases/` に大きなファイルを新設する場合は、両 XML への除外追加を検討する。端末買い替え時はこの自動バックアップで復元されるため、ユーザー操作は不要。サーバーIP の DataStore は意図的に除外していない。実機でのバックアップ・復元は未検証。
+
+#### Windows（Desktop）
+
+専用のバックアップ・復元機能は作らない。設定の保存先は `~/.kodriver`（`System.getProperty("user.home")` + `/.kodriver`。Windows では `C:\Users\<ユーザー名>\.kodriver`）で、アプリ終了状態でこのフォルダをコピーして保存し、新しい PC の同じ場所へ戻せば復元できる。
+
+- 中身: 各モジュールの DataStore（`preferencesDataStore(directory, fileName)` により `~/.kodriver/<fileName>.pb`。`fileName` は各 `*PreferencesDataStoreFactory.kt` 参照、多数）、匿名ユーザーID（`anonymous_user_id`、`AnonymousUserId`）、テレメトリログDB（`telemetry_logs.db`、Desktop でも Room DB として生成される）。Vosk 日本語モデルはアプリに同梱され自動展開されるためバックアップ不要（`~/.kodriver/vosk-model-ja` を手動配置した場合のみ、そのフォルダも対象）。
+- 復元時の注意: アプリ終了中に戻す。古いバージョンのアプリに新しい `.pb` を読ませない（DataStore のスキーマ互換を壊すおそれがあるため）。`preferencesDataStore` は `FallbackOnReadErrorDataStore` で包まれており、読み込みに失敗すると既定値で起動するため、戻した設定が反映されていないときはファイルの配置とアプリのバージョンを確認する。
+
+ユーザー向け案内の文言を変える場合は、この節とあわせて `docs/windows-install.md` と `docs/android-install.md` の両方を更新する。
