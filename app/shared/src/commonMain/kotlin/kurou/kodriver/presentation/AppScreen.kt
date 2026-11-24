@@ -428,6 +428,44 @@ internal fun AppScreenContent(
 }
 
 @Composable
+private fun AppDestinationNavItem(
+    dest: AppDestination,
+    resolvedLayoutType: NavigationSuiteType,
+    showBadge: Boolean,
+    navigationState: AppNavigationState,
+    onTabReselected: (AppDestination) -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    NavigationSuiteItem(
+        icon = { AppNavIcon(dest = dest, showBadge = showBadge) },
+        label = { Text(dest.label()) },
+        selected = navigationState.current == dest,
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            navigationState.handleTabClick(dest, onTabReselected)
+        },
+        navigationSuiteType = resolvedLayoutType,
+    )
+}
+
+@Composable
+private fun contentDividerModifier(resolvedLayoutType: NavigationSuiteType): Modifier {
+    if (resolvedLayoutType == NavigationSuiteType.NavigationBar) return Modifier
+    val dividerColor = DividerDefaults.color
+    val dividerThickness = DividerDefaults.Thickness
+    return Modifier.drawWithContent {
+        drawContent()
+        val strokeWidth = dividerThickness.toPx()
+        drawLine(
+            color = dividerColor,
+            start = Offset(strokeWidth / 2, 0f),
+            end = Offset(strokeWidth / 2, size.height),
+            strokeWidth = strokeWidth,
+        )
+    }
+}
+
+@Composable
 private fun AppScreenScaffold(
     resolvedLayoutType: NavigationSuiteType,
     hasAppUpdate: Boolean,
@@ -456,7 +494,6 @@ private fun AppScreenScaffold(
     otherListScrollToTopRequest: Int,
     speechRecognitionScrollToTopRequest: Int,
 ) {
-    val haptic = LocalHapticFeedback.current
     var simulatorMenuExpanded by remember { mutableStateOf(false) }
     Box(
         modifier =
@@ -477,50 +514,26 @@ private fun AppScreenScaffold(
                     onSimulatorSelected = onSimulatorSelected,
                 )
                 AppDestination.entries.forEach { dest ->
-                    val showBadge =
-                        dest == AppDestination.More &&
-                            (hasAppUpdate || !accessLocalNetworkPermissionGranted)
-                    NavigationSuiteItem(
-                        icon = { AppNavIcon(dest = dest, showBadge = showBadge) },
-                        label = { Text(dest.label()) },
-                        selected = navigationState.current == dest,
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            navigationState.handleTabClick(dest) { reselected ->
-                                when (reselected) {
-                                    AppDestination.AutoReadout -> onAutoReadoutTabReselected()
-                                    AppDestination.ManualReadout -> onManualReadoutTabReselected()
-                                    AppDestination.SpeechRecognition -> onSpeechRecognitionTabReselected()
-                                    AppDestination.More -> onOtherTabReselected()
-                                }
+                    AppDestinationNavItem(
+                        dest = dest,
+                        resolvedLayoutType = resolvedLayoutType,
+                        showBadge =
+                            dest == AppDestination.More &&
+                                (hasAppUpdate || !accessLocalNetworkPermissionGranted),
+                        navigationState = navigationState,
+                        onTabReselected = { reselected ->
+                            when (reselected) {
+                                AppDestination.AutoReadout -> onAutoReadoutTabReselected()
+                                AppDestination.ManualReadout -> onManualReadoutTabReselected()
+                                AppDestination.SpeechRecognition -> onSpeechRecognitionTabReselected()
+                                AppDestination.More -> onOtherTabReselected()
                             }
                         },
-                        navigationSuiteType = resolvedLayoutType,
                     )
                 }
             },
         ) {
-            val dividerColor = DividerDefaults.color
-            val dividerThickness = DividerDefaults.Thickness
-            val contentModifier =
-                Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                            Modifier
-                        } else {
-                            Modifier.drawWithContent {
-                                drawContent()
-                                val strokeWidth = dividerThickness.toPx()
-                                drawLine(
-                                    color = dividerColor,
-                                    start = Offset(strokeWidth / 2, 0f),
-                                    end = Offset(strokeWidth / 2, size.height),
-                                    strokeWidth = strokeWidth,
-                                )
-                            }
-                        },
-                    )
+            val contentModifier = Modifier.fillMaxSize().then(contentDividerModifier(resolvedLayoutType))
             Column(modifier = contentModifier) {
                 AnimatedVisibility(
                     visible = bannerUiState.isVisible,
