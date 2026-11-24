@@ -698,27 +698,40 @@ class LmuWindowsNarratorViewModelTest {
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
                     readoutText =
                         readoutTextOverride ?: {
-                            if (it is LmuWindowsMyBestLap) {
-                                myBestLapReadoutText?.let { template ->
-                                    formatLmuWindowsMyBestLapReadoutText(template, it.lapTimeMs)
+                            when (it) {
+                                is LmuWindowsMyBestLap -> {
+                                    myBestLapReadoutText?.let { template ->
+                                        formatLmuWindowsMyBestLapReadoutText(template, it.lapTimeMs)
+                                    }
                                 }
-                            } else if (it is LmuWindowsOverheating) {
-                                overheatReadoutText
-                            } else if (it is LmuWindowsPartDetached) {
-                                partDetachedReadoutText
-                            } else if (it is LmuWindowsTyreDetached) {
-                                tyreDetachedReadoutText
-                            } else if (it is LmuWindowsTyreOverheat) {
-                                tyreOverheatReadoutText
-                            } else if (it is LmuWindowsTyreCold) {
-                                tyreColdReadoutText
-                            } else if (
-                                it is LmuWindowsPitTimingWarning &&
-                                it.source == PitTimingSource.TyreWear
-                            ) {
-                                "タイヤ交換へ"
-                            } else {
-                                it.narratedText
+
+                                is LmuWindowsOverheating -> {
+                                    overheatReadoutText
+                                }
+
+                                is LmuWindowsPartDetached -> {
+                                    partDetachedReadoutText
+                                }
+
+                                is LmuWindowsTyreDetached -> {
+                                    tyreDetachedReadoutText
+                                }
+
+                                is LmuWindowsTyreOverheat -> {
+                                    tyreOverheatReadoutText
+                                }
+
+                                is LmuWindowsTyreCold -> {
+                                    tyreColdReadoutText
+                                }
+
+                                is LmuWindowsPitTimingWarning -> {
+                                    if (it.source == PitTimingSource.TyreWear) "タイヤ交換へ" else it.narratedText
+                                }
+
+                                else -> {
+                                    it.narratedText
+                                }
                             }
                         },
                 ),
