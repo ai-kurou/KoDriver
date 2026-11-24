@@ -191,6 +191,34 @@ class RecognitionPipelineTest {
             assertContentEquals(quietPcm, accepted[1])
         }
 
+    @Test
+    fun `コマンド受付中は閾値未満の断片も元の音声を認識器に渡す`() =
+        runTest {
+            results += null
+            mode.value = SpeechRecognitionMode.Command
+
+            feed(quietPcm)
+
+            assertContentEquals(quietPcm, accepted.single())
+        }
+
+    @Test
+    fun `コマンド受付からウェイクワードに戻ったら、前のホールドを持ち越さず小さい断片は全ゼロを渡す`() =
+        runTest {
+            repeat(3) { results += null }
+
+            flow<SpeechRecognitionEvent> {
+                with(pipeline) { process(loudPcm) }
+                mode.value = SpeechRecognitionMode.Command
+                with(pipeline) { process(quietPcm) }
+                mode.value = SpeechRecognitionMode.WakeWord
+                with(pipeline) { process(quietPcm) }
+            }.toList()
+
+            assertContentEquals(quietPcm, accepted[1])
+            assertContentEquals(ByteArray(quietPcm.size), accepted[2])
+        }
+
     private suspend fun feed(vararg chunks: ByteArray): List<SpeechRecognitionEvent> =
         flow<SpeechRecognitionEvent> {
             chunks.forEach { with(pipeline) { process(it) } }

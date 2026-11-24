@@ -21,7 +21,7 @@ import kotlin.coroutines.cancellation.CancellationException
  * 同じ [SpeechTranscriber] を使い続ける間は聞き取りをまたいで同じものを渡す。
  *
  * 音量ゲートの閾値（[pcmLevel] の 0.0〜1.0）は [volumeGateThreshold] の現在値で、これ未満の断片は無音として認識器に渡し、
- * 小さい音による誤反応を防ぐ。0.0 ならゲートは常に開く。設定の変更は次の断片から反映される。
+ * 小さい音による誤反応を防ぐ。ゲートはウェイクワード検出中だけ適用し、コマンド受付中などは使わない。0.0 ならゲートは常に開く。設定の変更は次の断片から反映される。
  */
 internal class RecognitionPipeline(
     private val transcriber: SpeechTranscriber,
@@ -44,7 +44,7 @@ internal class RecognitionPipeline(
         val previousMode = lastMode
         lastMode = modeSync.sync()
         if (lastMode != previousMode) lastPartial = ""
-        val input = if (isVolumeGateOpen(level)) pcm else ByteArray(pcm.size)
+        val input = if (isVolumeGateOpen(level, lastMode)) pcm else ByteArray(pcm.size)
         when (val transcript = transcriber.accept(input)) {
             is SpeechTranscript.Partial -> {
                 if (transcript.text != lastPartial) {
@@ -63,10 +63,18 @@ internal class RecognitionPipeline(
     }
 
     /**
-     * 音量ゲートの開閉を決める。閾値以上の断片でホールドを [VOLUME_GATE_HOLD_CHUNKS] に戻し、
+     * 音量ゲートの開閉を決める。ゲートはウェイクワード検出中（[SpeechRecognitionMode.WakeWord]）だけ適用し、
+     * それ以外のモード（コマンド受付中など）では常に開き、ホールドも捨てる。閾値以上の断片でホールドを [VOLUME_GATE_HOLD_CHUNKS] に戻し、
      * 閾値未満の断片はホールドが残っている間だけ開のまま、残数を1つ減らす。
      */
-    private fun isVolumeGateOpen(level: Float): Boolean {
+    private fun isVolumeGateOpen(
+        level: Float,
+        mode: SpeechRecognitionMode,
+    ): Boolean {
+        if (mode != SpeechRecognitionMode.WakeWord) {
+            volumeGateHoldChunks = 0
+            return true
+        }
         if (level >= volumeGateThreshold.value) {
             volumeGateHoldChunks = VOLUME_GATE_HOLD_CHUNKS
             return true
