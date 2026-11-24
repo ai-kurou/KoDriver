@@ -56,6 +56,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.handleColumnRowReorderKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
+import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_add_item
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_drag_item
@@ -71,6 +72,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_remove_item
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableColumn
+import sh.calvin.reorderable.ReorderableListItemScope
 
 internal fun manualReadoutPreview(uiState: ManualReadoutSetDetailUiState): String =
     uiState.selectedItemKeys
@@ -130,180 +132,258 @@ internal fun ManualReadoutItemsCard(
                 ) { index, itemKey, _ ->
                     key(itemKey) {
                         ReorderableItem {
-                            val name = manualReadoutItemName(uiState.simulatorId, itemKey).ifEmpty { itemKey }
-                            val moveActions =
-                                manualReadoutMoveActions(index, uiState.selectedItemKeys.size, onMoveItem)
-                            val category = manualReadoutItemDefinition(uiState.simulatorId, itemKey)?.category
-                            Row(Modifier.height(IntrinsicSize.Min)) {
-                                if (category != null) {
-                                    val categoryLabel = stringResource(category.label())
-                                    Box(
-                                        Modifier
-                                            .semantics { contentDescription = categoryLabel }
-                                            .fillMaxHeight()
-                                            .width(4.dp)
-                                            .clip(MaterialTheme.shapes.extraSmall)
-                                            .background(manualReadoutCategoryColor(category)),
-                                    )
-                                    Spacer(Modifier.width(KoDriverSpacing.small))
-                                }
-                                Column(
-                                    Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth().semantics { customActions = moveActions },
-                                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        Icon(
-                                            Icons.Default.DragIndicator,
-                                            stringResource(Res.string.manual_readout_drag_item, name),
-                                            Modifier
-                                                .onKeyEvent { event ->
-                                                    handleColumnRowReorderKey(
-                                                        event = event,
-                                                        index = index,
-                                                        itemKeys = uiState.selectedItemKeys,
-                                                        focusState = reorderFocusState,
-                                                        onMove = onMoveItem,
-                                                    )
-                                                }.focusable()
-                                                .draggableHandle(
-                                                    onDragStarted = { _ ->
-                                                        haptic.performHapticFeedback(
-                                                            HapticFeedbackType.GestureThresholdActivate,
-                                                        )
-                                                    },
-                                                    onDragStopped = { _ ->
-                                                        haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
-                                                    },
-                                                ).size(20.dp),
-                                        )
-                                        Text(name, modifier = Modifier.weight(1f))
-                                        IconButton(onClick = {
-                                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                            onRemoveItem(itemKey)
-                                        }) {
-                                            Icon(
-                                                Icons.Default.Close,
-                                                stringResource(Res.string.manual_readout_remove_item, name),
-                                            )
-                                        }
-                                    }
-                                    ManualReadoutItemTextField(
-                                        text = uiState.itemTexts[itemKey] ?: manualReadoutItemText(uiState, itemKey),
-                                        defaultText = manualReadoutItemText(uiState, itemKey),
-                                        onTextChanged = { onItemTextChanged(itemKey, it) },
-                                        itemKey = itemKey,
-                                        simulatorId = uiState.simulatorId,
-                                    )
-                                }
-                            }
+                            ManualReadoutItemRow(
+                                uiState = uiState,
+                                index = index,
+                                itemKey = itemKey,
+                                reorderFocusState = reorderFocusState,
+                                onRemoveItem = onRemoveItem,
+                                onMoveItem = onMoveItem,
+                                onItemTextChanged = onItemTextChanged,
+                            )
                         }
                     }
                 }
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        stringResource(
-                            Res.string.manual_readout_item_count,
-                            uiState.selectedItemKeys.size,
-                            MANUAL_READOUT_SET_ITEM_MAX,
-                        ),
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                    Text(
-                        stringResource(
-                            if (atLimit) {
-                                Res.string.manual_readout_item_limit
-                            } else {
-                                Res.string.manual_readout_item_limit_available
-                            },
-                            MANUAL_READOUT_SET_ITEM_MAX,
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-                val addEnabled = remaining.isNotEmpty() && !atLimit
-                val dashColor =
-                    if (addEnabled) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_DASH_ALPHA)
-                    }
-                val dashShape = MaterialTheme.shapes.medium
-                OutlinedButton(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        showPicker = true
-                    },
-                    enabled = addEnabled,
-                    modifier =
-                        Modifier.fillMaxWidth().drawBehind {
-                            val strokeWidth = 1.5.dp.toPx()
-                            val outline = dashShape.createOutline(size, layoutDirection, this)
-                            drawOutline(
-                                outline = outline,
-                                color = dashColor,
-                                style =
-                                    Stroke(
-                                        width = strokeWidth,
-                                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(8.dp.toPx(), 6.dp.toPx())),
-                                    ),
-                            )
-                        },
-                    shape = dashShape,
-                    border = BorderStroke(0.dp, Color.Transparent),
-                ) {
-                    Text(stringResource(Res.string.manual_readout_add_item), fontWeight = FontWeight.SemiBold)
-                }
+                ManualReadoutItemCountRow(count = uiState.selectedItemKeys.size, atLimit = atLimit)
+                ManualReadoutAddItemButton(
+                    enabled = remaining.isNotEmpty() && !atLimit,
+                    onClick = { showPicker = true },
+                )
                 ManualReadoutHotkeyAnimatedVisibility(visible = uiState.selectedItemKeys.isNotEmpty()) {
-                    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium)) {
-                        HorizontalDivider()
-                        if (lastPreview.isNotBlank()) {
-                            Text(
-                                lastPreview,
-                                modifier = Modifier.testTag("manual_readout_preview_sentence"),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                        }
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                            FilledTonalButton(
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                    onPreviewClick()
-                                },
-                                enabled =
-                                    uiState.isTextToSpeechAvailable &&
-                                        uiState.selectedItemKeys.isNotEmpty() &&
-                                        lastPreview.isNotBlank(),
-                            ) {
-                                Icon(
-                                    imageVector =
-                                        if (uiState.isPreviewing) Icons.Default.Stop else Icons.Default.PlayArrow,
-                                    contentDescription = null,
-                                )
-                                Spacer(Modifier.width(KoDriverSpacing.small))
-                                Text(
-                                    stringResource(
-                                        if (uiState.isPreviewing) {
-                                            Res.string.manual_readout_preview_stop
-                                        } else {
-                                            Res.string.manual_readout_preview_play
-                                        },
-                                    ),
-                                )
-                            }
-                        }
-                    }
+                    ManualReadoutPreviewSection(
+                        uiState = uiState,
+                        previewText = lastPreview,
+                        onPreviewClick = onPreviewClick,
+                    )
                 }
             }
         },
     )
+}
+
+@Composable
+private fun ReorderableListItemScope.ManualReadoutItemRow(
+    uiState: ManualReadoutSetDetailUiState,
+    index: Int,
+    itemKey: String,
+    reorderFocusState: ListRowFocusState,
+    onRemoveItem: (String) -> Unit,
+    onMoveItem: (Int, Int) -> Unit,
+    onItemTextChanged: (String, String) -> Unit,
+) {
+    val name = manualReadoutItemName(uiState.simulatorId, itemKey).ifEmpty { itemKey }
+    val moveActions = manualReadoutMoveActions(index, uiState.selectedItemKeys.size, onMoveItem)
+    val category = manualReadoutItemDefinition(uiState.simulatorId, itemKey)?.category
+    Row(Modifier.height(IntrinsicSize.Min)) {
+        if (category != null) {
+            ManualReadoutCategoryBar(category)
+            Spacer(Modifier.width(KoDriverSpacing.small))
+        }
+        Column(
+            Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+        ) {
+            Row(
+                Modifier.fillMaxWidth().semantics { customActions = moveActions },
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                ManualReadoutDragHandle(
+                    name = name,
+                    index = index,
+                    itemKeys = uiState.selectedItemKeys,
+                    reorderFocusState = reorderFocusState,
+                    onMoveItem = onMoveItem,
+                )
+                Text(name, modifier = Modifier.weight(1f))
+                ManualReadoutRemoveButton(name = name, onRemove = { onRemoveItem(itemKey) })
+            }
+            ManualReadoutItemTextField(
+                text = uiState.itemTexts[itemKey] ?: manualReadoutItemText(uiState, itemKey),
+                defaultText = manualReadoutItemText(uiState, itemKey),
+                onTextChanged = { onItemTextChanged(itemKey, it) },
+                itemKey = itemKey,
+                simulatorId = uiState.simulatorId,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ManualReadoutCategoryBar(category: ManualReadoutItemCategory) {
+    val categoryLabel = stringResource(category.label())
+    Box(
+        Modifier
+            .semantics { contentDescription = categoryLabel }
+            .fillMaxHeight()
+            .width(4.dp)
+            .clip(MaterialTheme.shapes.extraSmall)
+            .background(manualReadoutCategoryColor(category)),
+    )
+}
+
+@Composable
+private fun ReorderableListItemScope.ManualReadoutDragHandle(
+    name: String,
+    index: Int,
+    itemKeys: List<String>,
+    reorderFocusState: ListRowFocusState,
+    onMoveItem: (Int, Int) -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    Icon(
+        Icons.Default.DragIndicator,
+        stringResource(Res.string.manual_readout_drag_item, name),
+        Modifier
+            .onKeyEvent { event ->
+                handleColumnRowReorderKey(
+                    event = event,
+                    index = index,
+                    itemKeys = itemKeys,
+                    focusState = reorderFocusState,
+                    onMove = onMoveItem,
+                )
+            }.focusable()
+            .draggableHandle(
+                onDragStarted = { _ ->
+                    haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+                },
+                onDragStopped = { _ ->
+                    haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
+                },
+            ).size(20.dp),
+    )
+}
+
+@Composable
+private fun ManualReadoutRemoveButton(
+    name: String,
+    onRemove: () -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    IconButton(onClick = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onRemove()
+    }) {
+        Icon(
+            Icons.Default.Close,
+            stringResource(Res.string.manual_readout_remove_item, name),
+        )
+    }
+}
+
+@Composable
+private fun ManualReadoutItemCountRow(
+    count: Int,
+    atLimit: Boolean,
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            stringResource(Res.string.manual_readout_item_count, count, MANUAL_READOUT_SET_ITEM_MAX),
+            style = MaterialTheme.typography.labelMedium,
+        )
+        Text(
+            stringResource(
+                if (atLimit) {
+                    Res.string.manual_readout_item_limit
+                } else {
+                    Res.string.manual_readout_item_limit_available
+                },
+                MANUAL_READOUT_SET_ITEM_MAX,
+            ),
+            style = MaterialTheme.typography.bodySmall,
+        )
+    }
+}
+
+@Composable
+private fun ManualReadoutAddItemButton(
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    val dashColor =
+        if (enabled) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_DASH_ALPHA)
+        }
+    val dashShape = MaterialTheme.shapes.medium
+    OutlinedButton(
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            onClick()
+        },
+        enabled = enabled,
+        modifier =
+            Modifier.fillMaxWidth().drawBehind {
+                val strokeWidth = 1.5.dp.toPx()
+                val outline = dashShape.createOutline(size, layoutDirection, this)
+                drawOutline(
+                    outline = outline,
+                    color = dashColor,
+                    style =
+                        Stroke(
+                            width = strokeWidth,
+                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(8.dp.toPx(), 6.dp.toPx())),
+                        ),
+                )
+            },
+        shape = dashShape,
+        border = BorderStroke(0.dp, Color.Transparent),
+    ) {
+        Text(stringResource(Res.string.manual_readout_add_item), fontWeight = FontWeight.SemiBold)
+    }
+}
+
+@Composable
+private fun ManualReadoutPreviewSection(
+    uiState: ManualReadoutSetDetailUiState,
+    previewText: String,
+    onPreviewClick: () -> Unit,
+) {
+    val haptic = LocalHapticFeedback.current
+    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium)) {
+        HorizontalDivider()
+        if (previewText.isNotBlank()) {
+            Text(
+                previewText,
+                modifier = Modifier.testTag("manual_readout_preview_sentence"),
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            FilledTonalButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onPreviewClick()
+                },
+                enabled =
+                    uiState.isTextToSpeechAvailable &&
+                        uiState.selectedItemKeys.isNotEmpty() &&
+                        previewText.isNotBlank(),
+            ) {
+                Icon(
+                    imageVector = if (uiState.isPreviewing) Icons.Default.Stop else Icons.Default.PlayArrow,
+                    contentDescription = null,
+                )
+                Spacer(Modifier.width(KoDriverSpacing.small))
+                Text(
+                    stringResource(
+                        if (uiState.isPreviewing) {
+                            Res.string.manual_readout_preview_stop
+                        } else {
+                            Res.string.manual_readout_preview_play
+                        },
+                    ),
+                )
+            }
+        }
+    }
 }
 
 /** ドラッグできない利用者向けに、上下への移動をアクセシビリティ操作として提供する。 */
