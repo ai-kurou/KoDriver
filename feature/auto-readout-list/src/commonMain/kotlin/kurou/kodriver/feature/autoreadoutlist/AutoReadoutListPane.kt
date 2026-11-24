@@ -3,7 +3,6 @@ package kurou.kodriver.feature.autoreadoutlist
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -107,7 +106,6 @@ import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.core.designsystem.handleListRowPartArrowKey
 import kurou.kodriver.core.designsystem.handleListRowReorderKey
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
-import kurou.kodriver.core.designsystem.rightAlignedBackgroundImage
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -439,17 +437,11 @@ private fun AutoReadoutListItemCard(
     val partsState =
         remember(rowFocusRequester, hasStartSound, hasQueue) {
             ListRowPartsFocusState(
-                partCount = AUTO_READOUT_ROW_BASE_PART_COUNT + (if (hasStartSound) 1 else 0) + (if (hasQueue) 1 else 0),
+                partCount = autoReadoutRowPartCount(hasStartSound, hasQueue),
                 firstRequester = rowFocusRequester,
             )
         }
-    val partEnabled =
-        buildList {
-            add(true)
-            add(true)
-            if (hasStartSound) add(readoutEnabled)
-            if (hasQueue) add(readoutEnabled)
-        }
+    val partEnabled = autoReadoutRowPartEnabled(hasStartSound, hasQueue, readoutEnabled)
     val openDetail = {
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onItemClick(item)
@@ -465,18 +457,7 @@ private fun AutoReadoutListItemCard(
     val backgroundImage = autoReadoutBackground(item)?.let { painterResource(it.drawable) }
     val primary = MaterialTheme.colorScheme.primary
     val cardShape = CardDefaults.elevatedShape
-    val selectionBorderColor by
-        animateColorAsState(
-            targetValue = if (isSelected) primary else Color.Transparent,
-            animationSpec = tween(durationMillis = 500),
-            label = "selectionBorderColor",
-        )
-    val selectionShadowElevation by
-        animateDpAsState(
-            targetValue = if (isSelected) 8.dp else 0.dp,
-            animationSpec = tween(durationMillis = 500),
-            label = "selectionShadowElevation",
-        )
+    val selectionStyle = animateSelectionStyle(isSelected = isSelected, primary = primary)
     ElevatedCard(
         modifier =
             modifier
@@ -484,24 +465,19 @@ private fun AutoReadoutListItemCard(
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
                 .fillMaxWidth()
                 .shadow(
-                    elevation = selectionShadowElevation,
+                    elevation = selectionStyle.shadowElevation,
                     shape = cardShape,
                     ambientColor = primary,
                     spotColor = primary,
-                ).border(1.dp, selectionBorderColor, cardShape),
+                ).border(1.dp, selectionStyle.borderColor, cardShape),
         colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .then(
-                        if (backgroundImage != null) {
-                            Modifier.rightAlignedBackgroundImage(backgroundImage, containerColor)
-                        } else {
-                            Modifier
-                        },
-                    ).drawBehind {
+                    .then(optionalRightAlignedBackgroundImage(backgroundImage, containerColor))
+                    .drawBehind {
                         drawRect(
                             color = accentColor.copy(alpha = accentAlpha),
                             size = Size(KoDriverSpacing.extraSmall.toPx(), size.height),
@@ -797,9 +773,6 @@ private fun AutoReadoutListBottomChip(
 }
 
 private const val DISABLED_CHIP_CONTENT_ALPHA = 0.38f
-
-/** 行内の部品のうち、全項目に共通する主操作領域とスイッチの数。 */
-private const val AUTO_READOUT_ROW_BASE_PART_COUNT = 2
 
 @Composable
 private fun AutoReadoutListStartSoundToggle(
