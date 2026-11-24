@@ -155,26 +155,13 @@ internal fun ManualReadoutSetDetailPane(
     }
     val number = uiState.setNumber
     DetailPaneScaffold(
-        title =
-            if (number != null) {
-                uiState.name.ifBlank { stringResource(Res.string.manual_readout_set_title, number) }
-            } else {
-                stringResource(Res.string.manual_readout_title)
-            },
+        title = manualReadoutSetDetailTitle(number, uiState.name),
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
         actions = {
             if (number != null) {
-                val haptic = LocalHapticFeedback.current
-                IconButton(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        showDeleteDialog = true
-                    },
-                ) {
-                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.manual_readout_delete))
-                }
+                ManualReadoutSetDeleteAction(onClick = { showDeleteDialog = true })
             }
         },
     ) {
@@ -216,6 +203,30 @@ internal fun ManualReadoutSetDetailPane(
                 Text(stringResource(Res.string.manual_readout_set_missing))
             }
         }
+    }
+}
+
+@Composable
+private fun manualReadoutSetDetailTitle(
+    number: Int?,
+    name: String,
+): String =
+    if (number != null) {
+        name.ifBlank { stringResource(Res.string.manual_readout_set_title, number) }
+    } else {
+        stringResource(Res.string.manual_readout_title)
+    }
+
+@Composable
+private fun ManualReadoutSetDeleteAction(onClick: () -> Unit) {
+    val haptic = LocalHapticFeedback.current
+    IconButton(
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            onClick()
+        },
+    ) {
+        Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.manual_readout_delete))
     }
 }
 
