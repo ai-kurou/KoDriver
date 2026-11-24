@@ -81,6 +81,9 @@ Compose:
 
 complexity:
   active: true
+  CognitiveComplexMethod:
+    active: true
+    threshold: 15
   CyclomaticComplexMethod:
     active: true
     threshold: 15
