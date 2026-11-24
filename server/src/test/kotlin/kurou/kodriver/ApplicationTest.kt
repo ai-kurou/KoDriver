@@ -946,6 +946,92 @@ class ApplicationTest {
         }
 
     @Test
+    fun `ACEカーカス温度情報は同一値も継続して送信される`() =
+        testApplication {
+            val repository = FakeAceWindowsTyreCarcassTemperatureRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        lmuWindows =
+                            LmuWindowsServerUseCases(
+                                observeLmuWindowsRaceFlags =
+                                    ObserveLmuWindowsRaceFlagsUseCase(
+                                        FakeLmuWindowsFlagRepository(),
+                                    ),
+                                observeLmuWindowsVehicleApproach =
+                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                        EmptyLmuWindowsVehicleApproachRepository,
+                                    ),
+                                observeLmuWindowsVehicleDamage =
+                                    ObserveLmuWindowsVehicleDamageUseCase(
+                                        EmptyLmuWindowsVehicleDamageRepository,
+                                    ),
+                                observeLmuWindowsTyreCarcassTemperature =
+                                    ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeLmuWindowsBrakeTemperature =
+                                    ObserveLmuWindowsBrakeTemperatureUseCase(
+                                        EmptyLmuWindowsBrakeTemperatureRepository,
+                                    ),
+                                observeLmuWindowsVehicleClass =
+                                    ObserveLmuWindowsVehicleClassUseCase(
+                                        EmptyLmuWindowsVehicleClassRepository,
+                                    ),
+                                observeLmuWindowsTyreWear =
+                                    ObserveLmuWindowsTyreWearUseCase(
+                                        EmptyLmuWindowsTyreWearRepository,
+                                    ),
+                                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                                observeLmuWindowsVirtualEnergy =
+                                    ObserveLmuWindowsVirtualEnergyUseCase(
+                                        EmptyLmuWindowsVirtualEnergyRepository,
+                                    ),
+                                observeLmuWindowsPitStatus =
+                                    ObserveLmuWindowsPitStatusUseCase(
+                                        EmptyLmuWindowsPitStatusRepository,
+                                    ),
+                                observeLmuWindowsBrakeWear =
+                                    ObserveLmuWindowsBrakeWearUseCase(EmptyLmuWindowsBrakeWearRepository),
+                                observeLmuWindowsTyreDetached =
+                                    ObserveLmuWindowsTyreDetachedUseCase(
+                                        EmptyLmuWindowsTyreDetachedRepository,
+                                    ),
+                                observeLmuWindowsCarGap =
+                                    ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
+                            ),
+                        aceWindows =
+                            emptyAceWindowsServerUseCases().copy(
+                                observeAceWindowsTyreCarcassTemperature =
+                                    ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                        repository,
+                                    ),
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/tyre_carcass_temperature") {
+                    repository.emit(AceWindowsTyreCarcassTemperatureData(tyreCarcassTemperatureData1.wheels))
+                    repository.emit(AceWindowsTyreCarcassTemperatureData(tyreCarcassTemperatureData1.wheels))
+                    repository.emit(AceWindowsTyreCarcassTemperatureData(tyreCarcassTemperatureData2.wheels))
+
+                    val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val third = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_1, first)
+                    assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_1, second)
+                    assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_2, third)
+                }
+        }
+
+    @Test
     fun `カーカス温度情報は同一値も継続して送信される`() =
         testApplication {
             val repository = FakeLmuWindowsTyreCarcassTemperatureRepository()
