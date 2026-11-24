@@ -12,6 +12,7 @@ import java.net.URI
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -143,7 +144,7 @@ abstract class PrepareVoskModelTask
         private companion object {
             const val TIMEOUT_MILLIS = 60_000
             const val COPY_BUFFER_BYTES = 64 * 1024
-            val TOTAL_TIMEOUT_NANOS = java.util.concurrent.TimeUnit.MINUTES.toNanos(10)
+            val TOTAL_TIMEOUT_NANOS = TimeUnit.MINUTES.toNanos(10)
             const val DOWNLOAD_MAX_ATTEMPTS = 3
             const val DOWNLOAD_RETRY_DELAY_MILLIS = 5_000L
         }
