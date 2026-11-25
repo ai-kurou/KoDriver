@@ -14,6 +14,12 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
+/** 完了演出（900ms）の途中の時刻。 */
+private const val BEFORE_SHINE_END_MILLIS = 450L
+
+/** 途中の時刻から、完了演出が確実に終わるまで進める時間。 */
+private const val AFTER_SHINE_END_MILLIS = 1_000L
+
 class DesktopSplashHostTest {
     @get:Rule
     val rule = createComposeRule()
@@ -38,9 +44,13 @@ class DesktopSplashHostTest {
         rule.onNodeWithText("v1.0.0").assertIsDisplayed()
         assertEquals(0, finishedCount)
 
+        // 自動で時間を進めると完了演出まで終わってしまうため、手動で進めて通知の時点を確かめる。
+        rule.mainClock.autoAdvance = false
         serverGate.complete(Unit)
-        rule.waitForIdle()
+        rule.mainClock.advanceTimeBy(BEFORE_SHINE_END_MILLIS)
+        assertEquals(0, finishedCount)
 
+        rule.mainClock.advanceTimeBy(AFTER_SHINE_END_MILLIS)
         rule.onNodeWithText("起動が完了しました").assertIsDisplayed()
         assertEquals(1, finishedCount)
     }
