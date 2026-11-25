@@ -28,7 +28,6 @@ import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import org.koin.core.qualifier.named
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
@@ -44,7 +43,6 @@ class LmuWindowsNarratorModuleTest {
     private val itemSpokenRepository: ManualReadoutItemSpokenRepository = mockk()
     private val lmuWindowsRepository: LmuWindowsRepository = mockk()
     private val observeEnergy: ObserveLmuWindowsVirtualEnergyUseCase = mockk()
-    private val observeHotkey: ObserveReadoutHotkeyUseCase = mockk()
     private val observeThreshold: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase = mockk()
     private val observeFuelThreshold: ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase = mockk()
     private val observeFuelText: ObserveLmuWindowsRemainingFuelReadoutTextUseCase = mockk()
@@ -74,7 +72,6 @@ class LmuWindowsNarratorModuleTest {
                             }
                             single<LmuWindowsRepository> { lmuWindowsRepository }
                             factory { observeEnergy }
-                            factory { observeHotkey }
                             factory { observeThreshold }
                             factory { observeFuelThreshold }
                             factory(named(Simulator.LmuWindows.id)) { observeFuelText }
@@ -85,7 +82,6 @@ class LmuWindowsNarratorModuleTest {
                 val useCases = application.koin.get<RemainingVirtualEnergyUseCases>()
                 val fuelUseCases = application.koin.get<RemainingFuelUseCases>()
                 assertSame(observeEnergy, useCases.observeRemainingVirtualEnergy)
-                assertSame(observeHotkey, useCases.observeReadoutHotkey)
                 assertSame(observeThreshold, useCases.observeThresholdPercentage)
                 assertSame(observeFuelThreshold, fuelUseCases.observeThresholdPercentage)
                 assertSame(

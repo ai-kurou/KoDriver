@@ -66,7 +66,6 @@ import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import org.koin.core.qualifier.named
@@ -79,7 +78,6 @@ import org.koin.dsl.module
 val fakeLmuWindowsNarratorModule =
     module {
         single<ManualReadoutHotkeyRepository> { FakeManualReadoutHotkeyRepository() }
-        single<HotkeyRepository> { FakeHotkeyRepository() }
         single<LmuWindowsVehicleApproachRepository> { FakeLmuWindowsVehicleApproachRepository() }
         single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
         single<LmuWindowsRepository> { FakeLmuWindowsRepository() }
@@ -426,14 +424,6 @@ class FakeLmuWindowsVehicleClassBrakeWearPreferencesRepository : LmuWindowsVehic
     override suspend fun saveReadoutText(text: String) {
         this.text.update { text }
     }
-}
-
-class FakeHotkeyRepository : HotkeyRepository {
-    override suspend fun retryRegistration() = Unit
-
-    override fun registrationStateStream(): Flow<HotkeyRegistrationState> = flowOf(HotkeyRegistrationState.Unsupported)
-
-    override fun hotkeyPressStream(): Flow<Unit> = emptyFlow()
 }
 
 class FakeManualReadoutHotkeyRepository : ManualReadoutHotkeyRepository {

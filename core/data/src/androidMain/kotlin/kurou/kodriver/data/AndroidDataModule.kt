@@ -7,7 +7,6 @@ import kurou.kodriver.data.debugreadout.InMemoryDebugReadoutRequestRepository
 import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
-import kurou.kodriver.data.hotkey.UnsupportedHotkeyRepository
 import kurou.kodriver.data.hotkey.UnsupportedManualReadoutHotkeyRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemRequestRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemSpokenRepository
@@ -35,7 +34,6 @@ import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepositor
 import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
-import kurou.kodriver.data.preferences.createReadoutHotkeyPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
@@ -61,7 +59,6 @@ import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
-import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
@@ -79,7 +76,6 @@ import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -132,10 +128,6 @@ public fun androidDataModule(context: Context): Module =
         } bind ManualReadoutSettingsResetter::class
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutHotkeyRepository> { UnsupportedManualReadoutHotkeyRepository() }
-        single<HotkeyRepository> { UnsupportedHotkeyRepository() }
-        single<ReadoutHotkeyPreferencesRepository> {
-            createReadoutHotkeyPreferencesRepository(context.filesDir.absolutePath)
-        }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<ManualReadoutItemRequestRepository> { InMemoryManualReadoutItemRequestRepository() }
         single<ManualReadoutItemSpokenRepository> { InMemoryManualReadoutItemSpokenRepository() }

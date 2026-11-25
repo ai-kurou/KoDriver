@@ -43,7 +43,6 @@ import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.WheelIndex
@@ -163,44 +162,9 @@ private val sampleSideBySideDurations = LmuWindowsSideBySideDurations(leftMillis
 
 class LmuWindowsDebugStateDetailPaneScreenshotTest {
     @Test
-    fun `現在値読み上げホットキー固定カードを表示する`() =
+    fun `デフォルト データ未取得 最下部までスクロール`() =
         composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        LmuWindowsDebugStateDetailPaneContent(
-                            uiState =
-                                LmuWindowsDebugStateDetailUiState(
-                                    readoutHotkey =
-                                        ReadoutHotkeyUiState(registrationState = HotkeyRegistrationState.Registered),
-                                ),
-                            canNavigateBack = true,
-                            onBack = {},
-                            modifier = Modifier.requiredSize(1560.dp, 1080.dp),
-                        )
-                    }
-                }
-            }
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `デフォルト データ未取得 最下部までスクロール`() = captureScrolledToBottom(hotkeyRegistered = false)
-
-    @Test
-    fun `現在値読み上げホットキー固定カードを表示する 最下部までスクロール`() = captureScrolledToBottom(hotkeyRegistered = true)
-
-    private fun captureScrolledToBottom(hotkeyRegistered: Boolean) =
-        composeScreenshotTest {
-            val uiState =
-                LmuWindowsDebugStateDetailUiState(
-                    readoutHotkey =
-                        if (hotkeyRegistered) {
-                            ReadoutHotkeyUiState(registrationState = HotkeyRegistrationState.Registered)
-                        } else {
-                            ReadoutHotkeyUiState()
-                        },
-                )
+            val uiState = LmuWindowsDebugStateDetailUiState()
             setContent {
                 KoDriverTheme {
                     Surface {
@@ -215,8 +179,8 @@ class LmuWindowsDebugStateDetailPaneScreenshotTest {
                 }
             }
             // 縦に長く1080dpに収まらないため、最後のカードまでスクロールして撮影する。
-            val fixedItemCount = if (hotkeyRegistered) 2 else 1
-            val lastIndex = fixedItemCount + uiState.cardOrder.size - 1
+            // 先頭の固定カード（デバッグ読み上げ）の分だけ index がずれる。
+            val lastIndex = uiState.cardOrder.size
             onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).performScrollToIndex(lastIndex)
             waitForIdle()
             onRoot().captureRoboImage()

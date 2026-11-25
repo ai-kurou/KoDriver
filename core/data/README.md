@@ -6,7 +6,7 @@
 
 `CoreAutoReadoutSettingsResetter` は自動読み上げの有効状態・順序、キュー、開始音の有効状態を端末ローカルで既定値に戻します。開始音種別・音量・手動読み上げなどの設定は対象外で、Desktop / Android の Koin モジュールに `AutoReadoutSettingsResetter` として登録します。
 
-`CoreManualReadoutSettingsResetter` は LMU / ACE / GT7 の手動読み上げセット一覧（セット内のホットキーを含む）を空にし、手動読み上げ一覧の再生ボタン表示設定を既定値に戻します。`ReadoutHotkeyPreferencesRepository`（LMUデバッグ用）は対象外で、Desktop / Android の Koin モジュールに `ManualReadoutSettingsResetter` として登録します。
+`CoreManualReadoutSettingsResetter` は LMU / ACE / GT7 の手動読み上げセット一覧（セット内のホットキーを含む）を空にし、手動読み上げ一覧の再生ボタン表示設定を既定値に戻します。Desktop / Android の Koin モジュールに `ManualReadoutSettingsResetter` として登録します。
 
 ## Koin モジュール
 
@@ -64,10 +64,6 @@ LMUタイヤ温度設定は `:core:lmu-windows-data` に配置する。
 `jvmAndroidMain` の `InMemoryDebugReadoutRequestRepository` は replay なしの `MutableSharedFlow` で要求をプロセス内配信する。購読前の要求は保持せず、送信中の要求は現在の全購読者に渡す。DesktopDataModule と AndroidDataModule で同じ実装を single 登録する。永続化やテレメトリソースへの送信は行わない。
 
 `jvmAndroidMain` の `InMemorySpeechRecognitionTranscriptRepository` は、マイクが聞き取った文言を `MutableStateFlow` でメモリに保持する（永続化しない）。DesktopDataModule と AndroidDataModule で `single` として登録する。
-
-LMU のデバッグ専用の現在値読み上げホットキーは `ReadoutHotkeyPreferencesRepository` が
-`lmu_windows_readout_hotkey_preferences.pb` に仮想キーコードを保存する。既定値は domain の F1 定数を参照する。
-Desktop・Android 両方で設定 Repository を登録し、Android の `HotkeyRepository` は `Unsupported` 状態のみを提供する。
 
 ## 手動読み上げセット
 

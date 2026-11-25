@@ -81,7 +81,6 @@ import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
@@ -170,7 +169,6 @@ public val lmuWindowsNarratorModule: Module =
                 get(),
                 get(),
                 get(),
-                get(),
                 ObserveManualReadoutSetsUseCase(get(named(Simulator.LmuWindows.id))),
                 get(),
             )
@@ -191,11 +189,10 @@ public val lmuWindowsNarratorModule: Module =
         factory { DetermineLmuWindowsVehicleReadoutUseCase() }
         factory { DetermineLmuWindowsTyreReadoutUseCase() }
         factory { DetermineLmuWindowsBrakeReadoutUseCase() }
-        factory { DetermineLmuWindowsVirtualEnergyReadoutUseCase(get()) }
+        factory { DetermineLmuWindowsVirtualEnergyReadoutUseCase() }
         factory { DetermineLmuWindowsManualReadoutUseCase() }
         factory { DetermineLmuWindowsPitTimingReadoutUseCase() }
         factory { DetermineLmuWindowsRaceFlagReadoutUseCase() }
-        factory { ObserveReadoutHotkeyUseCase(get()) }
         factory { ObserveManualReadoutRequestsUseCase(get()) }
         factory { ObserveManualReadoutItemRequestsUseCase(get()) }
         factory { NotifyManualReadoutItemSpokenUseCase(get()) }

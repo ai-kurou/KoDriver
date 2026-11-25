@@ -1,15 +1,6 @@
 # 手動読み上げ・ホットキーの配線
 
-[`../readout-item-key-wiring.md`](../readout-item-key-wiring.md) の詳細。現在値読み上げホットキー、手動読み上げセットのホットキー、手動専用項目のキー配置をまとめる。
-
-## LMU の現在値読み上げホットキー
-
-LMU Windows デバッグ状態詳細ペインで設定したホットキーで残りバーチャルエネルギーの現在値を読み上げる。
-既定は `Ctrl + Alt + Shift + F1`（VK `0x70`）。修飾キーは固定で、末尾の F1〜F12・A〜Z・0〜9 を選択して保存する。
-SimHub Control Mapper 側も、デバッグペインと同じ組み合わせを送るように設定する。
-既存の `RemainingVirtualEnergy.Root` / `RemainingVirtualEnergy.WarningReadout` スイッチに従う。
-この設定はデバッグ専用のテスト段階。登録結果（競合・エラーコード）と最大10秒の動作確認を表示する。データ未受信時は何もしない。
-Android と非 Windows ではホットキー押下を通知しない。
+[`../readout-item-key-wiring.md`](../readout-item-key-wiring.md) の詳細。手動読み上げセットのホットキー、手動専用項目のキー配置をまとめる。
 
 ## 手動読み上げセットのホットキー
 

@@ -22,7 +22,6 @@ import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
-import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
@@ -175,12 +174,6 @@ class ObserveSettingsUseCasesTest {
             MainWindowBounds(x = 10, y = 20, width = 800, height = 500),
             observe = { observeMainWindowBounds() },
             useCase = { ObserveMainWindowBoundsUseCase(it)() },
-        )
-        assertObserves<HotkeyRepository, Unit>(
-            "ObserveReadoutHotkeyUseCase",
-            Unit,
-            observe = { hotkeyPressStream() },
-            useCase = { ObserveReadoutHotkeyUseCase(it)() },
         )
         assertObserves<SoundVolumePreferencesRepository, Int>(
             "ObserveSoundVolumeUseCase",

@@ -28,7 +28,6 @@ import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepositor
 import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
-import kurou.kodriver.data.preferences.createReadoutHotkeyPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createSelectedAudioInputDevicePreferencesRepository
@@ -70,7 +69,6 @@ import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
@@ -142,9 +140,6 @@ private fun desktopDataModuleInMemoryRepositories() =
 /** 音声・読み上げ関連の DataStore Repository バインド（ファイルは directory 配下）。 */
 private fun desktopDataModuleAudioPreferences(directory: String) =
     module {
-        single<ReadoutHotkeyPreferencesRepository> {
-            createReadoutHotkeyPreferencesRepository(directory)
-        }
         single<MicrophoneCutQuietSoundPreferencesRepository> {
             createMicrophoneCutQuietSoundPreferencesRepository(directory = directory)
         }

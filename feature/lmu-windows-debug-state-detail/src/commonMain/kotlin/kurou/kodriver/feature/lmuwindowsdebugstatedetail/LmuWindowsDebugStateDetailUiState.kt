@@ -33,7 +33,6 @@ public data class LmuWindowsDebugStateDetailUiState(
         LMU_WINDOWS_READOUT_ITEM_KEYS
             .filterIsInstance<ReadoutItemKey.TopLevel>()
             .first(),
-    val readoutHotkey: ReadoutHotkeyUiState = ReadoutHotkeyUiState(),
     val debugReadoutText: String = "",
     val lmuWindows: LmuWindowsDebugState = LmuWindowsDebugState(),
     val enabledCardKeys: Set<LmuWindowsDebugStateCardKey> = setOf(LmuWindowsDebugStateCardKey.SIMULATOR),

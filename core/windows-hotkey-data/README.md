@@ -4,15 +4,10 @@ Windowsグローバルホットキーを検出するJVM専用のI/O基盤です�
 `GlobalHotkey` で修飾キーと仮想キーコードを指定し、
 `GlobalHotkeySource.observe()` から登録結果と押下の `GlobalHotkeyEvent` を受け取ります。
 非 Windows 環境ではネイティブ API を読み込まず `Unsupported` を通知します。
-`HotkeyRepositoryImpl` は DataStore に保存された LMU のキーを監視し、変更時は解除後に再登録します。
-既定は `Ctrl + Alt + Shift + F1`。LMU Windows デバッグ状態詳細ペインで末尾のキーを変更できます。
-SimHub Control Mapper 側も同じ組み合わせに設定すると残りバーチャルエネルギー現在値を読み上げます。
-`windowsHotkeyDataModule` がドメインの `HotkeyRepository` をデスクトップアプリに提供します。
-Repository 内の共有 Flow で Narrator の押下購読とデバッグペインの状態購読を一つの登録にまとめます。
-登録状態は保持し、過去の押下は再配信しません。
+`windowsHotkeyDataModule` はドメインの `ManualReadoutHotkeyRepository` をデスクトップアプリに提供します。
 
 `ManualReadoutHotkeyRepositoryImpl` は全シミュレーターの保存済みセットを監視し、
-キーを割り当てたセットごとに保存済みの修飾キー（4択）とキーを登録します。
+キーを割り当てたセットごとに保存済みの修飾キー（3択）とキーを登録します。
 押下は `(simulatorId, setId)` の `ManualReadoutRequest` として配信し、過去の押下は再配信しません。
 押下・状態の購読で登録を共有し、キー・修飾キー変更・解除・セット削除では対象の登録だけを解除します。
 文言や項目だけの変更では再登録せず、競合・失敗時の再試行も対象セットだけを登録し直します。

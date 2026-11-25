@@ -8,10 +8,7 @@ import kurou.kodriver.domain.model.readoutEnabled
 
 private const val LMU_WINDOWS_PERCENTAGE_SCALE = 100.0
 
-public class DetermineLmuWindowsVirtualEnergyReadoutUseCase(
-    private val manualReadoutUseCase: DetermineLmuWindowsManualReadoutUseCase =
-        DetermineLmuWindowsManualReadoutUseCase(),
-) {
+public class DetermineLmuWindowsVirtualEnergyReadoutUseCase {
     public fun determineRemainingVirtualEnergy(
         state: LmuWindowsNarratorState,
         data: LmuWindowsVirtualEnergyData,
@@ -40,21 +37,5 @@ public class DetermineLmuWindowsVirtualEnergyReadoutUseCase(
                     emptyList()
                 },
         )
-    }
-
-    /** 警告の閾値・読み上げ済み状態を変更せず、現在の残量を読み上げる。 */
-    public fun determineRemainingVirtualEnergyCurrentValue(
-        state: LmuWindowsNarratorState,
-        data: LmuWindowsVirtualEnergyData,
-        settings: LmuWindowsNarratorReadoutSettings,
-    ): LmuWindowsNarratorReadoutDecision {
-        val shouldAnnounce =
-            settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) &&
-                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout)
-        return if (shouldAnnounce) {
-            manualReadoutUseCase.determineManualRemainingVirtualEnergyCurrentValue(state, data)
-        } else {
-            LmuWindowsNarratorReadoutDecision(state = state, events = emptyList())
-        }
     }
 }
