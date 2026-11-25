@@ -16,11 +16,12 @@ import kurou.kodriver.feature.splash.desktop.DesktopSplashScreen
 import kurou.kodriver.feature.splash.desktop.runInitialization
 
 /**
- * デスクトップアプリの起動時に、初期化が完了するまでスプラッシュ画面を表示するホスト。
+ * デスクトップアプリの起動時に、スプラッシュ画面を表示しながら初期化を実行するホスト。
  *
  * [initializeModules] と [startServer] を順に実行し、その進捗を [DesktopSplashScreen] に
- * 表示する。初期化が完了すると、スプラッシュ画面の完了演出（光が横切る）が終わるのを待って
- * [content]（メイン画面）へ切り替える。[onReady] は初期化の完了時に通知する。
+ * 表示する。初期化が完了し、スプラッシュ画面の完了演出（光が横切る）が終わると [onFinished] を
+ * 一度だけ通知する。スプラッシュ画面は表示し続けるため、呼び出し側が通知を受けて
+ * スプラッシュのウィンドウを閉じ、メインウィンドウを開く。
  *
  * 初期化処理が例外をスローした場合はスプラッシュ画面が完了しないまま停止するため、
  * エラーダイアログを表示する。ダイアログを閉じると [onError] を通知し、アプリ終了などの
@@ -29,25 +30,22 @@ import kurou.kodriver.feature.splash.desktop.runInitialization
  * @param appVersion スプラッシュ画面に表示するアプリのバージョン。
  * @param initializeModules Koin モジュール構築など、依存グラフの初期化処理。
  * @param startServer Ktor サーバーの起動処理。
- * @param onReady 初期化完了時に一度だけ呼ばれるコールバック。
+ * @param onFinished 初期化と完了演出が終わったときに一度だけ呼ばれるコールバック。
  * @param onError 初期化失敗時、エラーダイアログを閉じたときに呼ばれるコールバック。
- * @param content 初期化完了後に表示するメイン画面。
  */
 @Composable
 public fun DesktopSplashHost(
     appVersion: String,
     initializeModules: suspend () -> Unit,
     startServer: suspend () -> Unit,
+    onFinished: () -> Unit,
     modifier: Modifier = Modifier,
-    onReady: () -> Unit = {},
     onError: (Throwable) -> Unit = {},
-    content: @Composable () -> Unit,
 ) {
     val progress = remember { DesktopSplashProgress() }
     val uiState by progress.uiState.collectAsState()
     var error by remember { mutableStateOf<Throwable?>(null) }
-    var readyAnimationFinished by remember { mutableStateOf(false) }
-    val currentOnReady by rememberUpdatedState(onReady)
+    val currentOnFinished by rememberUpdatedState(onFinished)
 
     LaunchedEffect(Unit) {
         try {
@@ -55,7 +53,6 @@ public fun DesktopSplashHost(
                 initializeModules = initializeModules,
                 startServer = startServer,
             )
-            currentOnReady()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Throwable) {
@@ -63,16 +60,12 @@ public fun DesktopSplashHost(
         }
     }
 
-    if (uiState.isReady && readyAnimationFinished) {
-        content()
-    } else {
-        DesktopSplashScreen(
-            uiState = uiState,
-            appVersion = appVersion,
-            modifier = modifier,
-            onReadyAnimationFinished = { readyAnimationFinished = true },
-        )
-    }
+    DesktopSplashScreen(
+        uiState = uiState,
+        appVersion = appVersion,
+        modifier = modifier,
+        onReadyAnimationFinished = { currentOnFinished() },
+    )
 
     error?.let { throwable ->
         DesktopSplashErrorDialog(

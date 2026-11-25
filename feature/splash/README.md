@@ -6,7 +6,7 @@
 
 Android とデスクトップで同じ演出にするための部品。
 
-- `SplashBackdrop` … 自己ベストラップの背景画像（`ReadoutBackground.BEST_LAP`）を右側に置いて左へ溶かし、その上に光の帯を重ねる背景。光の位置は `shineProgress`（0〜1）で渡す。
+- `SplashBackdrop` … 自己ベストラップの背景画像（`ReadoutBackground.BEST_LAP`）を右側に置いて左へ溶かし、その上に光の帯を重ねる背景。光の位置は `shineProgress`（0〜1）で渡す。`backgroundAlpha` を 1 未満にすると、下地と写真だけをまとめて透けさせる（デスクトップのみ使用）。
 - `SplashAppIcon` … アプリアイコン。
 - `SplashVersionLabel` … アプリのバージョン（`v5.3.0` 形式）。デスクトップはフェーズ名の下、Android は画面下部中央に表示する。バージョン文字列は `:app:desktopApp` の `APP_VERSION`・`:app:androidApp` の `BuildConfig.VERSION_NAME` を各ホストの `appVersion` 引数で渡す。
 
@@ -27,12 +27,12 @@ JVM の起動から Compose 初期化・Koin モジュール構築・Ktor サー
 - `DesktopSplashUiState` … スプラッシュ画面の表示状態（現在フェーズ・進捗率）。
 - `DesktopSplashProgress` … 起動処理から駆動される進捗状態ホルダー。
 - `runInitialization` … 進捗を更新しながら初期化処理を順に実行する `DesktopSplashProgress` 拡張関数。
-- `DesktopSplashScreen` … `SplashBackdrop` の上に、アプリアイコン・進捗バー・フェーズ名を左側に表示する Composable。起動完了（`READY`）で光が画面を横切り、終わると `onReadyAnimationFinished` を一度通知する。
+- `DesktopSplashScreen` … `SplashBackdrop` の上に、アプリアイコン・進捗バー・フェーズ名を左側に表示する Composable。枠なしの透過ウィンドウに表示する前提で、角丸にして背景だけを少し透けさせる。起動完了（`READY`）で光が画面を横切り、終わると `onReadyAnimationFinished` を一度通知する。
 - `DesktopSplashErrorDialog` … 初期化に失敗したことを通知するダイアログ。
 
-進捗ホルダーは Koin 起動前に生成する必要があるため、DI モジュールは提供せず、`:app:shared` の `DesktopSplashHost` から `DesktopSplashProgress` を直接生成して駆動する。`:app:desktopApp` の `main.kt` は `DesktopSplashHost` に Koin 構築・サーバー起動処理を渡して配線する。
+進捗ホルダーは Koin 起動前に生成する必要があるため、DI モジュールは提供せず、`:app:shared` の `DesktopSplashHost` から `DesktopSplashProgress` を直接生成して駆動する。`:app:desktopApp` の `main.kt` は枠なし・透過のスプラッシュ専用ウィンドウ（720×405dp、画面中央）を開き、`DesktopSplashHost` に Koin 構築・サーバー起動処理を渡して配線する。
 
-`DesktopSplashHost` は初期化完了後、この通知を受けるまでスプラッシュ画面を保ち、光を最後まで見せてからメイン画面へ切り替える。
+`DesktopSplashHost` は初期化完了後、この通知を受けてから `onFinished` を通知する。`main.kt` はそれとメインウィンドウの位置・サイズの復元がそろってから、スプラッシュのウィンドウを閉じてメインウィンドウと（設定がオンなら）オーバーレイを開く。
 
 初期化処理が例外をスローした場合、スプラッシュ画面が完了しないまま停止するのを避けるため、`DesktopSplashHost` は `DesktopSplashErrorDialog` を表示する。ダイアログを閉じると `onError` が通知され、`main.kt` は Sentry へ送信のうえアプリを終了する。
 

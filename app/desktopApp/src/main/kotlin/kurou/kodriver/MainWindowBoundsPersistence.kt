@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.unit.DpSize
@@ -65,8 +66,8 @@ internal fun restoreMainWindowBounds(
  *   復元前に保存を始めると、既定値で保存値を上書きしてしまうため、保存は復元の後に開始する。
  * - 最大化・最小化・全画面の間は保存しない。その状態のサイズや位置を保存すると、次回起動時に画面いっぱいの
  *   大きさで復元されたり、画面外の座標が保存されたりする。通常のウィンドウに戻った時点の値が保存される。
- * - 保存値の購読元（Koin）はウィンドウより後に初期化されるため、ウィンドウは既定の大きさで先に開き、
- *   読み込み完了後に復元する。
+ * - 保存値の購読元（Koin）はスプラッシュの表示中に初期化される。復元が終わると [onRestored] を一度通知するので、
+ *   呼び出し側はこれを待ってからメインウィンドウを開くと、最初から保存した位置・サイズで表示できる。
  */
 @OptIn(FlowPreview::class)
 @Composable
@@ -75,7 +76,9 @@ internal fun MainWindowBoundsPersistence(
     savedBounds: MainWindowSavedBounds?,
     onBoundsChange: (x: Int, y: Int, width: Int, height: Int) -> Unit,
     screenBounds: () -> List<Rectangle> = ::currentScreenBounds,
+    onRestored: () -> Unit = {},
 ) {
+    val currentOnRestored by rememberUpdatedState(onRestored)
     var restored by remember { mutableStateOf(false) }
     LaunchedEffect(savedBounds != null) {
         val saved = savedBounds ?: return@LaunchedEffect
@@ -83,6 +86,7 @@ internal fun MainWindowBoundsPersistence(
         windowState.size = bounds.size
         bounds.position?.let { windowState.position = it }
         restored = true
+        currentOnRestored()
     }
     LaunchedEffect(restored, windowState, onBoundsChange) {
         if (!restored) return@LaunchedEffect

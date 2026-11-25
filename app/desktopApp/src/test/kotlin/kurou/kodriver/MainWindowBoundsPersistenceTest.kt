@@ -127,6 +127,33 @@ class MainWindowBoundsPersistenceTest {
         }
 
     @Test
+    fun `復元が終わると一度だけ通知する`() =
+        runComposeUiTest {
+            val windowState = WindowState(size = DpSize(1000.dp, 600.dp))
+            val savedBounds = mutableStateOf<MainWindowSavedBounds?>(null)
+            var restoredCount = 0
+
+            setContent {
+                MainWindowBoundsPersistence(
+                    windowState = windowState,
+                    savedBounds = savedBounds.value,
+                    onBoundsChange = { _, _, _, _ -> },
+                    screenBounds = { listOf(primaryScreen) },
+                    onRestored = { restoredCount++ },
+                )
+            }
+            waitForIdle()
+            assertEquals(0, restoredCount)
+
+            savedBounds.value = MainWindowSavedBounds(x = 100, y = 50, width = 1200, height = 800)
+            waitForIdle()
+            savedBounds.value = MainWindowSavedBounds(x = 200, y = 60, width = 900, height = 700)
+            waitForIdle()
+
+            assertEquals(1, restoredCount)
+        }
+
+    @Test
     fun `最大化中は保存しない`() =
         runComposeUiTest {
             val windowState = WindowState(size = DpSize(1000.dp, 600.dp))
