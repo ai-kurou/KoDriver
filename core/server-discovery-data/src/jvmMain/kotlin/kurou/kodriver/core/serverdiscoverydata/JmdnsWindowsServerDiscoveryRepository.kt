@@ -1,12 +1,12 @@
-package kurou.kodriver.feature.otherserveripdetail
+package kurou.kodriver.core.serverdiscoverydata
 
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kurou.kodriver.domain.MdnsConstants
 import kurou.kodriver.domain.captureError
-import org.koin.core.module.Module
-import org.koin.dsl.module
+import kurou.kodriver.domain.model.DiscoveredServer
+import kurou.kodriver.domain.repository.WindowsServerDiscoveryRepository
 import java.io.IOException
 import java.net.InetAddress
 import javax.jmdns.JmDNS
@@ -15,9 +15,9 @@ import javax.jmdns.ServiceListener
 
 private val SERVICE_TYPE = MdnsConstants.KO_DRIVER_SERVICE_TYPE
 
-internal class JmdnsWindowsServerDiscovery(
+internal class JmdnsWindowsServerDiscoveryRepository(
     private val jmdnsFactory: () -> JmDNS = { JmDNS.create(InetAddress.getLocalHost()) },
-) : WindowsServerDiscovery {
+) : WindowsServerDiscoveryRepository {
     override fun discover(): Flow<List<DiscoveredServer>> =
         callbackFlow {
             val instance =
@@ -59,8 +59,3 @@ internal class JmdnsWindowsServerDiscovery(
             }
         }
 }
-
-internal actual val platformWindowsServerDiscoveryModule: Module =
-    module {
-        factory<WindowsServerDiscovery> { JmdnsWindowsServerDiscovery() }
-    }

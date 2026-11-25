@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.otherserveripdetail
+package kurou.kodriver.domain.model
 
 /**
  * mDNS で検出した KoDriver サーバーの表示名と接続先 IPアドレス。

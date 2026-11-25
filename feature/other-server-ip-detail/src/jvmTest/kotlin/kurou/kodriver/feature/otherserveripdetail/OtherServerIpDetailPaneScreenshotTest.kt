@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.DiscoveredServer
 import org.junit.Test
 
 class OtherServerIpDetailPaneScreenshotTest {

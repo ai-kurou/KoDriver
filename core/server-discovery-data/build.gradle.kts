@@ -8,7 +8,9 @@ plugins {
 kotlin {
     android {
         namespace = "kurou.kodriver.core.serverdiscoverydata"
-        withHostTest {}
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
     }
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -29,6 +31,9 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }
+        jvmMain.dependencies {
+            implementation(libs.jmdns)
+        }
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
@@ -44,6 +49,8 @@ kotlin {
                 implementation(libs.junit)
                 implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
                 implementation(libs.kotlinx.coroutinesTest)
+                implementation(libs.mockk)
+                implementation(libs.robolectric)
             }
         }
     }

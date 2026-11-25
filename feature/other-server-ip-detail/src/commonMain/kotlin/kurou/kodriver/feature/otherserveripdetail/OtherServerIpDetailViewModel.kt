@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.launchCapturingErrors
+import kurou.kodriver.domain.model.DiscoveredServer
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.DiscoverWindowsServersUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -19,7 +21,7 @@ internal class OtherServerIpDetailViewModel(
     observeServerIp: ObserveServerIpUseCase,
     validateServerIpAddress: ValidateServerIpAddressUseCase,
     private val saveServerIpWithConnectivityCheck: SaveServerIpWithConnectivityCheckUseCase,
-    private val windowsServerDiscovery: WindowsServerDiscovery,
+    private val discoverWindowsServers: DiscoverWindowsServersUseCase,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
 ) : ViewModel() {
     private val savedIp: StateFlow<String?> =
@@ -33,7 +35,7 @@ internal class OtherServerIpDetailViewModel(
     // ローカルネットワークの権限がない間は検出を始めず、許可されたときに検出を始める
     private val discoveredServers: StateFlow<List<DiscoveredServer>> =
         accessLocalNetworkPermissionGranted
-            .flatMapLatest { granted -> if (granted) windowsServerDiscovery.discover() else flowOf(emptyList()) }
+            .flatMapLatest { granted -> if (granted) discoverWindowsServers() else flowOf(emptyList()) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _mutable: MutableStateFlow<OtherServerIpDetailMutableState> =

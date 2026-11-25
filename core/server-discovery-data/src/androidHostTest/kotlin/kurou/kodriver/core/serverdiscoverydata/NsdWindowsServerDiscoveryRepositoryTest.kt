@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming", "DEPRECATION")
 
-package kurou.kodriver.feature.otherserveripdetail
+package kurou.kodriver.core.serverdiscoverydata
 
 import android.content.Context
 import android.net.nsd.NsdManager
@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
+import kurou.kodriver.domain.model.DiscoveredServer
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -28,7 +29,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class NsdWindowsServerDiscoveryTest {
+class NsdWindowsServerDiscoveryRepositoryTest {
     private val nsdManager: NsdManager = mockk()
     private val context: Context = mockk()
     private val discoveryListener = slot<NsdManager.DiscoveryListener>()
@@ -70,7 +71,7 @@ class NsdWindowsServerDiscoveryTest {
         val emissions = mutableListOf<List<DiscoveredServer>>()
         val job =
             launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
-                NsdWindowsServerDiscovery(context).discover().collect { emissions += it }
+                NsdWindowsServerDiscoveryRepository(context).discover().collect { emissions += it }
             }
         block(emissions)
         job.cancel()
@@ -185,7 +186,7 @@ class NsdWindowsServerDiscoveryTest {
             val emissions = mutableListOf<List<DiscoveredServer>>()
             val job =
                 launch(Dispatchers.Unconfined, start = CoroutineStart.UNDISPATCHED) {
-                    NsdWindowsServerDiscovery(context).discover().collect { emissions += it }
+                    NsdWindowsServerDiscoveryRepository(context).discover().collect { emissions += it }
                 }
 
             discoveryListener.captured.onServiceFound(found)

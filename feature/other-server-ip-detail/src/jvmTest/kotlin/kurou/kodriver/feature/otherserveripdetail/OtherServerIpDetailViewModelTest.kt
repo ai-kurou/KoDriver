@@ -21,10 +21,13 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.model.DiscoveredServer
 import kurou.kodriver.domain.repository.ServerConnectivityRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.repository.WindowsServerDiscoveryRepository
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckServerConnectivityUseCase
+import kurou.kodriver.domain.usecase.DiscoverWindowsServersUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
 import java.io.IOException
@@ -65,7 +68,10 @@ class OtherServerIpDetailViewModelTest {
                 checkServerConnectivity = CheckServerConnectivityUseCase(ServerConnectivityRepository { reachable }),
                 saveServerIp = SaveServerIpUseCase(repository),
             ),
-        windowsServerDiscovery = WindowsServerDiscovery { flowOf(discoveredServers) },
+        discoverWindowsServers =
+            DiscoverWindowsServersUseCase(
+                WindowsServerDiscoveryRepository { flowOf(discoveredServers) },
+            ),
         checkAccessLocalNetworkPermissionGranted =
             CheckAccessLocalNetworkPermissionGrantedUseCase(FakeAccessLocalNetworkPermissionRepository()),
     )
@@ -313,7 +319,10 @@ class OtherServerIpDetailViewModelTest {
                                     ),
                                 saveServerIp = SaveServerIpUseCase(repository),
                             ),
-                        windowsServerDiscovery = WindowsServerDiscovery { flowOf(emptyList()) },
+                        discoverWindowsServers =
+                            DiscoverWindowsServersUseCase(
+                                WindowsServerDiscoveryRepository { flowOf(emptyList()) },
+                            ),
                         checkAccessLocalNetworkPermissionGranted =
                             CheckAccessLocalNetworkPermissionGrantedUseCase(
                                 FakeAccessLocalNetworkPermissionRepository(),

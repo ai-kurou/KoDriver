@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.otherserveripdetail
+package kurou.kodriver.core.serverdiscoverydata
 
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -14,6 +14,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.DiscoveredServer
 import java.io.IOException
 import javax.jmdns.JmDNS
 import javax.jmdns.ServiceEvent
@@ -24,7 +25,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class JmdnsWindowsServerDiscoveryTest {
+class JmdnsWindowsServerDiscoveryRepositoryTest {
     private companion object {
         const val SERVICE_TYPE = "_kodriver._tcp.local."
     }
@@ -46,7 +47,7 @@ class JmdnsWindowsServerDiscoveryTest {
         runTest(testDispatcher) {
             val listenerSlot = slot<ServiceListener>()
             every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
-            val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
+            val discovery = JmdnsWindowsServerDiscoveryRepository(jmdnsFactory = { jmdns })
 
             val results = mutableListOf<List<DiscoveredServer>>()
             val job = launch { discovery.discover().collect { results += it } }
@@ -66,7 +67,7 @@ class JmdnsWindowsServerDiscoveryTest {
         runTest(testDispatcher) {
             val listenerSlot = slot<ServiceListener>()
             every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
-            val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
+            val discovery = JmdnsWindowsServerDiscoveryRepository(jmdnsFactory = { jmdns })
 
             val results = mutableListOf<List<DiscoveredServer>>()
             val job = launch { discovery.discover().collect { results += it } }
@@ -89,7 +90,7 @@ class JmdnsWindowsServerDiscoveryTest {
         runTest(testDispatcher) {
             val listenerSlot = slot<ServiceListener>()
             every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
-            val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
+            val discovery = JmdnsWindowsServerDiscoveryRepository(jmdnsFactory = { jmdns })
 
             val job = launch { discovery.discover().collect { } }
 
@@ -110,7 +111,7 @@ class JmdnsWindowsServerDiscoveryTest {
         runTest(testDispatcher) {
             val listenerSlot = slot<ServiceListener>()
             every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
-            val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
+            val discovery = JmdnsWindowsServerDiscoveryRepository(jmdnsFactory = { jmdns })
 
             val job = launch { discovery.discover().collect { } }
             job.cancelAndJoin()
@@ -128,7 +129,7 @@ class JmdnsWindowsServerDiscoveryTest {
             mockkStatic(Sentry::class)
             every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
             try {
-                val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { throw exception })
+                val discovery = JmdnsWindowsServerDiscoveryRepository(jmdnsFactory = { throw exception })
                 val results = mutableListOf<List<DiscoveredServer>>()
                 discovery.discover().collect { results += it }
 
@@ -144,7 +145,7 @@ class JmdnsWindowsServerDiscoveryTest {
     fun `キャンセル時にJmDNSのクローズが失敗しても例外を伝播しない`() =
         runTest(testDispatcher) {
             every { jmdns.close() } throws IOException("close failed")
-            val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
+            val discovery = JmdnsWindowsServerDiscoveryRepository(jmdnsFactory = { jmdns })
 
             val job = launch { discovery.discover().collect { } }
             job.cancelAndJoin()

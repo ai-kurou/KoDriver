@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.otherserveripdetail
+package kurou.kodriver.core.serverdiscoverydata
 
 import android.content.Context
 import android.net.nsd.NsdManager
@@ -7,14 +7,14 @@ import android.os.Build
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import org.koin.core.module.Module
-import org.koin.dsl.module
+import kurou.kodriver.domain.model.DiscoveredServer
+import kurou.kodriver.domain.repository.WindowsServerDiscoveryRepository
 
 private const val SERVICE_TYPE = "_kodriver._tcp."
 
-internal class NsdWindowsServerDiscovery(
+internal class NsdWindowsServerDiscoveryRepository(
     private val context: Context,
-) : WindowsServerDiscovery {
+) : WindowsServerDiscoveryRepository {
     override fun discover(): Flow<List<DiscoveredServer>> =
         callbackFlow {
             val nsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
@@ -116,9 +116,4 @@ private fun resolveHostAddress(serviceInfo: NsdServiceInfo): String? =
         serviceInfo.hostAddresses.firstOrNull()?.hostAddress
     } else {
         serviceInfo.host?.hostAddress
-    }
-
-internal actual val platformWindowsServerDiscoveryModule: Module =
-    module {
-        factory<WindowsServerDiscovery> { NsdWindowsServerDiscovery(get<Context>()) }
     }
