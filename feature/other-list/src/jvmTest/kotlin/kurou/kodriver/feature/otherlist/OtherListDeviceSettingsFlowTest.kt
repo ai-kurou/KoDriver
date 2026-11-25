@@ -14,10 +14,12 @@ import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
@@ -29,6 +31,7 @@ class OtherListDeviceSettingsFlowTest {
     private val dynamicColorRepository: DynamicColorEnabledRepository = mockk()
     private val hapticFeedbackRepository: HapticFeedbackEnabledRepository = mockk()
     private val themeRepository: ThemePreferencesRepository = mockk()
+    private val microphoneRepository: MicrophoneCutQuietSoundPreferencesRepository = mockk()
 
     @Test
     fun `初期状態と全設定の更新を状態に反映する`() =
@@ -41,23 +44,33 @@ class OtherListDeviceSettingsFlowTest {
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColor
             every { hapticFeedbackRepository.hapticFeedbackEnabled() } returns hapticFeedback
             every { themeRepository.observeThemeMode() } returns themeMode
+            val microphoneLevel = MutableStateFlow(6)
+            every { microphoneRepository.observeMicrophoneCutQuietSoundLevel() } returns microphoneLevel
             val flow = createFlow()
 
             assertSettingsStateUpdates(
                 uiState = flow.uiState,
-                initialState = OtherListDeviceSettingsUiState(false, false, false, THEME_MODE_DEFAULT),
-                updatedState = OtherListDeviceSettingsUiState(true, true, true, ThemeMode.DARK),
+                initialState = OtherListDeviceSettingsUiState(false, false, false, THEME_MODE_DEFAULT, 6),
+                updatedState = OtherListDeviceSettingsUiState(true, true, true, ThemeMode.DARK, 0),
             ) {
                 keepScreenOn.update { true }
                 dynamicColor.update { true }
                 hapticFeedback.update { true }
                 themeMode.update { ThemeMode.DARK }
+                microphoneLevel.update { 0 }
             }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackRepository.hapticFeedbackEnabled() }
             verify(exactly = 1) { themeRepository.observeThemeMode() }
-            confirmVerified(keepScreenOnRepository, dynamicColorRepository, hapticFeedbackRepository, themeRepository)
+            verify(exactly = 1) { microphoneRepository.observeMicrophoneCutQuietSoundLevel() }
+            confirmVerified(
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackRepository,
+                themeRepository,
+                microphoneRepository,
+            )
         }
 
     @Test
@@ -67,6 +80,7 @@ class OtherListDeviceSettingsFlowTest {
             every { dynamicColorRepository.dynamicColorEnabled() } returns MutableStateFlow(false)
             every { hapticFeedbackRepository.hapticFeedbackEnabled() } returns MutableStateFlow(true)
             every { themeRepository.observeThemeMode() } returns MutableStateFlow(THEME_MODE_DEFAULT)
+            every { microphoneRepository.observeMicrophoneCutQuietSoundLevel() } returns MutableStateFlow(6)
             coEvery { keepScreenOnRepository.saveKeepScreenOn(true) } returns Unit
             coEvery { dynamicColorRepository.saveDynamicColorEnabled(false) } returns Unit
             coEvery { hapticFeedbackRepository.saveHapticFeedbackEnabled(true) } returns Unit
@@ -83,7 +97,14 @@ class OtherListDeviceSettingsFlowTest {
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackRepository.hapticFeedbackEnabled() }
             verify(exactly = 1) { themeRepository.observeThemeMode() }
-            confirmVerified(keepScreenOnRepository, dynamicColorRepository, hapticFeedbackRepository, themeRepository)
+            verify(exactly = 1) { microphoneRepository.observeMicrophoneCutQuietSoundLevel() }
+            confirmVerified(
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackRepository,
+                themeRepository,
+                microphoneRepository,
+            )
         }
 
     private fun createFlow() =
@@ -95,5 +116,6 @@ class OtherListDeviceSettingsFlowTest {
             ObserveHapticFeedbackEnabledUseCase(hapticFeedbackRepository),
             SaveHapticFeedbackEnabledUseCase(hapticFeedbackRepository),
             ObserveThemeModeUseCase(themeRepository),
+            ObserveMicrophoneCutQuietSoundLevelUseCase(microphoneRepository),
         )
 }

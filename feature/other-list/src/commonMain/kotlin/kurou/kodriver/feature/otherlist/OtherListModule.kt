@@ -8,6 +8,7 @@ import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
@@ -80,7 +81,7 @@ public val otherListModule: Module =
         factory { ResetAutoReadoutSettingsUseCase(getAll()) }
         factory { ResetManualReadoutSettingsUseCase(getAll()) }
         factory { OtherListStartupRegistrationFlow(get()) }
-        factory { OtherListDeviceSettingsFlow(get(), get(), get(), get(), get(), get(), get()) }
+        factory { OtherListDeviceSettingsFlow(get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { OtherListSpeechSettingsFlow(get(), get(), get(), get(), get(), get()) }
         factory { OtherListTtsAvailabilityFlow(get()) }
         factory { OtherListDeviceVolumeFlow(get()) }
@@ -113,6 +114,7 @@ public val otherListModule: Module =
         // other-theme-detail と同じfactory定義なので、どちらが後から登録されても同じ依存を解決する。
         factory { ObserveThemeModeUseCase(get()) }
         factory { ObserveServerIpUseCase(get()) }
+        factory { ObserveMicrophoneCutQuietSoundLevelUseCase(get()) }
         factory { ObserveConsoleAddressUseCase(get()) }
         factory { ObserveGt7Ps5UdpPortUseCase(get()) }
 

@@ -10,6 +10,8 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
+import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN
 import org.junit.Rule
 import org.junit.Test
 
@@ -43,10 +45,30 @@ class OtherListPaneMicrophoneTest {
         confirmVerified(onItemClick)
     }
 
-    private fun setPane() {
+    @Test
+    fun `保存されたレベルをサブ項目に表示する`() {
+        setPane(level = 3)
+
+        rule.onNodeWithText("レベル 3").assertIsDisplayed()
+        confirmVerified(onItemClick)
+    }
+
+    @Test
+    fun `レベルが最小値ならオフをサブ項目に表示する`() {
+        setPane(level = MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN)
+
+        rule.onNodeWithText("オフ（カットしない）").assertIsDisplayed()
+        confirmVerified(onItemClick)
+    }
+
+    private fun setPane(level: Int = MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT) {
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(items = listOf(OtherListItemType.MicrophoneCutQuietSound)),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.MicrophoneCutQuietSound),
+                        microphoneCutQuietSoundLevel = level,
+                    ),
                 onItemClick = onItemClick,
                 onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},

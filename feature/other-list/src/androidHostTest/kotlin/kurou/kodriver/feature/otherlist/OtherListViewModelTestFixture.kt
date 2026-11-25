@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.model.ANDROID_AUDIO_USAGE_DEFAULT
+import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
@@ -31,6 +32,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.ManualReadoutSettingsResetter
+import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -56,6 +58,7 @@ import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
@@ -133,6 +136,9 @@ abstract class OtherListViewModelTestFixture {
     protected val themeRepository: ThemePreferencesRepository = mockk()
     protected val themeModeFlow = MutableStateFlow(THEME_MODE_DEFAULT)
 
+    protected val microphoneCutQuietSoundRepository: MicrophoneCutQuietSoundPreferencesRepository = mockk()
+    protected val microphoneCutQuietSoundLevelFlow = MutableStateFlow(MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT)
+
     protected val voiceRepository: VoicePreferencesRepository = mockk()
     protected val voiceSpeedRepository: VoiceSpeedPreferencesRepository = mockk()
     protected val voicePitchRepository: VoicePitchPreferencesRepository = mockk()
@@ -158,6 +164,9 @@ abstract class OtherListViewModelTestFixture {
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
         every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
         every { themeRepository.observeThemeMode() } returns themeModeFlow
+        every {
+            microphoneCutQuietSoundRepository.observeMicrophoneCutQuietSoundLevel()
+        } returns microphoneCutQuietSoundLevelFlow
         every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
         every { voicePitchRepository.voicePitch() } returns voicePitchFlow
         every { audioUsageRepository.observeAndroidAudioUsage() } returns audioUsageFlow
@@ -204,6 +213,8 @@ abstract class OtherListViewModelTestFixture {
                     observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
                     saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
                     observeThemeMode = ObserveThemeModeUseCase(themeRepository),
+                    observeMicrophoneCutQuietSoundLevel =
+                        ObserveMicrophoneCutQuietSoundLevelUseCase(microphoneCutQuietSoundRepository),
                 ),
             connectionFlow =
                 OtherListConnectionFlow(
