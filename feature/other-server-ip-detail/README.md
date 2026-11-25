@@ -8,13 +8,12 @@ LMU Windows 版デスクトップアプリ（`:server`）の接続先IPアドレ
 - `OtherServerIpDetailViewModel.kt`: 操作状態の保持、stateIn による購読管理、保存・検出操作と副作用。
 - `OtherServerIpDetailFlow.kt`: 保存済みIP、操作状態、検出結果から画面状態を合成する冷たい Flow。保存済みIPが null の場合の空文字への正規化、入力検証、検出ダイアログの表示判定と選択サーバーのフォールバックを担当。
 - `OtherServerIpDetailUiState.kt`: 入力中のIPアドレス、バリデーション結果、疎通確認結果などの画面状態。
-- `WindowsServerDiscovery.kt`: mDNSによるサーバー検出のインターフェース。プラットフォームごとの実装（`PlatformWindowsServerDiscovery.*.kt`）は expect/actual で分離。
 - `OtherServerIpDiscoveryDialog.kt`: 検出したサーバー一覧から選択するダイアログ。
-- `DiscoveredServer.kt`: mDNSで検出したサーバーの表示名と接続先IPアドレスを保持するデータクラス。
 - `ValidateServerIpAddressUseCase.kt`: 入力されたIPアドレス文字列の形式検証。
 - `SaveServerIpWithConnectivityCheckUseCase.kt`: 疎通確認を行った上でIPアドレスを保存するUseCase。
 - `OtherServerIpDetailModule.kt`: この feature の Koin モジュール定義。
-- `ErrorCapture.kt`: プラットフォームごとのエラーレポート送信（expect/actual）。
+
+サーバーの検出と疎通確認は `core:domain` の `DiscoverWindowsServersUseCase` / `CheckServerConnectivityUseCase` を介して利用する。実装は `:core:server-discovery-data` にある。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

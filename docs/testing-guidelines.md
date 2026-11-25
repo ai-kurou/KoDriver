@@ -64,7 +64,7 @@ Windows 共有メモリ（JNA/kernel32）のように非 Windows 環境でイン
 - MockK API は import して短い名前で呼び出し、テストコード内に `io.mockk.` の完全修飾名を書かない。
 - プロパティとして宣言した `mockk()` はテストクラスのインスタンスごとに新規生成される（JUnit/kotlin.test はテストメソッドごとに新しいインスタンスを作る）ため、`unmockkAll()` や `clearAllMocks()` を追加しない。
 - `mockkObject` / `mockkStatic` / `mockkConstructor` でグローバルな差し替えを行う場合に限り、`finally` または `@AfterTest` で対応する `unmockkObject` / `unmockkStatic` / `unmockkConstructor` を必ず呼ぶ。対象を限定せず全グローバルモックを解除する `unmockkAll()` は原則として使わない。
-- `Build.VERSION.SDK_INT` による分岐をテストするときは、閾値の両側（閾値未満と閾値以上）を Robolectric の `@Config(sdk = [...])` で検証し、閾値ちょうどのAPIレベル（例: Q=29, S=31, UPSIDE_DOWN_CAKE=34）を「以上」側に使う。例: `AppThemeAndroidTest`・`NsdWindowsServerDiscoveryTest`・`AudioSettingsActionsTest`。
+- `Build.VERSION.SDK_INT` による分岐をテストするときは、閾値の両側（閾値未満と閾値以上）を Robolectric の `@Config(sdk = [...])` で検証し、閾値ちょうどのAPIレベル（例: Q=29, S=31, UPSIDE_DOWN_CAKE=34）を「以上」側に使う。例: `AppThemeAndroidTest`・`NsdWindowsServerDiscoveryRepositoryTest`・`AudioSettingsActionsTest`。
 
 ### mockk テストでの any() 使用
 
