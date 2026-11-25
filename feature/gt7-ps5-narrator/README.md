@@ -1,5 +1,7 @@
 # gt7-ps5-narrator
 
+GT7 (Gran Turismo 7) PS5版の開始音WAV再生・自由文言TTSとアナウンス制御。`feature:lmu-windows-narrator` / `feature:ace-windows-narrator` に相当する GT7 版。
+
 Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を提供し、`:core:data`の`VoiceSpeedPreferencesRepository`・`VoicePitchPreferencesRepository`を消費する。
 `SpeakTextUseCase`は試聴・本文の読み上げに保存済み速度・声の高さ（ともに0.5〜2.0、既定1.0）を使用する。
 
@@ -9,34 +11,15 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 ![Module Graph](../../docs/graphs/feature-gt7-ps5-narrator.svg)
 <!-- MODULE-GRAPH-END -->
 
-燃料残り周回数は保存した自由文言をOS標準TTSで読み上げる。`{laps}` は推定残り周回数に置換し、
-0周以下では燃料なし用の文言を使う。空白文言・TTS利用不可の場合は読み上げず、WAVにはフォールバックしない。
-判定時に文言を確定してイベントに保持するため、キュー待機中に設定が変わってもログと発話は一致する。
-詳細ペインの試聴は `PlayStartSoundForKeyUseCase` でGT7のナレーターエンジンの開始音を再生した後、
-`SpeakTextUseCase` からOS標準TTSで入力文言を再生する。1周以上用の `{laps}` は現在のスライダー閾値に置換し、
-燃料なし用の文言はそのまま再生する。空白文言・TTS利用不可・音量ゼロ以下では開始音・本文を再生しない。
+自動読み上げ各項目（燃料残量・タイヤ過熱・自己ベストラップ）の既定文言・プレースホルダー・開始音のキー、
+および全項目共通の動作（`resolvedText` の保持、空白・TTS利用不可時の `SKIPPED`、WAVへフォールバックしないこと、詳細画面の試聴条件）は
+[`docs/readout-item-key-wiring.md`](../../docs/readout-item-key-wiring.md) から辿れる GT7 の項目の説明を正とする。
+GT7 固有の注意点は次のとおり。
+- 燃料残り周回数は `{laps}` を推定残り周回数に置換し、0周以下では燃料なし用の文言を使う。詳細ペインの試聴は `PlayStartSoundForKeyUseCase` で開始音を再生した後 `SpeakTextUseCase` で再生し、1周以上用の `{laps}` は現在のスライダー閾値に置換、燃料なし用の文言はそのまま再生する。
 
-燃料残量警告も保存した自由文言をOS標準TTSで読み上げる。既定文言は「燃料は残り{percent}%」。
-`{percent}` は実際の残量割合を四捨五入した整数（0..100）に置換する。警告判定と有効状態は既存どおりで、
-開始音・優先度・キューは `RemainingFuel.Root` を使う。文言は判定時に確定してイベントとログに保持する。
-空白・TTS利用不可では開始音・本文を要求せず、空文字と `SKIPPED` をログに記録し、WAVへはフォールバックしない。
-燃料残量の詳細ペインで自由文言を設定でき、試聴は現在の閾値をサンプル残量として `{percent}` に置換してTTSで再生する。
-空白文言・TTS利用不可・音量0以下では本文も開始音も再生しない。開始音は `RemainingFuel.Root` を参照する。
-
-タイヤ過熱警告は自由文言のOS標準TTSのみを使用する。既定文言は「タイヤ過熱{celsius}℃」。
-`{celsius}` は判定時の全輪の最高タイヤ温度を整数に丸めた摂氏に置換し、解決文言をイベントの
-`resolvedText` に保持するためキュー待機中も発話とログが一致する。判定条件・閾値・ヒステリシスは従来どおり。
-空白文言・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` を記録する。
-`tyre_overheat.wav` は使用せず、WAVへのフォールバックは行わない。開始音・優先度・キュー設定は
-`TyreTemperature.Root` を参照する。詳細画面の試聴は現在の高温閾値をサンプル温度として同じキーの開始音とTTSで再生する。
-
-自己ベストラップ更新は保存した自由文言をOS標準TTSで読み上げる。既定文言は「自己ベストラップ更新 {laptime}」。
-`{laptime}` は判定時の更新後の `bestLapTimeMs` を「1分23秒456」の形式に置換する。1分未満では分を省略し、
-ミリ秒は3桁固定、60分以上も時間にせず分で表す。解決した文言は `resolvedText` に保持し、キュー待機中も発話とログを一致させる。
-判定条件と `MyBestLap.Root` / `DetailEnabled` の有効状態は従来どおり。開始音・優先度・キューは `MyBestLap.Root` を参照する。
-リザルト画面などで周回数が一度に2以上増えた場合は、自己ベストを読み上げず前回タイム・周回数だけ更新し、読み上げ済み自己ベストは変更しない。
-空白文言・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` を記録する。formal/casual の収録WAVは削除し、
-WAVへフォールバックしない。共有protoの `voiceType` は旧データの互換性のため残すが、どのシミュレーターも参照せず、GT7は `readoutText` を使用する。
+- 燃料残量の `{percent}` は設定閾値ではなく実際の残量割合（0..100）に置換する。
+- 自己ベストラップは、リザルト画面などで周回数が一度に2以上増えた場合は読み上げず、前回タイム・周回数だけ更新する（読み上げ済み自己ベストは変更しない）。
+- 共有protoの `voiceType` は旧データの互換性のため残すが、どのシミュレーターも参照せず、GT7は `readoutText` を使用する。
 
 `Gt7Ps5NarratorEventProcessor.process` のログ用コンテキストは必須。呼び出し側が判定前の状態・
 判定に使った設定・判定後の状態を渡し、既定の空設定による誤解を招くログを防ぐ。
