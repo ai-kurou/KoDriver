@@ -1,0 +1,6 @@
+# start-implementation: AIレビューの依頼手順
+
+`/start-implementation` の第三引数が `true` の場合にだけ読む（手順9のPR作成直後に行う）。`false` または省略時は読まなくてよい。
+
+   - **第三引数に `true` が指定されている場合のみ**、PR作成後にCodeRabbitへ手動でレビューを依頼する（`.coderabbit.yaml`の`auto_review`は無効化されているため、自動では起動しない）。PR作成直後に投稿される CodeRabbit の初回コメント本文には `- [ ] <!-- {"checkboxId":"..."} --> 🔍 Trigger review` というチェックボックスが含まれているため、そのコメントを `gh api repos/<owner>/<repo>/issues/<PR番号>/comments` で取得し、該当行のみ `- [ ]` を `- [x]` に置換した本文で `gh api -X PATCH repos/<owner>/<repo>/issues/comments/<コメントID> -f body=<書き換えた本文>` を実行してチェックを入れる（`checkboxId` はコメントごとに異なる動的な値のため、都度本文から抽出すること。該当行以外は変更しない）。第三引数が指定されていない場合はこの手順をスキップする。
+   - **第三引数に `true` が指定されている場合のみ**、CodeRabbitのチェックボックス操作に続けて、Greptile・Sourceryにも手動でレビューを依頼する（自動レビューは `greptile.json`・Sourcery側のReview Settings（Labelsに `sourcery-review` を登録）で無効化されている）。それぞれ別のトップレベルコメントとして `gh pr comment <PR番号> --body '@greptileai'`（Greptile）、`gh pr comment <PR番号> --body '@sourcery-ai review'`（Sourcery）を実行する。ただしSourceryはReview Settingsの Labels に `sourcery-review` を登録しており、このラベルが付いたPRだけを自動レビューする設定のため、コメントの前に `gh pr edit <PR番号> --add-label sourcery-review` でラベルを付与する。Greptileの設定はPRのソースブランチから読まれる。Greptile・Sourceryのいずれかがリポジトリに未導入・無料枠の対象外（Greptileはスター数などの条件）などでbotが反応しない場合は、エラー扱いにせず、反応がなかった旨をCI待機後の報告に含めて続行する。第三引数が `false` または省略の場合はこの手順をスキップする。
