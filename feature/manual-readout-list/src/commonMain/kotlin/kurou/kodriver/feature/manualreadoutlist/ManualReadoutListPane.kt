@@ -289,6 +289,7 @@ internal fun ManualReadoutListPaneContent(
                                         setNumber = set.number.takeIf { it > 0 } ?: (index + 1),
                                         simulatorId = simulatorId,
                                         set = set,
+                                        isSelected = set.id == uiState.selectedSetId,
                                         showHotkeyChip = showHotkeyChip,
                                         canReadSet = uiState.canReadSets,
                                         onReadSet = { onReadSet(set.id) },
