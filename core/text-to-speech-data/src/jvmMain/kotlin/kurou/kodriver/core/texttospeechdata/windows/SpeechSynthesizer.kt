@@ -16,7 +16,9 @@ internal interface SpeechSynthesizer {
     fun listVoices(): List<TextToSpeechVoice>
 
     /** 最初の読み上げが遅れないよう、読み上げの準備を先に済ませる。準備を要しない実装では何もしない。 */
-    fun warmUp() {}
+    fun warmUp() {
+        // 準備を要しない実装（macOS の say コマンドなど）は、上書きせずこのまま何もしない。
+    }
 
     /**
      * [text] を読み上げる。[queue] が `true` なら再生中の読み上げの完了を待ってから読み上げ、
