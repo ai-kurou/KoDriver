@@ -173,5 +173,5 @@ jobs:
             --repo ai-kurou/KoDriver \
             --title "Release v$VERSION_NAME" \
             --generate-notes \
-            artifacts/KoDriver-windows-${VERSION_NAME}.msi \
-            artifacts/KoDriver-android-${VERSION_NAME}.apk
+            "artifacts/KoDriver-windows-${VERSION_NAME}.msi" \
+            "artifacts/KoDriver-android-${VERSION_NAME}.apk"
