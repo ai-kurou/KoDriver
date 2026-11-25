@@ -192,6 +192,7 @@ internal fun ManualReadoutContentScaffold(
                         lastOpenedSetId = it
                         onSetClick(it)
                     },
+                    onSelectedSetClick = onClearSelectedSet,
                     restoreFocusSetId = lastOpenedSetId.takeIf { uiState.selectedSetId == null },
                     onFocusRestored = { lastOpenedSetId = null },
                 )

@@ -85,6 +85,7 @@ internal fun ManualReadoutListPaneContent(
     onReadSet: (String) -> Unit,
     modifier: Modifier = Modifier,
     onSetClick: (String) -> Unit = {},
+    onSelectedSetClick: () -> Unit = {},
     onDeleteSet: (String) -> Unit = {},
     onTogglePlayButtonLayout: () -> Unit = {},
     showHotkeyChip: Boolean = isManualReadoutHotkeySupported(),
@@ -291,7 +292,15 @@ internal fun ManualReadoutListPaneContent(
                                         showHotkeyChip = showHotkeyChip,
                                         canReadSet = uiState.canReadSets,
                                         onReadSet = { onReadSet(set.id) },
-                                        onSetClick = { onSetClick(set.id) },
+                                        onSetClick = {
+                                            handleManualReadoutRowClick(
+                                                set.id,
+                                                uiState.selectedSetId,
+                                                onSetClick,
+                                                onSelectedSetClick,
+                                            )
+                                        },
+                                        onEditSet = { onSetClick(set.id) },
                                         onDeleteSet = { onDeleteSet(set.id) },
                                         rowFocusRequester = rowFocusState.requesterFor(set.id),
                                     )
@@ -362,6 +371,16 @@ internal fun manualReadoutSetTitle(
         "ace_windows" -> stringResource(Res.string.manual_readout_list_set_title_ace, setNumber)
         else -> error("未対応のsimulatorId: $simulatorId")
     }
+
+/** 詳細を開いている行の再タップは詳細を閉じ、それ以外の行のタップは詳細を開く。 */
+private fun handleManualReadoutRowClick(
+    setId: String,
+    selectedSetId: String?,
+    onSetClick: (String) -> Unit,
+    onSelectedSetClick: () -> Unit,
+) {
+    if (setId == selectedSetId) onSelectedSetClick() else onSetClick(setId)
+}
 
 /** 詳細が開いておらず、戻り先の行の復元も待っていないときだけ、一覧の先頭の行へフォーカスを置く。 */
 private fun focusesFirstRowOnEntry(

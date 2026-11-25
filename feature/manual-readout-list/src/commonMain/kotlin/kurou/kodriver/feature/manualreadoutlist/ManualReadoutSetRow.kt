@@ -79,6 +79,7 @@ internal fun ManualReadoutSetRow(
     canReadSet: Boolean,
     onReadSet: () -> Unit,
     onSetClick: () -> Unit,
+    onEditSet: () -> Unit,
     onDeleteSet: () -> Unit,
     rowFocusRequester: FocusRequester,
 ) {
@@ -121,7 +122,7 @@ internal fun ManualReadoutSetRow(
         ManualReadoutSetMenu(
             expanded = menuExpanded,
             onDismissRequest = { menuExpanded = false },
-            onEdit = onSetClick,
+            onEdit = onEditSet,
             onDelete = onDeleteSet,
         )
         Row(
