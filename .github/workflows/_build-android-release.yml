@@ -44,7 +44,7 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "version=$(grep '^appVersion=' gradle.properties | cut -d'=' -f2)" >> $GITHUB_OUTPUT
+        run: echo "version=$(grep '^appVersion=' gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
 
       - name: Build APK
         env:
