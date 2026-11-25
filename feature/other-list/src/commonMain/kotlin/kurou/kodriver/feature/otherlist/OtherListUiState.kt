@@ -7,6 +7,7 @@ import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
+import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
@@ -59,4 +60,5 @@ public data class OtherListUiState(
     val startupDisabledByOs: Boolean = false,
     val appVersionLabel: String = "",
     val appVersion: String = "",
+    val microphoneCutQuietSoundLevel: Int = MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT,
 )

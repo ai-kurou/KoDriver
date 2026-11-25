@@ -37,6 +37,7 @@ internal class OtherListFlow(
                 dynamicColorEnabled = deviceSettings.dynamicColorEnabled,
                 hapticFeedbackEnabled = deviceSettings.hapticFeedbackEnabled,
                 themeMode = deviceSettings.themeMode,
+                microphoneCutQuietSoundLevel = deviceSettings.microphoneCutQuietSoundLevel,
                 voiceId = speechSettings.voiceId,
                 voiceSpeed = speechSettings.voiceSpeed,
                 voicePitch = speechSettings.voicePitch,

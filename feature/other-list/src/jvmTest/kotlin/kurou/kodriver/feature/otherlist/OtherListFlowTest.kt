@@ -62,6 +62,7 @@ class OtherListFlowTest {
                     dynamicColorEnabled = !deviceSettings.value.dynamicColorEnabled,
                     hapticFeedbackEnabled = !deviceSettings.value.hapticFeedbackEnabled,
                     themeMode = ThemeMode.entries.first { it != deviceSettings.value.themeMode },
+                    microphoneCutQuietSoundLevel = 2,
                     voiceId = "voice",
                     voiceSpeed = 1.5f,
                     voicePitch = 0.8f,
@@ -105,6 +106,7 @@ class OtherListFlowTest {
                     expected.dynamicColorEnabled,
                     expected.hapticFeedbackEnabled,
                     expected.themeMode,
+                    expected.microphoneCutQuietSoundLevel,
                 )
             }
             speechSettings.update {

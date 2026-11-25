@@ -19,12 +19,15 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.console_ip_not_configured
 import kurou.kodriver.feature.otherlist.generated.resources.item_github_repository_star_request
+import kurou.kodriver.feature.otherlist.generated.resources.item_microphone_cut_quiet_sound_summary
+import kurou.kodriver.feature.otherlist.generated.resources.item_microphone_cut_quiet_sound_summary_off
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_startup_disabled_by_os
@@ -62,7 +65,7 @@ internal fun OtherListSectionHeader(section: OtherListSection) {
     )
 }
 
-private fun otherVoiceSettingsItemSupportingContent(
+private fun otherSettingValueSupportingContent(
     item: OtherListItemType,
     uiState: OtherListUiState,
 ): @Composable () -> Unit =
@@ -119,6 +122,10 @@ private fun otherVoiceSettingsItemSupportingContent(
             }
         }
 
+        OtherListItemType.MicrophoneCutQuietSound -> {
+            { OtherMicrophoneCutQuietSoundSummary(uiState.microphoneCutQuietSoundLevel) }
+        }
+
         else -> {
             error("unexpected item type: $item")
         }
@@ -151,6 +158,17 @@ private fun otherAppSettingsSupportingContent(
     } else {
         null
     }
+
+@Composable
+private fun OtherMicrophoneCutQuietSoundSummary(level: Int) {
+    Text(
+        if (level == MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN) {
+            stringResource(Res.string.item_microphone_cut_quiet_sound_summary_off)
+        } else {
+            stringResource(Res.string.item_microphone_cut_quiet_sound_summary, level)
+        },
+    )
+}
 
 @Composable
 private fun OtherStartupDisabledByOsSummary() {
@@ -210,8 +228,9 @@ private fun otherListItemSupportingContent(
         OtherListItemType.OverlayTextSize,
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
+        OtherListItemType.MicrophoneCutQuietSound,
         -> {
-            otherVoiceSettingsItemSupportingContent(item, uiState)
+            otherSettingValueSupportingContent(item, uiState)
         }
 
         OtherListItemType.Theme,
