@@ -12,7 +12,6 @@ LMU Windows 版デスクトップアプリ（`:server`）の接続先IPアドレ
 - `OtherServerIpDiscoveryDialog.kt`: 検出したサーバー一覧から選択するダイアログ。
 - `DiscoveredServer.kt`: mDNSで検出したサーバーの表示名と接続先IPアドレスを保持するデータクラス。
 - `ValidateServerIpAddressUseCase.kt`: 入力されたIPアドレス文字列の形式検証。
-- `ServerConnectivityChecker.kt`: 指定したIPアドレスへの疎通確認。プラットフォームごとの実装は expect/actual で分離。
 - `SaveServerIpWithConnectivityCheckUseCase.kt`: 疎通確認を行った上でIPアドレスを保存するUseCase。
 - `OtherServerIpDetailModule.kt`: この feature の Koin モジュール定義。
 - `ErrorCapture.kt`: プラットフォームごとのエラーレポート送信（expect/actual）。

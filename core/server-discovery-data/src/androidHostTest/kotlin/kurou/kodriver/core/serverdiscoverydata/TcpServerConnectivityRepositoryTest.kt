@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming")
 
-package kurou.kodriver.feature.otherserveripdetail
+package kurou.kodriver.core.serverdiscoverydata
 
 import kotlinx.coroutines.runBlocking
 import java.net.InetAddress
@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class TcpServerConnectivityCheckerTest {
+class TcpServerConnectivityRepositoryTest {
     @Test
     fun `IPv4アドレスを4つのオクテットに変換して接続に渡す`() =
         runBlocking {
@@ -17,7 +17,7 @@ class TcpServerConnectivityCheckerTest {
             var connectedPort: Int? = null
             var connectedTimeoutMs: Int? = null
             val checker =
-                TcpServerConnectivityChecker(port = 4321) { address, port, timeoutMs ->
+                TcpServerConnectivityRepository(port = 4321) { address, port, timeoutMs ->
                     connectedAddress = address
                     connectedPort = port
                     connectedTimeoutMs = timeoutMs
@@ -33,7 +33,7 @@ class TcpServerConnectivityCheckerTest {
     fun `要素数が4ではないIPv4アドレスは接続せずfalseを返す`() =
         runBlocking {
             var connectCalled = false
-            val checker = TcpServerConnectivityChecker(connect = { _, _, _ -> connectCalled = true })
+            val checker = TcpServerConnectivityRepository(connect = { _, _, _ -> connectCalled = true })
 
             assertFalse(checker.isReachable("127.0.1"))
             assertFalse(checker.isReachable("127.0.0.1.2"))
@@ -44,7 +44,7 @@ class TcpServerConnectivityCheckerTest {
     fun `数値に変換できないオクテットは接続せずfalseを返す`() =
         runBlocking {
             var connectCalled = false
-            val checker = TcpServerConnectivityChecker(connect = { _, _, _ -> connectCalled = true })
+            val checker = TcpServerConnectivityRepository(connect = { _, _, _ -> connectCalled = true })
 
             assertFalse(checker.isReachable("127.x.0.1"))
             assertFalse(checker.isReachable("127..0.1"))
@@ -55,7 +55,7 @@ class TcpServerConnectivityCheckerTest {
     fun `範囲外のオクテットは接続せずfalseを返す`() =
         runBlocking {
             var connectCalled = false
-            val checker = TcpServerConnectivityChecker(connect = { _, _, _ -> connectCalled = true })
+            val checker = TcpServerConnectivityRepository(connect = { _, _, _ -> connectCalled = true })
 
             assertFalse(checker.isReachable("-1.0.0.1"))
             assertFalse(checker.isReachable("256.0.0.1"))

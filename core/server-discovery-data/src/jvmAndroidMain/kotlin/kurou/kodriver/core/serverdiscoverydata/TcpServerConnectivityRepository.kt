@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.otherserveripdetail
+package kurou.kodriver.core.serverdiscoverydata
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -8,17 +8,18 @@ import kurou.kodriver.domain.model.IPV4_OCTET_MAX
 import kurou.kodriver.domain.model.IPV4_OCTET_MIN
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
 import kurou.kodriver.domain.model.SERVER_CONNECTIVITY_CHECK_TIMEOUT_MS
+import kurou.kodriver.domain.repository.ServerConnectivityRepository
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 
-internal class TcpServerConnectivityChecker(
+internal class TcpServerConnectivityRepository(
     private val port: Int = KODRIVER_SERVER_PORT_DEFAULT,
     private val connect: (InetAddress, Int, Int) -> Unit = { address, connectPort, timeoutMs ->
         Socket().use { socket -> socket.connect(InetSocketAddress(address, connectPort), timeoutMs) }
     },
-) : ServerConnectivityChecker {
+) : ServerConnectivityRepository {
     override suspend fun isReachable(ip: String): Boolean =
         withContext(Dispatchers.IO) {
             val address = ip.toIpv4InetAddress() ?: return@withContext false
@@ -35,8 +36,6 @@ internal class TcpServerConnectivityChecker(
             }
         }
 }
-
-internal actual fun createServerConnectivityChecker(): ServerConnectivityChecker = TcpServerConnectivityChecker()
 
 private fun String.toIpv4InetAddress(): InetAddress? {
     val octets = split(".")

@@ -15,8 +15,10 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.repository.ServerConnectivityRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.CheckServerConnectivityUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
 import kotlin.test.AfterTest
@@ -54,7 +56,7 @@ class OtherServerIpDetailDiscoveryViewModelTest {
             saveServerIpWithConnectivityCheck =
                 SaveServerIpWithConnectivityCheckUseCase(
                     validateServerIpAddress = ValidateServerIpAddressUseCase(),
-                    connectivityChecker = ServerConnectivityChecker { true },
+                    checkServerConnectivity = CheckServerConnectivityUseCase(ServerConnectivityRepository { true }),
                     saveServerIp = SaveServerIpUseCase(repository),
                 ),
             windowsServerDiscovery =

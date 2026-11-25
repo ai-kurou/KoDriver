@@ -24,6 +24,7 @@ dependencies {
     implementation(projects.core.gt7Ps5Data)
     implementation(projects.core.lmuWindowsData)
     implementation(projects.core.deviceVolumeData)
+    implementation(projects.core.serverDiscoveryData)
     implementation(projects.core.speechRecognitionData)
     implementation(projects.core.textToSpeechData)
     // JVM 専用モジュール経由の JNA JAR が vosk-android の JNA AAR と重複するため除外する

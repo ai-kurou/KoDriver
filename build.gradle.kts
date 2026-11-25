@@ -394,6 +394,7 @@ tasks.register("generateModuleGraphImages") {
                         ":core:lmu-windows-rest-api-data",
                         ":core:text-to-speech-data",
                         ":core:device-volume-data",
+                        ":core:server-discovery-data",
                         ":core:speech-recognition-data",
                         ":core:windows-hotkey-data",
                         ":core:windows-startup-data",

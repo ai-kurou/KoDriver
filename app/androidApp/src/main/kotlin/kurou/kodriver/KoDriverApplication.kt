@@ -10,6 +10,7 @@ import kurou.kodriver.core.acewindowsdata.androidAceWindowsDataModule
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.androidLmuWindowsDataModule
+import kurou.kodriver.core.serverdiscoverydata.serverDiscoveryDataModule
 import kurou.kodriver.core.speechrecognitiondata.speechRecognitionDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
@@ -53,6 +54,7 @@ public class KoDriverApplication : Application() {
                     androidAceWindowsDataModule(this@KoDriverApplication),
                     gt7Ps5DataModule,
                     deviceVolumeDataModule,
+                    serverDiscoveryDataModule,
                     speechRecognitionDataModule,
                     textToSpeechDataModule,
                     windowsStartupDataModule,
