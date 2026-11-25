@@ -25,6 +25,16 @@ class WindowsStartupEnabledRepositoryTest {
         }
 
     @Test
+    fun `isDisabledByOsはWindows側の状態を返す`() =
+        runTest {
+            val disabled = WindowsStartupEnabledRepository(FakeWindowsStartupRegistrySource(disabledByWindows = true))
+            val enabled = WindowsStartupEnabledRepository(FakeWindowsStartupRegistrySource(disabledByWindows = false))
+
+            assertTrue(disabled.isDisabledByOs())
+            assertFalse(enabled.isDisabledByOs())
+        }
+
+    @Test
     fun `setEnabledにtrueを渡すとレジストリへ登録する`() =
         runTest {
             val source = FakeWindowsStartupRegistrySource(registered = false)

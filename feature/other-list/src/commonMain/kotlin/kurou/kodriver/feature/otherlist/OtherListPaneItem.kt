@@ -27,6 +27,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.console_ip_not_confi
 import kurou.kodriver.feature.otherlist.generated.resources.item_github_repository_star_request
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible_summary
+import kurou.kodriver.feature.otherlist.generated.resources.item_startup_disabled_by_os
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice_pitch_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice_speed_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume_summary
@@ -139,6 +140,26 @@ private fun OtherThemeSummary(themeMode: ThemeMode) {
     Text(stringResource(label))
 }
 
+private fun otherAppSettingsSupportingContent(
+    item: OtherListItemType,
+    uiState: OtherListUiState,
+): (@Composable () -> Unit)? =
+    if (item == OtherListItemType.Theme) {
+        { OtherThemeSummary(uiState.themeMode) }
+    } else if (uiState.startupDisabledByOs) {
+        { OtherStartupDisabledByOsSummary() }
+    } else {
+        null
+    }
+
+@Composable
+private fun OtherStartupDisabledByOsSummary() {
+    Text(
+        text = stringResource(Res.string.item_startup_disabled_by_os),
+        color = MaterialTheme.colorScheme.error,
+    )
+}
+
 private fun otherListItemSupportingContent(
     item: OtherListItemType,
     uiState: OtherListUiState,
@@ -193,8 +214,10 @@ private fun otherListItemSupportingContent(
             otherVoiceSettingsItemSupportingContent(item, uiState)
         }
 
-        OtherListItemType.Theme -> {
-            { OtherThemeSummary(uiState.themeMode) }
+        OtherListItemType.Theme,
+        OtherListItemType.Startup,
+        -> {
+            otherAppSettingsSupportingContent(item, uiState)
         }
 
         OtherListItemType.ReadoutStartSound -> {

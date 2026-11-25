@@ -28,6 +28,7 @@
     <string name="item_dynamic_color">ダイナミックカラー</string>
     <string name="item_haptic_feedback">ハプティックフィードバック</string>
     <string name="item_startup">PC起動時に自動起動</string>
+    <string name="item_startup_disabled_by_os">Windowsの設定で無効になっています。タスクマネージャーの「スタートアップ アプリ」で有効にしてください</string>
     <string name="item_github_repository">GitHubリポジトリ</string>
     <string name="item_github_repository_star_request">⭐ スターを付けていただけると嬉しいです</string>
     <string name="item_release_page">リリースページ</string>

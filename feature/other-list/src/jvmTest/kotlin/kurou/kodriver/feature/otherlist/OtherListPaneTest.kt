@@ -444,6 +444,49 @@ class OtherListPaneTest {
     }
 
     @Test
+    fun `Windows側で自動起動が無効な場合は理由と直し方を表示する`() {
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.Startup),
+                        startupEnabled = true,
+                        startupDisabledByOs = true,
+                    ),
+                onItemClick = {},
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("Windowsの設定で無効になっています", substring = true)).assertExists()
+    }
+
+    @Test
+    fun `Windows側で自動起動が無効でない場合は案内を表示しない`() {
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.Startup),
+                        startupEnabled = true,
+                    ),
+                onItemClick = {},
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("Windowsの設定で無効になっています", substring = true)).assertDoesNotExist()
+    }
+
+    @Test
     fun `Switch項目をクリックしても項目クリックコールバックは呼ばない`() {
         var clickedItem: OtherListItemType? = null
 

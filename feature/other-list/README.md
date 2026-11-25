@@ -67,7 +67,7 @@ Windows/Androidの「読み上げ速度」項目を読み上げ音声の次に�
 
 「手動タブの設定を初期化」は自動タブ初期化の次に表示する。確認後、手動タブの LMU (Win)・ACE・GT7 の読み上げセット（項目のON/OFF、並び順、ホットキーなど）と再生ボタンのレイアウト設定を一括で既定値へ戻す。構成は自動版と同じで、`OtherListResetFlow` に `ResetManualReadoutSettingsUseCase(getAll())::invoke` を渡して使い、OtherContent がダイアログとスナックバーを扱う。
 
-OS起動時自動起動の状態取得・変更と表示状態は `OtherListStartupRegistrationFlow` が管理し、`OtherListViewModel` は `viewModelScope` で操作を起動する。
+OS起動時自動起動の状態取得・変更と表示状態は `OtherListStartupRegistrationFlow` が管理し、`OtherListViewModel` は `viewModelScope` で操作を起動する。自動起動がONでもWindowsの設定（タスクマネージャーの「スタートアップ アプリ」など）で無効にされている場合は、スイッチをONのままにして項目の副テキストに理由と直し方を `error` 色で表示する。状態は画面の再開のたびに読み直す。Windows側の設定は書き換えない。
 
 TTS利用可否の判定と一覧案内項目・警告表示への反映は `OtherListTtsAvailabilityFlow` が管理し、判定処理のライフサイクルは呼び出し元の `viewModelScope` に従う。状態は `OtherListFlow` が `OtherListUiState` へ合成する。
 

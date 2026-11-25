@@ -61,7 +61,10 @@ internal class OtherListFlow(
         }.combine(manualReadoutSettingsReset) { state, reset ->
             state.copy(manualReadoutSettingsReset = reset)
         }.combine(startupRegistration) { state, startupRegistration ->
-            state.copy(startupEnabled = startupRegistration.startupEnabled)
+            state.copy(
+                startupEnabled = startupRegistration.startupEnabled,
+                startupDisabledByOs = startupRegistration.startupDisabledByOs,
+            )
         }.combine(appUpdate) { state, appUpdate ->
             state.copy(hasAppUpdate = appUpdate.hasAppUpdate)
         }

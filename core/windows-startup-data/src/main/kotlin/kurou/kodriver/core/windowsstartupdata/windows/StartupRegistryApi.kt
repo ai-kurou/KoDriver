@@ -7,6 +7,12 @@ internal interface StartupRegistryApi {
         valueName: String,
     ): Boolean
 
+    /** バイナリ値を返す。値がない場合は `null`。 */
+    fun getBinaryValue(
+        key: String,
+        valueName: String,
+    ): ByteArray?
+
     fun setStringValue(
         key: String,
         valueName: String,

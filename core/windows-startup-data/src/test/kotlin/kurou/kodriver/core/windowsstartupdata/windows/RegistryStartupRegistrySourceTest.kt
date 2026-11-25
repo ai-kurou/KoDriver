@@ -25,6 +25,37 @@ class RegistryStartupRegistrySourceTest {
         assertFalse(source.isRegistered())
     }
 
+    private val approvedEntry =
+        "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run" to "KoDriver"
+
+    @Test
+    fun `StartupApprovedの先頭が3の場合はWindows側で無効と判定する`() {
+        registry.binaryValues[approvedEntry] = byteArrayOf(3, 0, 0, 0, 109, -50, 44, -16, -79, 124, -35, 1)
+
+        assertTrue(source.isDisabledByWindows())
+    }
+
+    @Test
+    fun `StartupApprovedが有効・空・未知の値の場合は無効と判定しない`() {
+        listOf(byteArrayOf(2, 0, 0, 0), byteArrayOf(), byteArrayOf(6)).forEach { value ->
+            registry.binaryValues[approvedEntry] = value
+
+            assertFalse(source.isDisabledByWindows())
+        }
+    }
+
+    @Test
+    fun `StartupApprovedに値がない場合は無効と判定しない`() {
+        assertFalse(source.isDisabledByWindows())
+    }
+
+    @Test
+    fun `StartupApprovedを読み取れない場合は無効と判定しない`() {
+        registry.failure = IllegalStateException("registry unavailable")
+
+        assertFalse(source.isDisabledByWindows())
+    }
+
     @Test
     fun `取得したコマンドを所定のキーと値名へ登録する`() {
         source.register()

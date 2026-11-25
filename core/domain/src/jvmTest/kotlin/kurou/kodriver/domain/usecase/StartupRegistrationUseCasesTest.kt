@@ -26,6 +26,19 @@ class StartupRegistrationUseCasesTest {
         }
 
     @Test
+    fun `isDisabledByOsはRepositoryの値をそのまま返す`() =
+        runTest {
+            coEvery { repository.isDisabledByOs() } returns true
+            val useCases = StartupRegistrationUseCases(repository)
+
+            val result = useCases.isDisabledByOs()
+
+            assertTrue(result)
+            coVerify(exactly = 1) { repository.isDisabledByOs() }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `setEnabledはRepositoryにそのまま値を渡す`() =
         runTest {
             coEvery { repository.setEnabled(true) } returns Unit

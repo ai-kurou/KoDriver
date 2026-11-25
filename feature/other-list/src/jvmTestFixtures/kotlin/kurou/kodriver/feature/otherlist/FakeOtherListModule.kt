@@ -57,6 +57,8 @@ class FakeStartupEnabledRepository : StartupEnabledRepository {
     override suspend fun setEnabled(enabled: Boolean) {
         this.enabled = enabled
     }
+
+    override suspend fun isDisabledByOs(): Boolean = false
 }
 
 class FakeTextToSpeechRepository : TextToSpeechRepository {

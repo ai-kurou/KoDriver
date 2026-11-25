@@ -241,4 +241,72 @@ class OtherListPaneScreenshotTest {
             onNode(hasScrollAction()).performScrollToNode(hasText("ログをすべて削除"))
             onRoot().captureRoboImage()
         }
+
+    @Test
+    fun `Windows側で自動起動が無効な場合の案内を表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            OtherListPane(
+                                uiState =
+                                    OtherListUiState(
+                                        items =
+                                            listOf(
+                                                OtherListItemType.Theme,
+                                                OtherListItemType.Startup,
+                                                OtherListItemType.License,
+                                            ),
+                                        startupEnabled = true,
+                                        startupDisabledByOs = true,
+                                    ),
+                                onItemClick = {},
+                                onOverlayVisibleChange = {},
+                                onKeepScreenOnChange = {},
+                                onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
+                                onStartupEnabledChange = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `Windows側で自動起動が無効な場合の案内をダークテーマで表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme(darkTheme = true) {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            OtherListPane(
+                                uiState =
+                                    OtherListUiState(
+                                        items =
+                                            listOf(
+                                                OtherListItemType.Theme,
+                                                OtherListItemType.Startup,
+                                                OtherListItemType.License,
+                                            ),
+                                        startupEnabled = true,
+                                        startupDisabledByOs = true,
+                                    ),
+                                onItemClick = {},
+                                onOverlayVisibleChange = {},
+                                onKeepScreenOnChange = {},
+                                onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
+                                onStartupEnabledChange = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
 }

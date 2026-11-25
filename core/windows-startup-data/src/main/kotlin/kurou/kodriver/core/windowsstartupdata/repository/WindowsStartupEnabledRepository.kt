@@ -14,6 +14,11 @@ internal class WindowsStartupEnabledRepository(
             source.isRegistered()
         }
 
+    override suspend fun isDisabledByOs(): Boolean =
+        withContext(Dispatchers.IO) {
+            source.isDisabledByWindows()
+        }
+
     override suspend fun setEnabled(enabled: Boolean) {
         withContext(Dispatchers.IO) {
             if (enabled) source.register() else source.unregister()

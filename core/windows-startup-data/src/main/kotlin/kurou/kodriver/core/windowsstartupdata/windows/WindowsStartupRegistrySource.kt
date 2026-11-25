@@ -8,6 +8,9 @@ package kurou.kodriver.core.windowsstartupdata.windows
 internal interface WindowsStartupRegistrySource {
     fun isRegistered(): Boolean
 
+    /** Windowsの「スタートアップ アプリ」で無効にされているか。判定できない場合は `false`。 */
+    fun isDisabledByWindows(): Boolean
+
     fun register()
 
     fun unregister()

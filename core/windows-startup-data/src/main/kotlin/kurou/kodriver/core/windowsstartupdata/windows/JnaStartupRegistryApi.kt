@@ -10,6 +10,16 @@ internal class JnaStartupRegistryApi : StartupRegistryApi {
         valueName: String,
     ): Boolean = Advapi32Util.registryValueExists(WinReg.HKEY_CURRENT_USER, key, valueName)
 
+    override fun getBinaryValue(
+        key: String,
+        valueName: String,
+    ): ByteArray? =
+        if (valueExists(key, valueName)) {
+            Advapi32Util.registryGetBinaryValue(WinReg.HKEY_CURRENT_USER, key, valueName)
+        } else {
+            null
+        }
+
     override fun setStringValue(
         key: String,
         valueName: String,
