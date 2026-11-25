@@ -104,6 +104,10 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - Alt / Ctrl / Shift / Meta 付きの矢印と、項目の外にフォーカスがある場合は処理しない。
 - 判定ロジックは `src/jvmTest` の `ListGridKeyboardNavigationTest` で確認する。
 
+## 一覧上部に重ねる部品の出入り
+
+`KoDriverTopFloatingVisibility` は、上からスライドしながらフェードして出入りする（表示300ms・非表示200ms）。自動読み上げ一覧の先頭へ戻るボタンと、テレメトリログ一覧の新着ログボタンが利用する。配置は呼び出し側が `modifier` で指定し、ボタン本体は各 feature に残す。`app:shared` のバナーは `:core:*` に依存できないため、独自に定義している。
+
 ## 削除・リセットの確認ダイアログ
 
 `KoDriverDestructiveConfirmDialog` は、error 色の確認ボタンとキャンセルボタンを持つ共通ダイアログ。`title`・`body`・`confirmLabel`・`dismissLabel` は呼び出し側で `stringResource` を解決して渡す。本文への名前の埋め込みも呼び出し側で行い、feature の文字列リソースを designsystem に持ち込まない。

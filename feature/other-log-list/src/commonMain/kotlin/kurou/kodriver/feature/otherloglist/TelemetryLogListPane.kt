@@ -5,9 +5,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -79,6 +77,7 @@ import kurou.kodriver.core.designsystem.KoDriverHintRow
 import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.KoDriverTopFloatingVisibility
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
@@ -203,18 +202,8 @@ private fun TelemetryLogListContent(
             onDeleteClick = onDeleteClick,
         )
 
-        AnimatedVisibility(
+        KoDriverTopFloatingVisibility(
             visible = showNewLogsButton,
-            enter =
-                slideInVertically(
-                    initialOffsetY = { -it },
-                    animationSpec = tween(durationMillis = 300),
-                ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-            exit =
-                slideOutVertically(
-                    targetOffsetY = { -it },
-                    animationSpec = tween(durationMillis = 200),
-                ) + fadeOut(animationSpec = tween(durationMillis = 200)),
             modifier =
                 Modifier
                     .align(Alignment.TopCenter)
