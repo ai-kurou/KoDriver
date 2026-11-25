@@ -1,16 +1,14 @@
 package kurou.kodriver.domain.lmuwindows.model
 
 import kurou.kodriver.domain.model.SinglePlaceholderTemplate
+import kurou.kodriver.domain.util.formatLapTimeReadoutMs
 
 /** 自己ベストラップ更新文言のラップタイムプレースホルダーを置換する。 */
 public fun formatLmuWindowsMyBestLapReadoutText(
     template: String,
     lapTimeMs: Long,
 ): String {
-    val minutes = lapTimeMs / 60_000
-    val seconds = lapTimeMs / 1_000 % 60
-    val milliseconds = (lapTimeMs % 1_000).toString().padStart(3, '0')
-    val lapTime = if (minutes > 0) "${minutes}分${seconds}秒$milliseconds" else "${seconds}秒$milliseconds"
+    val lapTime = formatLapTimeReadoutMs(lapTimeMs)
     return SinglePlaceholderTemplate(LMU_WINDOWS_MY_BEST_LAP_LAPTIME_PLACEHOLDER).format(template, lapTime)
 }
 

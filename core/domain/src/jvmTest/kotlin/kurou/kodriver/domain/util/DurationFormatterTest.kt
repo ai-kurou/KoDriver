@@ -59,6 +59,34 @@ class DurationFormatterTest {
     }
 
     @Test
+    fun `読み上げ用ラップタイムは分が0より大きいとき分秒ミリ秒で表示する`() {
+        assertEquals("1分23秒456", formatLapTimeReadoutMs(83_456L))
+    }
+
+    @Test
+    fun `読み上げ用ラップタイムは分が0のとき秒ミリ秒で表示する`() {
+        assertEquals("23秒456", formatLapTimeReadoutMs(23_456L))
+        assertEquals("0秒000", formatLapTimeReadoutMs(0L))
+    }
+
+    @Test
+    fun `読み上げ用ラップタイムの秒はゼロ埋めせずミリ秒は3桁にゼロ埋めする`() {
+        assertEquals("1分2秒005", formatLapTimeReadoutMs(62_005L))
+        assertEquals("5秒005", formatLapTimeReadoutMs(5_005L))
+    }
+
+    @Test
+    fun `読み上げ用ラップタイムは59999msで分が0に、60000msで分が1になる境界を正しく表示する`() {
+        assertEquals("59秒999", formatLapTimeReadoutMs(59_999L))
+        assertEquals("1分0秒000", formatLapTimeReadoutMs(60_000L))
+    }
+
+    @Test
+    fun `読み上げ用ラップタイムは1時間以上でも分を合計の分として表示する`() {
+        assertEquals("60分0秒005", formatLapTimeReadoutMs(3_600_005L))
+    }
+
+    @Test
     fun `formatBestLapTimeMsOrNull returns null when the best lap time is null`() {
         assertNull(formatBestLapTimeMsOrNull(null))
     }
