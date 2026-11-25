@@ -1,15 +1,7 @@
 package kurou.kodriver.feature.main
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +37,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverCollapsibleVisibility
 import kurou.kodriver.core.designsystem.KoDriverPhraseChip
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.util.SPEECH_RECOGNITION_CORRECTIONS
@@ -152,7 +145,7 @@ private fun SpeechRecognitionCardContent(
             lastPartialText = uiState.partialText
             lastRecognized = uiState.recognized
         }
-        SpeechRecognitionHistoryAnimatedVisibility(visible = hasHistory) {
+        KoDriverCollapsibleVisibility(visible = hasHistory) {
             SpeechRecognitionHistory(partialText = lastPartialText, recognized = lastRecognized)
         }
     }
@@ -196,35 +189,6 @@ private fun SpeechRecognitionCardHeader(
                 contentDescription = stringResource(Res.string.speech_recognition_corrections_info_description),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        }
-    }
-}
-
-/** 履歴の出現・消失で一覧の位置が飛ばないよう、高さを伸縮させてフェードする。 */
-private val SpeechRecognitionHistoryEnter: EnterTransition =
-    fadeIn(tween(durationMillis = 300)) + expandVertically(tween(durationMillis = 300), expandFrom = Alignment.Top)
-
-private val SpeechRecognitionHistoryExit: ExitTransition =
-    fadeOut(tween(durationMillis = 200)) + shrinkVertically(tween(durationMillis = 200), shrinkTowards = Alignment.Top)
-
-/**
- * 非表示中は子要素を配置しない [AnimatedVisibility]。
- * 親の `Arrangement.spacedBy` は高さ0の子要素にも間隔を足すため、退場アニメーション完了後は取り除く。
- */
-@Composable
-private fun SpeechRecognitionHistoryAnimatedVisibility(
-    visible: Boolean,
-    content: @Composable () -> Unit,
-) {
-    val visibleState = remember { MutableTransitionState(visible) }
-    visibleState.targetState = visible
-    if (visibleState.currentState || visibleState.targetState) {
-        AnimatedVisibility(
-            visibleState = visibleState,
-            enter = SpeechRecognitionHistoryEnter,
-            exit = SpeechRecognitionHistoryExit,
-        ) {
-            content()
         }
     }
 }

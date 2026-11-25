@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import kurou.kodriver.core.designsystem.KoDriverCollapsibleVisibility
 import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.PlayingEqualizer
@@ -156,7 +157,7 @@ internal fun ManualReadoutSetRow(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 ManualReadoutCategoryChips(categories, set.itemKeys.size)
-                ManualReadoutHotkeyChipAnimatedVisibility(visible = showHotkeyChip) {
+                KoDriverCollapsibleVisibility(visible = showHotkeyChip) {
                     ManualReadoutHotkeyChip(set)
                 }
             }

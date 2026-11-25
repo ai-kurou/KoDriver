@@ -135,6 +135,10 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - `SimulatorInfoContent` は `simulatorId` を受け取り、既存の `simulatorDisplayName` で表示名を解決する。
 - 各 feature の既存関数は薄いラッパーとして維持し、温度判定の既定引数と既存テストの呼び出しを保つ。LMU 固有の `DebugStateWearMeter` は共通化しない。
 
+## 開閉アニメーション
+
+`KoDriverCollapsibleVisibility` は、高さを伸縮させながらフェードして出入りする（表示300ms・非表示200ms）。親の `Arrangement.spacedBy` の間隔が残らないよう、非表示中は子要素を配置しない。伸縮の基準は `expandFrom`（既定は上端）で指定する。手動読み上げ詳細のホットキー設定まわりは下端、手動読み上げ一覧のホットキーチップと音声認識カードの履歴は上端を使う。
+
 ## 詳細ペインのタイトル
 
 `DetailPaneTopAppBar` のタイトルは1行で表示し、バーの幅に収まらない場合は末尾を省略する。
