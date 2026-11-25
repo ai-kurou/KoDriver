@@ -1,11 +1,15 @@
 package kurou.kodriver.feature.narratoroverlay
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -26,6 +30,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -51,7 +56,7 @@ private val NarratorOverlayTextShadow =
     Shadow(color = Color.Black.copy(alpha = 0.8f), offset = Offset(2f, 2f), blurRadius = 4f)
 
 /**
- * 読み上げ内容が切り替わる際のフェード時間（ミリ秒）。ゲーム中の視認性を優先し、短く保つ。
+ * 読み上げ内容の切り替えと、マイク文言の出現・消去にかける時間（ミリ秒）。ゲーム中の視認性を優先し、短く保つ。
  */
 private const val NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS = 150
 
@@ -110,30 +115,68 @@ internal fun NarratorOverlayContent(
                         textAlign = TextAlign.Center,
                     )
                 }
-                val transcriptText =
-                    narratorOverlayTranscriptText(
-                        transcript = uiState.speechRecognitionTranscript,
-                        unknownWord = stringResource(Res.string.speech_recognition_unknown_word),
-                    )
-                if (transcriptText.isNotEmpty()) {
-                    val textColor = Color(uiState.overlayTextColor)
-                    Text(
-                        text = transcriptText,
-                        color =
-                            if (uiState.speechRecognitionTranscript.partialText.isEmpty()) {
-                                textColor
-                            } else {
-                                textColor.copy(alpha = textColor.alpha * NARRATOR_OVERLAY_PARTIAL_TEXT_ALPHA)
-                            },
-                        style = narratorOverlayTranscriptTextStyle(uiState.overlayTextSize),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = KoDriverSpacing.small),
-                    )
-                }
+                NarratorOverlayTranscript(uiState = uiState)
             }
         }
     }
 }
+
+/**
+ * 読み上げ文言の下段に表示するマイク文言。出現・消去はフェードと高さの変化を組み合わせ、
+ * 中央寄せされた読み上げ文言の位置も滑らかに動かす。表示中の文言の更新はアニメーションしない
+ * （認識途中の文字列は細かく書き換わるため）。
+ */
+@Composable
+private fun NarratorOverlayTranscript(uiState: NarratorOverlayUiState) {
+    val transcriptText =
+        narratorOverlayTranscriptText(
+            transcript = uiState.speechRecognitionTranscript,
+            unknownWord = stringResource(Res.string.speech_recognition_unknown_word),
+        )
+    val content =
+        if (transcriptText.isEmpty()) {
+            null
+        } else {
+            NarratorOverlayTranscriptContent(
+                text = transcriptText,
+                isPartial = uiState.speechRecognitionTranscript.partialText.isNotEmpty(),
+            )
+        }
+    val transition = updateTransition(targetState = content, label = "narratorOverlayTranscript")
+    val animationSpec = tween<IntSize>(NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS)
+    // 影が切れないように、高さの変化中も切り抜かない（clip = false）。
+    transition.AnimatedVisibility(
+        visible = { it != null },
+        enter =
+            fadeIn(tween(NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS)) +
+                expandVertically(animationSpec = animationSpec, expandFrom = Alignment.Top, clip = false),
+        exit =
+            fadeOut(tween(NARRATOR_OVERLAY_TEXT_FADE_DURATION_MILLIS)) +
+                shrinkVertically(animationSpec = animationSpec, shrinkTowards = Alignment.Top, clip = false),
+    ) {
+        // 消去中は新しい状態が null になるため、直前まで表示していた文言を描き続ける。
+        val shown = transition.targetState ?: transition.currentState ?: return@AnimatedVisibility
+        val textColor = Color(uiState.overlayTextColor)
+        Text(
+            text = shown.text,
+            color =
+                if (shown.isPartial) {
+                    textColor.copy(alpha = textColor.alpha * NARRATOR_OVERLAY_PARTIAL_TEXT_ALPHA)
+                } else {
+                    textColor
+                },
+            style = narratorOverlayTranscriptTextStyle(uiState.overlayTextSize),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = KoDriverSpacing.small),
+        )
+    }
+}
+
+/** 下段に表示中のマイク文言。 */
+private data class NarratorOverlayTranscriptContent(
+    val text: String,
+    val isPartial: Boolean,
+)
 
 /**
  * マイク文言として表示する文字列を返す。認識途中の文字列があればそれを、なければ直近に確定した発話を返す
