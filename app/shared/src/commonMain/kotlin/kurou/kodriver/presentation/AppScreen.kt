@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
@@ -171,7 +170,7 @@ public fun AppScreen(
 ) {
     val darkTheme = rememberAppDarkTheme()
     val snackbarHostState = remember { SnackbarHostState() }
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val bannerUiState =
         rememberConnectionBannerUiState().withAccessLocalNetworkPermission(
             granted = uiState.accessLocalNetworkPermissionGranted,
@@ -184,7 +183,7 @@ public fun AppScreen(
         remember(requestAccessLocalNetworkPermission) { { requestAccessLocalNetworkPermission(true) } }
     val requestWithoutOpeningSettings =
         remember(requestAccessLocalNetworkPermission) { { requestAccessLocalNetworkPermission(false) } }
-    val autoReadoutListUiState by autoReadoutListViewModel.uiState.collectAsState()
+    val autoReadoutListUiState by autoReadoutListViewModel.uiState.collectAsStateWithLifecycle()
     val otherListUiState by otherListViewModel.uiState.collectAsStateWithLifecycle()
     val lowVolumeWarning by lowVolumeWarningViewModel.uiState.collectAsStateWithLifecycle()
     var manualReadoutTabReselectRequest by rememberSaveable { mutableIntStateOf(0) }
