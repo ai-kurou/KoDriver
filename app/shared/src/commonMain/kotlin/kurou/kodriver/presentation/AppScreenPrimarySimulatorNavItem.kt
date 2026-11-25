@@ -64,7 +64,7 @@ internal val PrimarySimulatorRailHeaderDividerWidth = 32.dp
 
 /**
  * NavigationBar のシミュレーター項目ラベルの最大幅。超える場合はスペース位置で折り返し、
- * 「LMU (Win)」を「LMU」「(Win)」の2行で表示する。単語1つのラベル（GT7・ACE）は1行のまま。
+ * 「LMU (Win)」「ACE (Win)」を「LMU」「(Win)」の2行で表示する。単語1つのラベル（GT7）は1行のまま。
  */
 internal val PrimarySimulatorBarLabelMaxWidth = 44.dp
 
@@ -119,6 +119,7 @@ internal fun AppNavIcon(
  *
  * NavigationRail では、通常のナビ項目より大きくロゴを表示したうえで [HorizontalDivider] を添え、
  * シミュレーター選択（ヘッダ）とタブ切り替え（ナビ項目）が別の操作であることを視覚的に示すヘッダーとして表示する。
+ * ラベルは「(Win)」の前で改行し、「LMU」「(Win)」の2行で表示する。
  */
 @Composable
 internal fun AppScreenPrimarySimulatorNavItem(
@@ -186,7 +187,11 @@ internal fun AppScreenPrimarySimulatorNavItem(
             Spacer(modifier = Modifier.height(AppSpacing.extraSmall))
             val dropdownArrowRotation by animateFloatAsState(targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(appScreenPrimarySimulatorLabel(selectedSimulatorId), style = MaterialTheme.typography.labelMedium)
+                Text(
+                    text = appScreenPrimarySimulatorLabel(selectedSimulatorId).replace(" (", "\n("),
+                    style = MaterialTheme.typography.labelMedium,
+                    textAlign = TextAlign.Center,
+                )
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowRight,
                     contentDescription = null,
