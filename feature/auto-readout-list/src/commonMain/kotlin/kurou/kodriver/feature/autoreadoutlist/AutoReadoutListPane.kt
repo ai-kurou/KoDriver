@@ -5,9 +5,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -95,6 +93,7 @@ import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverListEntrance
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.KoDriverTopFloatingVisibility
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.ListRowPartsFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
@@ -369,18 +368,8 @@ private fun BoxScope.AutoReadoutScrollToTopButton(
     visible: Boolean,
     onClick: () -> Unit,
 ) {
-    AnimatedVisibility(
+    KoDriverTopFloatingVisibility(
         visible = visible,
-        enter =
-            slideInVertically(
-                initialOffsetY = { -it },
-                animationSpec = tween(durationMillis = 300),
-            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-        exit =
-            slideOutVertically(
-                targetOffsetY = { -it },
-                animationSpec = tween(durationMillis = 200),
-            ) + fadeOut(animationSpec = tween(durationMillis = 200)),
         modifier =
             Modifier
                 .align(Alignment.TopCenter)
