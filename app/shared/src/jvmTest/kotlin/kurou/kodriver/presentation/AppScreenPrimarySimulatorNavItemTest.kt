@@ -38,6 +38,42 @@ class AppScreenPrimarySimulatorNavItemTest {
         assertEquals(1, lineCountOf("GT7"))
     }
 
+    @Test
+    fun `NavigationRailのLMU (Win)は「(Win)」の前で改行して2行になる`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationRail,
+                selectedSimulatorId = "lmu_windows",
+            )
+        }
+
+        assertEquals(2, lineCountOf("LMU\n(Win)"))
+    }
+
+    @Test
+    fun `NavigationRailのACE (Win)は「(Win)」の前で改行して2行になる`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationRail,
+                selectedSimulatorId = "ace_windows",
+            )
+        }
+
+        assertEquals(2, lineCountOf("ACE\n(Win)"))
+    }
+
+    @Test
+    fun `NavigationRailの単語1つのシミュレーター名は1行のまま`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationRail,
+                selectedSimulatorId = "gt7_ps5",
+            )
+        }
+
+        assertEquals(1, lineCountOf("GT7"))
+    }
+
     private fun lineCountOf(label: String): Int {
         val results = mutableListOf<TextLayoutResult>()
         rule.onNode(hasText(label)).performSemanticsAction(SemanticsActions.GetTextLayoutResult) { action ->
