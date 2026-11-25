@@ -29,179 +29,26 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureDa
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
-import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
-import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemTextDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsFuelReadoutUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsManualReadoutUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsMyBestLapReadoutUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsPitTimingReadoutUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsRaceFlagReadoutUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsTyreReadoutUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVehicleReadoutUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsVirtualEnergyReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutDecision
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsPitTimingTrackingState
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsClassCarGapUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsFuelUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingFuelLapsUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreDetachedUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreWearUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.TyreTemperatureReadoutInput
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
-import kurou.kodriver.domain.model.LmuWindowsManualReadoutValue
-import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.NARRATOR_CURRENT_VALUE_MAX_AGE_MS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
-import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
 import kurou.kodriver.domain.onEachCapturingErrors
-import kurou.kodriver.domain.usecase.NotifyManualReadoutItemSpokenUseCase
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
-import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.mergeManualReadoutRequests
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-
-internal data class VehicleApproachUseCases(
-    val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
-    val observeLmuWindows: ObserveLmuWindowsUseCase,
-    val observeSkipFirstLap: ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase,
-    val observeEnabledStates: ObserveLmuWindowsVehicleApproachEnabledStatesUseCase,
-    val observeSustainedApproachDuration: ObserveLmuWindowsVehicleApproachSustainedDurationUseCase,
-)
-
-internal data class VehicleDamageUseCases(
-    val observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
-    val observeVehicleDamageEnabledStates: ObserveLmuWindowsVehicleDamageEnabledStatesUseCase,
-)
-
-internal data class TyreDetachedUseCases(
-    val observeTyreDetached: ObserveLmuWindowsTyreDetachedUseCase,
-)
-
-internal data class SimulatorUseCases(
-    val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
-)
-
-internal data class ReadoutListUseCases(
-    val observeAutoReadoutEnabledStates: ObserveAutoReadoutEnabledStatesUseCase,
-    val observeAutoReadoutOrder: ObserveResolvedAutoReadoutOrderUseCase,
-    val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
-)
-
-internal data class FlagUseCases(
-    val observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
-    val observeFlagEnabledStates: ObserveLmuWindowsFlagEnabledStatesUseCase,
-)
-
-internal data class TyreTemperatureUseCases(
-    val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
-    val observeVehicleClassHighThreshold: ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase,
-    val observeVehicleClass: ObserveLmuWindowsVehicleClassUseCase,
-    val observeTyreTemperatureEnabledStates: ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase,
-    val observeLowWarningPhases: ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase,
-)
-
-internal data class TyreWearUseCases(
-    val observeTyreWear: ObserveLmuWindowsTyreWearUseCase,
-    val observeThresholdPercentage: ObserveLmuWindowsTyreWearThresholdPercentageUseCase,
-)
-
-internal data class RemainingVirtualEnergyUseCases(
-    val observeRemainingVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
-    val observeReadoutHotkey: ObserveReadoutHotkeyUseCase,
-    val observeManualReadoutHotkeyPresses: ObserveManualReadoutHotkeyPressesUseCase,
-    val observeManualReadoutRequests: ObserveManualReadoutRequestsUseCase,
-    val observeManualReadoutItemRequests: ObserveManualReadoutItemRequestsUseCase,
-    val notifyManualReadoutItemSpoken: NotifyManualReadoutItemSpokenUseCase,
-    val observeManualReadoutSets: ObserveManualReadoutSetsUseCase,
-    val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
-)
-
-internal data class RemainingFuelUseCases(
-    val observeFuel: ObserveLmuWindowsFuelUseCase,
-    val observeThresholdPercentage: ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase,
-)
-
-internal data class BrakeTemperatureUseCases(
-    val observeBrakeTemperature: ObserveLmuWindowsBrakeTemperatureUseCase,
-    val observeVehicleClassHighThreshold: ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase,
-)
-
-internal data class BrakeWearUseCases(
-    val observeBrakeWear: ObserveLmuWindowsBrakeWearRemainingUseCase,
-    val observeVehicleClassLowThreshold: ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase,
-)
-
-internal data class PitTimingUseCases(
-    val observeVirtualEnergyLapsThreshold: ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
-    val observeTyreWearLapsThreshold: ObserveLmuWindowsPitTimingTyreWearLapsUseCase,
-    val observeFuelLapsThreshold: ObserveLmuWindowsPitTimingFuelLapsUseCase,
-    val observeEnabledStates: ObserveLmuWindowsPitTimingEnabledStatesUseCase,
-)
-
-internal data class ClassCarGapUseCases(
-    val observeClassCarGap: ObserveLmuWindowsClassCarGapUseCase,
-)
-
-internal data class NarratorUseCases(
-    val myBestLapReadout: DetermineLmuWindowsMyBestLapReadoutUseCase,
-    val vehicleReadout: DetermineLmuWindowsVehicleReadoutUseCase,
-    val tyreReadout: DetermineLmuWindowsTyreReadoutUseCase,
-    val brakeReadout: DetermineLmuWindowsBrakeReadoutUseCase,
-    val virtualEnergyReadout: DetermineLmuWindowsVirtualEnergyReadoutUseCase,
-    val fuelReadout: DetermineLmuWindowsFuelReadoutUseCase,
-    val manualReadout: DetermineLmuWindowsManualReadoutUseCase,
-    val pitTimingReadout: DetermineLmuWindowsPitTimingReadoutUseCase,
-    val raceFlagReadout: DetermineLmuWindowsRaceFlagReadoutUseCase,
-)
-
-private const val PERCENTAGE_SCALE = 100.0
 
 @OptIn(ExperimentalTime::class)
 @Suppress("LongParameterList")
@@ -226,6 +73,7 @@ internal class LmuWindowsNarratorViewModel(
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
     private var narratorState = LmuWindowsNarratorState()
+    private val manualReadoutComposer = LmuWindowsManualReadoutComposer(narratorUseCases.manualReadout)
 
     // ピットタイミング警告は同一ラップ内で予想残り周回数が最も低いものだけを読み上げる（別tickの後着もより緊急なら読み上げる）。
     private val pitTimingLapGate = PitTimingLapGate()
@@ -927,74 +775,7 @@ internal class LmuWindowsNarratorViewModel(
     ): Boolean {
         if (selectedSimulator.value !is Simulator.LmuWindows) return false
         val observedAtMs = currentTimeMs()
-        val energy =
-            latestVirtualEnergy?.takeIf {
-                observedAtMs - latestVirtualEnergyReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
-            }
-        val fuel =
-            latestFuel?.takeIf {
-                observedAtMs - latestFuelReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
-            }
-        val classCarGap =
-            latestClassCarGap?.takeIf {
-                observedAtMs - latestClassCarGapReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
-            }
-        val tyreWear =
-            latestTyreWear?.takeIf {
-                observedAtMs - latestTyreWearReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
-            }
-        val brakeWear =
-            latestBrakeWear?.takeIf {
-                observedAtMs - latestBrakeWearReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
-            }
-        val brakeTemperature =
-            latestBrakeTemperature?.takeIf {
-                observedAtMs - latestBrakeTemperatureReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
-            }
-        val tyreTemperature =
-            latestTyreTemperature?.takeIf {
-                observedAtMs - latestTyreTemperatureReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
-            }
-        val bestLapTimeMs =
-            latestBestLapTimeMs?.takeIf {
-                observedAtMs - latestBestLapReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS && it > 0
-            }
-        val items =
-            set.itemKeys.filter { it in lmuWindowsManualReadoutItemKeys() }.map { key ->
-                val ratio =
-                    manualReadoutRatio(
-                        key = key,
-                        brakeWear = brakeWear,
-                        tyreWear = tyreWear,
-                        fuel = fuel,
-                        energy = energy,
-                    )
-                val celsius =
-                    manualReadoutCelsius(key, brakeTemperature?.wheels?.values, tyreTemperature?.wheels?.values)
-                val remainingLaps =
-                    manualRemainingLaps(
-                        key = key,
-                        hasEnergy = energy != null,
-                        hasTyreWear = tyreWear != null,
-                        hasFuel = fuel != null,
-                        pitTimingFresh = observedAtMs - latestPitTimingUpdatedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS,
-                    )
-                val value =
-                    ratio?.let { LmuWindowsManualReadoutValue.Ratio(it) }
-                        ?: celsius?.let { LmuWindowsManualReadoutValue.Celsius(it) }
-                        ?: bestLapTimeMs
-                            ?.takeIf { key == LmuWindowsReadoutItemKey.MyBestLap.Root.value }
-                            ?.let { LmuWindowsManualReadoutValue.LapTimeMs(it) }
-                        ?: classCarGap
-                            ?.takeIf { isLmuWindowsManualReadoutClassCarGapItem(key) }
-                            ?.let { LmuWindowsManualReadoutValue.ClassCarGap(it) }
-                        ?: remainingLaps?.let { LmuWindowsManualReadoutValue.RemainingLaps(it) }
-                LmuWindowsManualReadoutItem(
-                    key,
-                    set.itemTexts[key] ?: lmuWindowsManualReadoutItemTextDefault(key),
-                    value,
-                )
-            }
+        val items = manualReadoutComposer.compose(set, manualReadoutSnapshot(), narratorState, observedAtMs)
         val state = narratorState
         val settings = currentSettings
         val decision = narratorUseCases.manualReadout.determineManualReadout(state, items)
@@ -1007,76 +788,18 @@ internal class LmuWindowsNarratorViewModel(
         )
     }
 
-    private fun manualReadoutRatio(
-        key: String,
-        brakeWear: LmuWindowsBrakeWearRemainingData?,
-        tyreWear: LmuWindowsTyreWearData?,
-        fuel: LmuWindowsRemainingFuelData?,
-        energy: LmuWindowsVirtualEnergyData?,
-    ): Double? =
-        when {
-            key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value ||
-                key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value ||
-                key == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value ||
-                key == LmuWindowsReadoutItemKey.MyBestLap.Root.value ||
-                isLmuWindowsManualReadoutClassCarGapItem(key) ||
-                isLmuWindowsManualReadoutTemperatureItem(key) -> {
-                null
-            }
-
-            key == LmuWindowsReadoutItemKey.BrakeWear.Root.value -> {
-                brakeWear?.let { data ->
-                    data.wheels.values
-                        .minOfOrNull { it.remainingPercent }
-                        ?.let { it / PERCENTAGE_SCALE }
-                }
-            }
-
-            key == LmuWindowsReadoutItemKey.TyreWear.Root.value -> {
-                tyreWear
-                    ?.wheels
-                    ?.values
-                    ?.minOrNull()
-                    ?.value
-            }
-
-            key == LmuWindowsReadoutItemKey.RemainingFuel.Root.value -> {
-                fuel?.exactPercent?.let { it / PERCENTAGE_SCALE }
-            }
-
-            else -> {
-                energy?.remainingRatio?.value
-            }
-        }
-
-    private fun manualRemainingLaps(
-        key: String,
-        hasEnergy: Boolean,
-        hasTyreWear: Boolean,
-        hasFuel: Boolean,
-        pitTimingFresh: Boolean,
-    ): Int? =
-        when {
-            key == LmuWindowsReadoutItemKey.RemainingFuel.Laps.value -> {
-                if (hasFuel) narratorUseCases.manualReadout.manualFuelRemainingLaps(narratorState) else null
-            }
-
-            !pitTimingFresh -> {
-                null
-            }
-
-            key == LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value && hasEnergy -> {
-                narratorUseCases.manualReadout.manualPitTimingVirtualEnergyRemainingLaps(narratorState)
-            }
-
-            key == LmuWindowsReadoutItemKey.PitTiming.TyreWear.value && hasTyreWear -> {
-                narratorUseCases.manualReadout.manualPitTimingTyreWearRemainingLaps(narratorState)
-            }
-
-            else -> {
-                null
-            }
-        }
+    private fun manualReadoutSnapshot(): LmuWindowsManualReadoutSnapshot =
+        LmuWindowsManualReadoutSnapshot(
+            virtualEnergy = LmuWindowsReceivedValue(latestVirtualEnergy, latestVirtualEnergyReceivedAtMs),
+            fuel = LmuWindowsReceivedValue(latestFuel, latestFuelReceivedAtMs),
+            classCarGap = LmuWindowsReceivedValue(latestClassCarGap, latestClassCarGapReceivedAtMs),
+            tyreWear = LmuWindowsReceivedValue(latestTyreWear, latestTyreWearReceivedAtMs),
+            brakeWear = LmuWindowsReceivedValue(latestBrakeWear, latestBrakeWearReceivedAtMs),
+            brakeTemperature = LmuWindowsReceivedValue(latestBrakeTemperature, latestBrakeTemperatureReceivedAtMs),
+            tyreTemperature = LmuWindowsReceivedValue(latestTyreTemperature, latestTyreTemperatureReceivedAtMs),
+            bestLapTimeMs = LmuWindowsReceivedValue(latestBestLapTimeMs, latestBestLapReceivedAtMs),
+            pitTimingUpdatedAtMs = latestPitTimingUpdatedAtMs,
+        )
 
     private suspend fun readRemainingVirtualEnergyCurrentValue() {
         if (selectedSimulator.value !is Simulator.LmuWindows) return
@@ -1213,25 +936,6 @@ internal class LmuWindowsNarratorViewModel(
                 pitTimingFuelLapsThreshold = pitTimingFuelLapsThreshold.value,
             )
 }
-
-/** 温度系の手動読み上げ項目の最高温度。温度系以外、またはデータ無しなら null。 */
-private fun manualReadoutCelsius(
-    key: String,
-    brakeReadings: Collection<CelsiusReading>?,
-    tyreReadings: Collection<CelsiusReading>?,
-): Float? =
-    when (key) {
-        LmuWindowsReadoutItemKey.BrakeTemperature.Root.value -> brakeReadings?.let { maxFiniteCelsius(it) }
-        LmuWindowsReadoutItemKey.TyreTemperature.Root.value -> tyreReadings?.let { maxFiniteCelsius(it) }
-        else -> null
-    }
-
-/** 非有限値（NaN・無限大）を除いた最高温度。有効な値が無ければ null（データ無し扱い）。 */
-private fun maxFiniteCelsius(readings: Collection<CelsiusReading>): Float? =
-    readings
-        .map { it.value }
-        .filter { it.isFinite() }
-        .maxOrNull()
 
 /**
  * バーチャルエネルギー・タイヤ摩耗・燃料のピットタイミング警告が同一tickで発火した場合、

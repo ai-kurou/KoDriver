@@ -49,7 +49,7 @@ Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を
 `LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
 手動の燃料読み上げは自動警告の有効状態・評価履歴を変更しない。
 
-`LmuWindowsNarratorFlow` は LMU の選択切り替え、有効状態・クラス別閾値・テレメトリ入力の合成、手動要求のマージを cold Flow として提供する。`LmuWindowsNarratorViewModel` は `viewModelScope` と `stateIn` / `shareIn`、初期値、最新値・受信時刻の保持と選択解除時の破棄、読み上げ判定・イベント処理を管理する。
+`LmuWindowsNarratorFlow` は LMU の選択切り替え、有効状態・クラス別閾値・テレメトリ入力の合成、手動要求のマージを cold Flow として提供する。`LmuWindowsNarratorViewModel` は `viewModelScope` と `stateIn` / `shareIn`、初期値、最新値・受信時刻の保持と選択解除時の破棄、読み上げ判定・イベント処理を管理する。手動読み上げ項目の組み立て（鮮度判定・残存率・最高温度・残り周回数）は、最新値のスナップショットを受け取る `LmuWindowsManualReadoutComposer` が行う。
 
 手動の「クラス内前後車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`）に対応する。前方車の後に後方車のギャップを1文で読み上げる1項目で、統合前の「前方車」「後方車」の2項目（`lmu_windows_auto_class_car_gap_ahead` / `_behind`）は廃止した。
 TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料残り周回数の後）に並ぶ。
