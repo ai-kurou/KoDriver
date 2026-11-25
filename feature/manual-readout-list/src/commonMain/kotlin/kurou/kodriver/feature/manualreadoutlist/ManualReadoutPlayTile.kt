@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import kurou.kodriver.core.designsystem.KoDriverCollapsibleVisibility
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.PlayingEqualizer
 import kurou.kodriver.core.designsystem.fullBackgroundImages
@@ -125,7 +126,7 @@ internal fun ManualReadoutSetPlayButton(
                 // ホットキー解除後の退場アニメーション中に「未割り当て」チップが出ないよう、最後に割り当て済みだったセットを保つ。
                 var lastAssignedSet by remember { mutableStateOf(set) }
                 if (hasHotkeyLabel) lastAssignedSet = set
-                ManualReadoutHotkeyChipAnimatedVisibility(visible = showHotkeyChip && hasHotkeyLabel) {
+                KoDriverCollapsibleVisibility(visible = showHotkeyChip && hasHotkeyLabel) {
                     ManualReadoutHotkeyChip(lastAssignedSet, playButtonLayout = true)
                 }
             }

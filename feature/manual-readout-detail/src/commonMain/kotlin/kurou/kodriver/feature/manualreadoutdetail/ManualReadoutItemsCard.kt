@@ -52,6 +52,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.KoDriverCollapsibleVisibility
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.handleColumnRowReorderKey
@@ -122,7 +123,10 @@ internal fun ManualReadoutItemsCard(
         title = stringResource(Res.string.manual_readout_items_title),
         bottomContent = {
             Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium)) {
-                ManualReadoutHotkeyAnimatedVisibility(visible = uiState.selectedItemKeys.isEmpty()) {
+                KoDriverCollapsibleVisibility(
+                    visible = uiState.selectedItemKeys.isEmpty(),
+                    expandFrom = Alignment.Bottom,
+                ) {
                     Text(stringResource(Res.string.manual_readout_empty_hint))
                 }
                 ReorderableColumn(
@@ -149,7 +153,10 @@ internal fun ManualReadoutItemsCard(
                     enabled = remaining.isNotEmpty() && !atLimit,
                     onClick = { showPicker = true },
                 )
-                ManualReadoutHotkeyAnimatedVisibility(visible = uiState.selectedItemKeys.isNotEmpty()) {
+                KoDriverCollapsibleVisibility(
+                    visible = uiState.selectedItemKeys.isNotEmpty(),
+                    expandFrom = Alignment.Bottom,
+                ) {
                     ManualReadoutPreviewSection(
                         uiState = uiState,
                         previewText = lastPreview,

@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -30,6 +31,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverCollapsibleVisibility
 import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
@@ -188,7 +190,7 @@ internal fun ManualReadoutSetDetailPane(
                         )
                     }
                 }
-                ManualReadoutHotkeyAnimatedVisibility(visible = showHotkey) {
+                KoDriverCollapsibleVisibility(visible = showHotkey, expandFrom = Alignment.Bottom) {
                     ManualReadoutHotkeyCard(
                         uiState,
                         onAssignHotkey,
