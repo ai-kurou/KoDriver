@@ -2,6 +2,8 @@
 
 Le Mans Ultimate（LMU）は Studio 397 純正の共有メモリインターフェースを内蔵しており、共有メモリ名 **`LMU_Data`** で全データを単一セグメントとして公開する。構造体定義の正典はゲームインストールフォルダの `Support\SharedMemoryInterface` にあるヘッダファイル（`SharedMemoryInterface.hpp` / `InternalsPlugin.hpp`）であり、本ドキュメントはその Python 移植である [TinyPedal/pyLMUSharedMemory](https://github.com/TinyPedal/pyLMUSharedMemory) の `lmu_data.py` を基に、ctypes（`_pack_=4`）で算出した実オフセットを記載する。
 
+> **確認済みの対象バージョン**: LMU V1.3〜V1.4.3（2026-11-25 時点）。構造体に項目が追加されたのは V1.3（2026-03-31、「new telemetry parameters」）が最後で、本ドキュメントはその 1.3 仕様に基づく。以降のパッチノートで共有メモリに触れたのは V1.4.2（2026-09-22）の「Fixed some threading issues with shared memory」のみで、レイアウトの変更ではない。pyLMUSharedMemory の `lmu_data.py` も 1.3 対応以降はフィールドの名前・型・順序が変わっていない。公式ヘッダと照合した他実装（[irdashies](https://github.com/tariknz/irdashies) の `static_assert`、[SimMagicFix](https://github.com/SunNathan/SimMagicFix) の `docs/VALIDATION.md`、いずれも2026年10〜11月）の構造体サイズ・オフセットとも一致する。アップデート後は Steam ニュースのパッチノートと `lmu_data.py` の更新履歴を確認すること。
+
 `LMU_Data` に含まれない情報（天候予報、Virtual Energy 消費履歴、ピットメニューの状態等）については、LMU が内蔵するローカル REST API を調査した [`docs/lmu-windows-rest-api.md`](lmu-windows-rest-api.md) を参照。
 
 ## rF2SharedMemoryMapPlugin との関係
@@ -15,6 +17,8 @@ rF2 プラグイン側にのみ存在する構造体（`rF2Rules`, `rF2MultiRule
 ## LMUObjectOut レイアウト（全体 324,820 bytes）
 
 `LMU_Data` の先頭から以下の順に配置される。すべて `_pack_=4` アライメント。
+
+324,820 bytes は各セグメントの合計。公式ヘッダの `SharedMemoryObjectOut` を C++ でコンパイルした `sizeof` は末尾パディング 4 bytes を含む 324,824 bytes になる（SimMagicFix の実測）。各フィールドのオフセットには影響せず、読み取りは 324,820 bytes のマッピングで足りる。
 
 | セグメント | 元の構造体名 | 先頭オフセット | サイズ |
 |---|---|---|---|
@@ -542,6 +546,8 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 - **`mSector`（0=S3, 1=S1, 2=S2）** と直感に反する順序に注意
 - **`_pack_=4` レイアウト**：`LMU_Data` は 4 バイト境界でアライメントされる。double が 8 バイト境界に乗らない箇所があるため、オフセットは本ドキュメントの実測値を使うこと
 - **タイム系フィールドは無効時に負値**（例: ラップ未計測時の `mBestLapTime` は -1.0）になるため、正値のみを有効値として扱う
+- **降雨強度・路面湿潤度は段階的にしか更新されない**（TinyPedal の調査）。`mRaining` は 0%・5%・15%・30% … のしきい値到達時のみ、`mMinPathWetness` / `mMaxPathWetness` / `mAvgPathWetness` は 0%・5%・12%・40%・60%・100% のしきい値到達時のみ値が変わる。`mMinPathWetness` は屋根・橋の下などで常に 0 になりうるため、3値の単純平均は避け、平均湿潤度には `mAvgPathWetness` を使う
+- **`mVehicleModel[30]` は長い車名が途中で切れる**（TinyPedal の補正表より。例: `Aston Martin Vantage AMR LMGT3` → `…AMR LMGT`、`Chevrolet Corvette Z06 LMGT3.R` → `…LMGT3.`）。車名の完全一致で判定する場合は切り詰め後の文字列を前提にする
 - ポインタ格納用フィールド（`mResultsStreamPointer`, `mVehiclePointer`）はゲームプロセス内部のアドレスであり、共有メモリの読み手には意味がない
 
 ---
@@ -606,4 +612,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | [pyLMUSharedMemory `lmu_enum.py`](https://github.com/TinyPedal/pyLMUSharedMemory/blob/master/lmu_enum.py) | Python | 各 enum フィールドの値マッピング。LMU API 1.3 spec 対応（2026年3月）で追加された |
 | [pyLMUSharedMemory `tests/read_lmu_api.py`](https://github.com/TinyPedal/pyLMUSharedMemory/blob/master/tests/read_lmu_api.py) | Python | 構造体サイズの照合（`compare_struct_size`）と全フィールドのダンプを行う検証スクリプト。Windows 実機でレイアウトの一致を確認する際に使う |
 | [TinyPedal/TinyPedal](https://github.com/TinyPedal/TinyPedal) | Python | 最も活発な LMU 対応オーバーレイ。フィールド利用例が豊富 |
+| [tariknz/irdashies `src/app/lmu/native/lmu_struct.h`](https://github.com/tariknz/irdashies/blob/main/src/app/lmu/native/lmu_struct.h) | C++ | 全構造体のサイズと主要オフセットを `static_assert` で固定した C++ 定義。レイアウト照合に使える |
+| [SunNathan/SimMagicFix `docs/VALIDATION.md`](https://github.com/SunNathan/SimMagicFix/blob/master/docs/VALIDATION.md) | C++ | 公式ヘッダと照合した `TelemInfoV01` のサイズ・主要オフセットと `SharedMemoryObjectOut` の `sizeof` を記録 |
+| [Le Mans Ultimate の Steam ニュース一覧](https://steamcommunity.com/app/2399420/allnews/) | — | 各アップデートのパッチノート。共有メモリの変更は V1.2（ヘッダ同梱）・V1.3（項目追加）・V1.4.2（スレッド処理の修正）に記載された |
 | [TheIronWolfModding/rF2SharedMemoryMapPlugin](https://github.com/TheIronWolfModding/rF2SharedMemoryMapPlugin) | C++/C# | rFactor 2 用共有メモリプラグイン。`LMU_Data` とは別物だが構造体の系譜が共通 |
