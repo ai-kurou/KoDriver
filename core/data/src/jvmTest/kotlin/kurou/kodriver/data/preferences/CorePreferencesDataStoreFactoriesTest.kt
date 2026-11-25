@@ -47,7 +47,7 @@ class CorePreferencesDataStoreFactoriesTest {
             }
             assertWritesTo("microphone_cut_quiet_sound_preferences.pb") { dir ->
                 val dataStore = createMicrophoneCutQuietSoundPreferencesDataStore(dir)
-                dataStore.updateData { it.copy(level = 3) }
+                dataStore.updateData { it.copy(level = 6) }
             }
             assertWritesTo("overlay_background_opacity_preferences.pb") { dir ->
                 val dataStore = createOverlayBackgroundOpacityPreferencesDataStore(dir)

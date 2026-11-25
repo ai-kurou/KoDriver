@@ -191,7 +191,7 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
     @Test
     fun `小さい音をカットの設定に従って小さい断片を無音にし、0なら元の音声を渡す`() =
         runTest {
-            val quiet = ByteArray(VOSK_READ_CHUNK_BYTES) { i -> if (i % 2 == 0) 100 else 0 }
+            val quiet = ByteArray(VOSK_READ_CHUNK_BYTES) { i -> if (i % 2 == 0) 60 else 0 }
 
             suspend fun acceptedPcm(): ByteArray {
                 transcriberFactory.acceptedPcm.clear()
@@ -212,7 +212,7 @@ class AndroidVoskSpeechRecognitionRepositoryTest {
     @Test
     fun `聞き取りを続けたまま小さい音をカットの設定を変えると、再開せずに次の断片から反映する`() =
         runBlocking {
-            val quiet = ByteArray(VOSK_READ_CHUNK_BYTES) { i -> if (i % 2 == 0) 100 else 0 }
+            val quiet = ByteArray(VOSK_READ_CHUNK_BYTES) { i -> if (i % 2 == 0) 60 else 0 }
             // 実スレッドで動かすため、収集をやめるまで小さい断片を読み取らせ続ける
             recorder.beforeRead = {
                 if (recorder.chunks.isEmpty()) recorder.chunks.add(quiet)

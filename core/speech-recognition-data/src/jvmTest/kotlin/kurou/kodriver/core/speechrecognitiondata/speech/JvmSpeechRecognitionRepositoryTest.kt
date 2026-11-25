@@ -96,7 +96,7 @@ class JvmSpeechRecognitionRepositoryTest {
     @Test
     fun `小さい音をカットの設定に従って小さい断片を無音にし、0なら元の音声を渡す`() =
         runTest {
-            val quiet = byteArrayOf(100, 0, 100, 0)
+            val quiet = byteArrayOf(60, 0, 60, 0)
             microphone.events = flowOf(MicrophoneAudioEvent.Chunk(quiet))
             val defaultTranscriber = FakeTranscriber()
             observeWith(defaultTranscriber)
