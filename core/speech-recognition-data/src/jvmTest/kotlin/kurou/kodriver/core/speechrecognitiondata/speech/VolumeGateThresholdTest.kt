@@ -27,7 +27,7 @@ class VolumeGateThresholdTest {
                     initial to threshold.value
                 }
 
-            assertEquals(0.3f, result.first, 0.0001f)
+            assertEquals(0.15f, result.first, 0.0001f)
             assertEquals(0.6f, result.second, 0.0001f)
         }
 

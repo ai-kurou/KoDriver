@@ -75,7 +75,7 @@ class OtherMicrophoneCutQuietSoundDetailPaneTest {
 
         rule.onNode(hasContentDescription("既定のレベルに戻す")).performClick()
 
-        assertEquals(6, changed)
+        assertEquals(3, changed)
     }
 
     @Test
