@@ -66,7 +66,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
@@ -102,10 +101,12 @@ import kurou.kodriver.core.designsystem.ListRowPartsFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.ReadoutStartSoundIcons
 import kurou.kodriver.core.designsystem.RestoreRowFocusOnReturn
+import kurou.kodriver.core.designsystem.animateListRowSelectionStyle
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
 import kurou.kodriver.core.designsystem.handleListRowPartArrowKey
 import kurou.kodriver.core.designsystem.handleListRowReorderKey
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
+import kurou.kodriver.core.designsystem.listRowSelection
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -346,16 +347,6 @@ private fun ReorderableCollectionItemScope.AutoReadoutReorderableRow(
 ) {
     val isSelected =
         AutoReadoutListItemType.fromId(uiState.selectedSimulator, item) == uiState.selectedItem
-    val cardContainerColor by animateColorAsState(
-        targetValue =
-            if (isSelected) {
-                MaterialTheme.colorScheme.secondaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceContainerLow
-            },
-        animationSpec = tween(durationMillis = 500),
-        label = "cardContainerColor",
-    )
     AutoReadoutListItemCard(
         modifier =
             (sharedBounds?.modifier(item) ?: Modifier)
@@ -376,7 +367,6 @@ private fun ReorderableCollectionItemScope.AutoReadoutReorderableRow(
         readoutEnabled = uiState.autoReadoutEnabledStates.readoutEnabled(item),
         queueEnabled = uiState.queueEnabledStates[item] ?: false,
         startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
-        containerColor = cardContainerColor,
         isSelected = isSelected,
         onItemClick = onItemClick,
         onQueueEnabledChanged = onQueueEnabledChanged,
@@ -419,7 +409,6 @@ private fun AutoReadoutListItemCard(
     readoutEnabled: Boolean,
     queueEnabled: Boolean,
     startSoundEnabled: Boolean,
-    containerColor: Color,
     isSelected: Boolean,
     onItemClick: (ReadoutItemKey) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
@@ -455,21 +444,16 @@ private fun AutoReadoutListItemCard(
     val tileColor by animateColorAsState(visualStyle.tileColor, label = "tileColor")
     val tileContentColor by animateColorAsState(visualStyle.tileContentColor, label = "tileContentColor")
     val backgroundImage = autoReadoutBackground(item)?.let { painterResource(it.drawable) }
-    val primary = MaterialTheme.colorScheme.primary
     val cardShape = CardDefaults.elevatedShape
-    val selectionStyle = animateSelectionStyle(isSelected = isSelected, primary = primary)
+    val selectionStyle = animateListRowSelectionStyle(isSelected)
+    val containerColor = selectionStyle.containerColor
     ElevatedCard(
         modifier =
             modifier
                 .onKeyEvent { event -> handleListRowPartArrowKey(event, partsState, partEnabled) }
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
                 .fillMaxWidth()
-                .shadow(
-                    elevation = selectionStyle.shadowElevation,
-                    shape = cardShape,
-                    ambientColor = primary,
-                    spotColor = primary,
-                ).border(1.dp, selectionStyle.borderColor, cardShape),
+                .listRowSelection(selectionStyle, cardShape),
         colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
     ) {
         Row(

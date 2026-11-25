@@ -55,6 +55,8 @@ import kotlinx.coroutines.delay
 import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.PlayingEqualizer
+import kurou.kodriver.core.designsystem.animateListRowSelectionStyle
+import kurou.kodriver.core.designsystem.listRowSelection
 import kurou.kodriver.core.designsystem.rightAlignedBackgroundImages
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
@@ -75,6 +77,7 @@ internal fun ManualReadoutSetRow(
     setNumber: Int,
     simulatorId: String,
     set: ManualReadoutSet,
+    isSelected: Boolean,
     showHotkeyChip: Boolean,
     canReadSet: Boolean,
     onReadSet: () -> Unit,
@@ -92,7 +95,9 @@ internal fun ManualReadoutSetRow(
             ?: MaterialTheme.colorScheme.outlineVariant
     val backgroundPainters =
         categories.counts.map { (category, _) -> painterResource(manualReadoutCategoryBackground(category).drawable) }
-    val cardColor = MaterialTheme.colorScheme.surfaceContainerLow
+    val selectionStyle = animateListRowSelectionStyle(isSelected)
+    val cardColor = selectionStyle.containerColor
+    val cardShape = CardDefaults.elevatedShape
     val haptic = LocalHapticFeedback.current
     var requestCount by remember { mutableIntStateOf(0) }
     LaunchedEffect(requestCount) {
@@ -107,6 +112,7 @@ internal fun ManualReadoutSetRow(
             Modifier
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
                 .fillMaxWidth()
+                .listRowSelection(selectionStyle, cardShape)
                 .focusRequester(rowFocusRequester)
                 .combinedClickable(
                     onClick = {

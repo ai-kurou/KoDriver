@@ -140,6 +140,10 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 `DetailPaneTopAppBar` のタイトルは1行で表示し、バーの幅に収まらない場合は末尾を省略する。
 手動読み上げセット名などの長いタイトルでも、戻るボタン・操作領域と共存できるようにする。
 
+## 一覧の行の選択表示
+
+`ListRowSelectionStyle.kt` は、詳細を開いている行の見た目を自動タブと手動タブで共通化する。`animateListRowSelectionStyle(isSelected)` が背景色・枠線色・影の高さを500msで切り替え、`Modifier.listRowSelection` が影と1dpの枠線を付ける。背景色は呼び出し側のカードに渡す。
+
 ## 行内の部品の ←→ 移動
 
 `ListRowPartsKeyboardNavigation.kt` の `handleListRowPartArrowKey` は、一覧の1行の中の部品（主操作領域・スイッチ・トグルなど）を ←→ で順に移動する共通処理を提供する。部品は行内の並び順に 0 から番号を振り、`ListRowPartsFocusState` が各部品の `FocusRequester` とフォーカス中の部品を保持する（0 番は行の主操作領域）。

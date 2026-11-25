@@ -53,6 +53,37 @@ class ManualReadoutListPaneScreenshotTest {
         }
 
     @Test
+    fun `詳細を開いている行を選択表示にした標準表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 480.dp)) {
+                            ManualReadoutListPaneContent(
+                                uiState =
+                                    ManualReadoutListUiState(
+                                        sets =
+                                            listOf(
+                                                ManualReadoutSet(id = "set-1", name = "Fuel & Tyres"),
+                                                ManualReadoutSet(id = "set-2", name = "Brakes"),
+                                            ),
+                                        selectedSetId = "set-1",
+                                    ),
+                                simulatorId = "lmu_windows",
+                                simulatorName = "LMU",
+                                onAddSet = {},
+                                onReadSet = {},
+                                onTogglePlayButtonLayout = {},
+                            )
+                        }
+                    }
+                }
+            }
+            onNodeWithText("Brakes").assertIsDisplayed()
+            onRoot().captureRoboImage()
+        }
+
+    @Test
     fun `ヘルプボトムシートホットキーあり`() =
         composeScreenshotTest {
             setContent {
