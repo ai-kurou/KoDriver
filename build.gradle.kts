@@ -573,6 +573,23 @@ kover {
                 // デスクトップのエントリーポイント。ウィンドウ・Sentry・サーバー起動は実機依存でユニットテストできない。
                 // 同じ Koin 構成は AppTest / DesktopKoinModuleGraphTest が検証する
                 classes("kurou.kodriver.MainKt", "kurou.kodriver.MainKt\$*")
+                // Android のエントリーポイント（MainActivity・KoDriverApplication）。Sentry 初期化・startKoin など実機依存の起動処理で、
+                // onCreate() はユニットテストで実行できない。Koin 構成の等価性は AndroidKoinModuleGraphTest が検証する。
+                // MainActivity は計装テスト MainActivityTest が起動する。
+                classes(
+                    "kurou.kodriver.MainActivity",
+                    "kurou.kodriver.MainActivity\$*",
+                    "kurou.kodriver.KoDriverApplication",
+                    "kurou.kodriver.KoDriverApplication\$*",
+                )
+                // デスクトップのナレーターオーバーレイのウィンドウ（NarratorOverlayWindow.kt）。実ウィンドウの生成が必要でユニットテストできない。
+                // 位置復元の画面内判定は OverlayWindowBoundsScreenCheckTest が検証する。
+                // NarratorOverlayWindowGeometry は同ファイル内の private data class で、別クラスとして出力される。
+                classes(
+                    "kurou.kodriver.NarratorOverlayWindowKt",
+                    "kurou.kodriver.NarratorOverlayWindowKt\$*",
+                    "kurou.kodriver.NarratorOverlayWindowGeometry",
+                )
             }
         }
     }
