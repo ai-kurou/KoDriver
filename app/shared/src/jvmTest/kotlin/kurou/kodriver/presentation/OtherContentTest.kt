@@ -404,6 +404,7 @@ class OtherContentTest {
         var backEnabled = false
         var githubRepositoryOpened = false
         var releasePageOpened = false
+        var readoutStartSoundDialogOpened = false
         var themeDialogOpened = false
         var overlayTextSizeDialogOpened = false
         var keepScreenOn = true
@@ -425,6 +426,7 @@ class OtherContentTest {
                 onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
+                onOpenReadoutStartSoundDialog = { readoutStartSoundDialogOpened = true },
                 onOpenThemeDialog = { themeDialogOpened = true },
                 onOpenOverlayTextSizeDialog = { overlayTextSizeDialogOpened = true },
                 onKeepScreenOnChange = { keepScreenOn = it },
@@ -487,6 +489,7 @@ class OtherContentTest {
         // ReadoutStartSound（ダイアログを開く）
         clickListItem("読み上げ開始音")
 
+        assertTrue(readoutStartSoundDialogOpened)
         assertFalse(backEnabled)
 
         // DynamicColor（Switchで直接切り替える）
