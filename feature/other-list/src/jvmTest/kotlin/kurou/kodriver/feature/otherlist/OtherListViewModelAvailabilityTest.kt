@@ -30,12 +30,14 @@ class OtherListViewModelAvailabilityTest : OtherListViewModelTestFixture() {
             every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { startupRegistrationRepository.isEnabled() } returns true
+            coEvery { startupRegistrationRepository.isDisabledByOs() } returns false
             val viewModel = createViewModel()
 
             viewModel.checkStartupEnabled()
 
             assertTrue(viewModel.uiState.first().startupEnabled)
             coVerify(exactly = 1) { startupRegistrationRepository.isEnabled() }
+            coVerify(exactly = 1) { startupRegistrationRepository.isDisabledByOs() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
@@ -68,12 +70,14 @@ class OtherListViewModelAvailabilityTest : OtherListViewModelTestFixture() {
             every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { startupRegistrationRepository.setEnabled(true) } returns Unit
+            coEvery { startupRegistrationRepository.isDisabledByOs() } returns false
             val viewModel = createViewModel()
 
             viewModel.onStartupEnabledChange(true)
 
             assertTrue(viewModel.uiState.first().startupEnabled)
             coVerify(exactly = 1) { startupRegistrationRepository.setEnabled(true) }
+            coVerify(exactly = 1) { startupRegistrationRepository.isDisabledByOs() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }

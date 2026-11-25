@@ -28,12 +28,15 @@ class OtherListStartupRegistrationFlowTest {
     fun `状態取得に成功すると取得値を反映する`() =
         runTest {
             coEvery { repository.isEnabled() } returns true
+            coEvery { repository.isDisabledByOs() } returns true
             val startupRegistrationFlow = createFlow()
 
             startupRegistrationFlow.checkStartupEnabled()
 
             assertTrue(startupRegistrationFlow.uiState.value.startupEnabled)
+            assertTrue(startupRegistrationFlow.uiState.value.startupDisabledByOs)
             coVerify(exactly = 1) { repository.isEnabled() }
+            coVerify(exactly = 1) { repository.isDisabledByOs() }
             confirmVerified(repository)
         }
 
@@ -54,12 +57,15 @@ class OtherListStartupRegistrationFlowTest {
     fun `変更に成功すると指定値を反映する`() =
         runTest {
             coEvery { repository.setEnabled(true) } returns Unit
+            coEvery { repository.isDisabledByOs() } returns false
             val startupRegistrationFlow = createFlow()
 
             startupRegistrationFlow.onStartupEnabledChange(true)
 
             assertTrue(startupRegistrationFlow.uiState.value.startupEnabled)
+            assertFalse(startupRegistrationFlow.uiState.value.startupDisabledByOs)
             coVerify(exactly = 1) { repository.setEnabled(true) }
+            coVerify(exactly = 1) { repository.isDisabledByOs() }
             confirmVerified(repository)
         }
 
@@ -73,6 +79,24 @@ class OtherListStartupRegistrationFlowTest {
 
             assertFalse(startupRegistrationFlow.uiState.value.startupEnabled)
             coVerify(exactly = 1) { repository.setEnabled(true) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `OFFにするとOS側の状態を確認せず警告を消す`() =
+        runTest {
+            coEvery { repository.isEnabled() } returns true
+            coEvery { repository.isDisabledByOs() } returns true
+            coEvery { repository.setEnabled(false) } returns Unit
+            val startupRegistrationFlow = createFlow()
+            startupRegistrationFlow.checkStartupEnabled()
+
+            startupRegistrationFlow.onStartupEnabledChange(false)
+
+            assertEquals(OtherListStartupRegistrationUiState(), startupRegistrationFlow.uiState.value)
+            coVerify(exactly = 1) { repository.isEnabled() }
+            coVerify(exactly = 1) { repository.isDisabledByOs() }
+            coVerify(exactly = 1) { repository.setEnabled(false) }
             confirmVerified(repository)
         }
 

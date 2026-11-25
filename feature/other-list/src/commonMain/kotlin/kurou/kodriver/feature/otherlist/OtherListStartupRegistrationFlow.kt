@@ -13,12 +13,17 @@ public class OtherListStartupRegistrationFlow(
         field = MutableStateFlow(OtherListStartupRegistrationUiState())
 
     public suspend fun checkStartupEnabled() {
-        val enabled = startupRegistration.getEnabled()
-        uiState.update { it.copy(startupEnabled = enabled) }
+        update(startupRegistration.getEnabled())
     }
 
     public suspend fun onStartupEnabledChange(enabled: Boolean) {
         startupRegistration.setEnabled(enabled)
-        uiState.update { it.copy(startupEnabled = enabled) }
+        update(enabled)
+    }
+
+    // 自動起動がOFFのときはOS側の状態に意味がないため確認しない。
+    private suspend fun update(enabled: Boolean) {
+        val disabledByOs = enabled && startupRegistration.isDisabledByOs()
+        uiState.update { it.copy(startupEnabled = enabled, startupDisabledByOs = disabledByOs) }
     }
 }

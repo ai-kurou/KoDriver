@@ -81,11 +81,12 @@ internal fun OtherContent(
 
     SideEffect(Unit) {
         viewModel.checkUpdate()
-        viewModel.checkStartupEnabled()
     }
 
     LifecycleResumeEffect(Unit) {
         viewModel.checkAccessLocalNetworkPermission()
+        // タスクマネージャー等で自動起動の有効・無効を変えて戻ってきた場合にも表示を更新する。
+        viewModel.checkStartupEnabled()
         onPauseOrDispose {}
     }
 

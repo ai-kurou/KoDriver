@@ -76,6 +76,7 @@ class OtherListFlowTest {
                     autoReadoutSettingsReset = OtherListResetUiState(resetSucceeded = false),
                     manualReadoutSettingsReset = OtherListResetUiState(showResetConfirmDialog = true),
                     startupEnabled = true,
+                    startupDisabledByOs = true,
                     hasAppUpdate = true,
                 )
             val updated = async(UnconfinedTestDispatcher(testScheduler)) { flow.uiState.first { it == expected } }
@@ -127,7 +128,9 @@ class OtherListFlowTest {
             reset.update { expected.reset }
             autoReadoutSettingsReset.update { expected.autoReadoutSettingsReset }
             manualReadoutSettingsReset.update { expected.manualReadoutSettingsReset }
-            startupRegistration.update { OtherListStartupRegistrationUiState(true) }
+            startupRegistration.update {
+                OtherListStartupRegistrationUiState(startupEnabled = true, startupDisabledByOs = true)
+            }
             appUpdate.update { OtherListAppUpdateUiState(true) }
 
             assertEquals(expected, updated.await())

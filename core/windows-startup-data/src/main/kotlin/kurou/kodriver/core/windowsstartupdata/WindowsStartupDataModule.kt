@@ -24,4 +24,6 @@ private class NoOpStartupEnabledRepository : StartupEnabledRepository {
     override suspend fun isEnabled(): Boolean = false
 
     override suspend fun setEnabled(enabled: Boolean) = Unit
+
+    override suspend fun isDisabledByOs(): Boolean = false
 }

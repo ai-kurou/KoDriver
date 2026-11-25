@@ -56,6 +56,7 @@ public data class OtherListUiState(
     val themeMode: ThemeMode = THEME_MODE_DEFAULT,
     val ttsUnavailableGuidance: TtsUnavailableGuidance? = null,
     val startupEnabled: Boolean = false,
+    val startupDisabledByOs: Boolean = false,
     val appVersionLabel: String = "",
     val appVersion: String = "",
 )

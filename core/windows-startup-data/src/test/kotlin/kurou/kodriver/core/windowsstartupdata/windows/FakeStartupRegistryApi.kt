@@ -2,6 +2,7 @@ package kurou.kodriver.core.windowsstartupdata.windows
 
 internal class FakeStartupRegistryApi : StartupRegistryApi {
     val values = mutableMapOf<Pair<String, String>, String>()
+    val binaryValues = mutableMapOf<Pair<String, String>, ByteArray>()
     val deletedValues = mutableListOf<Pair<String, String>>()
     var deletionFailure: RuntimeException? = null
     var failure: RuntimeException? = null
@@ -12,6 +13,14 @@ internal class FakeStartupRegistryApi : StartupRegistryApi {
     ): Boolean {
         failure?.let { throw it }
         return values.containsKey(key to valueName)
+    }
+
+    override fun getBinaryValue(
+        key: String,
+        valueName: String,
+    ): ByteArray? {
+        failure?.let { throw it }
+        return binaryValues[key to valueName]
     }
 
     override fun setStringValue(
