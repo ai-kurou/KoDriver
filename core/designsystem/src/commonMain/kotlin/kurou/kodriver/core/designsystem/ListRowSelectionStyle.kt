@@ -1,6 +1,7 @@
 package kurou.kodriver.core.designsystem
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
@@ -16,6 +17,9 @@ import androidx.compose.ui.unit.dp
 
 private const val SELECTION_ANIMATION_MS = 500
 
+/** 一覧の行の選択状態を切り替えるときに使うアニメーション指定。行の見た目が違う一覧でも切り替えの速さを揃える。 */
+public fun <T> listRowSelectionAnimationSpec(): TweenSpec<T> = tween(durationMillis = SELECTION_ANIMATION_MS)
+
 /** 一覧の行カードの、選択状態に応じた見た目。 */
 public data class ListRowSelectionStyle(
     public val containerColor: Color,
@@ -29,17 +33,17 @@ public fun animateListRowSelectionStyle(isSelected: Boolean): ListRowSelectionSt
     val colors = MaterialTheme.colorScheme
     val containerColor by animateColorAsState(
         targetValue = if (isSelected) colors.secondaryContainer else colors.surfaceContainerLow,
-        animationSpec = tween(durationMillis = SELECTION_ANIMATION_MS),
+        animationSpec = listRowSelectionAnimationSpec(),
         label = "selectionContainerColor",
     )
     val borderColor by animateColorAsState(
         targetValue = if (isSelected) colors.primary else Color.Transparent,
-        animationSpec = tween(durationMillis = SELECTION_ANIMATION_MS),
+        animationSpec = listRowSelectionAnimationSpec(),
         label = "selectionBorderColor",
     )
     val shadowElevation by animateDpAsState(
         targetValue = if (isSelected) 8.dp else 0.dp,
-        animationSpec = tween(durationMillis = SELECTION_ANIMATION_MS),
+        animationSpec = listRowSelectionAnimationSpec(),
         label = "selectionShadowElevation",
     )
     return ListRowSelectionStyle(containerColor, borderColor, shadowElevation)

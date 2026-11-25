@@ -40,4 +40,9 @@ class ListRowSelectionStyleTest {
         rule.waitForIdle()
         assertEquals(unselected, actual)
     }
+
+    @Test
+    fun `選択切り替えのアニメーション指定は500msである`() {
+        assertEquals(500, listRowSelectionAnimationSpec<Color>().durationMillis)
+    }
 }

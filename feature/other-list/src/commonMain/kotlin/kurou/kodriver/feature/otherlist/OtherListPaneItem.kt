@@ -1,7 +1,6 @@
 package kurou.kodriver.feature.otherlist
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +18,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.listRowSelectionAnimationSpec
 import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.ThemeMode
@@ -299,7 +299,7 @@ internal fun OtherListItem(
             } else {
                 MaterialTheme.colorScheme.surface
             },
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = listRowSelectionAnimationSpec(),
         label = "otherListItemContainerColor",
     )
     val isDestructive = item.isDestructive()
@@ -310,7 +310,7 @@ internal fun OtherListItem(
                 isDestructive -> MaterialTheme.colorScheme.error
                 else -> MaterialTheme.colorScheme.onSurface
             },
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = listRowSelectionAnimationSpec(),
         label = "otherListItemHeadlineColor",
     )
     val iconColor by animateColorAsState(
@@ -320,7 +320,7 @@ internal fun OtherListItem(
                 isDestructive -> MaterialTheme.colorScheme.error
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             },
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = listRowSelectionAnimationSpec(),
         label = "otherListItemIconColor",
     )
 
