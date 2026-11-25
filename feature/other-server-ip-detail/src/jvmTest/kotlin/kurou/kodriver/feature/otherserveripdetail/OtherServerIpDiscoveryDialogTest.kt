@@ -12,6 +12,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.DiscoveredServer
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

@@ -25,6 +25,7 @@ import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.desktopLmuWindowsPreferencesDataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.core.lmuwindowsrestapidata.lmuWindowsRestApiDataModule
+import kurou.kodriver.core.serverdiscoverydata.serverDiscoveryDataModule
 import kurou.kodriver.core.speechrecognitiondata.speechRecognitionDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowshotkeydata.windowsHotkeyDataModule
@@ -134,6 +135,7 @@ public fun main() {
                                                 gt7Ps5DataModule,
                                                 aceWindowsDataModule,
                                                 deviceVolumeDataModule,
+                                                serverDiscoveryDataModule,
                                                 speechRecognitionDataModule,
                                                 textToSpeechDataModule,
                                                 windowsStartupDataModule,

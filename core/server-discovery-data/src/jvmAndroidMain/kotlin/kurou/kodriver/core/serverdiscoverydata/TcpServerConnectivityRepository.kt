@@ -1,0 +1,51 @@
+package kurou.kodriver.core.serverdiscoverydata
+
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.model.IPV4_OCTET_MAX
+import kurou.kodriver.domain.model.IPV4_OCTET_MIN
+import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
+import kurou.kodriver.domain.model.SERVER_CONNECTIVITY_CHECK_TIMEOUT_MS
+import kurou.kodriver.domain.repository.ServerConnectivityRepository
+import java.io.IOException
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Socket
+
+internal class TcpServerConnectivityRepository(
+    private val port: Int = KODRIVER_SERVER_PORT_DEFAULT,
+    private val connect: (InetAddress, Int, Int) -> Unit = { address, connectPort, timeoutMs ->
+        Socket().use { socket -> socket.connect(InetSocketAddress(address, connectPort), timeoutMs) }
+    },
+) : ServerConnectivityRepository {
+    override suspend fun isReachable(ip: String): Boolean =
+        withContext(Dispatchers.IO) {
+            val address = ip.toIpv4InetAddress() ?: return@withContext false
+            try {
+                connect(address, port, SERVER_CONNECTIVITY_CHECK_TIMEOUT_MS)
+                true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: IOException) {
+                false
+            } catch (e: Exception) {
+                captureError(e)
+                false
+            }
+        }
+}
+
+private fun String.toIpv4InetAddress(): InetAddress? {
+    val octets = split(".")
+    if (octets.size != 4) return null
+
+    val address = ByteArray(4)
+    octets.forEachIndexed { index, octet ->
+        val value = octet.toIntOrNull() ?: return null
+        if (value !in IPV4_OCTET_MIN..IPV4_OCTET_MAX) return null
+        address[index] = value.toByte()
+    }
+    return InetAddress.getByAddress(address)
+}

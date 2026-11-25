@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otherserveripdetail
 
 import kurou.kodriver.domain.runCapturingErrorsOrNull
+import kurou.kodriver.domain.usecase.CheckServerConnectivityUseCase
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
 
 internal sealed interface SaveServerIpResult {
@@ -15,7 +16,7 @@ internal sealed interface SaveServerIpResult {
 
 internal class SaveServerIpWithConnectivityCheckUseCase(
     private val validateServerIpAddress: ValidateServerIpAddressUseCase,
-    private val connectivityChecker: ServerConnectivityChecker,
+    private val checkServerConnectivity: CheckServerConnectivityUseCase,
     private val saveServerIp: SaveServerIpUseCase,
 ) {
     suspend operator fun invoke(
@@ -23,7 +24,7 @@ internal class SaveServerIpWithConnectivityCheckUseCase(
         checkConnectivity: Boolean = true,
     ): SaveServerIpResult {
         if (!validateServerIpAddress(ip)) return SaveServerIpResult.InvalidIp
-        if (checkConnectivity && !connectivityChecker.isReachable(ip)) return SaveServerIpResult.Unreachable
+        if (checkConnectivity && !checkServerConnectivity(ip)) return SaveServerIpResult.Unreachable
 
         return runCapturingErrorsOrNull {
             saveServerIp(ip)

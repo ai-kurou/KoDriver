@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.otherserveripdetail
 
+import kurou.kodriver.domain.model.DiscoveredServer
+
 /**
  * OtherServerIpDetail 画面の表示状態。
  */

@@ -17,15 +17,10 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
         }
-        jvmMain.dependencies {
-            implementation(libs.jmdns)
-        }
         jvmTest.dependencies {
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.mockk)
-            implementation(project.dependencies.platform(libs.sentry.bom))
-            implementation(libs.sentry)
         }
         named("androidHostTest") {
             dependencies {

@@ -19,6 +19,7 @@ digraph G {
   ":core:lmu-windows-domain" [label=":core:lmu-windows-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:lmu-windows-rest-api-data" [label=":core:lmu-windows-rest-api-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:narrator" [label=":core:narrator", fillcolor="#FFF9C4", color="#F9A825"]
+  ":core:server-discovery-data" [label=":core:server-discovery-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:speech-recognition-data" [label=":core:speech-recognition-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:text-to-speech-data" [label=":core:text-to-speech-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-hotkey-data" [label=":core:windows-hotkey-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -36,6 +37,7 @@ digraph G {
   ":app:androidApp" -> ":core:device-volume-data"
   ":app:androidApp" -> ":core:gt7-ps5-data"
   ":app:androidApp" -> ":core:lmu-windows-data"
+  ":app:androidApp" -> ":core:server-discovery-data"
   ":app:androidApp" -> ":core:speech-recognition-data"
   ":app:androidApp" -> ":core:text-to-speech-data"
   ":app:androidApp" -> ":core:windows-startup-data"
@@ -47,6 +49,7 @@ digraph G {
   ":app:desktopApp" -> ":core:gt7-ps5-data"
   ":app:desktopApp" -> ":core:lmu-windows-data"
   ":app:desktopApp" -> ":core:lmu-windows-rest-api-data"
+  ":app:desktopApp" -> ":core:server-discovery-data"
   ":app:desktopApp" -> ":core:speech-recognition-data"
   ":app:desktopApp" -> ":core:text-to-speech-data"
   ":app:desktopApp" -> ":core:windows-hotkey-data"
@@ -74,6 +77,7 @@ digraph G {
   ":core:lmu-windows-domain" -> ":core:domain"
   ":core:lmu-windows-rest-api-data" -> ":core:domain"
   ":core:lmu-windows-rest-api-data" -> ":core:lmu-windows-domain"
+  ":core:server-discovery-data" -> ":core:domain"
   ":core:speech-recognition-data" -> ":core:domain"
   ":core:text-to-speech-data" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:domain"
@@ -100,7 +104,7 @@ digraph G {
   "feature:lmu-windows*" -> ":core:narrator"
   { rank=same; ":app:androidApp"; ":app:desktopApp"; }
   { rank=same; ":app:shared"; ":server"; }
-  { rank=same; "feature"; "feature:ace-windows*"; "feature:lmu-windows*"; "feature:gt7-ps5*"; ":core:data"; ":core:ace-windows-data"; ":core:lmu-windows-data"; ":core:gt7-ps5-data"; ":core:lmu-windows-rest-api-data"; ":core:text-to-speech-data"; ":core:device-volume-data"; ":core:speech-recognition-data"; ":core:windows-hotkey-data"; ":core:windows-startup-data"; }
+  { rank=same; "feature"; "feature:ace-windows*"; "feature:lmu-windows*"; "feature:gt7-ps5*"; ":core:data"; ":core:ace-windows-data"; ":core:lmu-windows-data"; ":core:gt7-ps5-data"; ":core:lmu-windows-rest-api-data"; ":core:text-to-speech-data"; ":core:device-volume-data"; ":core:server-discovery-data"; ":core:speech-recognition-data"; ":core:windows-hotkey-data"; ":core:windows-startup-data"; }
   { rank=same; ":core:narrator"; ":core:designsystem"; ":core:windows-shared-memory"; }
   { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; }
   { rank=same; ":core:domain"; }
@@ -109,5 +113,5 @@ digraph G {
   "feature" -> ":core:narrator" [style=invis]
   ":core:narrator" -> ":core:lmu-windows-domain" [style=invis]
   ":core:lmu-windows-domain" -> ":core:domain" [style=invis]
-  "feature" -> "feature:ace-windows*" -> "feature:lmu-windows*" -> "feature:gt7-ps5*" -> ":core:data" -> ":core:ace-windows-data" -> ":core:lmu-windows-data" -> ":core:gt7-ps5-data" -> ":core:lmu-windows-rest-api-data" -> ":core:text-to-speech-data" -> ":core:device-volume-data" -> ":core:speech-recognition-data" -> ":core:windows-hotkey-data" -> ":core:windows-startup-data" [style=invis]
+  "feature" -> "feature:ace-windows*" -> "feature:lmu-windows*" -> "feature:gt7-ps5*" -> ":core:data" -> ":core:ace-windows-data" -> ":core:lmu-windows-data" -> ":core:gt7-ps5-data" -> ":core:lmu-windows-rest-api-data" -> ":core:text-to-speech-data" -> ":core:device-volume-data" -> ":core:server-discovery-data" -> ":core:speech-recognition-data" -> ":core:windows-hotkey-data" -> ":core:windows-startup-data" [style=invis]
 }
