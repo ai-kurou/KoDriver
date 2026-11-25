@@ -78,6 +78,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.KoDriverTopFloatingVisibility
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.core.designsystem.listRowSelectionAnimationSpec
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.NarrationOutcome
@@ -351,7 +352,7 @@ private fun TelemetryLogListItem(
             } else {
                 MaterialTheme.colorScheme.surface
             },
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = listRowSelectionAnimationSpec(),
         label = "telemetryLogListItemContainerColor",
     )
     val headlineColor by animateColorAsState(
@@ -361,7 +362,7 @@ private fun TelemetryLogListItem(
             } else {
                 MaterialTheme.colorScheme.onSurface
             }.applySkippedAlpha(log.narrationOutcome),
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = listRowSelectionAnimationSpec(),
         label = "telemetryLogListItemHeadlineColor",
     )
     val supportingColor by animateColorAsState(
@@ -371,7 +372,7 @@ private fun TelemetryLogListItem(
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             }.applySkippedAlpha(log.narrationOutcome),
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = listRowSelectionAnimationSpec(),
         label = "telemetryLogListItemSupportingColor",
     )
 
