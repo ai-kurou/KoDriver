@@ -4,7 +4,7 @@ Assetto Corsa EVO（ACE、Kunos Simulazioni）は、初代 Assetto Corsa / Asset
 
 本ドキュメントは、公式 Steam ガイド（#3707421508）を正典とする 2 つの OSS 実装 — [albertowd/live-telemetry-evo](https://github.com/albertowd/live-telemetry-evo) の `docs/SHARED_MEMORY.md`（実測検証付き）と [dSyncro/acevo-shared-memory](https://github.com/dSyncro/acevo-shared-memory) の `wrapper.hpp`（公式ヘッダの C++ 転記、`static_assert` によるサイズ検証付き）— を突き合わせて作成した。
 
-> **注意（早期アクセス）**: ACE は早期アクセス中であり、共有メモリのレイアウト・フィールド・列挙値は更新で変更される可能性がある。物理ブロックの先頭部（0〜415バイト）は初代 AC の `SPageFilePhysics` と互換だが、それ以降の領域や Graphics ブロックは ACE 独自。Static ブロックの `sm_version` でフォーマットバージョンを検証すること。確認済みの対象バージョン: ACE 0.6.3〜0.9.1（2026-09-05 時点。0.7 以降のパッチノートに共有メモリ構造の変更なし）。公式 Steam ガイドの最終更新: 2026-04-17。
+> **注意（早期アクセス）**: ACE は早期アクセス中であり、共有メモリのレイアウト・フィールド・列挙値は更新で変更される可能性がある。物理ブロックの先頭部（0〜415バイト）は初代 AC の `SPageFilePhysics` と互換だが、それ以降の領域や Graphics ブロックは ACE 独自。Static ブロックの `sm_version` でフォーマットバージョンを検証すること。確認済みの対象バージョン: ACE 0.6.3〜0.9.1（2026-11-25 時点で 0.9.1 が最新。0.10 は予告のみ。0.7 以降のパッチノートに共有メモリ構造の変更なし。構造体の最後の変更は 0.6.3 の `car_ids` 追加で、acevo-shared-memory・Simulator-Controller など他実装の定義も同じ）。公式 Steam ガイドの最終更新: 2026-04-17。
 
 ---
 
@@ -370,7 +370,7 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | float | `max_fuel` | L（最大容量。AC1 の静的 `maxFuel` の後継） |
 | float | `max_turbo_boost` | bar（NA 車は 0。AC1 の静的 `maxTurboBoost` の後継） |
 | bool | `use_single_compound` | 単一コンパウンドルール適用中 |
-| `uint64[60][2]` | `car_ids` | `car_coordinates` に対応する車両 128bit GUID テーブル（960 B） |
+| `uint64[60][2]` | `car_ids` | `car_coordinates` に対応する車両 128bit GUID テーブル（960 B）。0.6.3 で追加。Race-Element は `ulong[60]`（480 B）で定義しているが、公式ヘッダを転記した acevo-shared-memory・Simulator-Controller はいずれも `[60][2]` |
 
 ### Graphics 主要オフセット一覧
 
@@ -614,6 +614,8 @@ acevo-shared-memory（公式ヘッダ転記）の定義。早期アクセスの�
 | 2 | AC_HOT_STINT（ホットスティント練習） |
 | 3 | AC_CRUISE（クルーズ） |
 
+この数値は練習・予選・レースなどのセッション種別と一致しないことがある。RaceIQ は練習走行でこの値から種別を判定できず、`static.session_name` の文字列（`Practice` / `Qualifying` / `Race` など）を優先する修正を入れている（2026-11）。KoDriver は Static ブロックを読んでいない。
+
 ### ACEVO_FLAG_TYPE（`graphics.flag`, `graphics.global_flag`）
 
 | 値 | 意味 |
@@ -681,4 +683,4 @@ acevo-shared-memory（公式ヘッダ転記）の定義。早期アクセスの�
 | [live-telemetry-evo `sources/ac_evo.py`](https://github.com/albertowd/live-telemetry-evo/blob/develop/src/live_telemetry_evo/sources/ac_evo.py) | Python | 上記リポジトリ内の ctypes 構造体定義（`_pack_=4`）。`docs/SHARED_MEMORY.md` より更新が新しく、オフセットを実行時に算出したい場合はこちらが実質の正 |
 | [dSyncro/acevo-shared-memory](https://github.com/dSyncro/acevo-shared-memory)（[crate](https://lib.rs/crates/acevo-shared-memory)） | OSS (Rust) | 公式ヘッダの C++ 転記（`src/bindings/source/wrapper.hpp`）。全サブ構造体・列挙値の定義と `static_assert` によるサイズ検証を含む |
 | [Live Telemetry Evo（OverTake.gg）](https://www.overtake.gg/downloads/live-telemetry-evo.84121/) | 配布 | 上記オーバーレイの配布ページ |
-| [ACE の Steam ニュース一覧](https://store.steampowered.com/news/app/3058630/) | 公式 | 各アップデートのパッチノート。共有メモリの変更は 0.6 / 0.6.2 / 0.6.3 のノートに記載された。早期アクセス中のため、仕様変更の有無はまずここで確認する |
+| [ACE の Steam ニュース一覧](https://store.steampowered.com/news/app/3058630/) | 公式 | 各アップデートのパッチノート。共有メモリの変更は 0.6 / 0.6.2 / 0.6.3 のノートに記載された（0.7〜0.9.1 には記載なし）。早期アクセス中のため、仕様変更の有無はまずここで確認する |
