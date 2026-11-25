@@ -1,31 +1,27 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kotlinx.coroutines.CompletableDeferred
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class DesktopSplashHostTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `初期化中はスプラッシュを表示し完了後にコンテンツへ切り替える`() {
+    fun `初期化と完了演出が終わると一度だけ通知する`() {
         val serverGate = CompletableDeferred<Unit>()
-        var readyCalled = false
+        var finishedCount = 0
 
         rule.setContent {
             MaterialTheme {
@@ -33,27 +29,26 @@ class DesktopSplashHostTest {
                     appVersion = "1.0.0",
                     initializeModules = {},
                     startServer = { serverGate.await() },
-                    onReady = { readyCalled = true },
-                ) {
-                    Text("メイン画面")
-                }
+                    onFinished = { finishedCount++ },
+                )
             }
         }
 
         rule.onNodeWithText("サーバーを起動しています…").assertIsDisplayed()
         rule.onNodeWithText("v1.0.0").assertIsDisplayed()
-        rule.onAllNodesWithText("メイン画面").assertCountEquals(0)
+        assertEquals(0, finishedCount)
 
         serverGate.complete(Unit)
         rule.waitForIdle()
 
-        rule.onNodeWithText("メイン画面").assertIsDisplayed()
-        assertTrue(readyCalled)
+        rule.onNodeWithText("起動が完了しました").assertIsDisplayed()
+        assertEquals(1, finishedCount)
     }
 
     @Test
-    fun `引数が変わらない再コンポーズでもメイン画面を維持する`() {
+    fun `引数が変わらない再コンポーズでは再通知しない`() {
         var tick by mutableIntStateOf(0)
+        var finishedCount = 0
 
         rule.setContent {
             MaterialTheme {
@@ -66,23 +61,24 @@ class DesktopSplashHostTest {
                     appVersion = "1.0.0",
                     initializeModules = initializeModules,
                     startServer = startServer,
-                ) {
-                    Text("メイン画面")
-                }
+                    onFinished = { finishedCount++ },
+                )
             }
         }
 
-        rule.onNodeWithText("メイン画面").assertIsDisplayed()
+        rule.waitForIdle()
 
         tick++
         rule.waitForIdle()
 
-        rule.onNodeWithText("メイン画面").assertIsDisplayed()
+        rule.onNodeWithText("起動が完了しました").assertIsDisplayed()
+        assertEquals(1, finishedCount)
     }
 
     @Test
-    fun `初期化が失敗するとエラーダイアログを表示しコンテンツへ切り替えない`() {
+    fun `初期化が失敗するとエラーダイアログを表示し完了を通知しない`() {
         var errored: Throwable? = null
+        var finishedCount = 0
 
         rule.setContent {
             MaterialTheme {
@@ -90,10 +86,9 @@ class DesktopSplashHostTest {
                     appVersion = "1.0.0",
                     initializeModules = { error("初期化に失敗しました") },
                     startServer = {},
+                    onFinished = { finishedCount++ },
                     onError = { errored = it },
-                ) {
-                    Text("メイン画面")
-                }
+                )
             }
         }
 
@@ -101,7 +96,7 @@ class DesktopSplashHostTest {
 
         rule.onNodeWithText("起動に失敗しました").assertIsDisplayed()
         rule.onNodeWithText("初期化に失敗しました").assertIsDisplayed()
-        rule.onAllNodesWithText("メイン画面").assertCountEquals(0)
+        assertEquals(0, finishedCount)
 
         rule.onNodeWithText("閉じる").performClick()
         rule.waitForIdle()

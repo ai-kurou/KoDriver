@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.splash
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,8 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -97,6 +100,7 @@ private fun Modifier.photoBackground(
  * スプラッシュ画面の背景。自己ベストラップの写真を右側に置いて左へ背景色へ溶かし、その上に光の帯を重ねる。
  * [shineProgress]（0〜1）は光の位置で、範囲外のときは光を描かない。[portrait] が true のときは写真を下端に置いて上へ溶かす（縦長の画面向け）。
  * [content] は背景の上に重ねる。
+ * [backgroundAlpha] を 1 未満にすると、下地の色と写真を1枚にまとめたうえで透けさせる（[content] と光の帯は透けない）。
  * デスクトップと Android のスプラッシュで共通に使う。
  */
 @Composable
@@ -104,6 +108,7 @@ public fun SplashBackdrop(
     shineProgress: Float,
     modifier: Modifier = Modifier,
     portrait: Boolean = false,
+    backgroundAlpha: Float = 1f,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val surface = MaterialTheme.colorScheme.surface
@@ -112,10 +117,21 @@ public fun SplashBackdrop(
         modifier =
             modifier
                 .fillMaxSize()
-                .photoBackground(portrait, photo, surface)
                 .shine(shineProgress, MaterialTheme.colorScheme.primary),
-        content = content,
-    )
+    ) {
+        // 写真とグラデーションを別々に透けさせると場所ごとに透け方が変わるため、1枚のレイヤーに描いてから透けさせる。
+        Box(
+            modifier =
+                Modifier
+                    .matchParentSize()
+                    .graphicsLayer {
+                        alpha = backgroundAlpha
+                        if (backgroundAlpha < 1f) compositingStrategy = CompositingStrategy.Offscreen
+                    }.then(if (backgroundAlpha < 1f) Modifier.background(surface) else Modifier)
+                    .photoBackground(portrait, photo, surface),
+        )
+        content()
+    }
 }
 
 /** スプラッシュに表示するアプリアイコン。大きさは [size] で変えられる。 */

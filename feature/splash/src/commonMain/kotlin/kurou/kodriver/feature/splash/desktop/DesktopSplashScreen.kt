@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -36,6 +37,9 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val PROGRESS_INDICATOR_WIDTH_DP = 200
 
+/** スプラッシュの背景の不透明度。背後がうっすら透ける程度にする。 */
+private const val SPLASH_BACKGROUND_ALPHA = 0.9f
+
 /** 起動完了時に光が画面を横切るのにかける時間（ミリ秒）。この間はスプラッシュ画面を保つ。 */
 internal const val SHINE_DURATION_MILLIS = 900
 
@@ -45,6 +49,7 @@ internal const val SHINE_DURATION_MILLIS = 900
  * 初期化がどのフェーズまで進んでいるかを [DesktopSplashUiState] から受け取り、
  * アプリアイコン・進捗バー・現在のフェーズ名を左側に、自己ベストラップの背景画像を右側に表示する。
  * フェーズ名の下にバージョン（[appVersion]）を表示する。
+ * 枠なしの透過ウィンドウに表示する前提で、角丸にして背景だけを少し透けさせる。
  * 起動が完了すると光が画面を横切り、終わったところで [onReadyAnimationFinished] を一度呼ぶ。
  * 呼び出し側はこの通知を受けてからメイン画面へ切り替えると、光を最後まで見せられる。
  */
@@ -79,8 +84,14 @@ internal fun DesktopSplashContent(
     shineProgress: Float,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier.fillMaxSize()) {
-        SplashBackdrop(shineProgress = shineProgress) {
+    // 枠なしの透過ウィンドウに角丸で表示するため、Surface 自体は塗らず、背景は SplashBackdrop 側で半透明に描く。
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        shape = MaterialTheme.shapes.large,
+        color = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+    ) {
+        SplashBackdrop(shineProgress = shineProgress, backgroundAlpha = SPLASH_BACKGROUND_ALPHA) {
             Column(
                 modifier = Modifier.align(Alignment.CenterStart).padding(start = KoDriverSpacing.extraLarge * 2),
                 horizontalAlignment = Alignment.Start,
