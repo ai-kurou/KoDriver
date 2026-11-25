@@ -43,11 +43,9 @@ import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachRea
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.repository.HotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
 import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
@@ -164,8 +162,6 @@ class DesktopKoinModuleGraphTest {
                 )
             }
         try {
-            assertNotNull(application.koin.get<ReadoutHotkeyPreferencesRepository>())
-            assertNotNull(application.koin.get<HotkeyRepository>())
             val manualHotkey = application.koin.get<ManualReadoutHotkeyRepository>()
             assertSame(manualHotkey, application.koin.get<ManualReadoutHotkeyRepository>())
         } finally {

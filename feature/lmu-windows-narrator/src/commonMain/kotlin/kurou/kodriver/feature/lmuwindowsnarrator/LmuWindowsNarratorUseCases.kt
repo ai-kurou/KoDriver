@@ -46,7 +46,6 @@ import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
 import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutHotkeyUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
@@ -97,7 +96,6 @@ internal data class TyreWearUseCases(
 
 internal data class RemainingVirtualEnergyUseCases(
     val observeRemainingVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
-    val observeReadoutHotkey: ObserveReadoutHotkeyUseCase,
     val observeManualReadoutHotkeyPresses: ObserveManualReadoutHotkeyPressesUseCase,
     val observeManualReadoutRequests: ObserveManualReadoutRequestsUseCase,
     val observeManualReadoutItemRequests: ObserveManualReadoutItemRequestsUseCase,

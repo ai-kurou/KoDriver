@@ -43,8 +43,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUs
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.repository.HotkeyRepository
-import kurou.kodriver.domain.repository.ReadoutHotkeyPreferencesRepository
 import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
 import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import org.junit.After
@@ -106,9 +104,6 @@ class LmuWindowsDebugStateDetailModuleTest {
                 modules(
                     lmuWindowsDebugStateDetailModule,
                     module {
-                        single { FakeReadoutHotkeyRepository() }
-                        single<HotkeyRepository> { get<FakeReadoutHotkeyRepository>() }
-                        single<ReadoutHotkeyPreferencesRepository> { get<FakeReadoutHotkeyRepository>() }
                         single<DebugReadoutRequestRepository> { debugRequestRepository }
                         single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
                             debugStateCardOrderPreferencesRepository
@@ -137,7 +132,6 @@ class LmuWindowsDebugStateDetailModuleTest {
             assertNotNull(
                 koin.get<DebugStateCardOrderUseCases<LmuWindowsDebugStateCardKey>>(named(Simulator.LmuWindows.id)),
             )
-            assertNotNull(koin.get<ReadoutHotkeyUseCases>())
             assertNotNull(koin.get<ObserveLmuWindowsRaceFlagsUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsVirtualEnergyUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsUseCase>())

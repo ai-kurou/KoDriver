@@ -2,14 +2,11 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
@@ -24,7 +21,6 @@ private const val SIDE_BY_SIDE_TICK_INTERVAL_MS = 100L
 
 /** [LmuWindowsDebugStateDetailViewModel] の時間まわりの設定。テストで差し替えるため引数にまとめている。 */
 internal data class LmuWindowsDebugStateDetailTimings(
-    val hotkeyCheckTimeoutMs: Long = 10_000L,
     val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
     val sideBySideTickIntervalMs: Long = SIDE_BY_SIDE_TICK_INTERVAL_MS,
 )
@@ -33,7 +29,6 @@ internal class LmuWindowsDebugStateDetailViewModel(
     lmuWindowsUseCases: LmuWindowsDebugStateUseCases,
     cardOrderUseCases: DebugStateCardOrderUseCases<LmuWindowsDebugStateCardKey>,
     private val requestDebugReadout: RequestDebugReadoutUseCase,
-    private val hotkeyUseCases: ReadoutHotkeyUseCases,
     private val timings: LmuWindowsDebugStateDetailTimings = LmuWindowsDebugStateDetailTimings(),
 ) : ViewModel() {
     private val _selectedReadoutItemKey =
@@ -41,8 +36,6 @@ internal class LmuWindowsDebugStateDetailViewModel(
             LMU_WINDOWS_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>().first(),
         )
     private val _debugReadoutText = MutableStateFlow("")
-    private val _hotkeyCheckState = MutableStateFlow(HotkeyCheckState.Idle)
-    private var hotkeyCheckJob: Job? = null
     private val saveCardOrder = cardOrderUseCases::saveKeys
     private val _receivedCardKeys = MutableStateFlow(setOf(LmuWindowsDebugStateCardKey.SIMULATOR))
 
@@ -72,60 +65,19 @@ internal class LmuWindowsDebugStateDetailViewModel(
             lmuWindows = lmuWindowsSource.state,
             selectedReadoutItemKey = _selectedReadoutItemKey,
             debugReadoutText = _debugReadoutText,
-            hotkeyInputs =
-                LmuWindowsDebugStateHotkeyInputs(
-                    virtualKeyCode = hotkeyUseCases.observeVirtualKeyCode(),
-                    registrationState = hotkeyUseCases.observeRegistrationState(),
-                    checkState = _hotkeyCheckState,
-                ),
         )
-    private val _hotkey: StateFlow<ReadoutHotkeyUiState> =
-        detailFlow.hotkey.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ReadoutHotkeyUiState())
     private val _header: StateFlow<LmuWindowsDebugStateDetailUiState> =
         detailFlow.header.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsDebugStateDetailUiState(),
         )
-    private val _detailState: StateFlow<LmuWindowsDebugStateDetailUiState> =
+    val uiState: StateFlow<LmuWindowsDebugStateDetailUiState> =
         detailFlow.detail(_header).stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsDebugStateDetailUiState(),
         )
-    val uiState: StateFlow<LmuWindowsDebugStateDetailUiState> =
-        detailFlow.uiState(_detailState, _hotkey).stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            LmuWindowsDebugStateDetailUiState(),
-        )
-
-    fun selectHotkey(virtualKeyCode: Int) {
-        hotkeyCheckJob?.cancel()
-        _hotkeyCheckState.update { HotkeyCheckState.Idle }
-        viewModelScope.launchCapturingErrors {
-            hotkeyUseCases.saveVirtualKeyCode(virtualKeyCode)
-            hotkeyUseCases.retryRegistration()
-        }
-    }
-
-    fun checkHotkey() {
-        hotkeyCheckJob?.cancel()
-        _hotkeyCheckState.update { HotkeyCheckState.Waiting }
-        hotkeyCheckJob =
-            viewModelScope.launchCapturingErrors {
-                val detected = withTimeoutOrNull(timings.hotkeyCheckTimeoutMs) { hotkeyUseCases.observePress().first() }
-                _hotkeyCheckState.update {
-                    if (detected !=
-                        null
-                    ) {
-                        HotkeyCheckState.Detected
-                    } else {
-                        HotkeyCheckState.TimedOut
-                    }
-                }
-            }
-    }
 
     fun selectReadoutItem(value: String) {
         val key =

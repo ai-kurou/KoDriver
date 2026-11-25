@@ -22,7 +22,6 @@ import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
 import kurou.kodriver.domain.engine.LmuWindowsRemainingFuelWarning
-import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
@@ -229,29 +228,6 @@ class LmuWindowsReadoutTextSpeakerTest {
             }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(text, volume = VOLUME) }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `現在のエネルギー残量は警告設定を取得せず既定文言で読み上げる`() =
-        runTest {
-            coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("バーチャルエネルギーは残り42%", volume = VOLUME) } just Runs
-            speaker(LmuWindowsRemainingVirtualEnergyCurrentValue(42), VOLUME)
-            verify(exactly = 0) { observeRemainingText() }
-            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("バーチャルエネルギーは残り42%", volume = VOLUME) }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `現在のエネルギー残量の解決済み本文が空白ならTTSを確認せず読み上げない`() =
-        runTest {
-            val event = LmuWindowsRemainingVirtualEnergyCurrentValue(42, resolvedText = " ")
-            assertNull(speaker.readoutText(event))
-            speaker(event, VOLUME)
-            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 

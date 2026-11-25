@@ -43,7 +43,6 @@ class LmuWindowsSpeechEventTest {
                 LmuWindowsBrakeOverheat(700),
                 LmuWindowsBrakeWearLow(30),
                 LmuWindowsRemainingVirtualEnergyWarning(50),
-                LmuWindowsRemainingVirtualEnergyCurrentValue(42),
                 LmuWindowsManualReadoutText(LmuWindowsReadoutItemKey.TyreWear.Root, "連結本文"),
                 LmuWindowsMyBestLap(83_456L),
                 LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
@@ -81,7 +80,6 @@ class LmuWindowsSpeechEventTest {
                 LmuWindowsTyreWearWarning(50),
                 LmuWindowsBrakeOverheat(700),
                 LmuWindowsRemainingVirtualEnergyWarning(50),
-                LmuWindowsRemainingVirtualEnergyCurrentValue(42),
                 LmuWindowsMyBestLap(83_456L),
                 LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
             )
@@ -105,7 +103,6 @@ class LmuWindowsSpeechEventTest {
                 LmuWindowsTyreWearWarning(50, "判定時の本文"),
                 LmuWindowsBrakeOverheat(700, "判定時の本文"),
                 LmuWindowsRemainingVirtualEnergyWarning(50, "判定時の本文"),
-                LmuWindowsRemainingVirtualEnergyCurrentValue(42, "判定時の本文"),
                 LmuWindowsMyBestLap(83_456L, "判定時の本文"),
                 LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear, "判定時の本文"),
             )
@@ -123,7 +120,7 @@ class LmuWindowsSpeechEventTest {
             assertEquals("判定時の本文", resolved.resolvedText)
 
             assertEquals(
-                if (event is LmuWindowsRemainingVirtualEnergyCurrentValue) "判定時の本文" else event.narratedText,
+                event.narratedText,
                 resolved.narratedText,
             )
 
@@ -179,21 +176,6 @@ class LmuWindowsSpeechEventTest {
         assertEquals("バーチャルエネルギーは残り50%以下", LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
         assertEquals("燃料は残り50%", LmuWindowsRemainingFuelWarning(50).narratedText)
         assertEquals(LmuWindowsReadoutItemKey.RemainingFuel.Root, LmuWindowsRemainingFuelWarning(50).readoutItemKey)
-    }
-
-    @Test
-    fun `LMUの現在のエネルギー残量は既定文言と既存のRootキーを持ち解決済み文言を反映する`() {
-        val event = LmuWindowsRemainingVirtualEnergyCurrentValue(42)
-
-        assertEquals("残量42%", event.withResolvedText("残量42%").narratedText)
-
-        assertEquals("", event.withResolvedText("").narratedText)
-
-        assertEquals(42, event.percentage)
-
-        assertEquals("バーチャルエネルギーは残り42%", event.narratedText)
-
-        assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, event.readoutItemKey)
     }
 
     @Test

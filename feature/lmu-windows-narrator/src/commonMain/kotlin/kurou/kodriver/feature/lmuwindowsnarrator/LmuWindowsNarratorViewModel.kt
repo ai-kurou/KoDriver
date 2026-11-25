@@ -727,14 +727,6 @@ internal class LmuWindowsNarratorViewModel(
             }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
-    private val readoutHotkeyJob =
-        remainingVirtualEnergyUseCases
-            .observeReadoutHotkey()
-            .onEachCapturingErrors {
-                readRemainingVirtualEnergyCurrentValue()
-            }.launchIn(viewModelScope)
-
-    @Suppress("UnusedPrivateProperty")
     private val manualReadoutRequestJob =
         mergeManualReadoutRequests(
             remainingVirtualEnergyUseCases.observeManualReadoutRequests(),
@@ -800,32 +792,6 @@ internal class LmuWindowsNarratorViewModel(
             bestLapTimeMs = LmuWindowsReceivedValue(latestBestLapTimeMs, latestBestLapReceivedAtMs),
             pitTimingUpdatedAtMs = latestPitTimingUpdatedAtMs,
         )
-
-    private suspend fun readRemainingVirtualEnergyCurrentValue() {
-        if (selectedSimulator.value !is Simulator.LmuWindows) return
-        val observedAtMs = currentTimeMs()
-        val remainingVirtualEnergy =
-            latestVirtualEnergy?.takeIf {
-                observedAtMs - latestVirtualEnergyReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
-            } ?: return
-        val state = narratorState
-        val settings = currentSettings
-        val decision =
-            narratorUseCases.virtualEnergyReadout.determineRemainingVirtualEnergyCurrentValue(
-                state = state,
-                data = remainingVirtualEnergy,
-                settings = settings,
-            )
-        narratorState = decision.state
-        eventProcessor.processRemainingVirtualEnergy(
-            remainingVirtualEnergy = remainingVirtualEnergy,
-            events = decision.events,
-            autoReadoutOrder = autoReadoutOrder.value,
-            queueEnabledStates = queueEnabledStates.value,
-            observedAtMs = observedAtMs,
-            logContext = LmuWindowsTelemetryLogContext(state, settings, decision.state),
-        )
-    }
 
     @Suppress("UnusedPrivateProperty")
     private val pitTimingJob =

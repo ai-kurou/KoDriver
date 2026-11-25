@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
-import kurou.kodriver.domain.model.HotkeyRegistrationState
-import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_HOTKEY_VIRTUAL_KEY_CODE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
@@ -84,26 +82,6 @@ class LmuWindowsDebugStateDetailFlowTest {
             expected = expected.copy(debugReadoutText = "テスト読み上げ")
             assertEquals(expected, states.last())
 
-            inputs.virtualKeyCode.update { 65 }
-            testScheduler.runCurrent()
-            expected = expected.copy(readoutHotkey = expected.readoutHotkey.copy(virtualKeyCode = 65))
-            assertEquals(expected, states.last())
-
-            inputs.registrationState.update { HotkeyRegistrationState.Registered }
-            testScheduler.runCurrent()
-            expected =
-                expected.copy(
-                    readoutHotkey = expected.readoutHotkey.copy(registrationState = HotkeyRegistrationState.Registered),
-                )
-            assertEquals(expected, states.last())
-
-            for (check in HotkeyCheckState.entries) {
-                inputs.hotkeyCheckState.update { check }
-                testScheduler.runCurrent()
-                expected = expected.copy(readoutHotkey = expected.readoutHotkey.copy(checkState = check))
-                assertEquals(expected, states.last())
-            }
-
             inputs.lmu.update { LmuWindowsDebugState() }
             testScheduler.runCurrent()
             assertEquals(expected.copy(lmuWindows = LmuWindowsDebugState()), states.last())
@@ -118,11 +96,11 @@ class LmuWindowsDebugStateDetailFlowTest {
 
             val firstCollector = backgroundScope.launch { flow.collect {} }
             testScheduler.runCurrent()
-            assertEquals(8, inputs.activeSubscriptions)
+            assertEquals(5, inputs.activeSubscriptions)
 
             val secondCollector = backgroundScope.launch { flow.collect {} }
             testScheduler.runCurrent()
-            assertEquals(16, inputs.activeSubscriptions)
+            assertEquals(10, inputs.activeSubscriptions)
 
             firstCollector.cancel()
             secondCollector.cancel()
@@ -130,21 +108,7 @@ class LmuWindowsDebugStateDetailFlowTest {
             assertEquals(0, inputs.activeSubscriptions)
 
             inputs.text.update { "再購読" }
-            inputs.virtualKeyCode.update { 66 }
-            inputs.registrationState.update { HotkeyRegistrationState.Registered }
-            inputs.hotkeyCheckState.update { HotkeyCheckState.Detected }
-            assertEquals(
-                LmuWindowsDebugStateDetailUiState(
-                    debugReadoutText = "再購読",
-                    readoutHotkey =
-                        ReadoutHotkeyUiState(
-                            66,
-                            HotkeyRegistrationState.Registered,
-                            HotkeyCheckState.Detected,
-                        ),
-                ),
-                flow.first(),
-            )
+            assertEquals(LmuWindowsDebugStateDetailUiState(debugReadoutText = "再購読"), flow.first())
             assertEquals(0, inputs.activeSubscriptions)
         }
 
@@ -154,9 +118,6 @@ class LmuWindowsDebugStateDetailFlowTest {
         val lmu = MutableStateFlow(LmuWindowsDebugState())
         val selected = MutableStateFlow(LmuWindowsDebugStateDetailUiState().selectedReadoutItemKey)
         val text = MutableStateFlow("")
-        val virtualKeyCode = MutableStateFlow(LMU_WINDOWS_READOUT_HOTKEY_VIRTUAL_KEY_CODE_DEFAULT)
-        val registrationState = MutableStateFlow<HotkeyRegistrationState>(HotkeyRegistrationState.Unsupported)
-        val hotkeyCheckState = MutableStateFlow(HotkeyCheckState.Idle)
         var activeSubscriptions = 0
             private set
 
@@ -168,14 +129,8 @@ class LmuWindowsDebugStateDetailFlowTest {
                     lmuWindows = lmu.tracked(),
                     selectedReadoutItemKey = selected.tracked(),
                     debugReadoutText = text.tracked(),
-                    hotkeyInputs =
-                        LmuWindowsDebugStateHotkeyInputs(
-                            virtualKeyCode = virtualKeyCode.tracked(),
-                            registrationState = registrationState.tracked(),
-                            checkState = hotkeyCheckState.tracked(),
-                        ),
                 )
-            return composition.uiState(composition.detail(composition.header), composition.hotkey)
+            return composition.detail(composition.header)
         }
 
         private fun <T> Flow<T>.tracked(): Flow<T> =

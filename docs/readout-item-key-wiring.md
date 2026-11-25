@@ -27,4 +27,4 @@
 項目ごとの配線・既定文言・保存先は次のファイルに分けている。新しい項目を追加したら該当ファイルも更新する。
 
 - [自動読み上げ項目の配線と動作](readout-item-key-wiring/auto-readout.md)（ACE / LMU / GT7 の項目表と各項目の動作）
-- [手動読み上げ・ホットキーの配線](readout-item-key-wiring/manual-readout.md)（現在値ホットキー、手動読み上げセットのホットキー、手動専用項目のキー配置）
+- [手動読み上げ・ホットキーの配線](readout-item-key-wiring/manual-readout.md)（手動読み上げセットのホットキー、手動専用項目のキー配置）

@@ -23,7 +23,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:speech-recognition-data` | マイク入力（Desktop は Java Sound）・音声認識（Android・Desktop とも Vosk）・マイク権限のリポジトリ実装 | [図](graphs/core-speech-recognition-data.svg) |
 | `:core:text-to-speech-data` | OS標準の音声合成（Windows SAPI / Android TextToSpeech）と音声設定の起動のリポジトリ実装 | [図](graphs/core-text-to-speech-data.svg) |
 | `:core:windows-startup-data` | OS起動時のKoDriver自動起動設定（Windowsレジストリ）のリポジトリ実装 | [図](graphs/core-windows-startup-data.svg) |
-| `:core:windows-hotkey-data` | Windowsグローバルホットキーの検出・F9固定のHotkeyRepository・Koinバインド（domain依存） | [図](graphs/core-windows-hotkey-data.svg) |
+| `:core:windows-hotkey-data` | Windowsグローバルホットキーの検出・ManualReadoutHotkeyRepository・Koinバインド（domain依存） | [図](graphs/core-windows-hotkey-data.svg) |
 | `:core:windows-shared-memory` | Windows共有メモリI/Oの汎用基盤（`lmu-windows-data` / `ace-windows-data` が共通利用） | [図](graphs/core-windows-shared-memory.svg) |
 | `:core:designsystem` | アプリ全体で共有する Composable コンポーネント | [図](graphs/core-designsystem.svg) |
 | `:core:narrator` | 開始音のWAV再生・TTS読み上げ制御の共通基盤（lmu/gt7/ace の各narrator featureが共通利用） | [図](graphs/core-narrator.svg) |
@@ -87,11 +87,6 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 マイクが聞き取った文言（認識途中の文字列・直近に確定した発話）のオーバーレイ表示は、`:feature:main` の `SpeechRecognitionViewModel` → `ReportSpeechRecognitionTranscriptUseCase` → `SpeechRecognitionTranscriptRepository`（Desktop / Android 共通のインメモリ StateFlow）→ `ObserveSpeechRecognitionTranscriptUseCase` → `:feature:narrator-overlay` の順で渡す。`observeRecognition()` は cold でマイク・Vosk を新規に開くため、オーバーレイは音声認識を直接購読しない。
 
 LMU のブレーキ摩耗は `:core:lmu-windows-rest-api-data` がデスクトップ版で取得し、`:server` の `/ws/lmu_windows/brake_wear` から配信する。Android 版は `:core:lmu-windows-data` の WebSocket Repository で受信し、共通の残量計算・Narrator に渡す。取得失敗時の `null` も配信する。
-
-F9 の読み上げホットキーは `:core:windows-hotkey-data` → `:core:domain` の
-`HotkeyRepository` / `ObserveReadoutHotkeyUseCase` → `:feature:lmu-windows-narrator` に配線する。
-デスクトップの composition root が `windowsHotkeyDataModule` を登録し、Android の `:core:data` は
-空 Flow の Repository を提供する。モジュール依存図は Gradle から CI で再生成する。
 
 手動読み上げの詳細は `app:shared` → `:feature:manual-readout-detail` → `:core:domain` / `:core:lmu-windows-domain` / `:core:ace-windows-domain` / `:core:gt7-ps5-domain` / `:core:designsystem` に依存する。一覧は詳細スロットを公開し、feature 間依存は持たない。両プラットフォームの共通 composition root が詳細の Koin モジュールを登録する。
 

@@ -12,7 +12,6 @@ import kurou.kodriver.core.designsystem.DebugStateReorderableGrid
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.SimulatorInfoContent
-import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LMU_WINDOWS_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -62,8 +61,6 @@ public fun LmuWindowsDebugStateDetailPane(
         onReadoutItemSelected = viewModel::selectReadoutItem,
         onDebugReadoutTextChange = viewModel::updateDebugReadoutText,
         onRequestReadout = viewModel::requestReadout,
-        onHotkeySelected = viewModel::selectHotkey,
-        onCheckHotkey = viewModel::checkHotkey,
         modifier = modifier,
     )
 }
@@ -77,8 +74,6 @@ public fun LmuWindowsDebugStateDetailPaneContent(
     onReadoutItemSelected: (String) -> Unit = {},
     onDebugReadoutTextChange: (String) -> Unit = {},
     onRequestReadout: () -> Unit = {},
-    onHotkeySelected: (Int) -> Unit = {},
-    onCheckHotkey: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     DetailPaneScaffold(
@@ -87,11 +82,10 @@ public fun LmuWindowsDebugStateDetailPaneContent(
         onBack = onBack,
         modifier = modifier,
     ) {
-        val showHotkey = uiState.readoutHotkey.registrationState != HotkeyRegistrationState.Unsupported
         DebugStateReorderableGrid(
             cardOrder = uiState.cardOrder,
             fixedCards =
-                listOfNotNull(
+                listOf(
                     DebugStateFixedCard(DEBUG_READOUT_REQUEST_ITEM_KEY) { cardModifier ->
                         DebugReadoutRequestCard(
                             readoutItemKeyValues =
@@ -106,14 +100,6 @@ public fun LmuWindowsDebugStateDetailPaneContent(
                             modifier = cardModifier,
                         )
                     },
-                    DebugStateFixedCard(READOUT_HOTKEY_ITEM_KEY) { cardModifier ->
-                        ReadoutHotkeyCard(
-                            state = uiState.readoutHotkey,
-                            onKeySelected = onHotkeySelected,
-                            onCheck = onCheckHotkey,
-                            modifier = cardModifier,
-                        )
-                    }.takeIf { showHotkey },
                 ),
             onMoveCard = onMoveCard,
             card = { cardKey, cardModifier ->
@@ -139,7 +125,6 @@ public fun LmuWindowsDebugStateDetailPaneContent(
 }
 
 private const val DEBUG_READOUT_REQUEST_ITEM_KEY = "debugReadoutRequest"
-private const val READOUT_HOTKEY_ITEM_KEY = "readoutHotkey"
 
 private val debugStateCardTitles: Map<LmuWindowsDebugStateCardKey, StringResource> =
     mapOf(

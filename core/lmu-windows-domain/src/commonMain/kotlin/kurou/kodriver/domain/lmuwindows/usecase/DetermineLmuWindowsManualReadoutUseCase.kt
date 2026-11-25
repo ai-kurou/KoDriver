@@ -1,14 +1,12 @@
 package kurou.kodriver.domain.lmuwindows.usecase
 
 import kurou.kodriver.domain.engine.LmuWindowsManualReadoutText
-import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_REMAINING_LAPS_MAX_ROUNDING_TOLERANCE
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_EMPTY_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.model.formatClassCarGapSeconds
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
@@ -25,7 +23,6 @@ import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemName
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutItem
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutValue
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.MANUAL_READOUT_NO_DATA_TEXT
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.joinManualReadoutTexts
@@ -213,31 +210,4 @@ public class DetermineLmuWindowsManualReadoutUseCase {
             }
         }
     }
-
-    /** 自動読み上げスイッチに関係なく現在の残量（未受信・鮮度切れならデータ無し）を読み上げ、警告済み状態を維持する。 */
-    public fun determineManualRemainingVirtualEnergyCurrentValue(
-        state: LmuWindowsNarratorState,
-        data: LmuWindowsVirtualEnergyData?,
-        textTemplate: String? = null,
-    ): LmuWindowsNarratorReadoutDecision =
-        LmuWindowsNarratorReadoutDecision(
-            state = state,
-            events =
-                listOf(
-                    LmuWindowsRemainingVirtualEnergyCurrentValue(
-                        data?.let { (it.remainingRatio.value * LMU_WINDOWS_PERCENTAGE_SCALE).roundToInt() } ?: 0,
-                        resolvedText =
-                            if (data == null) {
-                                MANUAL_READOUT_NO_DATA_TEXT
-                            } else {
-                                textTemplate?.let {
-                                    formatLmuWindowsRemainingVirtualEnergyReadoutText(
-                                        it,
-                                        (data.remainingRatio.value * LMU_WINDOWS_PERCENTAGE_SCALE).roundToInt(),
-                                    )
-                                }
-                            },
-                    ),
-                ),
-        )
 }
