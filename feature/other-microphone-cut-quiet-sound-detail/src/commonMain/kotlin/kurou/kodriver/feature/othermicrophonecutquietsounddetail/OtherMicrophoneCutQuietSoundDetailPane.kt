@@ -104,12 +104,11 @@ public fun OtherMicrophoneCutQuietSoundDetailPaneContent(
                 title = stringResource(Res.string.cut_quiet_sound_in_command_title),
                 checked = uiState.cutInCommand,
                 onCheckedChange = onCutInCommandChanged,
-                modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.small),
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
                 bottomContent = {
                     Text(
                         text = stringResource(Res.string.cut_quiet_sound_in_command_description),
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(KoDriverSpacing.large),
                     )
                 },
             )
