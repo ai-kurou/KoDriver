@@ -1,16 +1,14 @@
 package kurou.kodriver.domain.gt7ps5.model
 
 import kurou.kodriver.domain.model.SinglePlaceholderTemplate
+import kurou.kodriver.domain.util.formatLapTimeReadoutMs
 
 /** 自己ベストラップ更新文言のラップタイムプレースホルダーを置換する。 */
 public fun formatGt7Ps5MyBestLapReadoutText(
     template: String,
     lapTimeMs: Int,
 ): String {
-    val minutes = lapTimeMs / 60_000
-    val seconds = lapTimeMs / 1_000 % 60
-    val milliseconds = (lapTimeMs % 1_000).toString().padStart(3, '0')
-    val lapTime = if (minutes > 0) "${minutes}分${seconds}秒$milliseconds" else "${seconds}秒$milliseconds"
+    val lapTime = formatLapTimeReadoutMs(lapTimeMs.toLong())
     return SinglePlaceholderTemplate(GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER).format(template, lapTime)
 }
 
