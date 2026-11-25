@@ -39,10 +39,19 @@ internal data class SpeechRecognitionUiState(
     val level: Float? = null,
     /** 「小さい音をカット」の閾値。0.0〜1.0 で [level] と同じ尺度。この値未満の音は認識に使われない。0f はカットしない。 */
     val cutThreshold: Float = 0f,
+    /** 「コマンド受付中もカットする」の設定。オフのとき、コマンド待ちの間は [cutThreshold] を使わない。 */
+    val cutInCommand: Boolean = false,
     /** 確定した認識結果の履歴。新しい順で、各要素は信頼度の高い順の候補。 */
     val recognized: List<List<String>> = emptyList(),
     /** ドロップダウンに出す入力デバイス名の一覧。デバイスを選べないプラットフォーム（Android）や、取得前、デバイスが無い場合は空。 */
     val devices: List<String> = emptyList(),
     /** 選択中の入力デバイス名。一覧の取得前や、デバイスが無い場合は null。 */
     val deviceName: String? = null,
-)
+) {
+    /**
+     * 今の聞き取りで実際に使われるカットの閾値。コマンド待ち中は、[cutInCommand] がオフならカットしないので 0f。
+     * ゲージやリングの表示には [cutThreshold] ではなくこちらを使う。
+     */
+    val effectiveCutThreshold: Float
+        get() = if (status == SpeechRecognitionStatus.CommandWaiting && !cutInCommand) 0f else cutThreshold
+}

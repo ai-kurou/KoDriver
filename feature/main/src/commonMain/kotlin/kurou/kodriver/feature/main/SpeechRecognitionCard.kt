@@ -140,7 +140,7 @@ private fun SpeechRecognitionCardContent(
             )
             LevelGauge(
                 level = animatedLevel,
-                cutThreshold = uiState.cutThreshold,
+                cutThreshold = uiState.effectiveCutThreshold,
                 modifier = Modifier.semantics { contentDescription = levelDescription },
             )
         }

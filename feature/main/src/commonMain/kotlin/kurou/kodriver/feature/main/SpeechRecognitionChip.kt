@@ -247,7 +247,7 @@ internal fun SpeechRecognitionChip(
             VolumeRing(
                 step = ringStep,
                 color = animatedContentColor,
-                thresholdAngle = volumeRingThresholdAngle(uiState.cutThreshold),
+                thresholdAngle = volumeRingThresholdAngle(uiState.effectiveCutThreshold),
             )
         }
         Icon(

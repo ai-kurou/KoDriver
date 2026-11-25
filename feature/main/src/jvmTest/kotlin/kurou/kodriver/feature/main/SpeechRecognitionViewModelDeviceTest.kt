@@ -23,6 +23,7 @@ import kurou.kodriver.domain.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
 import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
@@ -68,6 +69,8 @@ class SpeechRecognitionViewModelDeviceTest {
             setSpeechRecognitionMode = SetSpeechRecognitionModeUseCase(FakeSpeechRecognitionModeRepository()),
             observeMicrophoneCutQuietSoundLevel =
                 ObserveMicrophoneCutQuietSoundLevelUseCase(FakeMicrophoneCutQuietSoundPreferencesRepository()),
+            observeMicrophoneCutQuietSoundInCommand =
+                ObserveMicrophoneCutQuietSoundInCommandUseCase(FakeMicrophoneCutQuietSoundPreferencesRepository()),
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
             playChime = PlaySpeechRecognitionChimeUseCase(FakeSpeechRecognitionChimePlayer()),
