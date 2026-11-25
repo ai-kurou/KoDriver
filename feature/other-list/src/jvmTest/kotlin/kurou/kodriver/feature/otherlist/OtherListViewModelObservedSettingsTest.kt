@@ -384,9 +384,9 @@ class OtherListViewModelObservedSettingsTest : OtherListViewModelTestFixture() {
             var attempt = 0
             coEvery { deviceVolumeRepository.getVolume() } answers {
                 when (attempt++) {
-                    0 -> throw IllegalStateException("no audio endpoint")
+                    0 -> error("no audio endpoint")
                     1 -> 60
-                    else -> throw IllegalStateException("device removed")
+                    else -> error("device removed")
                 }
             }
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
