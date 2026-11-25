@@ -73,6 +73,60 @@ class NarratorOverlayContentTest {
     }
 
     @Test
+    fun `マイク文言の出現中は読み上げ文言が滑らかに上へ移動する`() {
+        val state = mutableStateOf(NarratorOverlayUiState(latestTelemetryLog = telemetryLog("イエローフラッグ")))
+        rule.setContent { NarratorOverlayContent(uiState = state.value) }
+        val initialTop = narratedTop()
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle {
+            state.value = state.value.copy(speechRecognitionTranscript = SpeechRecognitionTranscript("", "燃料"))
+        }
+        rule.mainClock.advanceTimeBy(FADE_MIDWAY_MILLIS)
+        val midwayTop = narratedTop()
+        rule.mainClock.advanceTimeBy(FADE_COMPLETE_MILLIS)
+        val finalTop = narratedTop()
+        assertTrue(midwayTop < initialTop)
+        assertTrue(finalTop < midwayTop)
+    }
+
+    @Test
+    fun `マイク文言は消去中も直前の文言を表示し、完了後に取り除く`() {
+        val state =
+            mutableStateOf(
+                NarratorOverlayUiState(
+                    latestTelemetryLog = telemetryLog("イエローフラッグ"),
+                    speechRecognitionTranscript = SpeechRecognitionTranscript("", "燃料"),
+                ),
+            )
+        rule.setContent { NarratorOverlayContent(uiState = state.value) }
+        val initialTop = narratedTop()
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle { state.value = state.value.copy(speechRecognitionTranscript = SpeechRecognitionTranscript()) }
+        rule.mainClock.advanceTimeBy(FADE_MIDWAY_MILLIS)
+        rule.onAllNodesWithText("燃料").assertCountEquals(1)
+        val midwayTop = narratedTop()
+        rule.mainClock.advanceTimeBy(FADE_COMPLETE_MILLIS)
+        rule.onAllNodesWithText("燃料").assertCountEquals(0)
+        val finalTop = narratedTop()
+        assertTrue(initialTop < midwayTop)
+        assertTrue(midwayTop < finalTop)
+    }
+
+    @Test
+    fun `表示中のマイク文言の更新はアニメーションせず即時に切り替わる`() {
+        val state =
+            mutableStateOf(NarratorOverlayUiState(speechRecognitionTranscript = SpeechRecognitionTranscript("ピット")))
+        rule.setContent { NarratorOverlayContent(uiState = state.value) }
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle {
+            state.value = state.value.copy(speechRecognitionTranscript = SpeechRecognitionTranscript("ピットに入"))
+        }
+        rule.mainClock.advanceTimeByFrame()
+        rule.onAllNodesWithText("ピット").assertCountEquals(0)
+        rule.onAllNodesWithText("ピットに入").assertCountEquals(1)
+    }
+
+    @Test
     fun `認識途中の文字列があればマイク文言として表示し、確定した発話は表示しない`() {
         rule.setContent {
             NarratorOverlayContent(
@@ -148,6 +202,12 @@ class NarratorOverlayContentTest {
         assertEquals("", narratorOverlayTranscriptText(SpeechRecognitionTranscript(), "？"))
         assertEquals("？タイヤ？", narratorOverlayTranscriptText(SpeechRecognitionTranscript("[unk]タイヤ[unk]"), "？"))
     }
+
+    private fun narratedTop(): Float =
+        rule
+            .onNodeWithText("イエローフラッグ")
+            .getBoundsInRoot()
+            .top.value
 
     private fun telemetryLog(narratedText: String) =
         TelemetryLog(
