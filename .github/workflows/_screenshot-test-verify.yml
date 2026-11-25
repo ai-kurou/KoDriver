@@ -41,9 +41,11 @@ jobs:
         # スクリーンショット差分が実行されないまま見逃されることがある（#1395）。
         # ワーカー数・ヒープは .github/actions/setup が CI 用に上書きする（gradle.properties はローカル向け）
         # 失敗したモジュールだけを record するため、Gradle の出力をログに残す
+        env:
+          TASK_SUFFIX: ${{ inputs.taskSuffix }}
         run: |
           set -o pipefail
-          ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests --continue 2>&1 | tee verify.log
+          ./gradlew "verifyRoborazzi${TASK_SUFFIX}Tests" --continue 2>&1 | tee verify.log
 
       - name: Record golden images
         if: steps.verify.outcome == 'failure'

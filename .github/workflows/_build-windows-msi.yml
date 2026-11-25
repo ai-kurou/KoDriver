@@ -40,9 +40,11 @@ jobs:
 
       - name: Rename MSI
         shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           mv app/desktopApp/build/compose/binaries/main/msi/*.msi \
-             app/desktopApp/build/compose/binaries/main/msi/KoDriver-windows-${{ steps.version.outputs.version }}.msi
+             "app/desktopApp/build/compose/binaries/main/msi/KoDriver-windows-${VERSION}.msi"
 
       - name: Upload MSI
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
