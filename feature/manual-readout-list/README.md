@@ -28,29 +28,9 @@ Windows デスクトップでは、各セット行の左側にセット名・項
 - `ManualReadoutListPaneScreenshotTest.kt`: 再生ボタン表示（割り当て済みチップ付き）、見出し・セット追加 FAB 付きの空状態・読み上げボタンが有効な LMU の保存済みセット一覧と説明シート（ホットキーあり・なし）を確認する Desktop/JVM 向けスクリーンショットテスト。
 - `ManualReadoutHintSheetContentScreenshotTest.kt`: Android 版の説明シート（ホットキーの説明なし）を確認する Android 向けスクリーンショットテスト。Windows デスクトップ版と表示内容が異なるため追加している。
 
-手動の「燃料残り周回数」は `LmuWindowsReadoutItemKey.RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`）に対応する。
-`RemainingFuel` 配下の手動専用項目で、TopLevel・自動タブ・スイッチには追加しない。手動項目定義の末尾（タイヤ摩耗の残り周回数の後）に並ぶ。
-`fuelLapsTrackingState` の蓄積値を `manualFuelRemainingLaps` で読み、1周以上は `formatLmuWindowsPitTimingReadoutText` で `{laps}` を置換する。
-既定文言は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、0周は
-`LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料は残り1周未満」）。空欄テンプレートなら0周でも空文字にする。
-蓄積前・消費量が null／0以下／非有限・算出不能・最新燃料が未受信または受信から5秒超の場合はデータ無しとする。
-鮮度は `latestFuelReceivedAtMs` で判定し、ピットタイミングの鮮度には依存しない。
-複数項目では「燃料残り周回数はデータがありません」を連結する。
-先頭項目なら開始音・優先度・ログ・キューに `RemainingFuel.Root` を使う。編集画面はACE・GT7の燃料項目と同じ「燃料」カテゴリに配置し、既存の
-`LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER` を挿入・検証に使う。項目一覧・ホットキーは共通の手動項目定義を参照する。
-自動燃料警告の設定・状態は変更せず、自動読み上げには接続しない。
+手動の「燃料残り周回数」の仕様は [`core/lmu-windows-domain/README.md`](../../core/lmu-windows-domain/README.md) を参照。
 
-手動の「クラス内前後車とのギャップ」は `LmuWindowsReadoutItemKey.ClassCarGap.Root.value`（`lmu_windows_auto_class_car_gap`）に対応する。前方車の後に後方車のギャップを1文で読み上げる1項目で、統合前の「前方車」「後方車」の2項目（`lmu_windows_auto_class_car_gap_ahead` / `_behind`）は廃止した。
-TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列挙には追加しない手動専用項目で、`LMU_WINDOWS_READOUT_ITEM_KEYS` の末尾（`MyBestLap.DetailEnabled` の後）と手動項目定義の末尾（燃料残り周回数の後）に並ぶ。
-`ObserveLmuWindowsClassCarGapUseCase` の最新値（`LmuWindowsClassCarGapData`）を `latestClassCarGap` / `latestClassCarGapReceivedAtMs` に保持し、受信から5秒（`NARRATOR_CURRENT_VALUE_MAX_AGE_MS`）以内のものだけを項目へ渡す。未受信・鮮度切れはデータ無しとする。
-周回遅れ・周回先行の車両も前後の対象に含む。トップ・最後尾は `gapAheadSeconds` / `gapBehindSeconds` ではなく `classPosition == 1` / `classPosition == classVehicleCount`（両方非 null）で判定する。
-文言は1つのテンプレートで、`{ahead}`（`LMU_WINDOWS_CLASS_CAR_GAP_AHEAD_PLACEHOLDER`）が前方の秒数、`{behind}`（`LMU_WINDOWS_CLASS_CAR_GAP_BEHIND_PLACEHOLDER`）が後方の秒数に置き換わる（単位なしの小数1桁、例「1.5」）。既定文言は `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」、組は `LMU_WINDOWS_CLASS_CAR_GAP_PLACEHOLDERS`）。先頭（前方車なし）のときは前方の節「前方{ahead}秒」全体を「クラス内先頭です」（`..._TOP_TEXT_DEFAULT`）に、最後尾のときは後方の節「後方{behind}秒」全体を「クラス内最後尾です」（`..._LAST_TEXT_DEFAULT`）に置き換える。節を含まない文言で車なしのときは、プレースホルダー単体を「なし」（`LMU_WINDOWS_CLASS_CAR_GAP_NONE_VALUE_TEXT`）に置き換える。
-前方の節は、先頭なら節全体を固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TOP_TEXT_DEFAULT`（「クラス内先頭です」）に、それ以外は0以上の有限値の秒差を小数1桁に丸めた秒数（`formatClassCarGapSeconds`）に置き換える。
-後方の節は、最後尾なら節全体を固定文言 `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_LAST_TEXT_DEFAULT`（「クラス内最後尾です」）に、それ以外は同様に秒数へ置き換える。
-先頭・最後尾でない側の秒差が null・非有限・負値のときは、項目全体をデータ無しとする。空欄テンプレートなら（データがあれば）空文字を読む。
-保存済みセットに残る旧キーは、読み出し時に `migrateLmuWindowsManualReadoutLegacyClassCarGap`（`ManualReadoutSimulatorSpec.migrateLegacySet`）で新キー1つへ置き換える。旧キーが最初に現れた位置に置き、前方・後方の両方があっても1つにまとめる。旧キーの文言は新しい文言へ変換できないため破棄し、新キーには既定文言を使う。
-複数項目ではデータ無しの項目に「<項目名>はデータがありません」を連結する。
-先頭項目なら開始音・優先度・ログ・キューに `VehicleApproach.Root` を使う。編集画面は既存の「タイム」カテゴリに配置し、`{ahead}` と `{behind}` を挿入・検証に使う。
+手動の「クラス内前後車とのギャップ」の仕様は [`core/lmu-windows-domain/README.md`](../../core/lmu-windows-domain/README.md) を参照。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
@@ -58,38 +38,38 @@ TopLevel・自動タブ・スイッチ・`LmuWindowsReadoutDefaults.kt` の列�
 ![Module Graph](../../docs/graphs/feature-manual-readout-list.svg)
 <!-- MODULE-GRAPH-END -->
 
-LMU の手動「燃料残量」は既存の `LmuWindowsReadoutItemKey.RemainingFuel.Root` を使う。受信から5秒以内の `remainingPercent` を比率（0〜1）に変換し、手動判定で四捨五入した整数％を、既定文言 `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」）へ埋める。未受信・鮮度切れは「燃料残量はデータがありません」を連結する。先頭が燃料残量なら開始音・優先度・ログのキーは `RemainingFuel.Root`。自動燃料警告の `remainingFuelWarned` は変更しない。
+LMU の手動「燃料残量」の仕様は [`feature/lmu-windows-narrator/README.md`](../../feature/lmu-windows-narrator/README.md) を参照。
 
-手動ブレーキ残量は `BrakeWear.Root` に対応し、4輪の `remainingPercent`（0〜100）の最小値を四捨五入して、既定文言「ブレーキは残り{percent}%」へ置換する。セットの保存順に他項目と連結し、先頭項目の開始音と常時キュー追加を使う。未受信・受信から5秒超・空の wheels はデータ無しとして扱い、自動警告の前回値・警告済み状態は変更しない。
+手動ブレーキ残量の仕様は [`feature/lmu-windows-narrator/README.md`](../../feature/lmu-windows-narrator/README.md) を参照。
 
 ## 対応項目一覧
 
-| シミュレーター | 項目 | 一覧での保存キー | 既定文言（定数名） | 開始音・優先度・ログのキー |
-| --- | --- | --- | --- | --- |
-| LMU Windows | バーチャルエネルギー残量 | `RemainingVirtualEnergy.Root` | `LMU_WINDOWS_MANUAL_READOUT_REMAINING_VIRTUAL_ENERGY_TEXT_DEFAULT` | `RemainingVirtualEnergy.Root` |
-| LMU Windows | 燃料残量 | `RemainingFuel.Root` | `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| LMU Windows | タイヤ摩耗 | `TyreWear.Root` | `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_TEXT_DEFAULT` | `TyreWear.Root` |
-| LMU Windows | ブレーキ残量 | `BrakeWear.Root` | `LMU_WINDOWS_MANUAL_READOUT_BRAKE_WEAR_TEXT_DEFAULT` | `BrakeWear.Root` |
-| LMU Windows | ブレーキ温度 | `BrakeTemperature.Root` | `LMU_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT` | `BrakeTemperature.Root` |
-| LMU Windows | タイヤ温度 | `TyreTemperature.Root` | `LMU_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT` | `TyreTemperature.Root` |
-| LMU Windows | 自己ベストラップ | `MyBestLap.Root` | `LMU_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT` | `MyBestLap.Root` |
-| LMU Windows | バーチャルエネルギーの残り周回数 | `PitTiming.VirtualEnergy` | `LMU_WINDOWS_MANUAL_READOUT_VIRTUAL_ENERGY_LAPS_TEXT_DEFAULT` | `PitTiming.Root` |
-| LMU Windows | タイヤ摩耗の残り周回数 | `PitTiming.TyreWear` | `LMU_WINDOWS_MANUAL_READOUT_TYRE_WEAR_LAPS_TEXT_DEFAULT` | `PitTiming.Root` |
-| LMU Windows | 燃料残り周回数 | `RemainingFuel.Laps` | `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| LMU Windows | クラス内前後車とのギャップ | `ClassCarGap.Root` | `LMU_WINDOWS_MANUAL_READOUT_CLASS_CAR_GAP_TEXT_DEFAULT` | `VehicleApproach.Root` |
-| GT7 PS5 | 燃料残量 | `RemainingFuel.Root` | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| GT7 PS5 | 燃料残り周回数 | `RemainingFuelLaps.Root` | `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| GT7 PS5 | タイヤ温度 | `TyreTemperature.Root` | `GT7_PS5_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| GT7 PS5 | 自己ベストラップ | `MyBestLap.Root` | `GT7_PS5_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| ACE Windows | 燃料残量 | `RemainingFuel.Root` | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| ACE Windows | 燃料残り周回数 | `RemainingFuelLaps.Root` | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| ACE Windows | 自己ベストラップ | `MyBestLap.Root` | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| ACE Windows | タイヤ温度 | `TyreTemperature.Root` | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT` | `RemainingFuel.Root` |
-| ACE Windows | 前後車ギャップ | `CarGap.Root` | `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT` | `RemainingFuel.Root` |
+| シミュレーター | 項目 | 一覧での保存キー | 開始音・優先度・ログのキー |
+| --- | --- | --- | --- |
+| LMU Windows | バーチャルエネルギー残量 | `RemainingVirtualEnergy.Root` | `RemainingVirtualEnergy.Root` |
+| LMU Windows | 燃料残量 | `RemainingFuel.Root` | `RemainingFuel.Root` |
+| LMU Windows | タイヤ摩耗 | `TyreWear.Root` | `TyreWear.Root` |
+| LMU Windows | ブレーキ残量 | `BrakeWear.Root` | `BrakeWear.Root` |
+| LMU Windows | ブレーキ温度 | `BrakeTemperature.Root` | `BrakeTemperature.Root` |
+| LMU Windows | タイヤ温度 | `TyreTemperature.Root` | `TyreTemperature.Root` |
+| LMU Windows | 自己ベストラップ | `MyBestLap.Root` | `MyBestLap.Root` |
+| LMU Windows | バーチャルエネルギーの残り周回数 | `PitTiming.VirtualEnergy` | `PitTiming.Root` |
+| LMU Windows | タイヤ摩耗の残り周回数 | `PitTiming.TyreWear` | `PitTiming.Root` |
+| LMU Windows | 燃料残り周回数 | `RemainingFuel.Laps` | `RemainingFuel.Root` |
+| LMU Windows | クラス内前後車とのギャップ | `ClassCarGap.Root` | `VehicleApproach.Root` |
+| GT7 PS5 | 燃料残量 | `RemainingFuel.Root` | `RemainingFuel.Root` |
+| GT7 PS5 | 燃料残り周回数 | `RemainingFuelLaps.Root` | `RemainingFuel.Root` |
+| GT7 PS5 | タイヤ温度 | `TyreTemperature.Root` | `RemainingFuel.Root` |
+| GT7 PS5 | 自己ベストラップ | `MyBestLap.Root` | `RemainingFuel.Root` |
+| ACE Windows | 燃料残量 | `RemainingFuel.Root` | `RemainingFuel.Root` |
+| ACE Windows | 燃料残り周回数 | `RemainingFuelLaps.Root` | `RemainingFuel.Root` |
+| ACE Windows | 自己ベストラップ | `MyBestLap.Root` | `RemainingFuel.Root` |
+| ACE Windows | タイヤ温度 | `TyreTemperature.Root` | `RemainingFuel.Root` |
+| ACE Windows | 前後車ギャップ | `CarGap.Root` | `RemainingFuel.Root` |
 
 - LMU の開始音・優先度・ログのキーは、先頭の対応項目から決まる。`PitTiming.VirtualEnergy`・`PitTiming.TyreWear` は `PitTiming.Root`、`RemainingFuel.Laps` は `RemainingFuel.Root`、`ClassCarGap.Root` は `VehicleApproach.Root` を使う。それ以外は先頭項目自身の `Root` を使い、対応項目がない場合は `RemainingVirtualEnergy.Root` を使う。
-- GT7 と ACE は、表の「開始音・優先度・ログのキー」列を固定のキーとして使う（GT7・ACE の表の列は `RemainingFuel.Root` 固定。項目の既定文言は各行の定数）。
-- 項目の既定文言の詳細（データなし文言・プレースホルダー）は `feature/manual-readout-detail/README.md` の項目カタログを参照する。
+- GT7 と ACE は、表の「開始音・優先度・ログのキー」列を固定のキーとして使う（GT7・ACE の表の列は `RemainingFuel.Root` 固定）。
+- 項目の既定文言（定数名）・データなし文言・プレースホルダーは `feature/manual-readout-detail/README.md` の項目カタログを参照する。
 
 ## 仕様（合意済み）
 
