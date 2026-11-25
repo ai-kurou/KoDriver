@@ -195,6 +195,37 @@ class ManualReadoutContentTest {
     }
 
     @Test
+    fun `2ペイン表示では開いている行の再タップで詳細を閉じ編集では閉じない`() {
+        val state = mutableStateOf(ManualReadoutListUiState(sets = listOf(ManualReadoutSet("target"))))
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                    ManualReadoutContentScaffold(
+                        uiState = state.value,
+                        simulatorId = "lmu_windows",
+                        simulatorName = "LMU",
+                        windowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(840f, 640f),
+                        onAddSet = {},
+                        onReadSet = {},
+                        onSetClick = { state.value = state.value.copy(selectedSetId = it) },
+                        onClearSelectedSet = { state.value = state.value.copy(selectedSetId = null) },
+                        detailContent = { id, _, _ -> Text("詳細 $id") },
+                    )
+                }
+            }
+        }
+        rule.onNodeWithText("LMU (Win)セット1").performClick()
+        rule.onNodeWithText("詳細 target").assertExists()
+        rule.onNodeWithText("LMU (Win)セット1").performTouchInput { longClick() }
+        rule.onNodeWithText("編集").performClick()
+        rule.onNodeWithText("詳細 target").assertExists()
+        rule.onNodeWithText("LMU (Win)セット1").performClick()
+        rule.onNodeWithText("詳細 target").assertDoesNotExist()
+        rule.onNodeWithText("LMU (Win)セット1").performClick()
+        rule.onNodeWithText("詳細 target").assertExists()
+    }
+
+    @Test
     fun `再タップは選択中なら選択解除だけを未選択ならスクロールだけを要求する`() {
         var clearCount = 0
         var scrollCount = 0
