@@ -53,9 +53,9 @@ class OtherListDeviceVolumeFlowTest {
             var attempt = 0
             coEvery { repository.getVolume() } coAnswers {
                 when (attempt++) {
-                    0 -> throw IllegalStateException("no audio endpoint")
+                    0 -> error("no audio endpoint")
                     1 -> 60
-                    else -> throw IllegalStateException("device removed")
+                    else -> error("device removed")
                 }
             }
             val flow = OtherListDeviceVolumeFlow(GetDeviceVolumeUseCase(repository))
