@@ -6,7 +6,6 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.AcePreReleaseNotice
 import kurou.kodriver.core.designsystem.FocusFirstRowOnEntry
+import kurou.kodriver.core.designsystem.KoDriverListEntrance
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ListRowFocusState
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
@@ -122,17 +122,7 @@ internal fun ManualReadoutListPaneContent(
                 onAddSet()
             }
         }
-    val visibleState = remember { MutableTransitionState(false).apply { targetState = true } }
-    val entryOffset = with(LocalDensity.current) { 12.dp.roundToPx() }
-    AnimatedVisibility(
-        visibleState = visibleState,
-        enter =
-            slideInVertically(
-                initialOffsetY = { entryOffset },
-                animationSpec = tween(durationMillis = 200),
-            ) + fadeIn(animationSpec = tween(durationMillis = 200)),
-        modifier = modifier.fillMaxSize(),
-    ) {
+    KoDriverListEntrance(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize().padding(vertical = KoDriverSpacing.large)) {
                 ManualReadoutAcePreReleaseNotice(simulatorId)

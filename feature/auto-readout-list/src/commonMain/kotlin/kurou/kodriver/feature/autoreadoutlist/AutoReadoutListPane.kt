@@ -2,7 +2,6 @@ package kurou.kodriver.feature.autoreadoutlist
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -76,7 +75,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
@@ -94,6 +92,7 @@ import kurou.kodriver.core.designsystem.FocusFirstRowOnEntry
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverHintRow
 import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
+import kurou.kodriver.core.designsystem.KoDriverListEntrance
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ListRowFocusState
@@ -235,17 +234,7 @@ internal fun AutoReadoutListPane(
             )
         }
 
-    val visibleState = remember { MutableTransitionState(false).apply { targetState = true } }
-    val entryOffset = with(LocalDensity.current) { 12.dp.roundToPx() }
-    AnimatedVisibility(
-        visibleState = visibleState,
-        enter =
-            slideInVertically(
-                initialOffsetY = { entryOffset },
-                animationSpec = tween(durationMillis = 200),
-            ) + fadeIn(animationSpec = tween(durationMillis = 200)),
-        modifier = Modifier.fillMaxSize(),
-    ) {
+    KoDriverListEntrance(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 state = listState,
