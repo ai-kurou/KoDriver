@@ -33,8 +33,8 @@ jobs:
       - name: Set version
         id: set-version
         run: |
-          echo "VERSION_NAME=$INPUT_VERSION" >> $GITHUB_ENV
-          echo "version=$INPUT_VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION_NAME=$INPUT_VERSION" >> "$GITHUB_ENV"
+          echo "version=$INPUT_VERSION" >> "$GITHUB_OUTPUT"
         env:
           INPUT_VERSION: ${{ github.event.inputs.version }}
 
@@ -173,5 +173,5 @@ jobs:
             --repo ai-kurou/KoDriver \
             --title "Release v$VERSION_NAME" \
             --generate-notes \
-            artifacts/KoDriver-windows-${VERSION_NAME}.msi \
-            artifacts/KoDriver-android-${VERSION_NAME}.apk
+            "artifacts/KoDriver-windows-${VERSION_NAME}.msi" \
+            "artifacts/KoDriver-android-${VERSION_NAME}.apk"
