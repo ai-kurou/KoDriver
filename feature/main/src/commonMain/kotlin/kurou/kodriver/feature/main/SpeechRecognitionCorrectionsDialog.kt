@@ -3,6 +3,7 @@ package kurou.kodriver.feature.main
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -63,8 +64,9 @@ private fun CorrectionRow(
     right: String,
 ) {
     Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterHorizontally),
     ) {
         KoDriverPhraseChip(text = wrong, muted = true)
         Text(
