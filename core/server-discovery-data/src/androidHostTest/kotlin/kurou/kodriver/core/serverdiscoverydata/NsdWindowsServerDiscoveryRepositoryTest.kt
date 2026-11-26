@@ -115,7 +115,6 @@ class NsdWindowsServerDiscoveryRepositoryTest {
             yield()
             assertEquals(listOf(listOf(DiscoveredServer("server", "192.168.0.5"))), emissions)
 
-            discoveryListener.captured.onStartDiscoveryFailed("t", 0)
             discoveryListener.captured.onStopDiscoveryFailed("t", 0)
             discoveryListener.captured.onDiscoveryStarted("t")
             discoveryListener.captured.onDiscoveryStopped("t")
@@ -231,11 +230,52 @@ class NsdWindowsServerDiscoveryRepositoryTest {
             assertTrue(emissions.isEmpty())
 
             second.onServiceUpdated(serviceInfo("server", address("10.0.0.2")))
-            second.onServiceInfoCallbackRegistrationFailed(0)
             second.onServiceLost()
             second.onServiceInfoCallbackUnregistered()
             yield()
             assertEquals(listOf(listOf(DiscoveredServer("server", "10.0.0.2"))), emissions)
+        }
+    }
+
+    @Test
+    @Config(sdk = [36])
+    fun `探索の開始に失敗した場合は収集終了で探索を停止しない`() =
+        runDiscovery(verifyAfter = {
+            verify(exactly = 1) {
+                nsdManager.discoverServices("_kodriver._tcp.", NsdManager.PROTOCOL_DNS_SD, discoveryListener.captured)
+            }
+            confirmVerified(nsdManager)
+        }) {
+            discoveryListener.captured.onStartDiscoveryFailed("t", NsdManager.FAILURE_INTERNAL_ERROR)
+        }
+
+    @Test
+    @Config(sdk = [36])
+    fun `登録に失敗したコールバックは解除せず再発見後のコールバックだけを解除する`() {
+        val callbacks = mutableListOf<NsdManager.ServiceInfoCallback>()
+        val executor = slot<Executor>()
+        val found = serviceInfo("server")
+        runDiscovery(verifyAfter = {
+            verify(exactly = 1) { nsdManager.registerServiceInfoCallback(found, executor.captured, callbacks[0]) }
+            verify(exactly = 1) { nsdManager.registerServiceInfoCallback(found, executor.captured, callbacks[1]) }
+            verify(exactly = 1) { nsdManager.unregisterServiceInfoCallback(callbacks[1]) }
+            verify(exactly = 1) {
+                nsdManager.discoverServices("_kodriver._tcp.", NsdManager.PROTOCOL_DNS_SD, discoveryListener.captured)
+            }
+            verify(exactly = 1) { nsdManager.stopServiceDiscovery(discoveryListener.captured) }
+            confirmVerified(nsdManager)
+        }) {
+            every {
+                nsdManager.registerServiceInfoCallback(found, capture(executor), capture(callbacks))
+            } just runs
+            every { nsdManager.unregisterServiceInfoCallback(any<NsdManager.ServiceInfoCallback>()) } just runs
+
+            discoveryListener.captured.onServiceFound(found)
+            callbacks[0].onServiceInfoCallbackRegistrationFailed(NsdManager.FAILURE_INTERNAL_ERROR)
+            discoveryListener.captured.onServiceLost(found)
+            discoveryListener.captured.onServiceFound(found)
+            // 古いコールバックの失敗通知が遅れて届いても、新しいコールバックは解除対象に残る
+            callbacks[0].onServiceInfoCallbackRegistrationFailed(NsdManager.FAILURE_INTERNAL_ERROR)
         }
     }
 
