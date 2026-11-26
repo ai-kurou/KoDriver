@@ -2064,6 +2064,25 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `過熱中に全輪のタイヤ温度がNaNや無限大になっても過熱状態を保つ`() {
+        val decision =
+            tyreUseCase.determineTyreTemperatureOverheat(
+                LmuWindowsNarratorState(tyreOverheating = true),
+                tyreTemperatureInput(
+                    fl = Double.NaN,
+                    fr = Double.POSITIVE_INFINITY,
+                    rl = Double.NEGATIVE_INFINITY,
+                    rr = Double.NaN,
+                    raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+                ),
+                settings(tyreTemperatureHighThresholdCelsius = 90),
+            )
+
+        assertEquals(emptyList(), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
     fun `過熱と低温の警告は全輪の最高温度を四捨五入する`() {
         listOf(99.5 to 100, 99.4 to 99).forEach { (temperature, expected) ->
             WheelIndex.entries.forEach { hottestWheel ->
