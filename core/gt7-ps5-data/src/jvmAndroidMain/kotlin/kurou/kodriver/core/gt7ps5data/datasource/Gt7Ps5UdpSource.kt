@@ -76,7 +76,7 @@ internal class Gt7Ps5UdpSource(
             // Wi-Fi切り替え・スリープ復帰時のsend失敗、ポート競合(BindException)など、
             // 一時的なネットワーク起因のIOExceptionは再接続を試みる
             if (cause is java.io.IOException) {
-                delay(BIND_RETRY_DELAY_MS * (attempt + 1))
+                delay(bindRetryDelayMillis(attempt))
                 true
             } else {
                 false
@@ -144,6 +144,12 @@ internal class Gt7Ps5UdpSource(
         const val IV_OFFSET = 0x40
         const val HEARTBEAT_INTERVAL_PACKETS = 100
         const val BIND_RETRY_DELAY_MS = 1_000L
+
+        /** 再接続待ちの上限。attempt は再接続に成功しても戻らないため、上限がないと待ちが延び続ける。 */
+        const val BIND_RETRY_MAX_DELAY_MS = 5_000L
+
+        internal fun bindRetryDelayMillis(attempt: Long): Long =
+            minOf(BIND_RETRY_DELAY_MS * (attempt + 1), BIND_RETRY_MAX_DELAY_MS)
 
         val GT7_KEY = "Simulator Interface Packet GT7 ver 0.0".toByteArray().copyOf(32)
         val HEARTBEAT_PAYLOAD = "C".toByteArray(Charsets.UTF_8)
