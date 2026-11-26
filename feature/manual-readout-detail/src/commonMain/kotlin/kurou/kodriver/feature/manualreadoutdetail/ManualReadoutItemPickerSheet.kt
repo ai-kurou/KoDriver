@@ -32,6 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,6 +86,7 @@ internal fun ManualReadoutItemPickerSheet(
     onSelect: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState =
@@ -94,7 +96,10 @@ internal fun ManualReadoutItemPickerSheet(
             ),
         sheetMaxWidth = 560.dp,
     ) {
-        ManualReadoutItemPickerSheetContent(itemKeys, selectedCount, onSelect)
+        // Android ではシートが別の ComposeView になり LocalHapticFeedback が上書きされるため、呼び出し元の値を引き継ぐ。
+        CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+            ManualReadoutItemPickerSheetContent(itemKeys, selectedCount, onSelect)
+        }
     }
 }
 

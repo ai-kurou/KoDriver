@@ -120,6 +120,7 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 - `KoDriverHintRow` はラベル・ヘルプアイコンボタン・区切り線と、省略可能な `trailingText`（`labelSmall`）を表示する。ボタンを押すと `sheetContent` を `ModalBottomSheet` に表示する。
 - 開閉は部品内の一時的な UI 状態として `rememberSaveable` で保持し、保存状態からの再生成時に復元する。業務状態は従来どおり feature の ViewModel が管理する。
+- `KoDriverHintRow` と `HelpIconButton` は、呼び出し元の `LocalHapticFeedback` をシート内へ引き継ぐ。Android ではシートが別の `ComposeView` になって値が上書きされ、引き継がないとハプティックのオフ設定が効かない。ダイアログやシートを新しく作る場合も、`LocalHapticFeedback.current` は外側で読む。
 - `KoDriverHintSheetRow` は同じ見た目のアイコンバッジとタイトル・説明を表示する。文字列リソースは呼び出し側で解決して渡す。
 - 表示と操作は `src/jvmTest` の `KoDriverHintRowTest`、実際の画面レイアウトは両 list feature の既存スクリーンショットテストで確認する。
 

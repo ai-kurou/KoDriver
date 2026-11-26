@@ -139,6 +139,22 @@ class ManualReadoutHapticTest {
     }
 
     @Test
+    fun `ピッカーシート内の項目選択は呼び出し元が差し替えたハプティックに通知する`() {
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        val key = lmuWindowsManualReadoutItemKeys().first()
+        val selected = mutableListOf<String>()
+        rule.setContent {
+            HapticContent { ManualReadoutItemPickerSheet(listOf(key), 0, { selected.add(it) }, {}) }
+        }
+        rule
+            .onNodeWithText("バーチャルエネルギー残量")
+            .performSemanticsAction(SemanticsActions.OnClick) { it() }
+        assertEquals(listOf(key), selected)
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
+    }
+
+    @Test
     fun `名前編集開始とチェックとDoneは通知し入力では通知しない`() {
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         val saved = mutableListOf<String>()

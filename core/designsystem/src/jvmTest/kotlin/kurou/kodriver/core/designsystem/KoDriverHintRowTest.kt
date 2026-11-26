@@ -18,6 +18,7 @@ import androidx.compose.ui.test.performSemanticsAction
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertSame
 
 private class HintRowHapticFeedback : HapticFeedback {
     val performedTypes = mutableListOf<HapticFeedbackType>()
@@ -87,5 +88,25 @@ class KoDriverHintRowTest {
         rule.onNodeWithContentDescription("操作の説明").performClick()
         rule.onNodeWithText("セットを読み上げます").assertIsDisplayed()
         assertEquals(listOf(HapticFeedbackType.ContextClick, HapticFeedbackType.ContextClick), haptic.performedTypes)
+    }
+
+    @Test
+    fun `シート内でも呼び出し元が差し替えたハプティックを使う`() {
+        val haptic = HintRowHapticFeedback()
+        var sheetHaptic: HapticFeedback? = null
+        rule.setContent {
+            KoDriverTheme {
+                CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                    KoDriverHintRow(label = "手動読み上げ", helpContentDescription = "操作の説明") {
+                        sheetHaptic = LocalHapticFeedback.current
+                    }
+                }
+            }
+        }
+
+        rule.onNodeWithContentDescription("操作の説明").performClick()
+        rule.waitForIdle()
+
+        assertSame(haptic, sheetHaptic)
     }
 }

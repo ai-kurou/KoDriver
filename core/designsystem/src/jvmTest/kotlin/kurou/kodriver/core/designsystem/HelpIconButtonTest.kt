@@ -22,6 +22,7 @@ import androidx.compose.ui.test.waitUntilExactlyOneExists
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertSame
 
 private class FakeHapticFeedback : HapticFeedback {
     val performedTypes = mutableListOf<HapticFeedbackType>()
@@ -82,6 +83,27 @@ class HelpIconButtonTest {
         rule.onNode(hasContentDescription("閾値の説明を表示")).performClick()
 
         assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
+    }
+
+    @Test
+    fun `シート内でも呼び出し元が差し替えたハプティックを使う`() {
+        val haptic = FakeHapticFeedback()
+        var sheetHaptic: HapticFeedback? = null
+        rule.setContent {
+            KoDriverTheme {
+                CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                    HelpIconButton(
+                        contentDescription = "閾値の説明を表示",
+                        sheetContent = { sheetHaptic = LocalHapticFeedback.current },
+                    )
+                }
+            }
+        }
+
+        rule.onNode(hasContentDescription("閾値の説明を表示")).performClick()
+        rule.waitForIdle()
+
+        assertSame(haptic, sheetHaptic)
     }
 
     @OptIn(ExperimentalTestApi::class)
