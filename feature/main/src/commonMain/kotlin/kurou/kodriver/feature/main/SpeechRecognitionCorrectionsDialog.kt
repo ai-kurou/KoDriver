@@ -7,14 +7,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import kurou.kodriver.core.designsystem.KoDriverAlertDialog
 import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
 import kurou.kodriver.core.designsystem.KoDriverPhraseChip
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -35,9 +34,7 @@ internal fun SpeechRecognitionCorrectionsDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // AlertDialog の内容は別ウィンドウで組み立てられるため、外側で読んだハプティックを部品へ渡す。
-    val haptic = LocalHapticFeedback.current
-    AlertDialog(
+    KoDriverAlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,
         title = { Text(stringResource(Res.string.speech_recognition_corrections_title)) },
@@ -57,7 +54,6 @@ internal fun SpeechRecognitionCorrectionsDialog(
             KoDriverDialogTextButton(
                 text = stringResource(Res.string.speech_recognition_corrections_close),
                 onClick = onDismiss,
-                hapticFeedback = haptic,
             )
         },
     )

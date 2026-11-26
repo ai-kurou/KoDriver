@@ -1,6 +1,5 @@
 package kurou.kodriver.core.designsystem
 
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,7 +20,7 @@ public fun KoDriverDestructiveConfirmDialog(
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
-    AlertDialog(
+    KoDriverAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = { Text(body) },

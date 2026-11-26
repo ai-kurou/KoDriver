@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
@@ -17,9 +16,6 @@ import androidx.compose.ui.unit.dp
 
 /**
  * 選択肢を1行で表示するラジオボタン行。行全体をタップで選択でき、タップ時は ContextClick ハプティックを発生させてから [onClick] を呼ぶ。
- *
- * [hapticFeedback] は既定で呼び出し位置の [LocalHapticFeedback] を使う。ダイアログ内ではその値が別ウィンドウのものになるため、
- * ダイアログ呼び出し側で外側に読んだ値を渡す。
  */
 @Composable
 public fun KoDriverRadioRow(
@@ -27,8 +23,8 @@ public fun KoDriverRadioRow(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    hapticFeedback: HapticFeedback = LocalHapticFeedback.current,
 ) {
+    val haptic = LocalHapticFeedback.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier =
@@ -38,7 +34,7 @@ public fun KoDriverRadioRow(
                     selected = selected,
                     role = Role.RadioButton,
                     onClick = {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         onClick()
                     },
                 ),

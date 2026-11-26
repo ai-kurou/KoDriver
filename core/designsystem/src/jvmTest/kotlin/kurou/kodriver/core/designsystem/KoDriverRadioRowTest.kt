@@ -51,27 +51,6 @@ class KoDriverRadioRowTest {
         assertEquals(1, clickCount)
     }
 
-    @Test
-    fun `hapticFeedback引数を渡すとその値で振動させる`() {
-        val haptic = RecordingHapticFeedback()
-        var clickCount = 0
-        rule.setContent {
-            KoDriverTheme {
-                KoDriverRadioRow(
-                    selected = false,
-                    label = "電子ノイズ",
-                    onClick = { clickCount++ },
-                    hapticFeedback = haptic,
-                )
-            }
-        }
-
-        rule.onNodeWithText("電子ノイズ").performClick()
-
-        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
-        assertEquals(1, clickCount)
-    }
-
     private class RecordingHapticFeedback : HapticFeedback {
         val performedTypes = mutableListOf<HapticFeedbackType>()
 
