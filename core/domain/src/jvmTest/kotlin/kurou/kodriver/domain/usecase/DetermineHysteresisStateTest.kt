@@ -57,15 +57,17 @@ class DetermineHysteresisStateTest {
     }
 
     @Test
-    fun `値が空の場合はallの判定により無効になる`() {
-        assertEquals(
-            false,
-            determineHysteresisState(
-                valuesCelsius = emptyList(),
-                highThresholdCelsius = 90f,
-                hysteresisCelsius = 5f,
-                currentState = true,
-            ),
-        )
+    fun `値が空の場合は現在の状態を保つ`() {
+        listOf(true, false).forEach { currentState ->
+            assertEquals(
+                currentState,
+                determineHysteresisState(
+                    valuesCelsius = emptyList(),
+                    highThresholdCelsius = 90f,
+                    hysteresisCelsius = 5f,
+                    currentState = currentState,
+                ),
+            )
+        }
     }
 }
