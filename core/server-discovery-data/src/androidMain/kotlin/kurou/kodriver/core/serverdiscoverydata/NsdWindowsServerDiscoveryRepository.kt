@@ -32,19 +32,42 @@ internal class NsdWindowsServerDiscoveryRepository(
                 trySend(servers.values.toList())
             }
 
+            // 旧APIの resolveService は同時に1件しか解決できず、解決中の要求は FAILURE_ALREADY_ACTIVE で
+            // 失敗する。発見したサービスをキューに積み、前の解決が終わってから次を解決する。
+            val pendingResolves = ArrayDeque<NsdServiceInfo>()
+            var resolving = false
+
             @Suppress("DEPRECATION")
-            fun resolveLegacy(serviceInfo: NsdServiceInfo) {
+            fun resolveNextLegacy() {
+                val next =
+                    synchronized(pendingResolves) {
+                        if (resolving) return
+                        pendingResolves.removeFirstOrNull()?.also { resolving = true }
+                    } ?: return
                 nsdManager.resolveService(
-                    serviceInfo,
+                    next,
                     object : NsdManager.ResolveListener {
                         override fun onResolveFailed(
                             serviceInfo: NsdServiceInfo,
                             errorCode: Int,
-                        ) = Unit
+                        ) = finishResolve()
 
-                        override fun onServiceResolved(serviceInfo: NsdServiceInfo) = updateServer(serviceInfo)
+                        override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                            updateServer(serviceInfo)
+                            finishResolve()
+                        }
+
+                        private fun finishResolve() {
+                            synchronized(pendingResolves) { resolving = false }
+                            resolveNextLegacy()
+                        }
                     },
                 )
+            }
+
+            fun resolveLegacy(serviceInfo: NsdServiceInfo) {
+                synchronized(pendingResolves) { pendingResolves.addLast(serviceInfo) }
+                resolveNextLegacy()
             }
 
             fun watchService(serviceInfo: NsdServiceInfo) {
