@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import kurou.kodriver.feature.acewindowsautoreadout.braketemperaturedetail.aceWindowsAutoReadoutBrakeTemperatureDetailModule
 import kurou.kodriver.feature.acewindowsautoreadout.flagdetail.aceWindowsAutoReadoutFlagDetailModule
 import kurou.kodriver.feature.acewindowsautoreadout.mybestlapdetail.aceWindowsAutoReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.acewindowsautoreadout.remainingfueldetail.aceWindowsAutoReadoutRemainingFuelDetailModule
@@ -112,6 +113,7 @@ public val featureModules: List<Module> =
         aceWindowsAutoReadoutRemainingFuelDetailModule,
         aceWindowsAutoReadoutFlagDetailModule,
         aceWindowsAutoReadoutTyreTemperatureDetailModule,
+        aceWindowsAutoReadoutBrakeTemperatureDetailModule,
         aceWindowsAutoReadoutVehicleApproachDetailModule,
         aceWindowsAutoReadoutMyBestLapDetailModule,
         aceWindowsAutoReadoutRemainingFuelLapsDetailModule,

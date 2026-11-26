@@ -78,7 +78,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:ace-windows-auto-readout-vehicle-approach-detail` | ACE 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-vehicle-approach-detail.svg) |
 | `:feature:ace-windows-auto-readout-my-best-lap-detail` | ACE 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-my-best-lap-detail.svg) |
 | `:feature:ace-windows-auto-readout-remaining-fuel-laps-detail` | ACE 燃料残り周回数アナウンスの詳細設定 UI（有効/無効・閾値・リセット・試聴。設定は Narrator の読み上げ判定に反映） | [図](graphs/feature-ace-windows-auto-readout-remaining-fuel-laps-detail.svg) |
-| `:feature:ace-windows-auto-readout-brake-temperature-detail` | ACE ブレーキ温度アナウンスの詳細画面（現在は説明文のみ） | [図](graphs/feature-ace-windows-auto-readout-brake-temperature-detail.svg) |
+| `:feature:ace-windows-auto-readout-brake-temperature-detail` | ACE ブレーキ温度アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-auto-readout-brake-temperature-detail.svg) |
 | `:feature:other-log-list` | テレメトリログの一覧表示 UI | [図](graphs/feature-other-log-list.svg) |
 | `:feature:other-log-detail` | テレメトリログの詳細表示 UI | [図](graphs/feature-other-log-detail.svg) |
 | `:feature:narrator-overlay` | TelemetryLog の最新の読み上げ内容と、マイクが聞き取った文言をライブ購読して表示するオーバーレイ | [図](graphs/feature-narrator-overlay.svg) |
