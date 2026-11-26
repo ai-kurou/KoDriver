@@ -12,6 +12,27 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Test
 
 class AceWindowsAutoReadoutBrakeTemperatureDetailPaneScreenshotTest {
+    // スマホ幅で文言欄・挿入チップ・温度説明の配置を確認する。
+    @Test
+    fun `スマホ幅のチップ行`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            AceWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
+                                uiState =
+                                    AceWindowsAutoReadoutBrakeTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
     @Test
     fun `デフォルト`() =
         composeScreenshotTest {
@@ -19,7 +40,95 @@ class AceWindowsAutoReadoutBrakeTemperatureDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            AceWindowsAutoReadoutBrakeTemperatureDetailPane()
+                            AceWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
+                                uiState =
+                                    AceWindowsAutoReadoutBrakeTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `警告OFF時`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
+                                uiState =
+                                    AceWindowsAutoReadoutBrakeTemperatureDetailUiState(
+                                        overheatWarningEnabled = false,
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `空白文言`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
+                                uiState =
+                                    AceWindowsAutoReadoutBrakeTemperatureDetailUiState(
+                                        overheatReadoutText = "",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `TTS利用不可`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
+                                uiState =
+                                    AceWindowsAutoReadoutBrakeTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = false,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `未知のプレースホルダー`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsAutoReadoutBrakeTemperatureDetailPaneContent(
+                                uiState =
+                                    AceWindowsAutoReadoutBrakeTemperatureDetailUiState(
+                                        overheatReadoutText = "{wheel}",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
                         }
                     }
                 }

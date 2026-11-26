@@ -1,0 +1,305 @@
+package kurou.kodriver.feature.acewindowsautoreadout.braketemperaturedetail
+
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.coVerifyOrder
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BRAKE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureEnabledStatesUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsBrakeTemperatureEnabledStateUseCase
+import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
+class AceWindowsAutoReadoutBrakeTemperatureDetailViewModelTest {
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    private val repository: AceWindowsBrakeTemperaturePreferencesRepository = mockk()
+
+    private val observeText: ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase = mockk()
+    private val saveText: SaveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase = mockk()
+    private val speakText: SpeakTextUseCase = mockk()
+    private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
+    private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
+    private val observeVolume: ObserveSoundVolumeUseCase = mockk()
+
+    private val highThresholdFlow = MutableStateFlow(ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    private fun createViewModel() =
+        AceWindowsAutoReadoutBrakeTemperatureDetailViewModel(
+            brakeTemperatureUseCases =
+                BrakeTemperatureUseCases(
+                    observeEnabledStates = ObserveAceWindowsBrakeTemperatureEnabledStatesUseCase(repository),
+                    observeHighThreshold = ObserveAceWindowsBrakeTemperatureHighThresholdUseCase(repository),
+                    saveEnabledState = SaveAceWindowsBrakeTemperatureEnabledStateUseCase(repository),
+                    saveHighThreshold = SaveAceWindowsBrakeTemperatureHighThresholdUseCase(repository),
+                ),
+            readout =
+                BrakeTemperatureReadoutUseCases(
+                    observeText,
+                    saveText,
+                    speakText,
+                    playStartSound,
+                    checkAvailable,
+                    observeVolume,
+                ),
+        )
+
+    @Test
+    fun `初期状態はデフォルト値のUiStateを返す`() =
+        runTest {
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+            stubReadout()
+            val viewModel = createViewModel()
+
+            assertEquals(AceWindowsAutoReadoutBrakeTemperatureDetailUiState(), viewModel.uiState.first())
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onOverheatWarningEnabledChangedを呼ぶとuiStateのoverheatWarningEnabledが更新される`() =
+        runTest {
+            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { repository.observeEnabledStates() } returns enabledStatesFlow
+            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+            coEvery {
+                repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, false)
+            } answers {
+                enabledStatesFlow.update { it + (AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning to false) }
+            }
+            stubReadout()
+            val viewModel = createViewModel()
+
+            viewModel.onOverheatWarningEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().overheatWarningEnabled)
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            coVerify(exactly = 1) {
+                repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, false)
+            }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onHighThresholdChangedを呼ぶとuiStateのhighThresholdCelsiusが更新される`() =
+        runTest {
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+            coEvery {
+                repository.saveHighThresholdCelsius(Celsius(905))
+            } answers { highThresholdFlow.update { Celsius(905) } }
+            stubReadout()
+            val viewModel = createViewModel()
+
+            viewModel.onHighThresholdChanged(905)
+
+            assertEquals(905, viewModel.uiState.first().highThresholdCelsius)
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(Celsius(905)) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値に戻る`() =
+        runTest {
+            highThresholdFlow.update { Celsius(905) }
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+            coEvery {
+                repository.saveHighThresholdCelsius(ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+            } answers {
+                highThresholdFlow.update { ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT }
+            }
+            stubReadout()
+            val viewModel = createViewModel()
+
+            viewModel.onHighThresholdReset()
+
+            assertEquals(
+                ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value,
+                viewModel.uiState.first().highThresholdCelsius,
+            )
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            coVerify(exactly = 1) {
+                repository.saveHighThresholdCelsius(ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+            }
+            confirmVerified(repository)
+        }
+
+    private val textFlow = MutableStateFlow(ACE_WINDOWS_BRAKE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT)
+
+    private fun stubReadout(available: Boolean = false) {
+        every { observeText() } returns textFlow
+        coEvery { checkAvailable() } returns available
+    }
+
+    private fun stubSettings() {
+        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+    }
+
+    @Test
+    fun `文言の監視と保存をUiStateに反映する`() =
+        runTest {
+            stubSettings()
+            stubReadout(available = true)
+            coEvery { saveText(" 注意 ") } answers { textFlow.update { "注意" } }
+            val viewModel = createViewModel()
+            assertEquals(
+                ACE_WINDOWS_BRAKE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                viewModel.uiState.first().overheatReadoutText,
+            )
+            assertEquals(true, viewModel.uiState.first().isTextToSpeechAvailable)
+            viewModel.onOverheatReadoutTextChanged(" 注意 ")
+            assertEquals("注意", viewModel.uiState.first().overheatReadoutText)
+            verify(exactly = 1) { observeText() }
+            coVerify(exactly = 1) { saveText(" 注意 ") }
+            confirmVerified(observeText, saveText)
+        }
+
+    @Test
+    fun `空欄への変更を保存してUiStateに反映する`() =
+        runTest {
+            stubSettings()
+            stubReadout(available = true)
+            coEvery { saveText("") } answers { textFlow.update { "" } }
+            val viewModel = createViewModel()
+
+            viewModel.onOverheatReadoutTextChanged("")
+
+            assertEquals("", viewModel.uiState.first().overheatReadoutText)
+            coVerify(exactly = 1) { saveText("") }
+            confirmVerified(saveText)
+        }
+
+    @Test
+    fun `渡された温度を置換して未知のトークンを維持し開始音の後に試聴する`() =
+        runTest {
+            stubSettings()
+            stubReadout(available = true)
+            every { observeVolume() } returns flowOf(60)
+            coEvery { playStartSound(AceWindowsReadoutItemKey.BrakeTemperature.Root) } returns Unit
+            coEvery { speakText("注意907℃{unknown}", volume = 60) } returns Unit
+            val viewModel = createViewModel()
+            viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}", 907)
+            verify(exactly = 1) { observeVolume() }
+            coVerify(exactly = 1) { playStartSound(AceWindowsReadoutItemKey.BrakeTemperature.Root) }
+            coVerify(exactly = 1) { speakText("注意907℃{unknown}", volume = 60) }
+            coVerifyOrder {
+                playStartSound(AceWindowsReadoutItemKey.BrakeTemperature.Root)
+                speakText("注意907℃{unknown}", volume = 60)
+            }
+            confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `TTS利用不可を反映し試聴しない`() =
+        runTest {
+            stubSettings()
+            stubReadout(available = false)
+            val viewModel = createViewModel()
+            assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
+            viewModel.onOverheatReadoutTextPreviewClicked("注意", 100)
+            verify(exactly = 0) { observeVolume() }
+            coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.BrakeTemperature.Root) }
+            coVerify(exactly = 0) { speakText("注意", volume = 60) }
+            confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            stubSettings()
+            stubReadout(available = true)
+            every { observeVolume() } returns flowOf(60)
+            val viewModel = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(AceWindowsReadoutItemKey.BrakeTemperature.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}", 907)
+            viewModel.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            verify(exactly = 1) { observeVolume() }
+            coVerify(exactly = 1) { playStartSound(AceWindowsReadoutItemKey.BrakeTemperature.Root) }
+            coVerify(exactly = 0) { speakText("注意907℃{unknown}", volume = 60) }
+            confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `onHighThresholdChangedで保存が失敗しても記録して例外を伝播させない`() =
+        runTest {
+            val error = IOException("fail")
+            val errorCapture = Class.forName("kurou.kodriver.domain.ErrorCaptureKt").kotlin
+            mockkStatic(errorCapture)
+            every { captureError(error) } returns Unit
+            try {
+                every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+                every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+                coEvery {
+                    repository.saveHighThresholdCelsius(Celsius(905))
+                } throws error
+                stubReadout()
+                val viewModel = createViewModel()
+
+                viewModel.onHighThresholdChanged(905)
+
+                verify(exactly = 1) { repository.observeEnabledStates() }
+                verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+                coVerify(exactly = 1) { repository.saveHighThresholdCelsius(Celsius(905)) }
+                verify(exactly = 1) { captureError(error) }
+                confirmVerified(errorCapture, repository)
+            } finally {
+                unmockkStatic(errorCapture)
+            }
+        }
+}
