@@ -409,7 +409,7 @@ acevo-shared-memory（公式ヘッダ転記）による定義。各構造体は�
 | bool | `lock` | ロック中（ゲーム提供の判定） |
 | float | `tyre_pressure`（公式ヘッダでは `tyre_pression`） | psi |
 | float | `tyre_temperature_c` | ℃（カーカス平均） |
-| float | `brake_temperature_c` | ℃ |
+| float | `brake_temperature_c` | ℃（BrakeTemperature 取得対象。各要素内 +16、Graphics 先頭から FL=236 / FR=492 / RL=748 / RR=1004。宣言順からの算出値で実機未確認） |
 | float | `brake_pressure` | bar（このコーナーの油圧） |
 | float | `tyre_temperature_left` | ℃（接地面の左フェイス） |
 | float | `tyre_temperature_center` | ℃（中央） |

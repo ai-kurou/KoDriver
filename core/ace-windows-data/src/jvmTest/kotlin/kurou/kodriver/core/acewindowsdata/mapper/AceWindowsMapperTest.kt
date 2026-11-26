@@ -199,6 +199,30 @@ class AceWindowsMapperTest {
     }
 
     @Test
+    fun `4輪それぞれのbrake_temperature_cをブレーキ温度として取得する`() {
+        // 実装のオフセット定数を使わず、Graphics 先頭からの絶対位置で書き込む。
+        val buffer =
+            ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
+                it.putFloat(236, 300.0f)
+                it.putFloat(492, 310.0f)
+                it.putFloat(748, 250.0f)
+                it.putFloat(1004, 260.0f)
+            }
+
+        val result = AceWindowsMapper.mapBrakeTemperature(buffer)
+
+        assertEquals(
+            mapOf(
+                WheelIndex.FRONT_LEFT to CelsiusReading(300.0f),
+                WheelIndex.FRONT_RIGHT to CelsiusReading(310.0f),
+                WheelIndex.REAR_LEFT to CelsiusReading(250.0f),
+                WheelIndex.REAR_RIGHT to CelsiusReading(260.0f),
+            ),
+            result.wheels,
+        )
+    }
+
+    @Test
     fun `laps_possible_with_fuel をremainingLapsとして取得する`() {
         val result = AceWindowsMapper.mapRemainingFuelLaps(remainingFuelLapsBuffer(3.75f))
 

@@ -1,6 +1,7 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
@@ -57,6 +58,8 @@ import kotlin.math.sqrt
  *     (slip: float[+0], lock: bool[+4]+3パディング, tyre_pressure: float[+8], tyre_temperature_c: float[+12])。
  *     ホイール順は tyre_lf[+220]/tyre_rf[+476]/tyre_lr[+732]/tyre_rr[+988] で
  *     WheelIndex.FRONT_LEFT/FRONT_RIGHT/REAR_LEFT/REAR_RIGHT の ordinal 順と一致する。
+ *     SMEvoTyreState 内の brake_temperature_c (ブレーキ温度, ℃) は各要素内 [+16] オフセット
+ *     (tyre_temperature_c の直後) ← BrakeTemperature 取得対象
  *   [+1244] npos, kers_charge_perc, kers_current_perc, control_lock_time (float x4)
  *   [+1260] car_damage (SMEvoDamageState, 128バイト)
  *   [+1388] car_location (int32)
@@ -104,6 +107,7 @@ internal object AceWindowsMapper {
     private const val OFF_TYRE_LF = 220
     private const val TYRE_STATE_STRIDE = 256
     private const val OFF_TYRE_TEMPERATURE_C = 12
+    private const val OFF_TYRE_BRAKE_TEMPERATURE_C = 16
     private const val OFF_CAR_LOCATION = 1388
     private const val OFF_LAPS_POSSIBLE_WITH_FUEL = 1464
     private const val OFF_CURRENT_POS = 2388
@@ -145,6 +149,15 @@ internal object AceWindowsMapper {
                 WheelIndex.entries.associateWith { wheel ->
                     val tyreStateBase = OFF_TYRE_LF + wheel.ordinal * TYRE_STATE_STRIDE
                     CelsiusReading(buffer.getFloat(tyreStateBase + OFF_TYRE_TEMPERATURE_C))
+                },
+        )
+
+    fun mapBrakeTemperature(buffer: ByteBuffer): AceWindowsBrakeTemperatureData =
+        AceWindowsBrakeTemperatureData(
+            wheels =
+                WheelIndex.entries.associateWith { wheel ->
+                    val tyreStateBase = OFF_TYRE_LF + wheel.ordinal * TYRE_STATE_STRIDE
+                    CelsiusReading(buffer.getFloat(tyreStateBase + OFF_TYRE_BRAKE_TEMPERATURE_C))
                 },
         )
 
