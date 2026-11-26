@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kurou.kodriver.domain.serverconnection.model.DiscoveredServer
 import kurou.kodriver.domain.serverconnection.repository.WindowsServerDiscoveryRepository
+import java.util.concurrent.atomic.AtomicBoolean
 
 private const val SERVICE_TYPE = "_kodriver._tcp."
 
@@ -54,7 +55,11 @@ internal class NsdWindowsServerDiscoveryRepository(
                 }
                 val callback =
                     object : NsdManager.ServiceInfoCallback {
-                        override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) = Unit
+                        // 登録に失敗した callback は NsdManager に登録されていないため、解除の対象から外す
+                        // （解除すると IllegalArgumentException になる）。
+                        override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) {
+                            serviceInfoCallbacks.remove(serviceInfo.serviceName, this)
+                        }
 
                         override fun onServiceUpdated(serviceInfo: NsdServiceInfo) = updateServer(serviceInfo)
 
@@ -70,12 +75,18 @@ internal class NsdWindowsServerDiscoveryRepository(
                 nsdManager.registerServiceInfoCallback(serviceInfo, { it.run() }, callback)
             }
 
+            // 開始に失敗すると NsdManager がリスナーの登録を解除するため、停止を呼ぶと
+            // IllegalArgumentException になる。失敗を記録し、停止を呼ばないようにする。
+            val discoveryStartFailed = AtomicBoolean(false)
+
             val discoveryListener =
                 object : NsdManager.DiscoveryListener {
                     override fun onStartDiscoveryFailed(
                         serviceType: String,
                         errorCode: Int,
-                    ) = Unit
+                    ) {
+                        discoveryStartFailed.set(true)
+                    }
 
                     override fun onStopDiscoveryFailed(
                         serviceType: String,
@@ -105,7 +116,9 @@ internal class NsdWindowsServerDiscoveryRepository(
             awaitClose {
                 serviceInfoCallbacks.values.forEach(nsdManager::unregisterServiceInfoCallback)
                 serviceInfoCallbacks.clear()
-                nsdManager.stopServiceDiscovery(discoveryListener)
+                if (!discoveryStartFailed.get()) {
+                    nsdManager.stopServiceDiscovery(discoveryListener)
+                }
             }
         }
 }
