@@ -126,6 +126,78 @@ class NsdWindowsServerDiscoveryRepositoryTest {
     }
 
     @Test
+    @Config(sdk = [33])
+    fun `旧APIでは複数サービスを1件ずつ順に解決し失敗しても次を解決する`() {
+        val listeners = mutableListOf<NsdManager.ResolveListener>()
+        val a = serviceInfo("a")
+        val b = serviceInfo("b")
+        val c = serviceInfo("c")
+        runDiscovery(verifyAfter = {
+            verify(exactly = 1) { nsdManager.resolveService(a, listeners[0]) }
+            verify(exactly = 1) { nsdManager.resolveService(b, listeners[1]) }
+            verify(exactly = 1) { nsdManager.resolveService(c, listeners[2]) }
+            verify(exactly = 1) {
+                nsdManager.discoverServices("_kodriver._tcp.", NsdManager.PROTOCOL_DNS_SD, discoveryListener.captured)
+            }
+            verify(exactly = 1) { nsdManager.stopServiceDiscovery(discoveryListener.captured) }
+            confirmVerified(nsdManager)
+        }) { emissions ->
+            listOf(a, b, c).forEach { every { nsdManager.resolveService(it, capture(listeners)) } just runs }
+
+            discoveryListener.captured.onServiceFound(a)
+            discoveryListener.captured.onServiceFound(b)
+            discoveryListener.captured.onServiceFound(c)
+            assertEquals(1, listeners.size)
+
+            listeners[0].onResolveFailed(a, NsdManager.FAILURE_INTERNAL_ERROR)
+            assertEquals(2, listeners.size)
+
+            listeners[1].onServiceResolved(serviceInfo("b", address("10.0.0.2")))
+            assertEquals(3, listeners.size)
+
+            listeners[2].onServiceResolved(serviceInfo("c", address("10.0.0.3")))
+            yield()
+            assertEquals(
+                listOf(DiscoveredServer("b", "10.0.0.2"), DiscoveredServer("c", "10.0.0.3")),
+                emissions.last(),
+            )
+        }
+    }
+
+    @Test
+    @Config(sdk = [33])
+    fun `旧APIでは解決待ちのまま消えたサービスを解決しない`() {
+        val listeners = mutableListOf<NsdManager.ResolveListener>()
+        val a = serviceInfo("a")
+        val b = serviceInfo("b")
+        val c = serviceInfo("c")
+        runDiscovery(verifyAfter = {
+            verify(exactly = 1) { nsdManager.resolveService(a, listeners[0]) }
+            verify(exactly = 1) { nsdManager.resolveService(c, listeners[1]) }
+            verify(exactly = 1) {
+                nsdManager.discoverServices("_kodriver._tcp.", NsdManager.PROTOCOL_DNS_SD, discoveryListener.captured)
+            }
+            verify(exactly = 1) { nsdManager.stopServiceDiscovery(discoveryListener.captured) }
+            confirmVerified(nsdManager)
+        }) { emissions ->
+            listOf(a, c).forEach { every { nsdManager.resolveService(it, capture(listeners)) } just runs }
+
+            discoveryListener.captured.onServiceFound(a)
+            discoveryListener.captured.onServiceFound(b)
+            discoveryListener.captured.onServiceFound(c)
+            discoveryListener.captured.onServiceLost(b)
+            listeners[0].onServiceResolved(serviceInfo("a", address("10.0.0.1")))
+            listeners[1].onServiceResolved(serviceInfo("c", address("10.0.0.3")))
+            yield()
+
+            assertEquals(
+                listOf(DiscoveredServer("a", "10.0.0.1"), DiscoveredServer("c", "10.0.0.3")),
+                emissions.last(),
+            )
+        }
+    }
+
+    @Test
     @Config(sdk = [36])
     fun `新APIではサービス更新ごとにホストを通知し同名の再発見で古いコールバックを解除する`() = assertServiceInfoCallbackNotifiesHost()
 
