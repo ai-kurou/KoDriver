@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreTemperaturePreferencesRepository
@@ -23,6 +24,12 @@ class AceWindowsObserveThresholdUseCasesTest {
             Celsius(90),
             observe = { observeHighThresholdCelsius() },
             useCase = { ObserveAceWindowsTyreTemperatureHighThresholdUseCase(it)() },
+        )
+        assertObserves<AceWindowsBrakeTemperaturePreferencesRepository, _>(
+            "ObserveAceWindowsBrakeTemperatureHighThresholdUseCase",
+            Celsius(800),
+            observe = { observeHighThresholdCelsius() },
+            useCase = { ObserveAceWindowsBrakeTemperatureHighThresholdUseCase(it)() },
         )
         assertObserves<AceWindowsRemainingFuelLapsPreferencesRepository, _>(
             "ObserveAceWindowsRemainingFuelLapsThresholdUseCase",

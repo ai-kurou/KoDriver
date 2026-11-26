@@ -1,0 +1,48 @@
+package kurou.kodriver.core.acewindowsdata.preferences
+
+import androidx.datastore.core.DataStore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.ReadoutItemKey
+
+internal class AceWindowsBrakeTemperaturePreferencesRepositoryImpl(
+    private val dataStore: DataStore<AceWindowsBrakeTemperaturePreferences>,
+) : AceWindowsBrakeTemperaturePreferencesRepository {
+    override suspend fun resetToDefault() {
+        dataStore.updateData { AceWindowsBrakeTemperaturePreferences() }
+    }
+
+    override fun observeHighThresholdCelsius(): Flow<Celsius> =
+        dataStore.observeProperty { it.highThresholdCelsius }.map { Celsius(it) }
+
+    override suspend fun saveHighThresholdCelsius(celsius: Celsius) {
+        dataStore.saveProperty(celsius.value) { prefs, value -> prefs.copy(highThresholdCelsius = value) }
+    }
+
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
+        dataStore.observeProperty { prefs ->
+            prefs.enabledStates
+                .mapNotNull { (key, enabled) -> ReadoutItemKey.fromValue(key)?.let { it to enabled } }
+                .toMap()
+        }
+
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
+        dataStore.saveProperty(enabled) { prefs, value ->
+            prefs.copy(
+                enabledStates =
+                    prefs.enabledStates + (key.value to value),
+            )
+        }
+    }
+
+    override fun observeOverheatReadoutText(): Flow<String> = dataStore.observeProperty { it.overheatReadoutText }
+
+    override suspend fun saveOverheatReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(overheatReadoutText = value) }
+    }
+}

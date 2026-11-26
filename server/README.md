@@ -34,6 +34,7 @@ Android の `WebSocketLmuWindowsRepository` は `/ws/lmu_windows/telemetry` か�
 | `/ws/ace_windows/fuel` | `ObserveAceWindowsFuelUseCase`（`AceWindowsFuelRepository`） | `AceWindowsFuelData`（同一値も継続配信） |
 | `/ws/ace_windows/flags` | `ObserveAceWindowsFlagUseCase`（`AceWindowsFlagRepository`） | `AceWindowsFlagData` |
 | `/ws/ace_windows/status` | `ObserveAceWindowsStatusUseCase`（`AceWindowsStatusRepository`） | `AceWindowsStatusData`（同一値も継続配信） |
+| `/ws/ace_windows/brake_temperature` | `ObserveAceWindowsBrakeTemperatureUseCase`（`AceWindowsBrakeTemperatureRepository`） | `AceWindowsBrakeTemperatureData`（同一値も継続配信） |
 | `/ws/ace_windows/tyre_carcass_temperature` | `ObserveAceWindowsTyreCarcassTemperatureUseCase`（`AceWindowsTyreCarcassTemperatureRepository`） | `AceWindowsTyreCarcassTemperatureData`（同一値も継続配信） |
 | `/ws/ace_windows/vehicle_approach` | `ObserveAceWindowsVehicleApproachUseCase`（`AceWindowsVehicleApproachRepository`） | `AceWindowsVehicleApproachData` |
 | `/ws/ace_windows/my_best_lap` | `ObserveAceWindowsBestLapTimeUseCase`（`AceWindowsBestLapTimeRepository`） | `AceWindowsBestLapTimeData` |

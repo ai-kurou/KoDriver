@@ -3,6 +3,7 @@ package kurou.kodriver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
@@ -12,6 +13,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
@@ -21,6 +23,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
@@ -37,6 +40,7 @@ internal data class AceWindowsServerUseCases(
     val observeAceWindowsFlag: ObserveAceWindowsFlagUseCase,
     val observeAceWindowsStatus: ObserveAceWindowsStatusUseCase,
     val observeAceWindowsTyreCarcassTemperature: ObserveAceWindowsTyreCarcassTemperatureUseCase,
+    val observeAceWindowsBrakeTemperature: ObserveAceWindowsBrakeTemperatureUseCase,
     val observeAceWindowsVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
     val observeAceWindowsBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
     val observeAceWindowsRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsUseCase,
@@ -52,6 +56,10 @@ internal fun aceWindowsServerUseCasesFrom(koin: Koin): AceWindowsServerUseCases 
         observeAceWindowsTyreCarcassTemperature =
             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                 koin.get<AceWindowsTyreCarcassTemperatureRepository>(),
+            ),
+        observeAceWindowsBrakeTemperature =
+            ObserveAceWindowsBrakeTemperatureUseCase(
+                koin.get<AceWindowsBrakeTemperatureRepository>(),
             ),
         observeAceWindowsVehicleApproach =
             ObserveAceWindowsVehicleApproachUseCase(
@@ -80,6 +88,10 @@ internal fun emptyAceWindowsServerUseCases(): AceWindowsServerUseCases =
         observeAceWindowsTyreCarcassTemperature =
             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+            ),
+        observeAceWindowsBrakeTemperature =
+            ObserveAceWindowsBrakeTemperatureUseCase(
+                EmptyAceWindowsBrakeTemperatureRepository,
             ),
         observeAceWindowsVehicleApproach =
             ObserveAceWindowsVehicleApproachUseCase(
@@ -116,6 +128,10 @@ private object EmptyAceWindowsStatusRepository : AceWindowsStatusRepository {
 
 private object EmptyAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<AceWindowsTyreCarcassTemperatureData> = emptyFlow()
+}
+
+private object EmptyAceWindowsBrakeTemperatureRepository : AceWindowsBrakeTemperatureRepository {
+    override fun brakeTemperatureStream(): Flow<AceWindowsBrakeTemperatureData> = emptyFlow()
 }
 
 private object EmptyAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {

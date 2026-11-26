@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.runtime.Composable
+import kurou.kodriver.feature.acewindowsautoreadout.braketemperaturedetail.AceWindowsAutoReadoutBrakeTemperatureDetailPane
 import kurou.kodriver.feature.acewindowsautoreadout.flagdetail.AceWindowsAutoReadoutFlagDetailPane
 import kurou.kodriver.feature.acewindowsautoreadout.mybestlapdetail.AceWindowsAutoReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.acewindowsautoreadout.remainingfueldetail.AceWindowsAutoReadoutRemainingFuelDetailPane
@@ -30,6 +31,10 @@ internal fun AceWindowsAutoReadoutItemDetailContent(itemType: AceWindowsAutoRead
 
         AceWindowsAutoReadoutListItemType.VehicleApproach -> {
             AceWindowsAutoReadoutVehicleApproachDetailPane()
+        }
+
+        AceWindowsAutoReadoutListItemType.BrakeTemperature -> {
+            AceWindowsAutoReadoutBrakeTemperatureDetailPane()
         }
 
         AceWindowsAutoReadoutListItemType.MyBestLap -> {

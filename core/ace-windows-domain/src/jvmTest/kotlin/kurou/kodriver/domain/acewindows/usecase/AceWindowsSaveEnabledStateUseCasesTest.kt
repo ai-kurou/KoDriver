@@ -4,6 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachPreferencesRepository
@@ -31,6 +32,16 @@ class AceWindowsSaveEnabledStateUseCasesTest {
             useCase = {
                 SaveAceWindowsTyreTemperatureEnabledStateUseCase(it)(
                     AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+                    true,
+                )
+            },
+        )
+        assertSaves<AceWindowsBrakeTemperaturePreferencesRepository>(
+            "SaveAceWindowsBrakeTemperatureEnabledStateUseCase",
+            save = { saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, true) },
+            useCase = {
+                SaveAceWindowsBrakeTemperatureEnabledStateUseCase(it)(
+                    AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning,
                     true,
                 )
             },

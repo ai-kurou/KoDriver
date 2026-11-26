@@ -15,6 +15,9 @@ public sealed class AceWindowsAutoReadoutListItemType(
     public data object TyreTemperature :
         AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.TyreTemperature.Root)
 
+    public data object BrakeTemperature :
+        AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.BrakeTemperature.Root)
+
     public data object RemainingFuel : AceWindowsAutoReadoutListItemType(AceWindowsReadoutItemKey.RemainingFuel.Root)
 
     public data object RemainingFuelLaps :
@@ -31,6 +34,7 @@ public sealed class AceWindowsAutoReadoutListItemType(
                 AceWindowsReadoutItemKey.VehicleApproach.Root -> VehicleApproach
                 AceWindowsReadoutItemKey.Flag.Root -> Flag
                 AceWindowsReadoutItemKey.TyreTemperature.Root -> TyreTemperature
+                AceWindowsReadoutItemKey.BrakeTemperature.Root -> BrakeTemperature
                 AceWindowsReadoutItemKey.RemainingFuel.Root -> RemainingFuel
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root -> RemainingFuelLaps
                 AceWindowsReadoutItemKey.MyBestLap.Root -> MyBestLap

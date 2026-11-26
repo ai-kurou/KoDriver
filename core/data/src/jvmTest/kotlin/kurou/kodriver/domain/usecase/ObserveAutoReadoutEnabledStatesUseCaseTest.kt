@@ -141,6 +141,7 @@ class ObserveAutoReadoutEnabledStatesUseCaseTest {
                     AceWindowsReadoutItemKey.Flag.Root to true,
                     AceWindowsReadoutItemKey.VehicleApproach.Root to true,
                     AceWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    AceWindowsReadoutItemKey.BrakeTemperature.Root to true,
                     AceWindowsReadoutItemKey.RemainingFuel.Root to true,
                     AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
                     AceWindowsReadoutItemKey.MyBestLap.Root to false,

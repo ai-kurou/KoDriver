@@ -9,6 +9,10 @@ import kurou.kodriver.core.narrator.readStartSoundBytes
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.acewindows.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureEnabledStatesUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
@@ -65,12 +69,12 @@ import org.koin.dsl.module
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
- *   ManualReadoutUseCases / SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases / CarGapUseCases /
+ *   ManualReadoutUseCases / SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases / CarGapUseCases / BrakeTemperatureUseCases /
  *   AceWindowsRemainingFuelReadoutTextUseCases / AceWindowsReadoutTextUseCases）、
  *   それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・
  *   TextToSpeechEngine・SpeakTextUseCase・
- *   ObserveVoiceUseCase・ObserveVoiceSpeedUseCase・ObserveVoicePitchUseCase・CheckTextToSpeechAvailableUseCase・フラッグ・車両接近・タイヤ過熱・燃料残量・残り周回数・自己ベストラップ文言Observe UseCase）、
+ *   ObserveVoiceUseCase・ObserveVoiceSpeedUseCase・ObserveVoicePitchUseCase・CheckTextToSpeechAvailableUseCase・フラッグ・車両接近・タイヤ過熱・ブレーキ過熱・燃料残量・残り周回数・自己ベストラップ文言Observe UseCase）、
  *   および自由文言TTSの AceWindowsReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）・TextToSpeechRepository（:core:text-to-speech-data）。
@@ -87,6 +91,7 @@ public val aceWindowsNarratorModule: Module =
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
             AceWindowsNarratorViewModel(
+                get(),
                 get(),
                 get(),
                 get(),
@@ -121,6 +126,7 @@ public val aceWindowsNarratorModule: Module =
         factory { TyreTemperatureUseCases(get(), get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get()) }
         factory { CarGapUseCases(get()) }
+        factory { BrakeTemperatureUseCases(get(), get(), get()) }
         factory {
             AceWindowsNarratorEventProcessor(
                 get(named(Simulator.AceWindows.id)),
@@ -143,6 +149,9 @@ public val aceWindowsNarratorModule: Module =
         factory { ObserveAceWindowsTyreCarcassTemperatureUseCase(get()) }
         factory { ObserveAceWindowsTyreTemperatureHighThresholdUseCase(get()) }
         factory { ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(get()) }
+        factory { ObserveAceWindowsBrakeTemperatureUseCase(get()) }
+        factory { ObserveAceWindowsBrakeTemperatureHighThresholdUseCase(get()) }
+        factory { ObserveAceWindowsBrakeTemperatureEnabledStatesUseCase(get()) }
         factory { ObserveAceWindowsVehicleApproachUseCase(get()) }
         factory { ObserveAceWindowsVehicleApproachEnabledStatesUseCase(get()) }
         factory { AceWindowsVehicleApproachThresholdsUseCases(get()) }
@@ -157,6 +166,7 @@ public val aceWindowsNarratorModule: Module =
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsVehicleApproachReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRemainingFuelReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase(get()) }
@@ -187,6 +197,7 @@ public val aceWindowsNarratorModule: Module =
                         vehicleApproach = get(named(Simulator.AceWindows.id)),
                         tyreOverheat = get(named(Simulator.AceWindows.id)),
                         myBestLap = get(named(Simulator.AceWindows.id)),
+                        brakeOverheat = get(named(Simulator.AceWindows.id)),
                     ),
                 checkTextToSpeechAvailable = get(named(Simulator.AceWindows.id)),
                 speakText = get(named(Simulator.AceWindows.id)),

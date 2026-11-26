@@ -69,6 +69,14 @@ class AutoReadoutListItemTypeAceWindowsTest {
     }
 
     @Test
+    fun `ace_windows の brake_temperature は AceWindows_BrakeTemperature を返す`() {
+        assertEquals(
+            AceWindowsAutoReadoutListItemType.BrakeTemperature,
+            AutoReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.BrakeTemperature.Root),
+        )
+    }
+
+    @Test
     fun `ace_windows の vehicle_approach は AceWindows_VehicleApproach を返す`() {
         assertEquals(
             AceWindowsAutoReadoutListItemType.VehicleApproach,
@@ -77,7 +85,7 @@ class AutoReadoutListItemTypeAceWindowsTest {
     }
 
     @Test
-    fun `ace_windows のデフォルト並び順はフラッグ・車両接近・燃料残り周回数・燃料残量・タイヤ温度・自己ベストラップの順`() {
+    fun `ace_windows のデフォルト並び順はフラッグ・車両接近・燃料残り周回数・燃料残量・タイヤ温度・ブレーキ温度・自己ベストラップの順`() {
         assertEquals(
             listOf(
                 AceWindowsReadoutItemKey.Flag.Root,
@@ -85,6 +93,7 @@ class AutoReadoutListItemTypeAceWindowsTest {
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
                 AceWindowsReadoutItemKey.RemainingFuel.Root,
                 AceWindowsReadoutItemKey.TyreTemperature.Root,
+                AceWindowsReadoutItemKey.BrakeTemperature.Root,
                 AceWindowsReadoutItemKey.MyBestLap.Root,
             ),
             AutoReadoutListItemType.defaultOrder(Simulator.AceWindows),

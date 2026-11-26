@@ -2,6 +2,7 @@ package kurou.kodriver.domain.acewindows.usecase
 
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
@@ -14,6 +15,7 @@ import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemName
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsBrakeOverheat
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
 import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
@@ -1260,5 +1262,70 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 decision.events.single().narratedText,
             )
         }
+    }
+
+    @Test
+    fun `いずれかのブレーキが閾値以上になると閾値を持つAceWindowsBrakeOverheatを返す`() {
+        val decision = determineBrake(AceWindowsNarratorState(), 800f)
+
+        assertEquals(listOf(AceWindowsBrakeOverheat(800)), decision.events)
+        assertEquals(true, decision.state.brakeOverheating)
+    }
+
+    @Test
+    fun `ブレーキが閾値未満なら返さない`() {
+        val decision = determineBrake(AceWindowsNarratorState(), 799.9f)
+
+        assertEquals(emptyList(), decision.events)
+        assertEquals(false, decision.state.brakeOverheating)
+    }
+
+    @Test
+    fun `ブレーキは全輪が閾値より100度以上下がるまで再び返さない`() {
+        val hot = determineBrake(AceWindowsNarratorState(), 850f)
+        val slightlyCooled = determineBrake(hot.state, 700.1f)
+        val hotAgain = determineBrake(slightlyCooled.state, 850f)
+        val cooled = determineBrake(hotAgain.state, 700f)
+        val overheatedAgain = determineBrake(cooled.state, 850f)
+
+        assertEquals(true, slightlyCooled.state.brakeOverheating)
+        assertEquals(emptyList(), hotAgain.events)
+        assertEquals(false, cooled.state.brakeOverheating)
+        assertEquals(listOf(AceWindowsBrakeOverheat(800)), overheatedAgain.events)
+    }
+
+    @Test
+    fun `ブレーキ温度の項目か過熱警告が無効なら状態だけ更新して返さない`() {
+        listOf(
+            AceWindowsReadoutItemKey.BrakeTemperature.Root,
+            AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning,
+        ).forEach { disabledKey ->
+            val decision = determineBrake(AceWindowsNarratorState(), 850f, disabledKey)
+
+            assertEquals(emptyList(), decision.events)
+            assertEquals(true, decision.state.brakeOverheating)
+        }
+    }
+
+    private fun determineBrake(
+        state: AceWindowsNarratorState,
+        celsius: Float,
+        disabledKey: ReadoutItemKey? = null,
+    ): AceWindowsNarratorReadoutDecision {
+        val enabledStates =
+            mapOf<ReadoutItemKey, Boolean>(
+                AceWindowsReadoutItemKey.BrakeTemperature.Root to true,
+                AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning to true,
+            )
+        return DetermineAceWindowsNarratorReadoutUseCase().determineBrakeTemperatureOverheat(
+            state = state,
+            data = AceWindowsBrakeTemperatureData(mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(celsius))),
+            settings =
+                AceWindowsNarratorReadoutSettings(
+                    enabledStates = if (disabledKey == null) enabledStates else enabledStates + (disabledKey to false),
+                    remainingFuelThresholdPercentage = 30,
+                    brakeTemperatureHighThresholdCelsius = Celsius(800),
+                ),
+        )
     }
 }

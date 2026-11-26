@@ -17,6 +17,7 @@ internal fun aceWindowsItemIcon(itemId: AceWindowsReadoutItemKey): ImageVector =
         is AceWindowsReadoutItemKey.RemainingFuel -> Icons.Filled.LocalGasStation
         is AceWindowsReadoutItemKey.RemainingFuelLaps -> Icons.Filled.LocalGasStation
         is AceWindowsReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
+        is AceWindowsReadoutItemKey.BrakeTemperature -> Icons.Filled.DeviceThermostat
         is AceWindowsReadoutItemKey.MyBestLap -> Icons.Filled.Timer
         is AceWindowsReadoutItemKey.CarGap -> Icons.Filled.Straighten
     }
