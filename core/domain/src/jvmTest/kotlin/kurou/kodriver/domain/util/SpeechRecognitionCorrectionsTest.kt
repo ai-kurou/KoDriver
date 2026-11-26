@@ -6,7 +6,7 @@ import kotlin.test.assertTrue
 
 class SpeechRecognitionCorrectionsTest {
     @Test
-    fun `登録された置換は依頼された17組である`() {
+    fun `登録された置換は依頼された20組である`() {
         assertEquals(
             listOf(
                 "産業" to "残量",
@@ -26,6 +26,9 @@ class SpeechRecognitionCorrectionsTest {
                 "前項" to "前後",
                 "善行" to "前後",
                 "全高" to "前後",
+                "逆" to "ギャップ",
+                "登り" to "残り",
+                "上り" to "残り",
             ),
             SPEECH_RECOGNITION_CORRECTIONS,
         )
