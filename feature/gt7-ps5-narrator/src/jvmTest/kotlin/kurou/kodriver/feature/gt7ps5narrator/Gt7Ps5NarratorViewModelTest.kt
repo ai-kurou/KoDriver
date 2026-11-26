@@ -145,7 +145,7 @@ class Gt7Ps5NarratorViewModelTest {
 
     private val ttsEngine: TextToSpeechEngine = mockk()
 
-    private val priorityAwareTts: PriorityAwareTts = mockk()
+    private val priorityAwareTts: TextToSpeechEngine = mockk()
 
     @BeforeTest
     fun setUp() {
@@ -1516,12 +1516,9 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-            assertEquals(false, ttsEngine.stopCalled)
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-            verify(exactly = 0) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.currentIsManual }
-            verify(exactly = 1) { ttsEngine.stopCalled }
             confirmVerified(ttsEngine)
         }
 
@@ -1541,7 +1538,6 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-            assertEquals(false, ttsEngine.stopCalled)
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
 
@@ -1608,7 +1604,6 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-            assertEquals(true, ttsEngine.stopCalled)
             assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
         }
 
@@ -1628,7 +1623,6 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-            assertEquals(true, ttsEngine.stopCalled)
             assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
         }
 
@@ -1652,7 +1646,6 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-            assertEquals(false, ttsEngine.stopCalled)
             assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
         }
 
@@ -1672,7 +1665,6 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-            assertEquals(false, ttsEngine.stopCalled)
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
 
@@ -1845,16 +1837,14 @@ class Gt7Ps5NarratorViewModelTest {
                 capture(mutableListOf<Boolean>()),
             )
         } just Runs
-        every { ttsEngine.stop() } just Runs
         return ttsEngine
     }
 
     private fun mockPriorityAwareTts(
         spokenTexts: MutableList<SpeechEvent>,
         initialKey: ReadoutItemKey?,
-    ): PriorityAwareTts {
-        var currentKey = initialKey
-        var stopCalled = false
+    ): TextToSpeechEngine {
+        val currentKey = initialKey
         every { priorityAwareTts.currentReadoutItemKey } answers { currentKey }
         every { priorityAwareTts.currentIsManual } returns false
         every {
@@ -1864,16 +1854,7 @@ class Gt7Ps5NarratorViewModelTest {
                 capture(mutableListOf<Boolean>()),
             )
         } just Runs
-        every { priorityAwareTts.stop() } answers {
-            stopCalled = true
-            currentKey = null
-        }
-        every { priorityAwareTts.stopCalled } answers { stopCalled }
         return priorityAwareTts
-    }
-
-    private interface PriorityAwareTts : TextToSpeechEngine {
-        val stopCalled: Boolean
     }
 
     @Test

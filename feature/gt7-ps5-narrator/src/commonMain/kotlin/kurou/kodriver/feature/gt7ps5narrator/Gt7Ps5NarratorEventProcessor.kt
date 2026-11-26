@@ -169,7 +169,6 @@ internal class Gt7Ps5NarratorEventProcessor(
             autoReadoutOrder = autoReadoutOrder,
             queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
             speak = { queue -> ttsEngine.speak(event, queue, isManual, playStartSound) },
-            stop = { ttsEngine.stop() },
             outcomes =
                 SpeakOutcomes(
                     skipped = NarrationOutcome.SKIPPED,

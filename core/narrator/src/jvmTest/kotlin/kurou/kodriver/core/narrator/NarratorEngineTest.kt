@@ -490,20 +490,90 @@ class NarratorEngineTest {
         }
 
     @Test
-    fun `queue false の speak は待機中のキューを破棄して新しい音声を再生する`() =
+    fun `queue false の speak は再生中の音声を中断し、待機中のキューを残して後に再生する`() =
+        runTest {
+            val spoken = mutableListOf<String>()
+            val gate = CompletableDeferred<Unit>()
+            val engine =
+                createEngine(
+                    FakeSoundPlayer(),
+                    customSpeak = { event, _ ->
+                        spoken += event
+                        if (event == LEFT_APPROACH) gate.await()
+                    },
+                )
+            runCurrent()
+
+            engine.speak(LEFT_APPROACH)
+            runCurrent()
+            engine.speak(RED_FLAG, queue = true)
+            engine.speak(CAR_LEFT)
+            advanceUntilIdle()
+
+            assertEquals(listOf(LEFT_APPROACH, CAR_LEFT, RED_FLAG), spoken)
+            assertEquals(null, engine.currentKey)
+        }
+
+    @Test
+    fun `連続して割り込んでも待機中のキューは元の順で一度だけ再生する`() =
+        runTest {
+            val spoken = mutableListOf<String>()
+            val engine = createEngine(FakeSoundPlayer(), customSpeak = { event, _ -> spoken += event })
+            runCurrent()
+
+            engine.speak(LEFT_APPROACH)
+            engine.speak(RED_FLAG, queue = true)
+            engine.speak(CAR_LEFT, queue = true)
+            engine.speak("first")
+            engine.speak("second")
+            advanceUntilIdle()
+
+            assertEquals(listOf("second", RED_FLAG, CAR_LEFT), spoken)
+        }
+
+    @Test
+    fun `停止待ちでまだ再生していない先頭のキューは割り込み後に再生する`() =
+        runTest {
+            val spoken = mutableListOf<String>()
+            val engine = createEngine(FakeSoundPlayer(), customSpeak = { event, _ -> spoken += event })
+            runCurrent()
+
+            engine.speak(RED_FLAG, queue = true)
+            engine.speak(CAR_LEFT)
+            advanceUntilIdle()
+
+            assertEquals(listOf(CAR_LEFT, RED_FLAG), spoken)
+        }
+
+    @Test
+    fun `割り込み後も残したキューは開始音なしの指定を引き継ぐ`() =
         runTest {
             val player = FakeSoundPlayer()
             val engine = createEngine(player)
             runCurrent()
 
-            engine.speak(LEFT_APPROACH)
-            engine.speak(RED_FLAG, queue = true)
-            engine.speak(CAR_LEFT)
+            engine.speak(RED_FLAG, queue = true, playStartSound = false)
+            engine.speak(CAR_LEFT, playStartSound = false)
             advanceUntilIdle()
 
             assertEquals(2, player.playedSounds.size)
-            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
-            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[0])
+            assertContentEquals(RED_FLAG_SOUND, player.playedSounds[1])
+        }
+
+    @Test
+    fun `stop後は割り込みで残したキューも再生しない`() =
+        runTest {
+            val spoken = mutableListOf<String>()
+            val engine = createEngine(FakeSoundPlayer(), customSpeak = { event, _ -> spoken += event })
+            runCurrent()
+
+            engine.speak(RED_FLAG, queue = true)
+            engine.speak(CAR_LEFT)
+            engine.stop()
+            advanceUntilIdle()
+
+            assertEquals(emptyList(), spoken)
         }
 
     @Test
@@ -1253,23 +1323,6 @@ class NarratorEngineTest {
         }
 
     @Test
-    fun `再生待ちのイベントがある間に届いた非キューのイベントは待機分を破棄して再生する`() =
-        runTest {
-            val player = FakeSoundPlayer()
-            val engine = createEngine(player)
-            runCurrent()
-
-            engine.speak(CAR_LEFT, queue = true)
-            engine.speak(RED_FLAG, queue = true)
-            engine.speak(LEFT_APPROACH)
-            advanceUntilIdle()
-
-            // 割り込みで待機中のキューも破棄され、最後の非キューのイベントだけが再生される
-            assertEquals(2, player.playedSounds.size)
-            assertContentEquals(LEFT_APPROACH_SOUND, player.playedSounds.last())
-        }
-
-    @Test
     fun `再生が終わったらキューで待機している次のイベントのキーと手動フラグへ公開状態を引き継ぐ`() =
         runTest {
             val gate = CompletableDeferred<Unit>()
@@ -1306,7 +1359,7 @@ class NarratorEngineTest {
         }
 
     @Test
-    fun `非キューのイベントで破棄された待機分は後から積んだキューの引き継ぎ先に残らない`() =
+    fun `非キューの割り込みが終わると残したキューのキーと手動フラグへ公開状態を引き継ぐ`() =
         runTest {
             val gate = CompletableDeferred<Unit>()
             var observed: Pair<String?, Boolean>? = null
@@ -1330,14 +1383,46 @@ class NarratorEngineTest {
             engine.speak(CAR_LEFT, queue = true)
             engine.speak(LEFT_APPROACH)
             runCurrent()
-            engine.speak(RED_FLAG, queue = true)
-            runCurrent()
+            assertEquals(false, engine.currentIsManual)
 
             gate.complete(Unit)
             advanceUntilIdle()
 
-            // 破棄された手動の CAR_LEFT ではなく、後から積んだ RED_FLAG へ引き継がれる
-            assertEquals(RED_FLAG_KEY to false, observed)
+            assertEquals(CAR_LEFT_KEY to true, observed)
+            assertEquals(null, engine.currentKey)
+        }
+
+    @Test
+    fun `キャンセルされた再生が正常終了しても残したキューの公開状態へ引き継がない`() =
+        runTest {
+            val gate = CompletableDeferred<Unit>()
+            var observed: Pair<String?, Boolean>? = null
+            var engineRef: TestEngine? = null
+            val engine =
+                createEngine(
+                    FakeSoundPlayer(),
+                    isManualEvent = { it == CAR_LEFT },
+                    customSpeak = { event, _ ->
+                        if (event == RED_FLAG) {
+                            // 協調的でない読み上げを再現するため、キャンセル後も続けて正常終了する
+                            withContext(NonCancellable) { gate.await() }
+                            // 停止完了待ちが再開する前に実行されるよう、ここで積んでおく
+                            launch { observed = engineRef?.let { it.currentKey to it.currentIsManual } }
+                        }
+                    },
+                )
+            engineRef = engine
+            runCurrent()
+
+            engine.speak(RED_FLAG)
+            runCurrent()
+            engine.speak(CAR_LEFT, queue = true)
+            engine.speak(LEFT_APPROACH)
+            runCurrent()
+            gate.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals("${LEFT_APPROACH}_key" to false, observed)
         }
 
     @Test

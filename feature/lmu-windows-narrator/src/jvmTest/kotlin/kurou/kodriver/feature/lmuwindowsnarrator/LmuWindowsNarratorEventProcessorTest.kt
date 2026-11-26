@@ -1573,7 +1573,6 @@ class LmuWindowsNarratorEventProcessorTest {
             val newEvent = LmuWindowsCarLeft()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             every { ttsEngine.currentIsManual } returns false
-            every { ttsEngine.stop() } just Runs
             every { ttsEngine.speak(newEvent.withResolvedText("カーレフト"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -1597,7 +1596,6 @@ class LmuWindowsNarratorEventProcessorTest {
                 logContext = logContext(),
             )
 
-            verify(exactly = 1) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.speak(newEvent.withResolvedText("カーレフト"), queue = false) }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.currentIsManual }
@@ -2587,14 +2585,13 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `自動再生中の手動読み上げは停止して割り込み再生する`() =
+    fun `自動再生中の手動読み上げは割り込み再生する`() =
         runTest {
             val key = LmuWindowsReadoutItemKey.RemainingFuel.Root
             val event = LmuWindowsManualReadoutText(key, "手動")
             val resolved = event.withResolvedText("手動")
             every { ttsEngine.currentReadoutItemKey } returns key
             every { ttsEngine.currentIsManual } returns false
-            every { ttsEngine.stop() } just Runs
             every { ttsEngine.speak(resolved, false, true) } just Runs
             val json = slot<String>()
             coEvery {
@@ -2611,7 +2608,6 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor().processManualReadout(listOf(event), 0L, logContext())
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.currentIsManual }
-            verify(exactly = 1) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.speak(resolved, false, true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(

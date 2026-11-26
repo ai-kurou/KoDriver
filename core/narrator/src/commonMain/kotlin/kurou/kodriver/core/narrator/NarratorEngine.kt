@@ -138,17 +138,21 @@ public class NarratorEngine<EVENT, START_TYPE, KEY>(
     public val currentIsManual: Boolean
         get() = _currentIsManual && playJob?.isActive == true
 
-    // キューで再生待ちのイベント（再生順）。再生中のイベントは含まない。
-    // 再生が終わった時点で次の待機イベントのキー・手動フラグへ公開状態を引き継ぐために使う。
+    // キューで追加し、まだ再生を始めていないイベント（再生順）。何も再生していないときに追加した先頭も含む。
+    // 再生が終わった時点で次の待機イベントのキー・手動フラグへ公開状態を引き継ぎ、
+    // 非キューの割り込みでは未開始の分を割り込むイベントの後ろへ積み直すために使う。
     // commonMain では synchronized が使えないため、不変リストの差し替えは speak() / stop() を呼ぶ側だけが行う。
     // 再生側（play()）はリストを書き換えず、開始した項目に started を立てるだけにする。
     // 削除を再生側と呼び出し側で競合させると、終了済みの項目が復活して誤った公開状態を引き継ぐため。
     @Volatile
-    private var pendingPlays: List<PendingPlay<KEY>> = emptyList()
+    private var queuedPlays: List<Playback<EVENT, KEY>> = emptyList()
 
-    private data class PendingPlay<KEY>(
+    private class Playback<EVENT, KEY>(
+        val event: EVENT,
         val key: KEY,
         val manual: Boolean,
+        val playStartSound: Boolean,
+        val body: suspend (Int) -> Unit,
     ) {
         @Volatile
         var started: Boolean = false
@@ -183,6 +187,12 @@ public class NarratorEngine<EVENT, START_TYPE, KEY>(
         }
     }
 
+    /**
+     * [event] を再生する。[queue] が true なら再生中・再生待ちの後ろへ追加する。
+     * false なら再生中のイベントを止めてすぐに再生する。止めたイベントは再開しないが、
+     * キューで追加してまだ再生を始めていないイベントは残し、[event] の後に元の順で再生する。
+     * 再生待ちもすべて破棄する場合は [stop] を呼ぶ。
+     */
     public fun speak(
         event: EVENT,
         queue: Boolean = false,
@@ -190,46 +200,53 @@ public class NarratorEngine<EVENT, START_TYPE, KEY>(
         playStartSound: Boolean = true,
     ) {
         val body = playbackBody(event) ?: return
-        val manual = isManual || isManualEvent(event)
+        val playback = Playback(event, eventToKey(event), isManual || isManualEvent(event), playStartSound, body)
         if (queue) {
-            // stop() 直後で playbackScope がキャンセル済みのままだと、その配下へ launch した
-            // 瞬間に子ジョブごとキャンセルされてしまうため、生存中でなければ差し替える。
-            if (!playbackScope.isActive) playbackScope = newPlaybackScope()
-            val barrier = stopBarrier
-            val previousJob = playJob
-            val key = eventToKey(event)
-            // 再生中も再生待ちもなければ、このイベントが次に再生される。非キュー経路と同様に今すぐ公開する。
-            // 公開しないと play() に入るまで currentKey が null になり、その間に届いた別のイベントが
-            // 「再生中なし」と判定されて、再生待ちのこのイベントをキャンセルしてしまう。
-            // すでに再生中・再生待ちがあるときは、その公開状態が先に続くため待機リストへ積むだけにする。
-            val pending =
-                if (currentKey == null) {
-                    _currentKey = key
-                    _currentIsManual = manual
-                    null
-                } else {
-                    PendingPlay(key, manual).also { pendingPlays = pendingPlays.filterNot { p -> p.started } + it }
-                }
-            playJob =
-                playbackScope.launch {
-                    barrier.join()
-                    previousJob?.join()
-                    pending?.started = true
-                    play(event, manual, body, playStartSound)
-                }
+            enqueue(playback)
             return
         }
+        val waiting = queuedPlays
         val barrier = cancelPlayback()
+        // キャンセル後に started を読み、再生開始と入れ違いになった項目を積み直す可能性を狭める。
+        val kept = waiting.filterNot { it.started }
         // 前の再生の停止待ち（barrier）の間も、この新しいイベントを再生中として公開する。
         // 公開しないと play() に入るまで currentKey が null になり、続けて届いた自動・手動の
         // イベントが「再生中なし」と判定されて、待機中のこのイベントをキャンセルしてしまう。
-        _currentKey = eventToKey(event)
-        _currentIsManual = manual
+        _currentKey = playback.key
+        _currentIsManual = playback.manual
         playbackScope = newPlaybackScope()
         playJob =
             playbackScope.launch {
                 barrier.join()
-                play(event, manual, body, playStartSound)
+                play(playback)
+            }
+        // キャンセルしたジョブが後から started を立てても影響しないよう、作り直してから積み直す。
+        kept.forEach {
+            enqueue(Playback(it.event, it.key, it.manual, it.playStartSound, it.body))
+        }
+    }
+
+    private fun enqueue(playback: Playback<EVENT, KEY>) {
+        // stop() 直後で playbackScope がキャンセル済みのままだと、その配下へ launch した
+        // 瞬間に子ジョブごとキャンセルされてしまうため、生存中でなければ差し替える。
+        if (!playbackScope.isActive) playbackScope = newPlaybackScope()
+        val barrier = stopBarrier
+        val previousJob = playJob
+        // 再生中も再生待ちもなければ、このイベントが次に再生される。非キュー経路と同様に今すぐ公開する。
+        // 公開しないと play() に入るまで currentKey が null になり、その間に届いた別のイベントが
+        // 「再生中なし」と判定されて、再生待ちのこのイベントをキャンセルしてしまう。
+        // すでに再生中・再生待ちがあるときは、その公開状態が先に続く。
+        if (currentKey == null) {
+            _currentKey = playback.key
+            _currentIsManual = playback.manual
+        }
+        queuedPlays = queuedPlays.filterNot { it.started } + playback
+        playJob =
+            playbackScope.launch {
+                barrier.join()
+                previousJob?.join()
+                playback.started = true
+                play(playback)
             }
     }
 
@@ -242,22 +259,17 @@ public class NarratorEngine<EVENT, START_TYPE, KEY>(
         return { volume -> customSpeak(event, volume) }
     }
 
-    private suspend fun play(
-        event: EVENT,
-        manual: Boolean,
-        body: suspend (Int) -> Unit,
-        playStartSound: Boolean,
-    ) {
-        val key = eventToKey(event)
+    private suspend fun play(playback: Playback<EVENT, KEY>) {
+        val key = playback.key
         _currentKey = key
-        _currentIsManual = manual
+        _currentIsManual = playback.manual
         try {
             val vol = currentVolume
             val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
-            if (playStartSound && startSoundEnabled) {
+            if (playback.playStartSound && startSoundEnabled) {
                 startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
             }
-            body(vol)
+            playback.body(vol)
         } catch (e: CancellationException) {
             // 中断は呼び出し側（cancelPlayback）が公開状態を消すため、ここでは触らない
             throw e
@@ -279,11 +291,13 @@ public class NarratorEngine<EVENT, START_TYPE, KEY>(
      * 引き継がないと、直前のイベントの手動フラグが次のイベントの優先度判定に残ってしまう。
      */
     private suspend fun finishPlayback() {
+        // キャンセルを握りつぶして正常終了した再生は、割り込んだ側の公開状態を上書きしない。
+        if (!currentCoroutineContext().isActive) return
         if (playJob === currentCoroutineContext().job) {
             _currentKey = null
             _currentIsManual = false
         } else {
-            pendingPlays.firstOrNull { !it.started }?.let {
+            queuedPlays.firstOrNull { !it.started }?.let {
                 _currentKey = it.key
                 _currentIsManual = it.manual
             }
@@ -311,7 +325,7 @@ public class NarratorEngine<EVENT, START_TYPE, KEY>(
         // active になった間に古いキーが currentKey として見えないようここで消す。
         _currentKey = null
         _currentIsManual = false
-        pendingPlays = emptyList()
+        queuedPlays = emptyList()
         val previous = stopBarrier
         stopBarrier =
             scope.launch {

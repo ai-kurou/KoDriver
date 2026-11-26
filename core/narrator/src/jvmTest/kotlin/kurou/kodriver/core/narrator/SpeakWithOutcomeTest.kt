@@ -15,7 +15,6 @@ class SpeakWithOutcomeTest {
                 autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = true,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 outcomes =
                     SpeakOutcomes(
                         skipped = "skipped",
@@ -40,7 +39,6 @@ class SpeakWithOutcomeTest {
                 autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = false,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 outcomes =
                     SpeakOutcomes(
                         skipped = "skipped",
@@ -55,7 +53,7 @@ class SpeakWithOutcomeTest {
     }
 
     @Test
-    fun `優先度に勝った場合は停止して interrupted を返す`() {
+    fun `優先度に勝った場合は interrupted を返す`() {
         val calls = mutableListOf<String>()
 
         val result =
@@ -65,7 +63,6 @@ class SpeakWithOutcomeTest {
                 autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = false,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 outcomes =
                     SpeakOutcomes(
                         skipped = "skipped",
@@ -76,11 +73,11 @@ class SpeakWithOutcomeTest {
             )
 
         assertEquals("interrupted", result)
-        assertEquals(listOf("stop", "speak:false"), calls)
+        assertEquals(listOf("speak:false"), calls)
     }
 
     @Test
-    fun `再生中のイベントがなければ停止せず spoken を返す`() {
+    fun `再生中のイベントがなければ spoken を返す`() {
         val calls = mutableListOf<String>()
 
         val result =
@@ -90,7 +87,6 @@ class SpeakWithOutcomeTest {
                 autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = false,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 outcomes =
                     SpeakOutcomes(
                         skipped = "skipped",
@@ -105,13 +101,13 @@ class SpeakWithOutcomeTest {
     }
 
     @Test
-    fun `手動が自動を止めて割り込んだ場合は interrupted を返す`() {
+    fun `手動が自動に割り込んだ場合は interrupted を返す`() {
         val calls = mutableListOf<String>()
 
         val result = manualOutcome(calls, currentKey = "auto", currentIsManual = false)
 
         assertEquals("interrupted", result)
-        assertEquals(listOf("stop", "speak:false"), calls)
+        assertEquals(listOf("speak:false"), calls)
     }
 
     @Test
@@ -145,7 +141,6 @@ class SpeakWithOutcomeTest {
                 autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = false,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 outcomes = OUTCOMES,
                 currentIsManual = { true },
             )
@@ -165,7 +160,6 @@ class SpeakWithOutcomeTest {
             autoReadoutOrder = emptyList(),
             queueEnabled = false,
             speak = { queue -> calls += "speak:$queue" },
-            stop = { calls += "stop" },
             outcomes = OUTCOMES,
             isManual = true,
             currentIsManual = { currentIsManual },

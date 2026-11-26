@@ -24,8 +24,8 @@
 `:core:narrator` 自体は `:core:domain` に依存しません（`moduleGraphAssert` の `maxHeight` 制約を超えないため）。
 開始音タイプ→ファイルパスのマップ・開始音を読み込む `startSoundResourceLoader`・イベントからキーへの変換関数 `eventToKey` をコンストラクタで
 受け取ることで、3つの narrator feature がそのまま利用できます。各 feature は `TextToSpeechEngine` を実装する薄い
-アダプタ（`LmuWindowsNarratorEngine` など）でこのエンジンをラップします。優先度の高いイベントで割り込む際の
-`stop()` → `speak()` の連続呼び出しに対しても、直前にキャンセルした再生ジョブの停止処理が完了するまで新しい再生を
+アダプタ（`LmuWindowsNarratorEngine` など）でこのエンジンをラップします。非キューの `speak` や `stop()` が
+連続して呼ばれても、直前にキャンセルした再生ジョブの停止処理が完了するまで新しい再生を
 始めないよう `stopBarrier` で待ち合わせます。
 
 `currentKey` / `currentIsManual` は、再生中だけでなくキューで再生待ちのイベントも公開します。何も再生していないときに
@@ -33,7 +33,10 @@
 再生中・再生待ちがあるときに積んだイベントは待機リストに保持し、先行する再生が終わった時点で、次の待機イベントの
 キー・手動フラグへ公開状態を引き継ぎます。公開しないと、再生待ちの間に届いた別のイベントが「再生中なし」と判定して
 待機中のジョブをキャンセルしたり、直前のイベントの手動フラグが次のイベントの優先度判定に残ったりします。
-`stop()` や非キューの `speak` で再生が打ち切られると待機リストも破棄します。
+非キューの `speak` は再生中のイベントを止めて割り込みます。止めたイベントは再開しませんが、キューで追加してまだ
+再生を始めていないイベント（停止完了待ちの先頭を含む）は残し、割り込んだイベントの後に元の順で再生します。
+再生開始と割り込みがほぼ同時の場合は、冒頭が鳴ったイベントが最初から再生し直される可能性があります。
+`stop()`・`previewStartSound()`・`playStartSoundForKey()` は待機リストもすべて破棄します。
 
 `NarratorEngine` の `isCustomSpeakEvent` が true のイベントは、開始音の後に `customSpeak` へ本文と音量を渡す。false のイベントは再生対象外で、イベント別のWAV本文は持たない。
 本文は`SpeakTextUseCase`を通じ、保存済み音声ID・読み上げ速度（0.5〜2.0、既定1.0）・声の高さ（0.5〜2.0、既定1.0）を使う。
@@ -50,9 +53,9 @@
 | # | 条件 | 動作 | 対応する `NarrationOutcome` |
 | --- | --- | --- | --- |
 | 1 | キュー再生が有効 | 優先度判定をせず `speak(queue = true)` でキューへ追加 | `QUEUED` |
-| 2 | キュー再生が無効・再生中のイベントあり・優先度が負けた | `speak` も `stop` も呼ばない | `SKIPPED` |
-| 3 | キュー再生が無効・再生中のイベントあり・優先度が勝った | `stop()` してから `speak(queue = false)` | `INTERRUPTED` |
-| 4 | キュー再生が無効・再生中のイベントなし | `stop()` せず `speak(queue = false)` | `SPOKEN` |
+| 2 | キュー再生が無効・再生中のイベントあり・優先度が負けた | `speak` を呼ばない | `SKIPPED` |
+| 3 | キュー再生が無効・再生中のイベントあり・優先度が勝った | `speak(queue = false)` で割り込み | `INTERRUPTED` |
+| 4 | キュー再生が無効・再生中のイベントなし | `speak(queue = false)` | `SPOKEN` |
 
 `autoReadoutOrder` に含まれないキーは最も優先度が低いものとして扱います。
 
@@ -61,10 +64,10 @@
 
 | 条件 | 動作 | 対応する `NarrationOutcome` |
 | --- | --- | --- |
-| `isManual`・再生中が自動 | 優先度判定をせず `stop()` してから `speak(queue = false)` | `INTERRUPTED` |
+| `isManual`・再生中が自動 | 優先度判定をせず `speak(queue = false)` で割り込み | `INTERRUPTED` |
 | `isManual`・再生中が手動 | `speak(queue = true)` で末尾へ追加 | `QUEUED` |
-| `isManual`・再生中なし | `stop()` せず `speak(queue = false)` | `SPOKEN` |
-| 自動・キュー無効・再生中が手動（`currentIsManual`） | `speak` も `stop` も呼ばない | `SKIPPED` |
+| `isManual`・再生中なし | `speak(queue = false)` | `SPOKEN` |
+| 自動・キュー無効・再生中が手動（`currentIsManual`） | `speak` を呼ばない | `SKIPPED` |
 
 自動イベントでキュー再生が有効な場合は、再生中が手動でも従来どおりキューへ追加します。`NarratorEngine.currentIsManual` は、
 
@@ -73,12 +76,11 @@
 
 **戻り値の `Boolean` だけでは4経路を区別できません**（経路1・3・4がいずれも `true` になります）。テレメトリログへ
 保存する `NarrationOutcome` のように4経路を区別したい呼び出し側は、同ファイルの
-`speakWithOutcome<KEY, OUTCOME>(...)` を利用します。`speakWithPriority` を呼び、`speak` に渡された `queue` の値と
-`stop` が呼ばれたかどうかを捕捉して、呼び出し側から渡された `SpeakOutcomes`（`skipped` / `queued` / `interrupted` / `spoken`）の値を返します。
-特に経路4は `stop()` が呼ばれない通常再生であり、経路3の割り込み再生と取り違えないようにしています（PR #1626）。
+`speakWithOutcome<KEY, OUTCOME>(...)` を利用します。`speakWithPriority` と同じ判定の経路に応じて、呼び出し側から渡された `SpeakOutcomes`（`skipped` / `queued` / `interrupted` / `spoken`）の値を返します。
+特に経路4は再生中のイベントがない通常再生であり、経路3の割り込み再生と取り違えないようにしています（PR #1626）。
 
 `NarratorEngine` と同様に `:core:domain` に依存しないよう、イベントのキーと結果の型を型パラメータで受け取り、
-`speak` / `stop` の実行や現在再生中のキーの取得もラムダで受け取ります。各 feature が `NarrationOutcome` の各値を渡します。
+`speak` の実行や現在再生中のキーの取得もラムダで受け取ります。各 feature が `NarrationOutcome` の各値を渡します。
 
 `runCatchingTelemetryLogSave`（`RunCatchingTelemetryLogSave.kt`）は、ログ保存処理を suspend ラムダで受け取ります。
 ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めず、`captureNarratorError` で例外を記録します。
