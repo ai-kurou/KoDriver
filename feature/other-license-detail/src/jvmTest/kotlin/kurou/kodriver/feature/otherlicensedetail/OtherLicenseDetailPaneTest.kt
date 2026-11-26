@@ -1,12 +1,18 @@
 package kurou.kodriver.feature.otherlicensedetail
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.entity.Scm
 import com.mikepenz.aboutlibraries.util.parseData
@@ -26,6 +32,8 @@ class OtherLicenseDetailPaneTest {
 
     val uriHandler: UriHandler = mockk()
 
+    private val haptic: HapticFeedback = mockk(relaxUnitFun = true)
+
     @Test
     fun `ライセンス一覧を表示して戻る操作を通知する`() {
         var backCount = 0
@@ -42,6 +50,49 @@ class OtherLicenseDetailPaneTest {
         rule.onNode(hasContentDescription("戻る")).performClick()
 
         assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `サイトのあるライブラリの行をタップすると触覚の後にサイトを開く`() {
+        every { uriHandler.openUri("https://example.com/website") } answers {
+            verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        }
+        setPaneContent(testLibrary(website = "https://example.com/website", scmUrl = null))
+
+        rule.onNodeWithText("Test Library").performClick()
+        rule.waitForIdle()
+
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 1) { uriHandler.openUri("https://example.com/website") }
+        confirmVerified(haptic, uriHandler)
+    }
+
+    @Test
+    fun `サイトのないライブラリの行をタップしても触覚が発生する`() {
+        setPaneContent(testLibrary(website = null, scmUrl = null))
+
+        rule.onNodeWithText("Test Library").performClick()
+        rule.waitForIdle()
+
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic, uriHandler)
+    }
+
+    private fun setPaneContent(library: Library) {
+        rule.setContent {
+            CompositionLocalProvider(
+                LocalHapticFeedback provides haptic,
+                LocalUriHandler provides uriHandler,
+            ) {
+                MaterialTheme {
+                    OtherLicenseDetailPaneContent(
+                        libraries = Libs(libraries = listOf(library), licenses = emptySet()),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+        }
     }
 
     @Test

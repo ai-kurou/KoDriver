@@ -269,14 +269,21 @@ class OtherConsoleIpDetailPaneContentTest {
     }
 
     @Test
-    fun `入力欄でEnterキーを押すとonSaveが呼ばれる`() {
+    fun `入力欄でEnterキーを押すと触覚の後にonSaveが呼ばれる`() {
         var saveCount = 0
-        setContent(ContentParams(onSave = { saveCount++ }))
+        setContent(
+            ContentParams(
+                onSave = {
+                    verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+                    saveCount++
+                },
+            ),
+        )
 
         rule.onNodeWithText("IPアドレス").performImeAction()
 
         assertEquals(1, saveCount)
-        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(haptic)
     }
 
@@ -293,5 +300,7 @@ class OtherConsoleIpDetailPaneContentTest {
         rule.onNodeWithText("IPアドレス").performImeAction()
 
         assertEquals(0, saveCount)
+        verify(exactly = 0) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(haptic)
     }
 }
