@@ -114,6 +114,10 @@ internal class NsdWindowsServerDiscoveryRepository(
                     }
 
                     override fun onServiceLost(serviceInfo: NsdServiceInfo) {
+                        // 解決待ちのまま消えたサービスは解決しない（解決後に一覧へ戻さないため）。
+                        synchronized(pendingResolves) {
+                            pendingResolves.removeAll { it.serviceName == serviceInfo.serviceName }
+                        }
                         serviceInfoCallbacks
                             .remove(
                                 serviceInfo.serviceName,
