@@ -20,10 +20,15 @@ public class DetermineLmuWindowsTyreReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
         val data = input.tyreCarcassTemperature
+        // NaN・無限大は判定と最大値の対象から外す（NaN は roundToInt で例外になる）。
+        val finiteCelsius =
+            data.wheels.values
+                .map { it.value }
+                .filter { it.isFinite() }
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
         val nextOverheating =
             determineHysteresisState(
-                valuesCelsius = data.wheels.values.map { it.value },
+                valuesCelsius = finiteCelsius,
                 highThresholdCelsius = hotThreshold,
                 hysteresisCelsius = TYRE_OVERHEAT_HYSTERESIS_CELSIUS,
                 currentState = state.tyreOverheating,
@@ -37,12 +42,7 @@ public class DetermineLmuWindowsTyreReadoutUseCase {
             events =
                 if (shouldAnnounce) {
                     listOf(
-                        LmuWindowsTyreOverheat(
-                            celsius =
-                                data.wheels.values
-                                    .maxOf { it.value }
-                                    .roundToInt(),
-                        ),
+                        LmuWindowsTyreOverheat(celsius = finiteCelsius.max().roundToInt()),
                     )
                 } else {
                     emptyList()
@@ -63,7 +63,11 @@ public class DetermineLmuWindowsTyreReadoutUseCase {
             previousGamePhase != null &&
                 raceFlags.gamePhase != previousGamePhase &&
                 raceFlags.gamePhase in settings.tyreTemperatureLowWarningPhases
-        val anyCold = data.wheels.values.any { it.value <= TYRE_LOW_WARNING_THRESHOLD_CELSIUS }
+        val finiteCelsius =
+            data.wheels.values
+                .map { it.value }
+                .filter { it.isFinite() }
+        val anyCold = finiteCelsius.any { it <= TYRE_LOW_WARNING_THRESHOLD_CELSIUS }
         val shouldAnnounce =
             enteringTargetPhase && anyCold &&
                 settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreTemperature.Root) &&
@@ -73,12 +77,7 @@ public class DetermineLmuWindowsTyreReadoutUseCase {
             events =
                 if (shouldAnnounce) {
                     listOf(
-                        LmuWindowsTyreCold(
-                            celsius =
-                                data.wheels.values
-                                    .maxOf { it.value }
-                                    .roundToInt(),
-                        ),
+                        LmuWindowsTyreCold(celsius = finiteCelsius.max().roundToInt()),
                     )
                 } else {
                     emptyList()

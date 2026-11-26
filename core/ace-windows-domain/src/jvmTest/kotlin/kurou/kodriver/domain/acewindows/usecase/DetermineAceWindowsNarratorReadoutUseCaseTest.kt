@@ -896,6 +896,27 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `NaNや無限大のタイヤ温度は除外して有限値の最高温度で過熱を読み上げる`() {
+        val decision =
+            useCase.determineTyreTemperatureOverheat(
+                state = AceWindowsNarratorState(),
+                data =
+                    AceWindowsTyreCarcassTemperatureData(
+                        wheels =
+                            mapOf(
+                                WheelIndex.FRONT_LEFT to CelsiusReading(96f),
+                                WheelIndex.FRONT_RIGHT to CelsiusReading(Float.NaN),
+                                WheelIndex.REAR_LEFT to CelsiusReading(Float.POSITIVE_INFINITY),
+                            ),
+                    ),
+                settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+            )
+
+        assertEquals(listOf(AceWindowsTyreOverheat(96)), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
     fun `高温状態が継続しても再度読み上げない`() {
         val decision =
             useCase.determineTyreTemperatureOverheat(

@@ -252,10 +252,12 @@ public class DetermineGt7Ps5NarratorReadoutUseCase {
                 telemetry.tyreTemperature.rearLeftCelsius,
                 telemetry.tyreTemperature.rearRightCelsius,
             )
+        // NaN・無限大は判定と最大値の対象から外す（NaN は roundToInt で例外になる）。手動読み上げ側と揃える。
+        val finiteCelsius = wheels.map { it.value }.filter { it.isFinite() }
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
         val nextOverheating =
             determineHysteresisState(
-                valuesCelsius = wheels.map { it.value },
+                valuesCelsius = finiteCelsius,
                 highThresholdCelsius = hotThreshold,
                 hysteresisCelsius = TYRE_OVERHEAT_HYSTERESIS_CELSIUS,
                 currentState = state.tyreOverheating,
@@ -268,7 +270,7 @@ public class DetermineGt7Ps5NarratorReadoutUseCase {
             state = state.copy(tyreOverheating = nextOverheating),
             events =
                 if (shouldAnnounce) {
-                    listOf(Gt7Ps5TyreOverheat(wheels.maxOf { it.value }.roundToInt()))
+                    listOf(Gt7Ps5TyreOverheat(finiteCelsius.max().roundToInt()))
                 } else {
                     emptyList()
                 },

@@ -1296,6 +1296,28 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `NaNや無限大のタイヤ温度は除外して有限値の最高温度で過熱を読み上げる`() {
+        val decision =
+            useCase.determineTyreTemperature(
+                state = Gt7Ps5NarratorState(),
+                telemetry =
+                    telemetry(
+                        tyreTemperature =
+                            Gt7Ps5TyreTemperatureData(
+                                CelsiusReading(96f),
+                                CelsiusReading(Float.NaN),
+                                CelsiusReading(Float.POSITIVE_INFINITY),
+                                CelsiusReading(90f),
+                            ),
+                    ),
+                settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
+            )
+
+        assertEquals(listOf(Gt7Ps5TyreOverheat(96)), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
     fun `過熱状態が継続しても再度読み上げない`() {
         val decision =
             useCase.determineTyreTemperature(
