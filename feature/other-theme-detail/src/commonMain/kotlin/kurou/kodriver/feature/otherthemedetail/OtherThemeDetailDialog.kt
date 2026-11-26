@@ -1,26 +1,18 @@
 package kurou.kodriver.feature.otherthemedetail
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
+import kurou.kodriver.core.designsystem.KoDriverRadioRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ThemeMode
@@ -67,11 +59,8 @@ internal fun OtherThemeDetailDialogContent(
     onDismiss: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    // AlertDialog の内容は別ウィンドウで組み立てられるため、外側で読んだハプティックを部品へ渡す。
     val haptic = LocalHapticFeedback.current
-    val onThemeModeSelectedWithHaptic: (ThemeMode) -> Unit = { themeMode ->
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        onThemeModeSelected(themeMode)
-    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.theme_title)) },
@@ -85,46 +74,28 @@ internal fun OtherThemeDetailDialogContent(
                             ThemeMode.LIGHT -> stringResource(Res.string.theme_light)
                             ThemeMode.DARK -> stringResource(Res.string.theme_dark)
                         }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .selectable(
-                                    selected = uiState.pendingThemeMode == themeMode,
-                                    role = Role.RadioButton,
-                                    onClick = { onThemeModeSelectedWithHaptic(themeMode) },
-                                ),
-                    ) {
-                        RadioButton(
-                            selected = uiState.pendingThemeMode == themeMode,
-                            onClick = null,
-                            modifier = Modifier.size(48.dp),
-                        )
-                        Text(label)
-                    }
+                    KoDriverRadioRow(
+                        selected = uiState.pendingThemeMode == themeMode,
+                        label = label,
+                        onClick = { onThemeModeSelected(themeMode) },
+                        hapticFeedback = haptic,
+                    )
                 }
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onConfirm()
-                },
-            ) {
-                Text(stringResource(Res.string.theme_ok))
-            }
+            KoDriverDialogTextButton(
+                text = stringResource(Res.string.theme_ok),
+                onClick = onConfirm,
+                hapticFeedback = haptic,
+            )
         },
         dismissButton = {
-            TextButton(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onDismiss()
-                },
-            ) {
-                Text(stringResource(Res.string.theme_cancel))
-            }
+            KoDriverDialogTextButton(
+                text = stringResource(Res.string.theme_cancel),
+                onClick = onDismiss,
+                hapticFeedback = haptic,
+            )
         },
         modifier = modifier,
     )

@@ -13,15 +13,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +30,7 @@ import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverHelpSheetImageContent
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverSwitch
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
@@ -163,7 +161,6 @@ internal fun LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
     onSustainedLeftTextPreviewClicked: (String) -> Unit = {},
     onSustainedRightTextPreviewClicked: (String) -> Unit = {},
 ) {
-    val haptic = LocalHapticFeedback.current
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
     val lateralLabel = stringResource(Res.string.vehicle_approach_lateral_label)
     val sustainedDurationLabel = stringResource(Res.string.vehicle_approach_sustained_duration_label)
@@ -229,12 +226,9 @@ internal fun LmuWindowsAutoReadoutVehicleApproachDetailPaneContent(
             Spacer(modifier = Modifier.width(KoDriverSpacing.large))
             val skipFirstLapSwitchDescription =
                 stringResource(Res.string.vehicle_approach_skip_first_lap_switch_content_description)
-            Switch(
+            KoDriverSwitch(
                 checked = uiState.skipFirstLap,
-                onCheckedChange = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onSkipFirstLapChanged(it)
-                },
+                onCheckedChange = onSkipFirstLapChanged,
                 modifier = Modifier.semantics { contentDescription = skipFirstLapSwitchDescription },
             )
         }
