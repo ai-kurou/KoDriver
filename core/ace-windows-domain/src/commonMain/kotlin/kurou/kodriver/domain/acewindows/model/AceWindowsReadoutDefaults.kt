@@ -13,6 +13,7 @@ internal val ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey,
         AceWindowsReadoutItemKey.Flag.Root to true,
         AceWindowsReadoutItemKey.VehicleApproach.Root to true,
         AceWindowsReadoutItemKey.TyreTemperature.Root to true,
+        AceWindowsReadoutItemKey.BrakeTemperature.Root to true,
         AceWindowsReadoutItemKey.RemainingFuel.Root to true,
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
         AceWindowsReadoutItemKey.MyBestLap.Root to false,
@@ -29,6 +30,7 @@ internal val ACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutI
         AceWindowsReadoutItemKey.RemainingFuel.Root to true,
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
         AceWindowsReadoutItemKey.TyreTemperature.Root to true,
+        AceWindowsReadoutItemKey.BrakeTemperature.Root to true,
         AceWindowsReadoutItemKey.MyBestLap.Root to true,
     )
 
@@ -42,6 +44,7 @@ internal val ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolea
         AceWindowsReadoutItemKey.RemainingFuel.Root to true,
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
         AceWindowsReadoutItemKey.TyreTemperature.Root to true,
+        AceWindowsReadoutItemKey.BrakeTemperature.Root to true,
         AceWindowsReadoutItemKey.MyBestLap.Root to false,
     )
 
@@ -59,5 +62,6 @@ private fun aceWindowsOrderIndex(key: AceWindowsReadoutItemKey.TopLevel): Int =
         AceWindowsReadoutItemKey.RemainingFuelLaps.Root -> 2
         AceWindowsReadoutItemKey.RemainingFuel.Root -> 3
         AceWindowsReadoutItemKey.TyreTemperature.Root -> 4
-        AceWindowsReadoutItemKey.MyBestLap.Root -> 5
+        AceWindowsReadoutItemKey.BrakeTemperature.Root -> 5
+        AceWindowsReadoutItemKey.MyBestLap.Root -> 6
     }

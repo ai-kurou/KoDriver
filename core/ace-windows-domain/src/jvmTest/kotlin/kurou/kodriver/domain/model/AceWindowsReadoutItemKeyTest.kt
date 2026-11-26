@@ -15,7 +15,7 @@ class AceWindowsReadoutItemKeyTest {
 
     @Test
     fun `ACE keys retain legacy order and every key round trips`() {
-        assertEquals(22, ACE_WINDOWS_READOUT_ITEM_KEYS.size)
+        assertEquals(23, ACE_WINDOWS_READOUT_ITEM_KEYS.size)
         assertEquals(AceWindowsReadoutItemKey.VehicleApproach.Root, ACE_WINDOWS_READOUT_ITEM_KEYS.first())
         assertEquals(AceWindowsReadoutItemKey.CarGap.Root, ACE_WINDOWS_READOUT_ITEM_KEYS.last())
         assertEquals(
@@ -39,6 +39,7 @@ class AceWindowsReadoutItemKeyTest {
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
                 AceWindowsReadoutItemKey.RemainingFuel.Root,
                 AceWindowsReadoutItemKey.TyreTemperature.Root,
+                AceWindowsReadoutItemKey.BrakeTemperature.Root,
                 AceWindowsReadoutItemKey.MyBestLap.Root,
             ),
             aceWindowsReadoutSpec.defaultAutoReadoutOrder,
