@@ -1,5 +1,6 @@
 package kurou.kodriver.core.lmuwindowsdata
 
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -14,7 +15,6 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeTe
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamagePreferencesRepository
-import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 
 // 自動読み上げ設定の各 DataStore を明示的に列挙する。
 @Suppress("LongParameterList")

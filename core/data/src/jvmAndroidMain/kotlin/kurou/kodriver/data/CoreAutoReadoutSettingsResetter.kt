@@ -1,7 +1,7 @@
 package kurou.kodriver.data
 
-import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
-import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutPreferencesRepository
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 

@@ -8,7 +8,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPr
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachPreferencesRepository
-import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
 
 // 自動読み上げ設定の各 DataStore を明示的に列挙する。
 @Suppress("LongParameterList")

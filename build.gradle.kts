@@ -408,6 +408,7 @@ tasks.register("generateModuleGraphImages") {
                         ":core:lmu-windows-domain",
                         ":core:ace-windows-domain",
                         ":core:gt7-ps5-domain",
+                        ":core:auto-readout-domain",
                         ":core:overlay-domain",
                         ":core:manual-readout-domain",
                         ":core:microphone-domain",

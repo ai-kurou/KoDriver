@@ -1,4 +1,4 @@
-package kurou.kodriver.domain.usecase
+package kurou.kodriver.domain.autoreadout.usecase
 
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -7,12 +7,12 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SimulatorReadoutSpec
 import kurou.kodriver.domain.model.defaultAutoReadoutOrder
-import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

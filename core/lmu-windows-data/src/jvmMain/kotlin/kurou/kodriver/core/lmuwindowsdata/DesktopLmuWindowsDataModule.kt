@@ -17,6 +17,7 @@ import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsVehicleCla
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.core.lmuwindowsdata.preferences.createLmuWindowsVehicleDamagePreferencesRepository
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -34,7 +35,6 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeTe
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamagePreferencesRepository
-import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module

@@ -1,8 +1,6 @@
 # domain
 
-`ResetAutoReadoutSettingsUseCase` は受け取った `AutoReadoutSettingsResetter` を順番に実行し、全シミュレーターの自動読み上げ設定を一括で既定値に戻します。途中で失敗した場合は例外を呼び出し側に伝播します。
-
-オーバーレイ・手動読み上げの操作・マイク・音声認識は、機能領域ごとのドメインモジュール（[`overlay-domain`](../overlay-domain/README.md)・[`manual-readout-domain`](../manual-readout-domain/README.md)・[`microphone-domain`](../microphone-domain/README.md)・[`speech-recognition-domain`](../speech-recognition-domain/README.md)）に置く。以下の手動読み上げの説明に出る型には、`:core:manual-readout-domain` にあるものを含む。
+自動読み上げ・オーバーレイ・手動読み上げの操作・マイク・音声認識は、機能領域ごとのドメインモジュール（[`auto-readout-domain`](../auto-readout-domain/README.md)・[`overlay-domain`](../overlay-domain/README.md)・[`manual-readout-domain`](../manual-readout-domain/README.md)・[`microphone-domain`](../microphone-domain/README.md)・[`speech-recognition-domain`](../speech-recognition-domain/README.md)）に置く。以下の手動読み上げの説明に出る型には、`:core:manual-readout-domain` にあるものを含む。
 
 `GetAudioInputDevicesUseCase` は `AudioInputDeviceRepository` から入力デバイス（マイク）の一覧を取得する。PCM形式は `MICROPHONE_*` 定数（16kHz・モノラル・16bit）で固定する。
 
@@ -10,7 +8,7 @@
 
 シミュレーター固有コードの配置先は `kurou.kodriver.domain.<lmuwindows|acewindows|gt7ps5>.{model,repository,usecase}` とする。
 共通コードは `kurou.kodriver.domain` 直下の `model` / `repository` / `usecase` / `engine` に置く。
-機能領域ごとのドメインモジュールは `kurou.kodriver.domain.<overlay|manualreadout|microphone|speechrecognition>.{model,repository,usecase}`（必要に応じて `engine` / `util`）に置く。
+機能領域ごとのドメインモジュールは `kurou.kodriver.domain.<autoreadout|overlay|manualreadout|microphone|speechrecognition>.{model,repository,usecase}`（必要に応じて `engine` / `util`）に置く。
 GT7・ACE・LMU はすべて移動済み。
 `:core:domain` は共通 `ReadoutItemKey` インターフェースと `ReadoutItemKeyRegistry` を提供する。シミュレーター別の sealed key、キー一覧 `*ReadoutItemKeys.kt`、および `*ReadoutDefaults.kt` は各 simulator domain に置く。キーを追加する際は、そのモジュールの `*ReadoutItemKeys.kt` にも登録する。`SpeechEvent` はシミュレーター別ドメインモジュールで実装し、手動読み上げ項目定義は各シミュレーターのドメインモジュール、simulatorId 集約は `:feature:manual-readout-detail` に置く。
 

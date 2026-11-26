@@ -44,6 +44,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.core.domain)
+            implementation(projects.core.autoReadoutDomain)
             implementation(projects.core.manualReadoutDomain)
             implementation(projects.core.microphoneDomain)
             implementation(projects.core.overlayDomain)
@@ -89,6 +90,7 @@ compose.resources {
 
 dependencies {
     testFixturesApi(projects.core.domain)
+    testFixturesApi(projects.core.autoReadoutDomain)
     testFixturesApi(projects.core.manualReadoutDomain)
     testFixturesApi(projects.core.microphoneDomain)
     testFixturesApi(projects.core.gt7Ps5Domain)

@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.braketemperaturedetail
 
+import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.autoreadout.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
@@ -8,9 +10,7 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsVehicleClassBrakeT
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf

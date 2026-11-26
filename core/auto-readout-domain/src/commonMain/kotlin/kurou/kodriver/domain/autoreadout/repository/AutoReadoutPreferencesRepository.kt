@@ -1,4 +1,4 @@
-package kurou.kodriver.domain.repository
+package kurou.kodriver.domain.autoreadout.repository
 
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey

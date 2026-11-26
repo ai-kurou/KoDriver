@@ -39,6 +39,8 @@ import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.preferences.createVoiceSpeedPreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutPreferencesRepository
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
@@ -55,8 +57,6 @@ import kurou.kodriver.domain.overlay.repository.OverlayWindowBoundsPreferencesRe
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
-import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
-import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository

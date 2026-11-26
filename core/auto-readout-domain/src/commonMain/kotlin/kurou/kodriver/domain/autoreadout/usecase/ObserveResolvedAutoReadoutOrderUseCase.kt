@@ -1,4 +1,4 @@
-package kurou.kodriver.domain.usecase
+package kurou.kodriver.domain.autoreadout.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

@@ -14,6 +14,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:ace-windows-domain` | ACE固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-ace-windows-domain.svg) |
 | `:core:gt7-ps5-domain` | GT7固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-gt7-ps5-domain.svg) |
 | `:core:lmu-windows-domain` | LMU固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-lmu-windows-domain.svg) |
+| `:core:auto-readout-domain` | 自動読み上げの有効状態・順序・設定リセットのリポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-auto-readout-domain.svg) |
 | `:core:overlay-domain` | 読み上げオーバーレイ設定のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-overlay-domain.svg) |
 | `:core:manual-readout-domain` | 手動読み上げのセット操作・読み上げ依頼・ホットキーのリポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-manual-readout-domain.svg) |
 | `:core:microphone-domain` | マイク入力と「小さい音をカット」設定のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-microphone-domain.svg) |

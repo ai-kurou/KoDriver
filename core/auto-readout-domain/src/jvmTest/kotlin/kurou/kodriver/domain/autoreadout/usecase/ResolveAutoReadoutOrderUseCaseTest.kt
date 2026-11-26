@@ -1,16 +1,15 @@
-package kurou.kodriver.domain.usecase
+package kurou.kodriver.domain.autoreadout.usecase
 
-import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ResolveAutoReadoutOrderUseCaseTest {
     private val useCase = ResolveAutoReadoutOrderUseCase()
 
-    private val flag = LmuWindowsReadoutItemKey.Flag.Root
-    private val myBestLap = LmuWindowsReadoutItemKey.MyBestLap.Root
-    private val vehicleApproach = LmuWindowsReadoutItemKey.VehicleApproach.Root
-    private val vehicleDamage = LmuWindowsReadoutItemKey.VehicleDamage.Root
+    private val flag = TestAutoReadoutItemKey.Flag
+    private val myBestLap = TestAutoReadoutItemKey.MyBestLap
+    private val vehicleApproach = TestAutoReadoutItemKey.VehicleApproach
+    private val vehicleDamage = TestAutoReadoutItemKey.VehicleDamage
 
     @Test
     fun `保存済み順序が空の場合はデフォルト順序を返す`() {

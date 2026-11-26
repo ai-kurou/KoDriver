@@ -1,8 +1,8 @@
-package kurou.kodriver.domain.usecase
+package kurou.kodriver.domain.autoreadout.usecase
 
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 
 public class ObserveAutoReadoutOrderUseCase(
     private val repository: AutoReadoutPreferencesRepository,

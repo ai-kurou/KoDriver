@@ -16,7 +16,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPr
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachPreferencesRepository
-import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module

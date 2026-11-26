@@ -23,11 +23,11 @@ import kotlinx.coroutines.runBlocking
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutPreferencesRepository
+import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import org.junit.Test
 
 class AutoReadoutListPaneScreenshotTest {

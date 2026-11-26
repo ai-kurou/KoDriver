@@ -32,6 +32,7 @@ import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsVehicleAp
 import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsVehicleClassRepository
 import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsVehicleDamageRepository
 import kurou.kodriver.core.lmuwindowsdata.websocket.WebSocketLmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
@@ -63,7 +64,6 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassTyreTem
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
-import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module

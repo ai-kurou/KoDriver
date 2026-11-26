@@ -1,13 +1,13 @@
 package kurou.kodriver.feature.autoreadoutlist
 
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.autoreadout.usecase.ResolveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.autoreadout.usecase.SaveAutoReadoutEnabledStateUseCase
+import kurou.kodriver.domain.autoreadout.usecase.SaveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
 import org.koin.core.module.Module

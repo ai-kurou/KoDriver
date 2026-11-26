@@ -1,4 +1,4 @@
-package kurou.kodriver.domain.usecase
+package kurou.kodriver.domain.autoreadout.usecase
 
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -6,7 +6,7 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
