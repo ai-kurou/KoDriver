@@ -11,7 +11,7 @@ internal fun Route.aceWindowsRoutes(useCases: KoDriverServerUseCases) {
     telemetryWebSocket(KoDriverServerFeature.FLAGS, Simulator.AceWindows) {
         useCases.aceWindows.observeAceWindowsFlag()
     }
-    telemetryWebSocket(KoDriverServerFeature.STATUS, Simulator.AceWindows) {
+    telemetryWebSocket(KoDriverServerFeature.STATUS, Simulator.AceWindows, distinct = false) {
         useCases.aceWindows.observeAceWindowsStatus()
     }
     telemetryWebSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE, Simulator.AceWindows, distinct = false) {

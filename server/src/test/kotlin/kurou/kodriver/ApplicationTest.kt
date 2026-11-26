@@ -2529,7 +2529,7 @@ class ApplicationTest {
         }
 
     @Test
-    fun `ACEステータスの同一値は重複して送信されない`() =
+    fun `ACEステータスは同一値も継続して送信される`() =
         testApplication {
             val repository = FakeAceWindowsStatusRepository()
             application {
@@ -2603,9 +2603,11 @@ class ApplicationTest {
 
                     val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
                     val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val third = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
                     assertEquals(ACE_STATUS_JSON_1, first)
-                    assertEquals(ACE_STATUS_JSON_2, second)
+                    assertEquals(ACE_STATUS_JSON_1, second)
+                    assertEquals(ACE_STATUS_JSON_2, third)
                 }
         }
 
