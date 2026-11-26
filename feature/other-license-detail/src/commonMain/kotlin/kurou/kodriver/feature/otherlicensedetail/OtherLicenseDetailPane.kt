@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
@@ -26,6 +29,25 @@ public fun OtherLicenseDetailPane(
     val libraries by produceLibraries {
         Res.readBytes("files/aboutlibraries.json").decodeToString()
     }
+    OtherLicenseDetailPaneContent(
+        libraries = libraries,
+        canNavigateBack = canNavigateBack,
+        onBack = onBack,
+        modifier = modifier,
+    )
+}
+
+/**
+ * OtherLicenseDetail の画面本体を表示する Composable。
+ */
+@Composable
+internal fun OtherLicenseDetailPaneContent(
+    libraries: Libs?,
+    canNavigateBack: Boolean,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val haptic = LocalHapticFeedback.current
     val uriHandler = LocalUriHandler.current
     DetailPaneScaffold(
         title = stringResource(Res.string.license_title),
@@ -38,7 +60,10 @@ public fun OtherLicenseDetailPane(
             modifier = Modifier.fillMaxSize(),
             // true を返すと aboutlibraries 標準のライセンス詳細ダイアログ表示を抑制する。website/scm を開けた場合のみ抑制し、
             // 開けなかった場合は false を返してデフォルト挙動（ライセンス詳細表示）にフォールバックする。
-            onLibraryClick = { library -> openLibraryWebsite(library, uriHandler) },
+            onLibraryClick = { library ->
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                openLibraryWebsite(library, uriHandler)
+            },
         )
     }
 }
