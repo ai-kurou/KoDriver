@@ -34,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -157,6 +159,7 @@ private fun SpeechRecognitionCardHeader(
     uiState: SpeechRecognitionUiState,
     onInfoClick: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
@@ -183,7 +186,12 @@ private fun SpeechRecognitionCardHeader(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        IconButton(onClick = onInfoClick) {
+        IconButton(
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                onInfoClick()
+            },
+        ) {
             Icon(
                 imageVector = Icons.Outlined.Info,
                 contentDescription = stringResource(Res.string.speech_recognition_corrections_info_description),

@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
@@ -43,6 +44,26 @@ class SpeechRecognitionHapticTest {
         rule.runOnIdle {
             assertEquals(1, clicks)
             assertEquals(listOf(HapticFeedbackType.ContextClick), feedback)
+        }
+    }
+
+    @Test
+    fun `補正の説明を開くボタンと閉じるボタンはそれぞれハプティックを一度発生させる`() {
+        setContent {
+            SpeechRecognitionCard(
+                uiState = SpeechRecognitionUiState(),
+                onDeviceMenuOpen = {},
+                onDeviceSelected = {},
+            )
+        }
+
+        rule.onNodeWithContentDescription("認識の補正について").performClick()
+        rule.runOnIdle { assertEquals(listOf(HapticFeedbackType.ContextClick), feedback) }
+        rule.onNodeWithText("閉じる").performClick()
+
+        rule.onNodeWithText("閉じる").assertDoesNotExist()
+        rule.runOnIdle {
+            assertEquals(listOf(HapticFeedbackType.ContextClick, HapticFeedbackType.ContextClick), feedback)
         }
     }
 

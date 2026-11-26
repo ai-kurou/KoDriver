@@ -14,6 +14,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import kurou.kodriver.core.designsystem.KoDriverPhraseChip
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -34,6 +36,7 @@ internal fun SpeechRecognitionCorrectionsDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,
@@ -51,7 +54,12 @@ internal fun SpeechRecognitionCorrectionsDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onDismiss()
+                },
+            ) {
                 Text(stringResource(Res.string.speech_recognition_corrections_close))
             }
         },
