@@ -5,8 +5,10 @@ digraph G {
   ":core:ace-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:auto-readout-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:debug-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:device-volume-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=2.5]
+  ":core:feedback-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:gt7-ps5-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:gt7-ps5-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:lmu-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
@@ -98,7 +100,11 @@ digraph G {
   ":core:data" -> ":core:microphone-domain"
   ":core:data" -> ":core:overlay-domain"
   ":core:data" -> ":core:speech-recognition-domain"
+  ":core:data" -> ":core:feedback-domain"
+  ":core:data" -> ":core:debug-domain"
+  ":core:debug-domain" -> ":core:domain"
   ":core:device-volume-data" -> ":core:domain"
+  ":core:feedback-domain" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:gt7-ps5-domain"
   ":core:gt7-ps5-data" -> ":core:auto-readout-domain"
@@ -144,11 +150,13 @@ digraph G {
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:ace-windows-auto-readout-vehicle-approach-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-debug-state-detail" -> ":core:domain"
+  ":feature:ace-windows-debug-state-detail" -> ":core:debug-domain"
   ":feature:ace-windows-debug-state-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:auto-readout-domain"
   ":feature:ace-windows-narrator" -> ":core:telemetry-log-domain"
   ":feature:ace-windows-narrator" -> ":core:ace-windows-domain"
+  ":feature:ace-windows-narrator" -> ":core:debug-domain"
   ":feature:ace-windows-narrator" -> ":core:manual-readout-domain"
   ":feature:auto-readout-list" -> ":core:domain"
   ":feature:auto-readout-list" -> ":core:auto-readout-domain"
@@ -168,10 +176,12 @@ digraph G {
   ":feature:gt7-ps5-auto-readout-tyre-temperature-detail" -> ":core:gt7-ps5-domain"
   ":feature:gt7-ps5-debug-state-detail" -> ":core:domain"
   ":feature:gt7-ps5-debug-state-detail" -> ":core:gt7-ps5-domain"
+  ":feature:gt7-ps5-debug-state-detail" -> ":core:debug-domain"
   ":feature:gt7-ps5-narrator" -> ":core:domain"
   ":feature:gt7-ps5-narrator" -> ":core:auto-readout-domain"
   ":feature:gt7-ps5-narrator" -> ":core:telemetry-log-domain"
   ":feature:gt7-ps5-narrator" -> ":core:gt7-ps5-domain"
+  ":feature:gt7-ps5-narrator" -> ":core:debug-domain"
   ":feature:gt7-ps5-narrator" -> ":core:manual-readout-domain"
   ":feature:lmu-windows-auto-readout-brake-temperature-detail" -> ":core:domain"
   ":feature:lmu-windows-auto-readout-brake-temperature-detail" -> ":core:auto-readout-domain"
@@ -202,11 +212,13 @@ digraph G {
   ":feature:lmu-windows-auto-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:lmu-windows-auto-readout-vehicle-damage-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-debug-state-detail" -> ":core:domain"
+  ":feature:lmu-windows-debug-state-detail" -> ":core:debug-domain"
   ":feature:lmu-windows-debug-state-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:auto-readout-domain"
   ":feature:lmu-windows-narrator" -> ":core:telemetry-log-domain"
   ":feature:lmu-windows-narrator" -> ":core:lmu-windows-domain"
+  ":feature:lmu-windows-narrator" -> ":core:debug-domain"
   ":feature:lmu-windows-narrator" -> ":core:manual-readout-domain"
   ":feature:main" -> ":core:domain"
   ":feature:main" -> ":core:manual-readout-domain"
@@ -216,6 +228,7 @@ digraph G {
   ":feature:main" -> ":core:gt7-ps5-domain"
   ":feature:main" -> ":core:ace-windows-domain"
   ":feature:main" -> ":core:lmu-windows-domain"
+  ":feature:main" -> ":core:debug-domain"
   ":feature:manual-readout-detail" -> ":core:domain"
   ":feature:manual-readout-detail" -> ":core:gt7-ps5-domain"
   ":feature:manual-readout-detail" -> ":core:manual-readout-domain"
@@ -236,6 +249,7 @@ digraph G {
   ":feature:other-console-ip-detail" -> ":core:server-connection-domain"
   ":feature:other-console-ip-detail" -> ":core:gt7-ps5-domain"
   ":feature:other-feedback-detail" -> ":core:domain"
+  ":feature:other-feedback-detail" -> ":core:feedback-domain"
   ":feature:other-feedback-detail" -> ":core:telemetry-log-domain"
   ":feature:other-feedback-detail" -> ":core:lmu-windows-domain"
   ":feature:other-license-detail" -> ":core:domain"
@@ -277,6 +291,7 @@ digraph G {
   ":feature:server-connection" -> ":core:server-connection-domain"
   ":feature:speech-recognition-list" -> ":core:domain"
   ":feature:speech-recognition-list" -> ":core:manual-readout-domain"
+  ":feature:speech-recognition-list" -> ":core:speech-recognition-domain"
   ":feature:speech-recognition-list" -> ":core:ace-windows-domain"
   ":feature:speech-recognition-list" -> ":core:gt7-ps5-domain"
   ":feature:speech-recognition-list" -> ":core:lmu-windows-domain"

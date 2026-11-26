@@ -11,9 +11,11 @@ digraph G {
   ":core:ace-windows-domain" [label=":core:ace-windows-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:auto-readout-domain" [label=":core:auto-readout-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:data" [label=":core:data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:debug-domain" [label=":core:debug-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:designsystem" [label=":core:designsystem", fillcolor="#FFF9C4", color="#F9A825"]
   ":core:device-volume-data" [label=":core:device-volume-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:domain" [label=":core:domain", fillcolor="#E1BEE7", color="#8E24AA"]
+  ":core:feedback-domain" [label=":core:feedback-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:gt7-ps5-data" [label=":core:gt7-ps5-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:gt7-ps5-domain" [label=":core:gt7-ps5-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -75,7 +77,9 @@ digraph G {
   ":core:auto-readout-domain" -> ":core:domain"
   ":core:data" -> ":core:ace-windows-domain"
   ":core:data" -> ":core:auto-readout-domain"
+  ":core:data" -> ":core:debug-domain"
   ":core:data" -> ":core:domain"
+  ":core:data" -> ":core:feedback-domain"
   ":core:data" -> ":core:gt7-ps5-domain"
   ":core:data" -> ":core:lmu-windows-domain"
   ":core:data" -> ":core:manual-readout-domain"
@@ -84,7 +88,9 @@ digraph G {
   ":core:data" -> ":core:server-connection-domain"
   ":core:data" -> ":core:speech-recognition-domain"
   ":core:data" -> ":core:telemetry-log-domain"
+  ":core:debug-domain" -> ":core:domain"
   ":core:device-volume-data" -> ":core:domain"
+  ":core:feedback-domain" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:auto-readout-domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:gt7-ps5-domain"
@@ -118,8 +124,10 @@ digraph G {
   ":server" -> ":core:lmu-windows-domain"
   "feature" -> ":core:ace-windows-domain"
   "feature" -> ":core:auto-readout-domain"
+  "feature" -> ":core:debug-domain"
   "feature" -> ":core:designsystem"
   "feature" -> ":core:domain"
+  "feature" -> ":core:feedback-domain"
   "feature" -> ":core:gt7-ps5-domain"
   "feature" -> ":core:lmu-windows-domain"
   "feature" -> ":core:manual-readout-domain"
@@ -130,12 +138,14 @@ digraph G {
   "feature" -> ":core:telemetry-log-domain"
   "feature:ace-windows*" -> ":core:ace-windows-domain"
   "feature:ace-windows*" -> ":core:auto-readout-domain"
+  "feature:ace-windows*" -> ":core:debug-domain"
   "feature:ace-windows*" -> ":core:designsystem"
   "feature:ace-windows*" -> ":core:domain"
   "feature:ace-windows*" -> ":core:manual-readout-domain"
   "feature:ace-windows*" -> ":core:narrator"
   "feature:ace-windows*" -> ":core:telemetry-log-domain"
   "feature:gt7-ps5*" -> ":core:auto-readout-domain"
+  "feature:gt7-ps5*" -> ":core:debug-domain"
   "feature:gt7-ps5*" -> ":core:designsystem"
   "feature:gt7-ps5*" -> ":core:domain"
   "feature:gt7-ps5*" -> ":core:gt7-ps5-domain"
@@ -143,6 +153,7 @@ digraph G {
   "feature:gt7-ps5*" -> ":core:narrator"
   "feature:gt7-ps5*" -> ":core:telemetry-log-domain"
   "feature:lmu-windows*" -> ":core:auto-readout-domain"
+  "feature:lmu-windows*" -> ":core:debug-domain"
   "feature:lmu-windows*" -> ":core:designsystem"
   "feature:lmu-windows*" -> ":core:domain"
   "feature:lmu-windows*" -> ":core:lmu-windows-domain"
@@ -153,7 +164,7 @@ digraph G {
   { rank=same; ":app:shared"; ":server"; }
   { rank=same; "feature"; "feature:ace-windows*"; "feature:lmu-windows*"; "feature:gt7-ps5*"; ":core:data"; ":core:ace-windows-data"; ":core:lmu-windows-data"; ":core:gt7-ps5-data"; ":core:lmu-windows-rest-api-data"; ":core:text-to-speech-data"; ":core:device-volume-data"; ":core:server-discovery-data"; ":core:speech-recognition-data"; ":core:windows-hotkey-data"; ":core:windows-startup-data"; }
   { rank=same; ":core:narrator"; ":core:designsystem"; ":core:windows-shared-memory"; }
-  { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; ":core:auto-readout-domain"; ":core:telemetry-log-domain"; ":core:server-connection-domain"; ":core:overlay-domain"; ":core:manual-readout-domain"; ":core:microphone-domain"; ":core:speech-recognition-domain"; }
+  { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; ":core:auto-readout-domain"; ":core:telemetry-log-domain"; ":core:server-connection-domain"; ":core:overlay-domain"; ":core:manual-readout-domain"; ":core:microphone-domain"; ":core:speech-recognition-domain"; ":core:feedback-domain"; ":core:debug-domain"; }
   { rank=same; ":core:domain"; }
   ":app:androidApp" -> ":app:shared" [style=invis]
   ":app:shared" -> "feature" [style=invis]
