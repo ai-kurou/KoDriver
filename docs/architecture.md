@@ -14,6 +14,11 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:ace-windows-domain` | ACE固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-ace-windows-domain.svg) |
 | `:core:gt7-ps5-domain` | GT7固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-gt7-ps5-domain.svg) |
 | `:core:lmu-windows-domain` | LMU固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-lmu-windows-domain.svg) |
+| `:core:overlay-domain` | 読み上げオーバーレイ設定のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-overlay-domain.svg) |
+| `:core:manual-readout-domain` | 手動読み上げのセット操作・読み上げ依頼・ホットキーのリポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-manual-readout-domain.svg) |
+| `:core:voice-domain` | 読み上げ音声の一覧取得と音声設定の保存のユースケース（`:core:domain` に依存） | [図](graphs/core-voice-domain.svg) |
+| `:core:microphone-domain` | マイク入力と「小さい音をカット」設定のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-microphone-domain.svg) |
+| `:core:speech-recognition-domain` | 音声認識のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-speech-recognition-domain.svg) |
 | `:core:data` | 共通 DataStore、HTTP/WebSocketクライアント、共通リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り（JVM）、設定永続化（JVM / Android）、Android WebSocketクライアント | [図](graphs/core-lmu-windows-data.svg) |
 | `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗用に `RepairAndRefuel` の DataSource・`wearables.brakes` のポーリング Repository と Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |

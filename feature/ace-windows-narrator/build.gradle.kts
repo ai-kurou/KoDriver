@@ -12,6 +12,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.domain)
+            implementation(projects.core.manualReadoutDomain)
             implementation(projects.core.narrator)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)

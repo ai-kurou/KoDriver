@@ -11,6 +11,8 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
+            implementation(projects.core.overlayDomain)
+            implementation(projects.core.speechRecognitionDomain)
             implementation(libs.koin.compose)
         }
         jvmTest.dependencies {

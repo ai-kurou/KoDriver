@@ -44,6 +44,9 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.core.domain)
+            implementation(projects.core.manualReadoutDomain)
+            implementation(projects.core.microphoneDomain)
+            implementation(projects.core.overlayDomain)
             implementation(projects.core.gt7Ps5Domain)
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
@@ -86,6 +89,8 @@ compose.resources {
 
 dependencies {
     testFixturesApi(projects.core.domain)
+    testFixturesApi(projects.core.manualReadoutDomain)
+    testFixturesApi(projects.core.microphoneDomain)
     testFixturesApi(projects.core.gt7Ps5Domain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)

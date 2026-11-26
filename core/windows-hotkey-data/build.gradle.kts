@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.core.manualReadoutDomain)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.jna)
