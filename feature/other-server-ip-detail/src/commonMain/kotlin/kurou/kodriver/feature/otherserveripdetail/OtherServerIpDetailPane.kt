@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherserveripdetail
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -212,7 +213,7 @@ public fun OtherServerIpDetailPaneContent(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onSaveConfirmedByKeyboard() }),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().animateContentSize(),
             )
             AnimatedVisibility(visible = uiState.connectivityWarning) {
                 Column {

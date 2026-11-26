@@ -128,8 +128,10 @@ internal fun ConnectionBannerContent(
 ) {
     val haptic = LocalHapticFeedback.current
     val colors = bannerColors(uiState.status)
-    val backgroundColor by animateColorAsState(targetValue = colors.background)
-    val contentColor by animateColorAsState(targetValue = colors.content)
+    val backgroundColor by
+        animateColorAsState(targetValue = colors.background, animationSpec = tween(BANNER_ENTER_MILLIS))
+    val contentColor by
+        animateColorAsState(targetValue = colors.content, animationSpec = tween(BANNER_ENTER_MILLIS))
     val icon = bannerIcon(uiState.iconType, uiState.isConnected)
     val currentOnClick = onClick
     val isTappable = uiState.isTappable && currentOnClick != null
@@ -175,8 +177,8 @@ internal fun ConnectionBannerContent(
         }
         AnimatedVisibility(
             visible = isTappable,
-            enter = fadeIn(),
-            exit = fadeOut(),
+            enter = fadeIn(tween(BANNER_ENTER_MILLIS)),
+            exit = fadeOut(tween(BANNER_EXIT_MILLIS)),
             modifier = Modifier.align(Alignment.CenterEnd),
         ) {
             Icon(
