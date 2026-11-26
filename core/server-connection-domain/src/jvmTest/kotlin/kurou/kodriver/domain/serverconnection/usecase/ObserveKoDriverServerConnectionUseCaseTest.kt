@@ -96,6 +96,27 @@ class ObserveKoDriverServerConnectionUseCaseTest {
         }
 
     @Test
+    fun `アプリバージョンが空ならサーバーバージョンがあっても不一致にしない`() =
+        runTest {
+            every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+            coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
+            val useCase = createUseCase()
+
+            val states = mutableListOf<KoDriverServerConnectionState>()
+            val job = launch { useCase(appVersion = "").collect { states += it } }
+            delay(50L)
+
+            assertEquals("2.0.0", states[1].serverVersion)
+            assertFalse(states[1].isVersionMismatch)
+            job.cancel()
+            coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
+            verify(exactly = 1) { serverIpRepository.serverIp() }
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            confirmVerified(serverIpRepository, simulatorRepository, versionRepository)
+        }
+
+    @Test
     @OptIn(ExperimentalCoroutinesApi::class)
     fun `一定間隔で接続状態を更新する`() =
         runTest {
