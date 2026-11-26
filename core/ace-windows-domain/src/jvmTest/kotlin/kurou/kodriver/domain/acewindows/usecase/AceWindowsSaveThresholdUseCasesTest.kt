@@ -4,6 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreTemperaturePreferencesRepository
@@ -17,6 +18,11 @@ class AceWindowsSaveThresholdUseCasesTest {
             "SaveAceWindowsTyreTemperatureHighThresholdUseCase",
             save = { saveHighThresholdCelsius(Celsius(90)) },
             useCase = { SaveAceWindowsTyreTemperatureHighThresholdUseCase(it)(Celsius(90)) },
+        )
+        assertSaves<AceWindowsBrakeTemperaturePreferencesRepository>(
+            "SaveAceWindowsBrakeTemperatureHighThresholdUseCase",
+            save = { saveHighThresholdCelsius(Celsius(900)) },
+            useCase = { SaveAceWindowsBrakeTemperatureHighThresholdUseCase(it)(Celsius(900)) },
         )
         assertSaves<AceWindowsRemainingFuelLapsPreferencesRepository>(
             "SaveAceWindowsRemainingFuelLapsThresholdUseCase",
