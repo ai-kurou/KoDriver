@@ -132,7 +132,7 @@ digraph G {
   { rank=same; ":app:shared"; ":server"; }
   { rank=same; "feature"; "feature:ace-windows*"; "feature:lmu-windows*"; "feature:gt7-ps5*"; ":core:data"; ":core:ace-windows-data"; ":core:lmu-windows-data"; ":core:gt7-ps5-data"; ":core:lmu-windows-rest-api-data"; ":core:text-to-speech-data"; ":core:device-volume-data"; ":core:server-discovery-data"; ":core:speech-recognition-data"; ":core:windows-hotkey-data"; ":core:windows-startup-data"; }
   { rank=same; ":core:narrator"; ":core:designsystem"; ":core:windows-shared-memory"; }
-  { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; }
+  { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; ":core:overlay-domain"; ":core:manual-readout-domain"; ":core:voice-domain"; ":core:microphone-domain"; ":core:speech-recognition-domain"; }
   { rank=same; ":core:domain"; }
   ":app:androidApp" -> ":app:shared" [style=invis]
   ":app:shared" -> "feature" [style=invis]
