@@ -63,6 +63,10 @@ subprojects {
     // macOS でテスト用 JVM が Dock に表示されて画面フォーカスが奪われるのを防ぐ
     tasks.withType<Test>().configureEach {
         jvmArgs("-Dapple.awt.UIElement=true")
+        // CI で flaky テストの失敗原因（メッセージ・スタックトレース）を把握できるよう、例外を省略せず全文表示する
+        testLogging {
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
         // Robolectric 4.17 の公式推奨設定: JDK 17 以降で内部 API へのアクセスを許可する
         if (name.contains("AndroidHostTest", ignoreCase = true) || name.endsWith("UnitTest")) {
             jvmArgs(
