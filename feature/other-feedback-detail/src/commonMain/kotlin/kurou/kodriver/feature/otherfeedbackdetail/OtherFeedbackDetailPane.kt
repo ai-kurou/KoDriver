@@ -2,7 +2,6 @@ package kurou.kodriver.feature.otherfeedbackdetail
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.appendInlineContent
@@ -25,18 +23,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -51,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverRadioRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.FeedbackType
@@ -371,29 +367,11 @@ private fun FeedbackTypeOption(
     label: String,
     onTypeSelected: (FeedbackType) -> Unit,
 ) {
-    val haptic = LocalHapticFeedback.current
-    val onTypeSelectedWithHaptic: () -> Unit = {
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        onTypeSelected(type)
-    }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .selectable(
-                    selected = type == selectedType,
-                    role = Role.RadioButton,
-                    onClick = onTypeSelectedWithHaptic,
-                ),
-    ) {
-        RadioButton(
-            selected = type == selectedType,
-            onClick = null,
-            modifier = Modifier.size(48.dp),
-        )
-        Text(label)
-    }
+    KoDriverRadioRow(
+        selected = type == selectedType,
+        label = label,
+        onClick = { onTypeSelected(type) },
+    )
 }
 
 @Composable

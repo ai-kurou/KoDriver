@@ -18,10 +18,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
-import io.mockk.confirmVerified
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.OverlayTextSize
 import org.junit.Rule
@@ -48,7 +44,13 @@ class OtherOverlayTextSizeDetailDialogContentTest {
         }
     }
 
-    private val haptic: HapticFeedback = mockk()
+    private val hapticFeedbacks = mutableListOf<HapticFeedbackType>()
+    private val haptic: HapticFeedback =
+        object : HapticFeedback {
+            override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+                hapticFeedbacks += hapticFeedbackType
+            }
+        }
 
     @Test
     fun `OKボタンをクリックするとonConfirmが呼ばれる`() {
@@ -73,7 +75,6 @@ class OtherOverlayTextSizeDetailDialogContentTest {
     @Test
     fun `OKボタンをクリックするとハプティックとonConfirmが一度ずつ呼ばれる`() {
         var confirmCount = 0
-        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
             CompositionLocalProvider(LocalHapticFeedback provides haptic) {
                 KoDriverTheme {
@@ -88,14 +89,12 @@ class OtherOverlayTextSizeDetailDialogContentTest {
         rule.onNodeWithText("OK").performClick()
 
         assertEquals(1, confirmCount)
-        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
-        confirmVerified(haptic)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), hapticFeedbacks)
     }
 
     @Test
     fun `キャンセルボタンをクリックするとハプティックとonDismissが一度ずつ呼ばれる`() {
         var dismissCount = 0
-        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
             CompositionLocalProvider(LocalHapticFeedback provides haptic) {
                 KoDriverTheme {
@@ -110,8 +109,7 @@ class OtherOverlayTextSizeDetailDialogContentTest {
         rule.onNodeWithText("キャンセル").performClick()
 
         assertEquals(1, dismissCount)
-        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
-        confirmVerified(haptic)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), hapticFeedbacks)
     }
 
     @Test
@@ -149,7 +147,6 @@ class OtherOverlayTextSizeDetailDialogContentTest {
     fun `選択行がラジオボタンのroleと選択状態を公開しクリックで一度だけ選択と触感を更新する`() {
         var selected by mutableStateOf(OverlayTextSize.MEDIUM)
         val selections = mutableListOf<OverlayTextSize>()
-        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
             CompositionLocalProvider(LocalHapticFeedback provides haptic) {
                 KoDriverTheme {
@@ -177,11 +174,10 @@ class OtherOverlayTextSizeDetailDialogContentTest {
             .assertIsNotSelected()
             .performClick()
         rule.onNodeWithText("中").assertIsNotSelected()
-        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        assertEquals(listOf(HapticFeedbackType.ContextClick), hapticFeedbacks)
         rule.onNodeWithText("大").assertIsSelected().performClick()
 
         assertEquals(listOf(OverlayTextSize.LARGE, OverlayTextSize.LARGE), selections)
-        verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
-        confirmVerified(haptic)
+        assertEquals(List(2) { HapticFeedbackType.ContextClick }, hapticFeedbacks)
     }
 }

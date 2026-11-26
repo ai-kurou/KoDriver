@@ -13,12 +13,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -121,14 +119,11 @@ public fun HelpIconButton(
     }
 
     if (showHelpSheet) {
-        ModalBottomSheet(
+        KoDriverModalBottomSheet(
             onDismissRequest = { showHelpSheet = false },
             sheetState = sheetState,
         ) {
-            // Android ではシートが別の ComposeView になり LocalHapticFeedback が上書きされるため、呼び出し元の値を引き継ぐ。
-            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
-                sheetContent()
-            }
+            sheetContent()
         }
     }
 }

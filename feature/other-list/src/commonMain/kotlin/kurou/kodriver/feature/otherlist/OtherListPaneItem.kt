@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,6 +17,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverSwitch
 import kurou.kodriver.core.designsystem.listRowSelectionAnimationSpec
 import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN
 import kurou.kodriver.domain.model.ReadoutStartSoundType
@@ -271,26 +271,6 @@ internal fun OtherListItem(
     val haptic = LocalHapticFeedback.current
     val openAccessLocalNetworkPermissionSettings = rememberOpenAccessLocalNetworkPermissionSettings()
     val openTtsSettings = rememberOpenTtsSettings()
-    val onOverlayVisibleChangeWithHaptic: (Boolean) -> Unit = {
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        onOverlayVisibleChange(it)
-    }
-    val onKeepScreenOnChangeWithHaptic: (Boolean) -> Unit = {
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        onKeepScreenOnChange(it)
-    }
-    val onDynamicColorEnabledChangeWithHaptic: (Boolean) -> Unit = {
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        onDynamicColorEnabledChange(it)
-    }
-    val onHapticFeedbackEnabledChangeWithHaptic: (Boolean) -> Unit = {
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        onHapticFeedbackEnabledChange(it)
-    }
-    val onStartupEnabledChangeWithHaptic: (Boolean) -> Unit = {
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        onStartupEnabledChange(it)
-    }
     val isSelected = item == uiState.selectedItem
     val containerColor by animateColorAsState(
         targetValue =
@@ -333,37 +313,37 @@ internal fun OtherListItem(
         trailingContent = {
             when (item) {
                 OtherListItemType.OverlayVisible -> {
-                    Switch(
+                    KoDriverSwitch(
                         checked = uiState.overlayVisible,
-                        onCheckedChange = onOverlayVisibleChangeWithHaptic,
+                        onCheckedChange = onOverlayVisibleChange,
                     )
                 }
 
                 OtherListItemType.KeepScreenOn -> {
-                    Switch(
+                    KoDriverSwitch(
                         checked = uiState.keepScreenOn,
-                        onCheckedChange = onKeepScreenOnChangeWithHaptic,
+                        onCheckedChange = onKeepScreenOnChange,
                     )
                 }
 
                 OtherListItemType.DynamicColor -> {
-                    Switch(
+                    KoDriverSwitch(
                         checked = uiState.dynamicColorEnabled,
-                        onCheckedChange = onDynamicColorEnabledChangeWithHaptic,
+                        onCheckedChange = onDynamicColorEnabledChange,
                     )
                 }
 
                 OtherListItemType.HapticFeedback -> {
-                    Switch(
+                    KoDriverSwitch(
                         checked = uiState.hapticFeedbackEnabled,
-                        onCheckedChange = onHapticFeedbackEnabledChangeWithHaptic,
+                        onCheckedChange = onHapticFeedbackEnabledChange,
                     )
                 }
 
                 OtherListItemType.Startup -> {
-                    Switch(
+                    KoDriverSwitch(
                         checked = uiState.startupEnabled,
-                        onCheckedChange = onStartupEnabledChangeWithHaptic,
+                        onCheckedChange = onStartupEnabledChange,
                     )
                 }
 

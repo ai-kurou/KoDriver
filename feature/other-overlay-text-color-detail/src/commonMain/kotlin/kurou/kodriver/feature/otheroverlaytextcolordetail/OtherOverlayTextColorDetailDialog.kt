@@ -31,6 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
@@ -117,24 +118,18 @@ internal fun OtherOverlayTextColorDetailDialogContent(
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onConfirm()
-                },
-            ) {
-                Text(stringResource(Res.string.overlay_text_color_ok))
-            }
+            KoDriverDialogTextButton(
+                text = stringResource(Res.string.overlay_text_color_ok),
+                onClick = onConfirm,
+                hapticFeedback = haptic,
+            )
         },
         dismissButton = {
-            TextButton(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onDismiss()
-                },
-            ) {
-                Text(stringResource(Res.string.overlay_text_color_cancel))
-            }
+            KoDriverDialogTextButton(
+                text = stringResource(Res.string.overlay_text_color_cancel),
+                onClick = onDismiss,
+                hapticFeedback = haptic,
+            )
         },
         modifier = modifier,
     )
