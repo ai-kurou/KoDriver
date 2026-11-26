@@ -3,7 +3,10 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.job
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AndroidAudioUsage
@@ -15,16 +18,18 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidAudioUsagePreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_android_audio_usage_repo_test").toFile()
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = AndroidAudioUsagePreferencesSerializer,
-            scope = CoroutineScope(UnconfinedTestDispatcher()),
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = AndroidAudioUsagePreferencesRepositoryImpl(dataStore)
 
     @AfterTest
     fun tearDown() {
+        runBlocking { dataStoreScope.coroutineContext.job.cancelAndJoin() }
         tempDir.deleteRecursively()
     }
 

@@ -3,8 +3,10 @@ package kurou.kodriver.core.lmuwindowsdata.preferences
 import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.job
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT
@@ -39,7 +41,7 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
 
     @AfterTest
     fun tearDown() {
-        dataStoreScope.cancel()
+        runBlocking { dataStoreScope.coroutineContext.job.cancelAndJoin() }
         tempDir.deleteRecursively()
     }
 
