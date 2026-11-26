@@ -26,6 +26,7 @@ import java.net.UnknownHostException
  * [retryDelayMs] 待機後にリトライする。接続拒否・タイムアウト・名前解決失敗・ソケット切断・
  * 接続中の EOF（サーバー側の切断）、存在しないエンドポイントの HTTP ハンドシェイク 404 による
  * 想定内のネットワーク利用不可は Sentry へ送信せず、それ以外の失敗とデコード失敗のみ送信する。
+ * 下流（collector）が投げた例外は通信失敗として扱わず、そのまま再送出する（Flow の例外透過性）。
  */
 internal fun <T> HttpClient.webSocketFlow(
     host: String,
@@ -60,6 +61,8 @@ private suspend fun <T> HttpClient.connectOnce(
         }
     } catch (e: CancellationException) {
         throw e
+    } catch (e: DownstreamException) {
+        throw e.downstream
     } catch (e: Exception) {
         if (!e.isExpectedNetworkFailure()) {
             captureException(e)
@@ -72,14 +75,26 @@ private suspend fun <T> FlowCollector<T>.emitDecoded(
     decode: (String) -> T,
     captureException: (Throwable) -> Unit,
 ) {
+    val value =
+        try {
+            decode(text)
+        } catch (e: SerializationException) {
+            captureException(e)
+            return
+        }
     try {
-        emit(decode(text))
+        emit(value)
     } catch (e: CancellationException) {
         throw e
-    } catch (e: SerializationException) {
-        captureException(e)
+    } catch (e: Throwable) {
+        throw DownstreamException(e)
     }
 }
+
+/** 下流の例外を通信失敗と区別して [connectOnce] の外へ運ぶための包み。 */
+private class DownstreamException(
+    val downstream: Throwable,
+) : Exception(downstream)
 
 internal fun Throwable.isExpectedNetworkFailure(): Boolean =
     this is SocketTimeoutException ||

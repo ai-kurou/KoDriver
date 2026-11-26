@@ -132,6 +132,35 @@ class WebSocketFlowFactoryTest {
         }
 
     @Test
+    fun `下流が投げた例外はSentry送信やリトライをせず再スローする`() =
+        runTest {
+            enqueueHello()
+            val client = createWebSocketHttpClient()
+            val exception = IllegalStateException("downstream")
+            val capturedExceptions = mutableListOf<Throwable>()
+            try {
+                val thrown =
+                    assertFailsWith<IllegalStateException> {
+                        client
+                            .webSocketFlow(
+                                host = "127.0.0.1",
+                                port = server.port,
+                                path = "/ws/test",
+                                retryDelayMs = 100L,
+                                decode = { it.uppercase() },
+                                captureException = { capturedExceptions += it },
+                            ).collect { throw exception }
+                    }
+
+                assertSame(exception, thrown)
+                assertEquals(1, server.requestCount)
+                assertEquals(emptyList<Throwable>(), capturedExceptions)
+            } finally {
+                client.close()
+            }
+        }
+
+    @Test
     fun `404の除外はProtocolExceptionのハンドシェイク文言に限定する`() {
         val handshake = "Expected HTTP 101 response but was '404 Not Found'"
         assertTrue(ProtocolException(handshake).isExpectedNetworkFailure())
