@@ -18,10 +18,15 @@ digraph G {
   ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:lmu-windows-domain" [label=":core:lmu-windows-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:lmu-windows-rest-api-data" [label=":core:lmu-windows-rest-api-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:manual-readout-domain" [label=":core:manual-readout-domain", fillcolor="#E1BEE7", color="#8E24AA"]
+  ":core:microphone-domain" [label=":core:microphone-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:narrator" [label=":core:narrator", fillcolor="#FFF9C4", color="#F9A825"]
+  ":core:overlay-domain" [label=":core:overlay-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:server-discovery-data" [label=":core:server-discovery-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:speech-recognition-data" [label=":core:speech-recognition-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:speech-recognition-domain" [label=":core:speech-recognition-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:text-to-speech-data" [label=":core:text-to-speech-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:voice-domain" [label=":core:voice-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:windows-hotkey-data" [label=":core:windows-hotkey-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#FFF9C4", color="#F9A825"]
   ":core:windows-startup-data" [label=":core:windows-startup-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -67,6 +72,10 @@ digraph G {
   ":core:data" -> ":core:domain"
   ":core:data" -> ":core:gt7-ps5-domain"
   ":core:data" -> ":core:lmu-windows-domain"
+  ":core:data" -> ":core:manual-readout-domain"
+  ":core:data" -> ":core:microphone-domain"
+  ":core:data" -> ":core:overlay-domain"
+  ":core:data" -> ":core:speech-recognition-domain"
   ":core:device-volume-data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:gt7-ps5-domain"
@@ -77,10 +86,19 @@ digraph G {
   ":core:lmu-windows-domain" -> ":core:domain"
   ":core:lmu-windows-rest-api-data" -> ":core:domain"
   ":core:lmu-windows-rest-api-data" -> ":core:lmu-windows-domain"
+  ":core:manual-readout-domain" -> ":core:domain"
+  ":core:microphone-domain" -> ":core:domain"
+  ":core:overlay-domain" -> ":core:domain"
   ":core:server-discovery-data" -> ":core:domain"
   ":core:speech-recognition-data" -> ":core:domain"
+  ":core:speech-recognition-data" -> ":core:microphone-domain"
+  ":core:speech-recognition-data" -> ":core:speech-recognition-domain"
+  ":core:speech-recognition-domain" -> ":core:domain"
   ":core:text-to-speech-data" -> ":core:domain"
+  ":core:text-to-speech-data" -> ":core:voice-domain"
+  ":core:voice-domain" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:domain"
+  ":core:windows-hotkey-data" -> ":core:manual-readout-domain"
   ":core:windows-startup-data" -> ":core:domain"
   ":server" -> ":core:ace-windows-domain"
   ":server" -> ":core:domain"
@@ -90,17 +108,25 @@ digraph G {
   "feature" -> ":core:domain"
   "feature" -> ":core:gt7-ps5-domain"
   "feature" -> ":core:lmu-windows-domain"
+  "feature" -> ":core:manual-readout-domain"
+  "feature" -> ":core:microphone-domain"
+  "feature" -> ":core:overlay-domain"
+  "feature" -> ":core:speech-recognition-domain"
+  "feature" -> ":core:voice-domain"
   "feature:ace-windows*" -> ":core:ace-windows-domain"
   "feature:ace-windows*" -> ":core:designsystem"
   "feature:ace-windows*" -> ":core:domain"
+  "feature:ace-windows*" -> ":core:manual-readout-domain"
   "feature:ace-windows*" -> ":core:narrator"
   "feature:gt7-ps5*" -> ":core:designsystem"
   "feature:gt7-ps5*" -> ":core:domain"
   "feature:gt7-ps5*" -> ":core:gt7-ps5-domain"
+  "feature:gt7-ps5*" -> ":core:manual-readout-domain"
   "feature:gt7-ps5*" -> ":core:narrator"
   "feature:lmu-windows*" -> ":core:designsystem"
   "feature:lmu-windows*" -> ":core:domain"
   "feature:lmu-windows*" -> ":core:lmu-windows-domain"
+  "feature:lmu-windows*" -> ":core:manual-readout-domain"
   "feature:lmu-windows*" -> ":core:narrator"
   { rank=same; ":app:androidApp"; ":app:desktopApp"; }
   { rank=same; ":app:shared"; ":server"; }

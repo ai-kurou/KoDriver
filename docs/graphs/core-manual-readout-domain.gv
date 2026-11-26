@@ -1,0 +1,37 @@
+digraph G {
+  rankdir=TB
+  node [shape=box, style="rounded,filled"]
+  ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:manual-readout-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=2.5]
+  ":core:windows-hotkey-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:gt7-ps5-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:manual-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":core:data" -> ":core:domain"
+  ":core:data" -> ":core:manual-readout-domain"
+  ":core:manual-readout-domain" -> ":core:domain"
+  ":core:windows-hotkey-data" -> ":core:domain"
+  ":core:windows-hotkey-data" -> ":core:manual-readout-domain"
+  ":feature:ace-windows-narrator" -> ":core:domain"
+  ":feature:ace-windows-narrator" -> ":core:manual-readout-domain"
+  ":feature:gt7-ps5-narrator" -> ":core:domain"
+  ":feature:gt7-ps5-narrator" -> ":core:manual-readout-domain"
+  ":feature:lmu-windows-narrator" -> ":core:domain"
+  ":feature:lmu-windows-narrator" -> ":core:manual-readout-domain"
+  ":feature:main" -> ":core:domain"
+  ":feature:main" -> ":core:manual-readout-domain"
+  ":feature:manual-readout-detail" -> ":core:domain"
+  ":feature:manual-readout-detail" -> ":core:manual-readout-domain"
+  ":feature:manual-readout-list" -> ":core:domain"
+  ":feature:manual-readout-list" -> ":core:manual-readout-domain"
+  ":feature:other-list" -> ":core:domain"
+  ":feature:other-list" -> ":core:manual-readout-domain"
+  ":feature:speech-recognition-list" -> ":core:domain"
+  ":feature:speech-recognition-list" -> ":core:manual-readout-domain"
+}

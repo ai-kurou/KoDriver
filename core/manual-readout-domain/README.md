@@ -8,3 +8,9 @@
 `ResetManualReadoutSettingsUseCase` は受け取った `ManualReadoutSettingsResetter` を順番に実行し、手動読み上げセット（ホットキーを含む）と再生ボタン表示設定を既定値に戻します。
 
 `kurou.kodriver.domain.util` の `isManualReadoutHotkeySupported()`（expect/actual）は手動読み上げのホットキー対応判定で、Windows デスクトップのみ true を返す。`:feature:manual-readout-list` と `:feature:manual-readout-detail` が共用する。
+
+<!-- MODULE-GRAPH-START -->
+## Module Dependencies
+
+![Module Graph](../../docs/graphs/core-manual-readout-domain.svg)
+<!-- MODULE-GRAPH-END -->

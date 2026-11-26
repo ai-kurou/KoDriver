@@ -10,3 +10,9 @@
 `MicrophoneCutQuietSoundPreferencesRepository` が保持する。既定値は3で、段階 × `MICROPHONE_CUT_QUIET_SOUND_LEVEL_STEP`（0.05）が
 音量ゲートのしきい値（既定は0.15）に当たる。`ObserveMicrophoneCutQuietSoundLevelUseCase` で購読し、
 `SaveMicrophoneCutQuietSoundLevelUseCase` が範囲外の値を拒否して保存する。「コマンド受付中もカットする」は `MICROPHONE_CUT_QUIET_SOUND_IN_COMMAND_DEFAULT`（false）を既定に、同じRepositoryの `observeMicrophoneCutQuietSoundInCommand` / `saveMicrophoneCutQuietSoundInCommand` と対応するUseCaseで扱う。
+
+<!-- MODULE-GRAPH-START -->
+## Module Dependencies
+
+![Module Graph](../../docs/graphs/core-microphone-domain.svg)
+<!-- MODULE-GRAPH-END -->

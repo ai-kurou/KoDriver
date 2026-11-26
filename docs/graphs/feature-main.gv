@@ -7,12 +7,21 @@ digraph G {
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:gt7-ps5-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:lmu-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:manual-readout-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:microphone-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:speech-recognition-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:main"
   ":core:ace-windows-domain" -> ":core:domain"
   ":core:gt7-ps5-domain" -> ":core:domain"
   ":core:lmu-windows-domain" -> ":core:domain"
+  ":core:manual-readout-domain" -> ":core:domain"
+  ":core:microphone-domain" -> ":core:domain"
+  ":core:speech-recognition-domain" -> ":core:domain"
   ":feature:main" -> ":core:domain"
+  ":feature:main" -> ":core:manual-readout-domain"
+  ":feature:main" -> ":core:microphone-domain"
+  ":feature:main" -> ":core:speech-recognition-domain"
   ":feature:main" -> ":core:gt7-ps5-domain"
   ":feature:main" -> ":core:ace-windows-domain"
   ":feature:main" -> ":core:lmu-windows-domain"
