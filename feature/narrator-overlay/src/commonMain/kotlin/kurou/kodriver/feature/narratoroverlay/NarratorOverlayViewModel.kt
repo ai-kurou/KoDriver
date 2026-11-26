@@ -9,7 +9,7 @@ import kurou.kodriver.domain.overlay.usecase.ObserveOverlayBackgroundOpacityUseC
 import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionTranscriptUseCase
-import kurou.kodriver.domain.usecase.ObserveLatestNarratedTelemetryLogUseCase
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveLatestNarratedTelemetryLogUseCase
 
 internal class NarratorOverlayViewModel(
     observeLatestNarratedTelemetryLog: ObserveLatestNarratedTelemetryLogUseCase,

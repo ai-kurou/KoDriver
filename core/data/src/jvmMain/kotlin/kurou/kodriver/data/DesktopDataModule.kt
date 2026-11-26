@@ -54,10 +54,8 @@ import kurou.kodriver.domain.overlay.repository.OverlayTextColorPreferencesRepos
 import kurou.kodriver.domain.overlay.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.overlay.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.overlay.repository.OverlayWindowBoundsPreferencesRepository
-import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
@@ -75,12 +73,14 @@ import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepos
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
-import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.AccessLocalNetworkPermissionRepository
+import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionTranscriptRepository
+import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind

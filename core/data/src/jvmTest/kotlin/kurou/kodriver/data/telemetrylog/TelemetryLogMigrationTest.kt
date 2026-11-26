@@ -3,8 +3,8 @@ package kurou.kodriver.data.telemetrylog
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
 import kurou.kodriver.data.registerReadoutItemKeys
-import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
 import java.nio.file.Files
 import kotlin.test.BeforeTest
 import kotlin.test.Test

@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
-import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
+import kurou.kodriver.domain.serverconnection.repository.AccessLocalNetworkPermissionRepository
 
 /**
  * Android 17 (API 37) 以降で強制適用される [Manifest.permission.ACCESS_LOCAL_NETWORK] の許可状態を返す。

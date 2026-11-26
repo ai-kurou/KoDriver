@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.otherserveripdetail
 
-import kurou.kodriver.domain.model.IPV4_OCTET_MAX
-import kurou.kodriver.domain.model.IPV4_OCTET_MIN
+import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MAX
+import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MIN
 
 internal class ValidateServerIpAddressUseCase {
     operator fun invoke(ip: String): Boolean {

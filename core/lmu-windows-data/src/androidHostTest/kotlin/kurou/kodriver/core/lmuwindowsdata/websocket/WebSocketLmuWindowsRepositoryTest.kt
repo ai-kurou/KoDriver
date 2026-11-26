@@ -16,7 +16,7 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener

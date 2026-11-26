@@ -19,7 +19,7 @@ import kurou.kodriver.buildlogic.screenshottest.rememberFoldedVerticalHingeDirec
 import kurou.kodriver.buildlogic.screenshottest.rememberNonFlatVerticalHingePosture
 import kurou.kodriver.buildlogic.screenshottest.rememberTabletopPosture
 import kurou.kodriver.buildlogic.screenshottest.twoPaneDirective
-import kurou.kodriver.domain.model.DiscoveredServer
+import kurou.kodriver.domain.serverconnection.model.DiscoveredServer
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailUiState
 import kurou.kodriver.feature.otherlist.OtherListItemType

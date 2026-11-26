@@ -22,9 +22,9 @@ import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.gt7ps5.usecase.CheckGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
+import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.serverconnection.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest

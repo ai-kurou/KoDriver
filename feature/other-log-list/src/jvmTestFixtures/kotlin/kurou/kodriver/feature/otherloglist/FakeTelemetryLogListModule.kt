@@ -3,13 +3,13 @@ package kurou.kodriver.feature.otherloglist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
-import kurou.kodriver.domain.model.TelemetryLogDetail
-import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLogDetail
+import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
 import org.koin.dsl.module
 
 /**

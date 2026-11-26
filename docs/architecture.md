@@ -15,6 +15,8 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:gt7-ps5-domain` | GT7固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-gt7-ps5-domain.svg) |
 | `:core:lmu-windows-domain` | LMU固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-lmu-windows-domain.svg) |
 | `:core:auto-readout-domain` | 自動読み上げの有効状態・順序・設定リセットのリポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-auto-readout-domain.svg) |
+| `:core:telemetry-log-domain` | 読み上げ履歴のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-telemetry-log-domain.svg) |
+| `:core:server-connection-domain` | サーバー接続（IPの保存・検出・疎通確認・コンソールIP・ローカルネットワーク権限）のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-server-connection-domain.svg) |
 | `:core:overlay-domain` | 読み上げオーバーレイ設定のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-overlay-domain.svg) |
 | `:core:manual-readout-domain` | 手動読み上げのセット操作・読み上げ依頼・ホットキーのリポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-manual-readout-domain.svg) |
 | `:core:microphone-domain` | マイク入力と「小さい音をカット」設定のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-microphone-domain.svg) |
@@ -96,6 +98,24 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 LMU のブレーキ摩耗は `:core:lmu-windows-rest-api-data` がデスクトップ版で取得し、`:server` の `/ws/lmu_windows/brake_wear` から配信する。Android 版は `:core:lmu-windows-data` の WebSocket Repository で受信し、共通の残量計算・Narrator に渡す。取得失敗時の `null` も配信する。
 
 手動読み上げの詳細は `app:shared` → `:feature:manual-readout-detail` → `:core:domain` / `:core:lmu-windows-domain` / `:core:ace-windows-domain` / `:core:gt7-ps5-domain` / `:core:designsystem` に依存する。一覧は詳細スロットを公開し、feature 間依存は持たない。両プラットフォームの共通 composition root が詳細の Koin モジュールを登録する。
+
+## domain モジュールの振り分け基準
+
+コードを `:core:domain` と、機能領域ごとの `:core:<領域>-domain` のどちらに置くかは、次の順に判断する。1はファイル（型）ごとに適用するため、同じ領域でも一部が `:core:domain` に残ることがある。
+
+1. **`:core:domain` に置く**（いずれかに該当）
+   - `:core:domain` に残るコード、または2つ以上の domain モジュールが使う。domain モジュール同士は `:core:domain` 以外に依存できない。テストからの参照は、テスト用の型に置き換えられるなら数えない。feature・data からの参照は、どの domain にも依存できるため判定に使わない。
+   - `:server` が使い、移動先の候補に `:server` が依存できない。
+   - アプリ全体の設定・状態（テーマ、画面常時点灯、ハプティック、ウィンドウ位置、自動起動、音量、更新確認など）。機能領域とはみなさない。
+   - 読み上げの共通基盤（音声合成、声、開始音、再生状態、音声設定画面の起動）。機能領域とはみなさない。
+   - 特定のシミュレーターに依存しない単位を表す値の型。
+2. **既存の domain モジュールに置く**: 1に該当せず、その型を使う領域の domain モジュールがすでにある。
+3. **新しい `:core:<領域>-domain` を作る**: 1と2に該当せず、次の両方を満たす。
+   - 1つの名前で責務を説明できる。種類の違う設定などの寄せ集めは作らない。
+   - Repository と、それを使う UseCase がある。値の型や定数だけのモジュールは作らない。
+4. どれにも該当しないものは `:core:domain` に置く。
+
+ファイル数の下限は設けない。依存の向きは `moduleGraphAssert` が検証するが、置き場所と分割漏れは検証できないため、レビューで確認する。
 
 ## モジュール一覧の更新漏れ防止
 

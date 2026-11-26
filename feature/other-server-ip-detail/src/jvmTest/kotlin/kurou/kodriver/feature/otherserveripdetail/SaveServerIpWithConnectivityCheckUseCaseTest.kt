@@ -11,10 +11,10 @@ import io.mockk.verify
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.repository.ServerConnectivityRepository
-import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
-import kurou.kodriver.domain.usecase.CheckServerConnectivityUseCase
-import kurou.kodriver.domain.usecase.SaveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.repository.ServerConnectivityRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.serverconnection.usecase.CheckServerConnectivityUseCase
+import kurou.kodriver.domain.serverconnection.usecase.SaveServerIpUseCase
 import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals

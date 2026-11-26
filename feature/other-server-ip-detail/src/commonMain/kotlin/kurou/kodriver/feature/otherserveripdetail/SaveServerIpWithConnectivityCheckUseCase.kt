@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.otherserveripdetail
 
 import kurou.kodriver.domain.runCapturingErrorsOrNull
-import kurou.kodriver.domain.usecase.CheckServerConnectivityUseCase
-import kurou.kodriver.domain.usecase.SaveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.usecase.CheckServerConnectivityUseCase
+import kurou.kodriver.domain.serverconnection.usecase.SaveServerIpUseCase
 
 internal sealed interface SaveServerIpResult {
     data object Saved : SaveServerIpResult

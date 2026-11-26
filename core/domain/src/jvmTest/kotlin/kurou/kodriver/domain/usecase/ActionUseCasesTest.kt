@@ -10,21 +10,10 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
-import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ActionUseCasesTest {
-    @Test
-    fun `suspend系の操作UseCaseはRepositoryの対応するメソッドへ委譲する`() =
-        runTest {
-            assertDelegatesSuspend<TelemetryLogRepository>(
-                useCaseName = "DeleteTelemetryLogUseCase",
-                call = { deleteTelemetryLog(1L) },
-                useCase = { DeleteTelemetryLogUseCase(it)(1L) },
-            )
-        }
-
     @Test
     fun `プレビュー系UseCaseは設定と解除をそのまま委譲する`() {
         assertDelegates<TextToSpeechEngine>(
@@ -54,22 +43,6 @@ class ActionUseCasesTest {
             coVerify(exactly = 1) { repository.getVolume() }
             confirmVerified(repository)
         }
-
-    private suspend inline fun <reified R : Any> assertDelegatesSuspend(
-        useCaseName: String,
-        crossinline call: suspend R.() -> Unit,
-        crossinline useCase: suspend (R) -> Unit,
-    ) {
-        val repository = mockk<R>(relaxUnitFun = true)
-        try {
-            useCase(repository)
-
-            coVerify(exactly = 1) { repository.call() }
-            confirmVerified(repository)
-        } catch (e: AssertionError) {
-            throw AssertionError("$useCaseName: ${e.message}", e)
-        }
-    }
 
     private inline fun <reified R : Any> assertDelegates(
         useCaseName: String,

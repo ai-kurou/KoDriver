@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

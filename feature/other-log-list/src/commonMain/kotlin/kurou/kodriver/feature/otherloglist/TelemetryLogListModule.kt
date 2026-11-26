@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.otherloglist
 
-import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
+import kurou.kodriver.domain.telemetrylog.usecase.DeleteTelemetryLogUseCase
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveTelemetryLogsUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

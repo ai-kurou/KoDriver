@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
 
 internal class AndroidServerIpPreferencesRepository(
     private val dataStore: DataStore<Preferences>,

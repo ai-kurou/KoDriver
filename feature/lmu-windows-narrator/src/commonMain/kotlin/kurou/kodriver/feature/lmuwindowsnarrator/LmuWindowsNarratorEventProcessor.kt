@@ -25,11 +25,11 @@ import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutSetting
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.lmuwindows.usecase.TyreTemperatureReadoutInput
 import kurou.kodriver.domain.model.DebugReadoutRequest
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.usecase.SaveTelemetryLogUseCase
 
 internal data class LmuWindowsTelemetryLogContext(
     val state: LmuWindowsNarratorState,

@@ -4,11 +4,11 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.model.IPV4_OCTET_MAX
-import kurou.kodriver.domain.model.IPV4_OCTET_MIN
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
 import kurou.kodriver.domain.model.SERVER_CONNECTIVITY_CHECK_TIMEOUT_MS
-import kurou.kodriver.domain.repository.ServerConnectivityRepository
+import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MAX
+import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MIN
+import kurou.kodriver.domain.serverconnection.repository.ServerConnectivityRepository
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress

@@ -14,7 +14,6 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
@@ -80,12 +79,6 @@ class ObserveSettingsUseCasesTest {
 
     @Test
     fun `Observe系UseCaseはRepositoryの監視Flowの値をそのまま返す2`() {
-        assertObserves<ConsoleAddressPreferencesRepository, String?>(
-            "ObserveConsoleAddressUseCase",
-            "192.168.1.100",
-            observe = { consoleAddress() },
-            useCase = { ObserveConsoleAddressUseCase(it)() },
-        )
         assertObserves<LowVolumeWarningEnabledPreferencesRepository, Boolean>(
             "ObserveLowVolumeWarningEnabledUseCase",
             true,

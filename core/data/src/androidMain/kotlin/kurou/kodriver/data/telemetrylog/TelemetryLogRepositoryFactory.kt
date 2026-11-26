@@ -3,7 +3,7 @@ package kurou.kodriver.data.telemetrylog
 import android.content.Context
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
 
 /**
  * TelemetryLog Repository の永続化実装を生成する。

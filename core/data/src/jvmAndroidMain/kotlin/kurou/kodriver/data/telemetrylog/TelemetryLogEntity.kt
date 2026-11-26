@@ -2,11 +2,11 @@ package kurou.kodriver.data.telemetrylog
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
 
 @Entity(tableName = "telemetry_logs")
 internal data class TelemetryLogEntity(

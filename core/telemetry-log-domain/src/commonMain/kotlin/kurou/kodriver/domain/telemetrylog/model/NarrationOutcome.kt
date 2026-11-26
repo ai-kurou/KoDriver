@@ -1,0 +1,29 @@
+package kurou.kodriver.domain.telemetrylog.model
+
+/**
+ * 読み上げ条件が整ったイベントが、実際にどう処理されたかを表す。
+ * 再生要求時の結果であり、OS標準TTSの発話完了やキュー待機後の再生成功を保証するものではない。
+ *
+ * `:core:narrator` の `speakWithPriority` が分岐する4経路と1対1に対応する。キュー再生が有効な場合は
+ * 優先度判定をせずキューへ追加されるため、[SPOKEN] 以降はいずれもキュー再生が無効な場合にのみ発生する。
+ */
+public enum class NarrationOutcome(
+    public val id: String,
+) {
+    /** キュー再生が有効で、読み上げキュー経由で再生を要求した（再生中の読み上げの有無は問わない）。 */
+    QUEUED("queued"),
+
+    /** キュー再生が無効で、再生中の読み上げがなかったため、そのまま読み上げた。 */
+    SPOKEN("spoken"),
+
+    /** キュー再生が無効で優先度が勝ったため、再生中の読み上げを止めて割り込み再生した。 */
+    INTERRUPTED("interrupted"),
+
+    /** 優先度が負けた、または本文が空欄・TTS利用不可のため、読み上げされなかった。 */
+    SKIPPED("skipped"),
+    ;
+
+    public companion object {
+        public fun fromId(id: String): NarrationOutcome? = entries.firstOrNull { it.id == id }
+    }
+}

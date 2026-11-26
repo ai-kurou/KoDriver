@@ -81,6 +81,7 @@ import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutRequestsU
 import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.telemetrylog.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
@@ -93,7 +94,6 @@ import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ReportSpeechPlaybackActiveUseCase
-import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel

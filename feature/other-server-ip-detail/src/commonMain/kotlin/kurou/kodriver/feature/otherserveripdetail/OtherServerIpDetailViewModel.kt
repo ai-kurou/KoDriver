@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.model.DiscoveredServer
-import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
-import kurou.kodriver.domain.usecase.DiscoverWindowsServersUseCase
-import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.model.DiscoveredServer
+import kurou.kodriver.domain.serverconnection.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
+import kurou.kodriver.domain.serverconnection.usecase.DiscoverWindowsServersUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveServerIpUseCase
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class OtherServerIpDetailViewModel(

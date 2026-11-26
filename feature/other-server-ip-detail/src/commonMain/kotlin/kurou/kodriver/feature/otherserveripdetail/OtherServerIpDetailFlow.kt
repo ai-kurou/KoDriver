@@ -2,7 +2,7 @@ package kurou.kodriver.feature.otherserveripdetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kurou.kodriver.domain.model.DiscoveredServer
+import kurou.kodriver.domain.serverconnection.model.DiscoveredServer
 
 /** 保存済みIP、操作状態、検出結果から画面状態を合成する冷たい Flow。 */
 internal class OtherServerIpDetailFlow(

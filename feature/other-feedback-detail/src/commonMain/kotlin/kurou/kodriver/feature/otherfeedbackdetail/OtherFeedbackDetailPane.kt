@@ -51,10 +51,10 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.Res
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_attached_telemetry_log_chip
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_cooldown

@@ -7,8 +7,8 @@ import android.os.Build
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kurou.kodriver.domain.model.DiscoveredServer
-import kurou.kodriver.domain.repository.WindowsServerDiscoveryRepository
+import kurou.kodriver.domain.serverconnection.model.DiscoveredServer
+import kurou.kodriver.domain.serverconnection.repository.WindowsServerDiscoveryRepository
 
 private const val SERVICE_TYPE = "_kodriver._tcp."
 

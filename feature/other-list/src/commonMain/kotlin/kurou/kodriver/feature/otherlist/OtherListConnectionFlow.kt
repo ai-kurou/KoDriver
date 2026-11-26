@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
-import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveConsoleAddressUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveServerIpUseCase
 
 /** 接続情報の観測と表示状態を管理する。実行のライフサイクルは呼び出し元に従う。 */
 public class OtherListConnectionFlow(

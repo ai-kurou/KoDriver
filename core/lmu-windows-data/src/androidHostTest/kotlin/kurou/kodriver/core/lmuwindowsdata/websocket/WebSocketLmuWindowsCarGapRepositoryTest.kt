@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
-import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener

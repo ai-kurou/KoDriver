@@ -15,6 +15,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
+            implementation(projects.core.telemetryLogDomain)
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(projects.core.gt7Ps5Domain)
@@ -40,6 +41,7 @@ compose.resources {
 
 dependencies {
     testFixturesApi(projects.core.domain)
+    testFixturesApi(projects.core.telemetryLogDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))

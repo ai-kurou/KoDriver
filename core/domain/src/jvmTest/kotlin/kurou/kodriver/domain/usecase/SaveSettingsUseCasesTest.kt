@@ -10,7 +10,6 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
@@ -25,11 +24,6 @@ class SaveSettingsUseCasesTest {
     @Test
     fun `設定保存UseCaseはRepositoryの対応するメソッドへ委譲する その1`() =
         runTest {
-            assertSaves<ConsoleAddressPreferencesRepository>(
-                useCaseName = "SaveConsoleAddressUseCase",
-                save = { saveConsoleAddress("192.168.1.50") },
-                useCase = { SaveConsoleAddressUseCase(it)("192.168.1.50") },
-            )
             assertSaves<DynamicColorEnabledRepository>(
                 useCaseName = "SaveDynamicColorEnabledUseCase",
                 save = { saveDynamicColorEnabled(true) },

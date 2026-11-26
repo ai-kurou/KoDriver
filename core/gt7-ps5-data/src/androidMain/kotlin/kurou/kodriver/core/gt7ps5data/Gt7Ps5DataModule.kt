@@ -17,7 +17,7 @@ import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelPreferencesRep
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind

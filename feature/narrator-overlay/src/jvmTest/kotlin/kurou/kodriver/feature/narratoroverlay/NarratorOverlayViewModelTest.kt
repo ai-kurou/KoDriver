@@ -14,10 +14,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.domain.overlay.model.OverlayTextSize
 import kurou.kodriver.domain.overlay.repository.OverlayBackgroundOpacityPreferencesRepository
@@ -26,11 +23,14 @@ import kurou.kodriver.domain.overlay.repository.OverlayTextSizePreferencesReposi
 import kurou.kodriver.domain.overlay.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextSizeUseCase
-import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionTranscript
 import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionTranscriptRepository
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionTranscriptUseCase
-import kurou.kodriver.domain.usecase.ObserveLatestNarratedTelemetryLogUseCase
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveLatestNarratedTelemetryLogUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

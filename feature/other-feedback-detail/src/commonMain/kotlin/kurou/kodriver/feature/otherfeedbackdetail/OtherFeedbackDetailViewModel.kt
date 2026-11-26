@@ -15,8 +15,8 @@ import kurou.kodriver.domain.model.FEEDBACK_MESSAGE_MAX_LENGTH
 import kurou.kodriver.domain.model.FEEDBACK_NAME_MAX_LENGTH
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveTelemetryLogDetailUseCase
 import kurou.kodriver.domain.usecase.CanSendFeedbackUseCase
-import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 import kurou.kodriver.domain.usecase.SendFeedbackUseCase
 
 internal class OtherFeedbackDetailViewModel(

@@ -32,6 +32,8 @@ kotlin {
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(projects.core.autoReadoutDomain)
+            implementation(projects.core.telemetryLogDomain)
+            implementation(projects.core.serverConnectionDomain)
             implementation(projects.core.manualReadoutDomain)
             implementation(projects.core.microphoneDomain)
             implementation(projects.core.overlayDomain)

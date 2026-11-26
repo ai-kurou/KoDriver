@@ -21,9 +21,9 @@ import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5UdpPortUseCase
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.SaveConsoleAddressUseCase
+import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.serverconnection.usecase.ObserveConsoleAddressUseCase
+import kurou.kodriver.domain.serverconnection.usecase.SaveConsoleAddressUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

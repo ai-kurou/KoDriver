@@ -409,6 +409,8 @@ tasks.register("generateModuleGraphImages") {
                         ":core:ace-windows-domain",
                         ":core:gt7-ps5-domain",
                         ":core:auto-readout-domain",
+                        ":core:telemetry-log-domain",
+                        ":core:server-connection-domain",
                         ":core:overlay-domain",
                         ":core:manual-readout-domain",
                         ":core:microphone-domain",

@@ -49,8 +49,8 @@ import kurou.kodriver.domain.manualreadout.repository.ManualReadoutRequestReposi
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
-import kurou.kodriver.domain.repository.ServerVersionRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerVersionRepository
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.presentation.featureModules
 import org.junit.AfterClass

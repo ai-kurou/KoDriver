@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveTelemetryLogDetailUseCase
 
 /** 添付ログIDからログを取得し、フォーム状態・送信可否と合わせて画面状態を合成する冷たい Flow。 */
 internal class OtherFeedbackDetailFlow(

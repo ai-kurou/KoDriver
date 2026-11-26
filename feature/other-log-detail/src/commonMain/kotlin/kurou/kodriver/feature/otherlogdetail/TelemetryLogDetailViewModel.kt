@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveTelemetryLogDetailUseCase
 
 internal class TelemetryLogDetailViewModel(
     observeTelemetryLogDetail: ObserveTelemetryLogDetailUseCase,

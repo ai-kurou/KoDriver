@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
-import kurou.kodriver.domain.repository.ServerVersionRepository
-import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
-import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerVersionRepository
+import kurou.kodriver.domain.serverconnection.usecase.FetchServerVersionUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveServerIpUseCase
 import org.junit.Test
 import kotlin.test.assertEquals
 

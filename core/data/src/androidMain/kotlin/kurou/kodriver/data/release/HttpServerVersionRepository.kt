@@ -7,7 +7,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CancellationException
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
-import kurou.kodriver.domain.repository.ServerVersionRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerVersionRepository
 
 private const val PATH = "/version"
 

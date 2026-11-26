@@ -1,6 +1,6 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
 
 /**
  * ConsoleAddressPreferences Repository の永続化実装を生成する。

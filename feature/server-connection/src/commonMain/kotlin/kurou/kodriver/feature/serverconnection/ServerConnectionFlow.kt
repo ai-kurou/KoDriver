@@ -2,7 +2,7 @@ package kurou.kodriver.feature.serverconnection
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kurou.kodriver.domain.usecase.KoDriverServerConnectionState
+import kurou.kodriver.domain.serverconnection.usecase.KoDriverServerConnectionState
 
 /** 接続状態とボトムシートの表示フラグから表示状態を合成する冷たい Flow。 */
 internal class ServerConnectionFlow(

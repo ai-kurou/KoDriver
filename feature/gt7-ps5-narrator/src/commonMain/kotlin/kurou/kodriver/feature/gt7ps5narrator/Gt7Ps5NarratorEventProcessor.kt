@@ -18,11 +18,11 @@ import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.model.DebugReadoutRequest
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.usecase.SaveTelemetryLogUseCase
 
 internal data class Gt7Ps5TelemetryLogContext(
     val state: Gt7Ps5NarratorState,

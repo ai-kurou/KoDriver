@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.usecase.ObserveKoDriverServerConnectionUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveKoDriverServerConnectionUseCase
 
 /**
  * ServerConnection 画面の状態管理とユーザー操作を扱う ViewModel。

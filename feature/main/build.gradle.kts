@@ -45,6 +45,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.domain)
             implementation(projects.core.manualReadoutDomain)
+            implementation(projects.core.serverConnectionDomain)
             implementation(projects.core.microphoneDomain)
             implementation(projects.core.speechRecognitionDomain)
             implementation(projects.core.gt7Ps5Domain)
