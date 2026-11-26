@@ -2,6 +2,7 @@ digraph G {
   rankdir=TB
   node [shape=box, style="rounded,filled"]
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
+  ":core:auto-readout-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:designsystem" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:gt7-ps5-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
@@ -10,11 +11,13 @@ digraph G {
   ":core:overlay-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":feature:other-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:other-list"
+  ":core:auto-readout-domain" -> ":core:domain"
   ":core:gt7-ps5-domain" -> ":core:domain"
   ":core:manual-readout-domain" -> ":core:domain"
   ":core:microphone-domain" -> ":core:domain"
   ":core:overlay-domain" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
+  ":feature:other-list" -> ":core:auto-readout-domain"
   ":feature:other-list" -> ":core:manual-readout-domain"
   ":feature:other-list" -> ":core:microphone-domain"
   ":feature:other-list" -> ":core:overlay-domain"

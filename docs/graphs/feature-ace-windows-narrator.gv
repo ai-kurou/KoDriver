@@ -3,14 +3,17 @@ digraph G {
   node [shape=box, style="rounded,filled"]
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:ace-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:auto-readout-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:manual-readout-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:narrator" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:ace-windows-narrator"
   ":core:ace-windows-domain" -> ":core:domain"
+  ":core:auto-readout-domain" -> ":core:domain"
   ":core:manual-readout-domain" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
+  ":feature:ace-windows-narrator" -> ":core:auto-readout-domain"
   ":feature:ace-windows-narrator" -> ":core:ace-windows-domain"
   ":feature:ace-windows-narrator" -> ":core:manual-readout-domain"
   ":feature:ace-windows-narrator" -> ":core:narrator"

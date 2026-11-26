@@ -6,3 +6,9 @@
 - 有効状態・順序の既定値（`READOUT_ENABLED_STATE_DEFAULT`・`readoutEnabled`・`defaultAutoReadoutOrder`）は `ReadoutItemKeyRegistry` から取り出すもので、`readoutEnabled` はシミュレーター固有ドメインも使うため `:core:domain` に置く（ドメインモジュール同士は依存できないため）。
 
 `ResetAutoReadoutSettingsUseCase` は受け取った `AutoReadoutSettingsResetter` を順番に実行し、全シミュレーターの自動読み上げ設定を一括で既定値に戻します。途中で失敗した場合は例外を呼び出し側に伝播します。
+
+<!-- MODULE-GRAPH-START -->
+## Module Dependencies
+
+![Module Graph](../../docs/graphs/core-auto-readout-domain.svg)
+<!-- MODULE-GRAPH-END -->
