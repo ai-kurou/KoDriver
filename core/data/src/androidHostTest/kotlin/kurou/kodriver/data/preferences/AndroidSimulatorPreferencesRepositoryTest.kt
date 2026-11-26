@@ -6,7 +6,10 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.job
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Simulator
@@ -19,6 +22,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidSimulatorPreferencesRepositoryTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val dataStoreScope = CoroutineScope(testDispatcher + SupervisorJob())
     private lateinit var tempFile: File
     private lateinit var repository: AndroidSimulatorPreferencesRepository
 
@@ -27,7 +31,7 @@ class AndroidSimulatorPreferencesRepositoryTest {
         tempFile = File.createTempFile("simulator_test", ".preferences_pb")
         val dataStore =
             PreferenceDataStoreFactory.create(
-                scope = CoroutineScope(testDispatcher + SupervisorJob()),
+                scope = dataStoreScope,
                 produceFile = { tempFile },
             )
         repository = AndroidSimulatorPreferencesRepository(dataStore)
@@ -35,6 +39,7 @@ class AndroidSimulatorPreferencesRepositoryTest {
 
     @AfterTest
     fun tearDown() {
+        runBlocking { dataStoreScope.coroutineContext.job.cancelAndJoin() }
         tempFile.delete()
     }
 

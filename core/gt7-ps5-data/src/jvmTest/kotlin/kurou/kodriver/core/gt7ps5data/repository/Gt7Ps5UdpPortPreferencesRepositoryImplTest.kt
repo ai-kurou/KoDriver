@@ -4,10 +4,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.job
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpPortPreferencesSerializer
@@ -35,6 +38,7 @@ class Gt7Ps5UdpPortPreferencesRepositoryImplTest {
 
     @AfterTest
     fun tearDown() {
+        runBlocking { dataStoreScope.coroutineContext.job.cancelAndJoin() }
         tempDir.deleteRecursively()
     }
 

@@ -3,7 +3,10 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.job
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import java.nio.file.Files
@@ -28,6 +31,7 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
 
     @AfterTest
     fun tearDown() {
+        runBlocking { dataStoreScope.coroutineContext.job.cancelAndJoin() }
         tempDir.deleteRecursively()
     }
 
