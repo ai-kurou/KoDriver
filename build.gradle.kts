@@ -404,7 +404,16 @@ tasks.register("generateModuleGraphImages") {
                         ":core:windows-startup-data",
                     ),
                     listOf(":core:narrator", ":core:designsystem", ":core:windows-shared-memory"),
-                    listOf(":core:lmu-windows-domain", ":core:ace-windows-domain", ":core:gt7-ps5-domain"),
+                    listOf(
+                        ":core:lmu-windows-domain",
+                        ":core:ace-windows-domain",
+                        ":core:gt7-ps5-domain",
+                        ":core:overlay-domain",
+                        ":core:manual-readout-domain",
+                        ":core:voice-domain",
+                        ":core:microphone-domain",
+                        ":core:speech-recognition-domain",
+                    ),
                     listOf(":core:domain"),
                 )
                 val existingOverviewColumns = overviewColumns.map { column -> column.filter { it in overviewNodes } }
