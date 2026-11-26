@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
@@ -28,6 +29,7 @@ import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsBrakeOverheat
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
 import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
@@ -1209,6 +1211,117 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `直前のブレーキ温度データがないイベントはnullとして保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val key = AceWindowsReadoutItemKey.BrakeTemperature.Root
+            every { ttsEngine.speak(AceWindowsBrakeOverheat(110, "ブレーキ温度は110℃以上"), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "ブレーキ温度は110℃以上",
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+
+            createProcessor().processBrakeTemperature(
+                brakeTemperature = brakeTemperature(110.0f),
+                events = listOf(AceWindowsBrakeOverheat(110)),
+                autoReadoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+
+            assertEquals(true, telemetryJsons.single().contains("\"previousBrakeTemperature\":null"))
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""brakeTemperature":{"wheels":{"FRONT_LEFT":110.0}}"""),
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(AceWindowsBrakeOverheat(110, "ブレーキ温度は110℃以上"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "ブレーキ温度は110℃以上",
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `読み上げたブレーキ温度イベントを直前と現在のブレーキ温度データとともに保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val processor = createProcessor()
+            val key = AceWindowsReadoutItemKey.BrakeTemperature.Root
+            every { ttsEngine.speak(AceWindowsBrakeOverheat(110, "ブレーキ温度は110℃以上"), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "ブレーキ温度は110℃以上",
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+
+            processor.processBrakeTemperature(
+                brakeTemperature(90.0f),
+                emptyList(),
+                emptyList(),
+                emptyMap(),
+                100L,
+                logContext(),
+            )
+            processor.processBrakeTemperature(
+                brakeTemperature(110.0f),
+                listOf(AceWindowsBrakeOverheat(110)),
+                listOf(key),
+                emptyMap(),
+                200L,
+                logContext(),
+            )
+
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""previousBrakeTemperature":{"wheels":{"FRONT_LEFT":90.0}}"""),
+            )
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""brakeTemperature":{"wheels":{"FRONT_LEFT":110.0}}"""),
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(AceWindowsBrakeOverheat(110, "ブレーキ温度は110℃以上"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "ブレーキ温度は110℃以上",
+                    NarrationOutcome.SPOKEN,
+                    NarrationSource.AUTO,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `読み上げたタイヤカーカス温度イベントを直前と現在のタイヤカーカス温度データとともに保存する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
@@ -1469,6 +1582,9 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
+
+    private fun brakeTemperature(frontLeftCelsius: Float) =
+        AceWindowsBrakeTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(frontLeftCelsius)))
 
     private fun tyreCarcassTemperature(frontLeftCelsius: Float) =
         AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(frontLeftCelsius)))
@@ -2198,6 +2314,46 @@ class AceWindowsNarratorEventProcessorTest {
                 )
             }
             confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `ブレーキ過熱は空白の解決結果なら開始音を要求せず空文字でSKIPPEDを記録する`() =
+        runTest {
+            val key = AceWindowsReadoutItemKey.BrakeTemperature.Root
+            val telemetryJsons = mutableListOf<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+
+            createProcessor(readoutText = { " " }).processBrakeTemperature(
+                brakeTemperature = brakeTemperature(850.0f),
+                events = listOf(AceWindowsBrakeOverheat(800)),
+                autoReadoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    NarrationSource.AUTO,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
     private fun createProcessor(readoutText: suspend (SpeechEvent) -> String? = { it.narratedText }) =

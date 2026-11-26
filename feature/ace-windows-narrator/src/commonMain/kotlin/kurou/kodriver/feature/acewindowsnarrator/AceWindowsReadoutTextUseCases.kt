@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
@@ -20,4 +21,5 @@ internal data class AceWindowsReadoutTextUseCases(
     val vehicleApproach: ObserveAceWindowsVehicleApproachReadoutTextUseCase,
     val tyreOverheat: ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase,
     val myBestLap: ObserveAceWindowsMyBestLapReadoutTextUseCase,
+    val brakeOverheat: ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase,
 )

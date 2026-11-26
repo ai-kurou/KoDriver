@@ -10,6 +10,7 @@ import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsRemainingF
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsBestLapTimeRepository
+import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsBrakeTemperatureRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsFlagRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsFuelRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsGapRepository
@@ -20,6 +21,7 @@ import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsTyreCarca
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
@@ -68,6 +70,9 @@ public fun androidAceWindowsDataModule(context: Context): Module =
         }
         single<AceWindowsStatusRepository> {
             WebSocketAceWindowsStatusRepository(serverIpRepository = get(), client = get())
+        }
+        single<AceWindowsBrakeTemperatureRepository> {
+            WebSocketAceWindowsBrakeTemperatureRepository(serverIpRepository = get(), client = get())
         }
         single<AceWindowsTyreCarcassTemperatureRepository> {
             WebSocketAceWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())

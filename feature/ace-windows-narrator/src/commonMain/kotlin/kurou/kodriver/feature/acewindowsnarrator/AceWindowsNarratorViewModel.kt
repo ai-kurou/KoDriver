@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
@@ -22,6 +23,9 @@ import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.acewindows.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureEnabledStatesUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
@@ -90,6 +94,12 @@ internal data class TyreTemperatureUseCases(
     val observeTyreTemperatureEnabledStates: ObserveAceWindowsTyreTemperatureEnabledStatesUseCase,
 )
 
+internal data class BrakeTemperatureUseCases(
+    val observeAceWindowsBrakeTemperature: ObserveAceWindowsBrakeTemperatureUseCase,
+    val observeHighThreshold: ObserveAceWindowsBrakeTemperatureHighThresholdUseCase,
+    val observeBrakeTemperatureEnabledStates: ObserveAceWindowsBrakeTemperatureEnabledStatesUseCase,
+)
+
 internal data class VehicleApproachUseCases(
     val observeVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
     val observeEnabledStates: ObserveAceWindowsVehicleApproachEnabledStatesUseCase,
@@ -122,6 +132,7 @@ internal class AceWindowsNarratorViewModel(
     tyreTemperatureUseCases: TyreTemperatureUseCases,
     vehicleApproachUseCases: VehicleApproachUseCases,
     carGapUseCases: CarGapUseCases,
+    brakeTemperatureUseCases: BrakeTemperatureUseCases,
     private val eventProcessor: AceWindowsNarratorEventProcessor,
     private val determineAceWindowsNarratorReadout: DetermineAceWindowsNarratorReadoutUseCase =
         DetermineAceWindowsNarratorReadoutUseCase(),
@@ -148,6 +159,7 @@ internal class AceWindowsNarratorViewModel(
                 flagUseCases.observeFlagEnabledStates(),
                 tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
                 vehicleApproachUseCases.observeEnabledStates(),
+                brakeTemperatureUseCases.observeBrakeTemperatureEnabledStates(),
             ).stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     private val autoReadoutOrder =
@@ -178,6 +190,15 @@ internal class AceWindowsNarratorViewModel(
                 viewModelScope,
                 SharingStarted.Eagerly,
                 ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+            )
+
+    private val brakeTemperatureHighThreshold =
+        brakeTemperatureUseCases
+            .observeHighThreshold()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
             )
 
     private val vehicleApproachThreshold =
@@ -229,6 +250,7 @@ internal class AceWindowsNarratorViewModel(
                 tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThreshold.value,
                 vehicleApproachThresholdMeters = vehicleApproachThreshold.value,
                 remainingFuelLapsThreshold = remainingFuelLapsThreshold.value,
+                brakeTemperatureHighThresholdCelsius = brakeTemperatureHighThreshold.value,
             )
 
     private val bestLapTimeFlow =
@@ -254,6 +276,11 @@ internal class AceWindowsNarratorViewModel(
     private val tyreTemperatureFlow =
         narratorFlow
             .telemetry { tyreTemperatureUseCases.observeAceWindowsTyreCarcassTemperature() }
+            .shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val brakeTemperatureFlow =
+        narratorFlow
+            .telemetry { brakeTemperatureUseCases.observeAceWindowsBrakeTemperature() }
             .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val gapFlow =
@@ -513,6 +540,35 @@ internal class AceWindowsNarratorViewModel(
                 narratorState = decision.state
                 eventProcessor.processTyreTemperature(
                     tyreCarcassTemperature = tyreCarcassTemperature,
+                    events = decision.events,
+                    autoReadoutOrder = autoReadoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        AceWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val brakeTemperatureJob =
+        brakeTemperatureFlow
+            .onEachCapturingErrors { brakeTemperature ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    determineAceWindowsNarratorReadout.determineBrakeTemperatureOverheat(
+                        state = state,
+                        data = brakeTemperature,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processBrakeTemperature(
+                    brakeTemperature = brakeTemperature,
                     events = decision.events,
                     autoReadoutOrder = autoReadoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,

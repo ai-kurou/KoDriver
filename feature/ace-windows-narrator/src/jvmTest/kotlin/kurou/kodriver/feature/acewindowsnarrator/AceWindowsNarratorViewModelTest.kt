@@ -34,6 +34,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
@@ -44,6 +45,8 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureDa
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemTextDefault
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
@@ -57,6 +60,9 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachPref
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureEnabledStatesUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
@@ -73,6 +79,7 @@ import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsBrakeOverheat
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
 import kurou.kodriver.domain.engine.AceWindowsManualReadoutText
 import kurou.kodriver.domain.engine.AceWindowsMyBestLap
@@ -183,6 +190,10 @@ class AceWindowsNarratorViewModelTest {
 
     private val flagPreferencesRepository: AceWindowsFlagPreferencesRepository = mockk()
 
+    private val brakeTemperatureRepository: AceWindowsBrakeTemperatureRepository = mockk()
+
+    private val brakeTemperaturePreferencesRepository: AceWindowsBrakeTemperaturePreferencesRepository = mockk()
+
     private val tyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository = mockk()
 
     private val tyreTemperaturePreferencesRepository: AceWindowsTyreTemperaturePreferencesRepository = mockk()
@@ -215,6 +226,7 @@ class AceWindowsNarratorViewModelTest {
         gapChannel: Channel<AceWindowsGapData> = Channel(Channel.UNLIMITED),
         bestLapTimeChannel: Channel<AceWindowsBestLapTimeData> = Channel(Channel.UNLIMITED),
         remainingFuelLapsChannel: Channel<AceWindowsRemainingFuelLapsData> = Channel(Channel.UNLIMITED),
+        brakeTemperatureChannel: Channel<AceWindowsBrakeTemperatureData> = Channel(Channel.UNLIMITED),
         currentTimeMs: () -> Long = { 0L },
         readoutText: suspend (SpeechEvent) -> String? = { it.narratedText },
     ): AceWindowsNarratorViewModel {
@@ -226,6 +238,9 @@ class AceWindowsNarratorViewModelTest {
         every {
             vehicleApproachRepository.vehicleApproachStream()
         } returns vehicleApproachChannel.receiveAsFlow()
+        every {
+            brakeTemperatureRepository.brakeTemperatureStream()
+        } returns brakeTemperatureChannel.receiveAsFlow()
         every { gapRepository.gapStream() } returns gapChannel.receiveAsFlow()
         every { bestLapTimeRepository.bestLapTimeStream() } returns bestLapTimeChannel.receiveAsFlow()
         every {
@@ -298,6 +313,7 @@ class AceWindowsNarratorViewModelTest {
                     thresholds = AceWindowsVehicleApproachThresholdsUseCases(vehicleApproachPreferencesRepository),
                 ),
             carGapUseCases = CarGapUseCases(ObserveAceWindowsGapUseCase(gapRepository)),
+            brakeTemperatureUseCases = createBrakeTemperatureUseCases(),
             eventProcessor =
                 AceWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
@@ -307,6 +323,15 @@ class AceWindowsNarratorViewModelTest {
             currentTimeMs = currentTimeMs,
         )
     }
+
+    private fun createBrakeTemperatureUseCases() =
+        BrakeTemperatureUseCases(
+            observeAceWindowsBrakeTemperature = ObserveAceWindowsBrakeTemperatureUseCase(brakeTemperatureRepository),
+            observeHighThreshold =
+                ObserveAceWindowsBrakeTemperatureHighThresholdUseCase(brakeTemperaturePreferencesRepository),
+            observeBrakeTemperatureEnabledStates =
+                ObserveAceWindowsBrakeTemperatureEnabledStatesUseCase(brakeTemperaturePreferencesRepository),
+        )
 
     @Test
     fun `ViewModelのスコープ終了で手動とデバッグの要求購読を解除する`() =
@@ -1265,7 +1290,15 @@ class AceWindowsNarratorViewModelTest {
         remainingFuelLapsThreshold: Int = 3,
         selectedSimulator: Simulator = Simulator.AceWindows,
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        brakeTemperatureHighThresholdCelsius: Int = 800,
+        brakeTemperatureEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
+        every {
+            brakeTemperaturePreferencesRepository.observeHighThresholdCelsius()
+        } returns MutableStateFlow(Celsius(brakeTemperatureHighThresholdCelsius))
+        every {
+            brakeTemperaturePreferencesRepository.observeEnabledStates()
+        } returns MutableStateFlow(brakeTemperatureEnabledOverrides)
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(selectedSimulator)
         every {
             autoReadoutPreferencesRepository.observeAutoReadoutEnabledStates(selectedSimulator.id)
@@ -1315,6 +1348,7 @@ class AceWindowsNarratorViewModelTest {
             val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
             val tyreCarcassTemperatureChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
             val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val brakeTemperatureChannel = Channel<AceWindowsBrakeTemperatureData>(Channel.UNLIMITED)
             val bestLapTimeChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
             val remainingFuelLapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -1333,6 +1367,7 @@ class AceWindowsNarratorViewModelTest {
                 vehicleApproachChannel = vehicleApproachChannel,
                 bestLapTimeChannel = bestLapTimeChannel,
                 remainingFuelLapsChannel = remainingFuelLapsChannel,
+                brakeTemperatureChannel = brakeTemperatureChannel,
             )
 
             fuelChannel.send(fuel(50.0))
@@ -1342,6 +1377,7 @@ class AceWindowsNarratorViewModelTest {
             tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0f))
             tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0f))
             vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+            brakeTemperatureChannel.send(brakeTemperature(fl = 850.0f))
             bestLapTimeChannel.send(bestLapTime(90_000))
             bestLapTimeChannel.send(bestLapTime(89_000))
             remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 3.5f))
@@ -1353,6 +1389,7 @@ class AceWindowsNarratorViewModelTest {
                 ttsEngine.speak(AceWindowsWhiteFlag("ホワイトフラッグ"), false)
                 ttsEngine.speak(AceWindowsTyreOverheat(95, "タイヤ過熱95℃"), false)
                 ttsEngine.speak(AceWindowsVehicleApproach("車両接近"), false)
+                ttsEngine.speak(AceWindowsBrakeOverheat(800, "ブレーキ温度は800℃以上"), false)
                 ttsEngine.speak(AceWindowsMyBestLap(89_000, "自己ベストラップ更新 1分29秒000"), false)
                 ttsEngine.speak(AceWindowsRemainingFuelLapsWarning(2, "燃料は残り約2周"), false)
             }
@@ -1514,6 +1551,79 @@ class AceWindowsNarratorViewModelTest {
 
             tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0f))
             tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0f))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `ブレーキ温度が保存した閾値以上になると読み上げる`() =
+        runTest(testDispatcher) {
+            val brakeTemperatureChannel = Channel<AceWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30, brakeTemperatureHighThresholdCelsius = 700)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    AceWindowsReadoutItemKey.BrakeTemperature.Root,
+                    "ブレーキ温度は700℃以上",
+                    NarrationOutcome.QUEUED,
+                    NarrationSource.AUTO,
+                    match { it.contains(""""brakeTemperature":{"wheels":{"FRONT_LEFT":710.0}}""") },
+                )
+            } just Runs
+            createViewModel(
+                fuelChannel = Channel(Channel.UNLIMITED),
+                ttsEngine = ttsEngine,
+                brakeTemperatureChannel = brakeTemperatureChannel,
+            )
+
+            brakeTemperatureChannel.send(brakeTemperature(fl = 650.0f))
+            brakeTemperatureChannel.send(brakeTemperature(fl = 710.0f))
+
+            assertEquals(listOf<SpeechEvent>(AceWindowsBrakeOverheat(700, "ブレーキ温度は700℃以上")), spokenTexts)
+        }
+
+    @Test
+    fun `ブレーキ温度の一覧スイッチが無効のときは読み上げない`() =
+        runTest(testDispatcher) {
+            val brakeTemperatureChannel = Channel<AceWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.BrakeTemperature.Root to false),
+            )
+            createViewModel(
+                fuelChannel = Channel(Channel.UNLIMITED),
+                ttsEngine = ttsEngine,
+                brakeTemperatureChannel = brakeTemperatureChannel,
+            )
+
+            brakeTemperatureChannel.send(brakeTemperature(fl = 850.0f))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `ブレーキの過熱警告スイッチが無効のときは読み上げない`() =
+        runTest(testDispatcher) {
+            val brakeTemperatureChannel = Channel<AceWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                brakeTemperatureEnabledOverrides =
+                    mapOf(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning to false),
+            )
+            createViewModel(
+                fuelChannel = Channel(Channel.UNLIMITED),
+                ttsEngine = ttsEngine,
+                brakeTemperatureChannel = brakeTemperatureChannel,
+            )
+
+            brakeTemperatureChannel.send(brakeTemperature(fl = 850.0f))
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
@@ -1971,6 +2081,9 @@ class AceWindowsNarratorViewModelTest {
     }
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))
+
+    private fun brakeTemperature(fl: Float) =
+        AceWindowsBrakeTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(fl)))
 
     private fun tyreCarcassTemperature(fl: Float) =
         AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(fl)))

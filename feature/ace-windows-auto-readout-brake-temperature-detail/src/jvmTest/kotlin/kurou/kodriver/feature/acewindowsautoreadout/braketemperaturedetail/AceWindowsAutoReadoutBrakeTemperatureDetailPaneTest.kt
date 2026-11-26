@@ -67,7 +67,7 @@ class AceWindowsAutoReadoutBrakeTemperatureDetailPaneTest {
         }
 
         rule
-            .onNodeWithText("ブレーキ温度の過熱警告を設定します。自動読み上げは準備中のため、現在は読み上げを行いません。")
+            .onNodeWithText("いずれかのブレーキが過熱閾値以上になると読み上げます。一度過熱を判定すると、すべてのブレーキが閾値より100℃以上下がるまで再び読み上げません。")
             .assertIsDisplayed()
     }
 

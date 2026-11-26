@@ -11,6 +11,7 @@ import kurou.kodriver.core.narrator.runCatchingTelemetryLogSave
 import kurou.kodriver.core.narrator.speakWithOutcome
 import kurou.kodriver.core.narrator.toRawTelemetryLogJson
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
@@ -44,6 +45,7 @@ internal class AceWindowsNarratorEventProcessor(
     private var previousRemainingFuelLaps: AceWindowsRemainingFuelLapsData? = null
     private var previousFlag: AceWindowsFlagData? = null
     private var previousTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null
+    private var previousBrakeTemperature: AceWindowsBrakeTemperatureData? = null
     private var previousVehicleApproach: AceWindowsVehicleApproachData? = null
     private var previousBestLapTime: AceWindowsBestLapTimeData? = null
 
@@ -310,6 +312,44 @@ internal class AceWindowsNarratorEventProcessor(
         previousTyreCarcassTemperature = tyreCarcassTemperature
     }
 
+    suspend fun processBrakeTemperature(
+        brakeTemperature: AceWindowsBrakeTemperatureData,
+        events: List<ReadoutTextEvent>,
+        autoReadoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: AceWindowsTelemetryLogContext,
+    ) {
+        val previous = previousBrakeTemperature
+        events.forEach { event ->
+            val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
+            val narrationOutcome =
+                if (text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    val resolvedEvent = event.withResolvedText(text)
+                    speakWithPriority(resolvedEvent, autoReadoutOrder, queueEnabledStates)
+                }
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = text.orEmpty(),
+                narrationOutcome = narrationOutcome,
+                narrationSource = NarrationSource.AUTO,
+                telemetryJson =
+                    buildBrakeTemperatureTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = brakeTemperature,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
+        }
+        previousBrakeTemperature = brakeTemperature
+    }
+
     suspend fun processVehicleApproach(
         vehicleApproach: AceWindowsVehicleApproachData,
         events: List<ReadoutTextEvent>,
@@ -548,6 +588,40 @@ private fun buildTyreTemperatureTelemetryLogJson(
         current =
             TelemetryLogJsonCurrentField(
                 name = "tyreCarcassTemperature",
+                json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(current),
+            ),
+        settingsJson = settings.toRawTelemetryLogJson(),
+        observedAtMs = observedAtMs,
+        finalStateJson = finalState.toRawTelemetryLogJson(),
+    )
+
+/**
+ * ACE のブレーキ温度判定入力（[AceWindowsBrakeTemperatureData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineBrakeTemperatureOverheat]）と
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJsonAllowingSpecialFloatingPoint] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
+private fun buildBrakeTemperatureTelemetryLogJson(
+    state: AceWindowsNarratorState,
+    previous: AceWindowsBrakeTemperatureData?,
+    current: AceWindowsBrakeTemperatureData,
+    settings: AceWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: AceWindowsNarratorState,
+): String =
+    buildTelemetryLogJson(
+        stateJson = state.toRawTelemetryLogJson(),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousBrakeTemperature",
+                json =
+                    previous?.let {
+                        TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(it)
+                    },
+            ),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "brakeTemperature",
                 json = TelemetryLogJsonAllowingSpecialFloatingPoint.encodeToString(current),
             ),
         settingsJson = settings.toRawTelemetryLogJson(),
