@@ -3,12 +3,11 @@ package kurou.kodriver.feature.otherserveripdetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
+import kurou.kodriver.core.designsystem.KoDriverAlertDialog
 import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
 import kurou.kodriver.core.designsystem.KoDriverRadioRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -31,9 +30,7 @@ internal fun OtherServerIpDiscoveryDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // AlertDialog の内容は別ウィンドウで組み立てられるため、外側で読んだハプティックを部品へ渡す。
-    val haptic = LocalHapticFeedback.current
-    AlertDialog(
+    KoDriverAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.server_ip_discovery_dialog_title)) },
         text = {
@@ -44,7 +41,6 @@ internal fun OtherServerIpDiscoveryDialog(
                         selected = selectedDiscoveredServer == server,
                         label = "${server.hostName} (${server.ipAddress})",
                         onClick = { onServerSelected(server) },
-                        hapticFeedback = haptic,
                     )
                 }
             }
@@ -53,14 +49,12 @@ internal fun OtherServerIpDiscoveryDialog(
             KoDriverDialogTextButton(
                 text = stringResource(Res.string.server_ip_discovery_dialog_confirm),
                 onClick = onConfirm,
-                hapticFeedback = haptic,
             )
         },
         dismissButton = {
             KoDriverDialogTextButton(
                 text = stringResource(Res.string.server_ip_discovery_dialog_cancel),
                 onClick = onDismiss,
-                hapticFeedback = haptic,
             )
         },
         modifier = modifier,

@@ -3,14 +3,13 @@ package kurou.kodriver.feature.otherthemedetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverAlertDialog
 import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
 import kurou.kodriver.core.designsystem.KoDriverRadioRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -59,9 +58,7 @@ internal fun OtherThemeDetailDialogContent(
     onDismiss: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    // AlertDialog の内容は別ウィンドウで組み立てられるため、外側で読んだハプティックを部品へ渡す。
-    val haptic = LocalHapticFeedback.current
-    AlertDialog(
+    KoDriverAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.theme_title)) },
         text = {
@@ -78,7 +75,6 @@ internal fun OtherThemeDetailDialogContent(
                         selected = uiState.pendingThemeMode == themeMode,
                         label = label,
                         onClick = { onThemeModeSelected(themeMode) },
-                        hapticFeedback = haptic,
                     )
                 }
             }
@@ -87,14 +83,12 @@ internal fun OtherThemeDetailDialogContent(
             KoDriverDialogTextButton(
                 text = stringResource(Res.string.theme_ok),
                 onClick = onConfirm,
-                hapticFeedback = haptic,
             )
         },
         dismissButton = {
             KoDriverDialogTextButton(
                 text = stringResource(Res.string.theme_cancel),
                 onClick = onDismiss,
-                hapticFeedback = haptic,
             )
         },
         modifier = modifier,

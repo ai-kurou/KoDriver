@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,6 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverAlertDialog
 import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -84,7 +84,7 @@ internal fun OtherOverlayTextColorDetailDialogContent(
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onOverlayTextColorSelected(overlayTextColor)
     }
-    AlertDialog(
+    KoDriverAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.overlay_text_color_title)) },
         text = {
@@ -121,14 +121,12 @@ internal fun OtherOverlayTextColorDetailDialogContent(
             KoDriverDialogTextButton(
                 text = stringResource(Res.string.overlay_text_color_ok),
                 onClick = onConfirm,
-                hapticFeedback = haptic,
             )
         },
         dismissButton = {
             KoDriverDialogTextButton(
                 text = stringResource(Res.string.overlay_text_color_cancel),
                 onClick = onDismiss,
-                hapticFeedback = haptic,
             )
         },
         modifier = modifier,

@@ -132,9 +132,9 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 - `KoDriverSwitch` は設定項目のスイッチ。`onCheckedChange` には切り替え後の値を渡す。
 - `KoDriverDialogTextButton` はダイアログの確認・キャンセル用テキストボタン。`enabled` で無効化できる。
 
-`KoDriverRadioRow` と `KoDriverDialogTextButton` は `hapticFeedback` 引数（既定は呼び出し位置の `LocalHapticFeedback.current`）を持つ。`AlertDialog` の内容も別ウィンドウになり、シートと同じく既定値がオフ設定を失うおそれがある（`AlertDialog` では実機未確認）ため、ダイアログ呼び出し側は外側で読んだ `LocalHapticFeedback.current` を `hapticFeedback = haptic` で渡す。
+`AlertDialog` の内容は別ウィンドウになり、`LocalHapticFeedback` が上書きされてハプティックのオフ設定を失うおそれがある（`AlertDialog` では実機未確認）。`KoDriverAlertDialog` は呼び出し元の値を各スロット（`title` / `text` / `confirmButton` / `dismissButton`）へ引き継ぐ（振動はさせない）ため、中の部品へハプティックを渡す必要はない。`AlertDialog` を直接使わず、ダイアログを新しく作る場合はこの部品を使う（`:core:*` に依存できない `app:shared` は除く）。
 
-テストは `src/jvmTest` の `KoDriverRadioRowTest` / `KoDriverSwitchTest` / `KoDriverDialogTextButtonTest` / `KoDriverModalBottomSheetTest` で確認する。
+テストは `src/jvmTest` の `KoDriverRadioRowTest` / `KoDriverSwitchTest` / `KoDriverDialogTextButtonTest` / `KoDriverModalBottomSheetTest` / `KoDriverAlertDialogTest` で確認する。
 
 ## 読み上げ開始音のアイコン
 
