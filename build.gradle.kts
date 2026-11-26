@@ -364,10 +364,13 @@ tasks.register("generateModuleGraphImages") {
             buildString {
                 appendLine("digraph G {")
                 appendLine("  rankdir=LR")
-                // 縦が 1200pt（16.666667in）になるよう拡縮する。`!` は図が指定サイズより小さい場合も拡大する指定。
-                appendLine("  size=\"1000,16.666667!\"")
-                appendLine("  graph [ranksep=0.8, nodesep=0.2]")
-                appendLine("  node [shape=box, style=\"rounded,filled\"]")
+                appendLine("  graph [ranksep=1.0, nodesep=0.12]")
+                // 箱の寸法をそろえて列を整える。width と height は最小値で、収まらないラベルの箱は広がる。
+                appendLine(
+                    "  node [shape=box, style=\"rounded,filled\", fontname=\"Helvetica\", " +
+                        "fontsize=16, width=3.2, height=0.42]",
+                )
+                appendLine("  edge [arrowsize=0.6, penwidth=0.9]")
                 overviewNodes.forEach { node ->
                     val featureCount = featureGroupNodes[node]
                     val category = if (featureCount != null) ":feature:x" else node
@@ -378,8 +381,10 @@ tasks.register("generateModuleGraphImages") {
                         "  \"$node\" [label=\"$label\", fillcolor=\"$fillColor\", color=\"$strokeColor\"]",
                     )
                 }
+                // どの種別から出た依存かを追えるよう、線は依存元の枠色を半透明（末尾の 80）にして描く。
                 overviewEdges.forEach { (from, to) ->
-                    appendLine("  \"$from\" -> \"$to\"")
+                    val sourceCategory = if (from in featureGroupNodes) ":feature:x" else from
+                    appendLine("  \"$from\" -> \"$to\" [color=\"${moduleStrokeColor(sourceCategory)}80\"]")
                 }
 
                 // 依存の向き（左→右）に合わせて列を構成する。新規モジュールは必要に応じて追加し、未列挙のモジュールは dot に配置させる。
@@ -404,7 +409,20 @@ tasks.register("generateModuleGraphImages") {
                         ":core:windows-startup-data",
                     ),
                     listOf(":core:narrator", ":core:designsystem", ":core:windows-shared-memory"),
-                    listOf(":core:lmu-windows-domain", ":core:ace-windows-domain", ":core:gt7-ps5-domain"),
+                    listOf(
+                        ":core:lmu-windows-domain",
+                        ":core:ace-windows-domain",
+                        ":core:gt7-ps5-domain",
+                        ":core:auto-readout-domain",
+                        ":core:telemetry-log-domain",
+                        ":core:server-connection-domain",
+                        ":core:overlay-domain",
+                        ":core:manual-readout-domain",
+                        ":core:microphone-domain",
+                        ":core:speech-recognition-domain",
+                        ":core:feedback-domain",
+                        ":core:debug-domain",
+                    ),
                     listOf(":core:domain"),
                 )
                 val existingOverviewColumns = overviewColumns.map { column -> column.filter { it in overviewNodes } }

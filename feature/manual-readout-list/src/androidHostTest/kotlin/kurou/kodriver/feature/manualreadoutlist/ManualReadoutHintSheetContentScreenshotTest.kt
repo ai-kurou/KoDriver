@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
+import kurou.kodriver.domain.manualreadout.util.isManualReadoutHotkeySupported
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

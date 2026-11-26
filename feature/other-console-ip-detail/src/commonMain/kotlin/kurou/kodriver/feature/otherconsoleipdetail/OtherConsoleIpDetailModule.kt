@@ -2,8 +2,8 @@ package kurou.kodriver.feature.otherconsoleipdetail
 
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.gt7ps5.usecase.SaveGt7Ps5UdpPortUseCase
-import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.SaveConsoleAddressUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveConsoleAddressUseCase
+import kurou.kodriver.domain.serverconnection.usecase.SaveConsoleAddressUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

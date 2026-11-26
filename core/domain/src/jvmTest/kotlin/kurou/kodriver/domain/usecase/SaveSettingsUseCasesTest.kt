@@ -6,38 +6,23 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.MainWindowBounds
-import kurou.kodriver.domain.model.OverlayTextSize
-import kurou.kodriver.domain.model.OverlayWindowBounds
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
-import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.MainWindowBoundsPreferencesRepository
-import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
-import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
-import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
-import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
-import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
-import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kotlin.test.Test
 
 class SaveSettingsUseCasesTest {
     @Test
     fun `設定保存UseCaseはRepositoryの対応するメソッドへ委譲する その1`() =
         runTest {
-            assertSaves<ConsoleAddressPreferencesRepository>(
-                useCaseName = "SaveConsoleAddressUseCase",
-                save = { saveConsoleAddress("192.168.1.50") },
-                useCase = { SaveConsoleAddressUseCase(it)("192.168.1.50") },
-            )
             assertSaves<DynamicColorEnabledRepository>(
                 useCaseName = "SaveDynamicColorEnabledUseCase",
                 save = { saveDynamicColorEnabled(true) },
@@ -52,11 +37,6 @@ class SaveSettingsUseCasesTest {
                 useCaseName = "SaveAndroidAudioUsageUseCase",
                 save = { saveAndroidAudioUsage(AndroidAudioUsage.ASSISTANT) },
                 useCase = { SaveAndroidAudioUsageUseCase(it)(AndroidAudioUsage.ASSISTANT) },
-            )
-            assertSaves<OverlayTextSizePreferencesRepository>(
-                useCaseName = "SaveOverlayTextSizeUseCase",
-                save = { saveOverlayTextSize(OverlayTextSize.SMALL) },
-                useCase = { SaveOverlayTextSizeUseCase(it)(OverlayTextSize.SMALL) },
             )
             assertSaves<ReadoutStartSoundPreferencesRepository>(
                 useCaseName = "SaveReadoutStartSoundTypeUseCase",
@@ -78,39 +58,10 @@ class SaveSettingsUseCasesTest {
     @Test
     fun `設定保存UseCaseはRepositoryの対応するメソッドへ委譲する その2`() =
         runTest {
-            assertSaves<OverlayTextColorPreferencesRepository>(
-                useCaseName = "SaveOverlayTextColorUseCase",
-                save = { saveOverlayTextColor(0xFFFFFFFFL) },
-                useCase = { SaveOverlayTextColorUseCase(it)(0xFFFFFFFFL) },
-            )
             assertSaves<LowVolumeWarningEnabledPreferencesRepository>(
                 useCaseName = "SaveLowVolumeWarningEnabledUseCase",
                 save = { saveLowVolumeWarningEnabled(false) },
                 useCase = { SaveLowVolumeWarningEnabledUseCase(it)(false) },
-            )
-            assertSaves<ManualReadoutPlayButtonLayoutEnabledPreferencesRepository>(
-                useCaseName = "SaveManualReadoutPlayButtonLayoutEnabledUseCase",
-                save = { saveManualReadoutPlayButtonLayoutEnabled(true) },
-                useCase = { SaveManualReadoutPlayButtonLayoutEnabledUseCase(it)(true) },
-            )
-            assertSaves<OverlayVisiblePreferencesRepository>(
-                useCaseName = "SaveOverlayVisibleUseCase",
-                save = { saveOverlayVisible(true) },
-                useCase = { SaveOverlayVisibleUseCase(it)(true) },
-            )
-            assertSaves<DebugStateCardOrderPreferencesRepository>(
-                useCaseName = "SaveDebugStateCardOrderUseCase",
-                save = { saveCardOrder(listOf("SESSION", "SIMULATOR")) },
-                useCase = { SaveDebugStateCardOrderUseCase(it)(listOf("SESSION", "SIMULATOR")) },
-            )
-            assertSaves<OverlayWindowBoundsPreferencesRepository>(
-                useCaseName = "SaveOverlayWindowBoundsUseCase",
-                save = { saveOverlayWindowBounds(OverlayWindowBounds(x = 10, y = 20, width = 300, height = 100)) },
-                useCase = {
-                    SaveOverlayWindowBoundsUseCase(
-                        it,
-                    )(OverlayWindowBounds(x = 10, y = 20, width = 300, height = 100))
-                },
             )
             assertSaves<MainWindowBoundsPreferencesRepository>(
                 useCaseName = "SaveMainWindowBoundsUseCase",
@@ -120,11 +71,6 @@ class SaveSettingsUseCasesTest {
                         it,
                     )(MainWindowBounds(x = 10, y = 20, width = 800, height = 500))
                 },
-            )
-            assertSaves<VoicePreferencesRepository>(
-                useCaseName = "SaveVoiceUseCase",
-                save = { saveVoiceId("ja-jp-x-jab-local") },
-                useCase = { SaveVoiceUseCase(it)("ja-jp-x-jab-local") },
             )
         }
 

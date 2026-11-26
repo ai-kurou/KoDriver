@@ -1,43 +1,14 @@
 # domain
 
-`ResetAutoReadoutSettingsUseCase` は受け取った `AutoReadoutSettingsResetter` を順番に実行し、全シミュレーターの自動読み上げ設定を一括で既定値に戻します。途中で失敗した場合は例外を呼び出し側に伝播します。
-`ResetManualReadoutSettingsUseCase` も同形で、受け取った `ManualReadoutSettingsResetter` を順番に実行し、手動読み上げセット（ホットキーを含む）と再生ボタン表示設定を既定値に戻します。
-
-`GetAudioInputDevicesUseCase` は `AudioInputDeviceRepository` から入力デバイス（マイク）の一覧を取得する。PCM形式は `MICROPHONE_*` 定数（16kHz・モノラル・16bit）で固定する。
+自動読み上げ・読み上げ履歴・サーバー接続・オーバーレイ・手動読み上げの操作・マイク・音声認識・フィードバック送信・デバッグ表示は、機能領域ごとのドメインモジュール（[`telemetry-log-domain`](../telemetry-log-domain/README.md)・[`server-connection-domain`](../server-connection-domain/README.md)・[`auto-readout-domain`](../auto-readout-domain/README.md)・[`overlay-domain`](../overlay-domain/README.md)・[`manual-readout-domain`](../manual-readout-domain/README.md)・[`microphone-domain`](../microphone-domain/README.md)・[`speech-recognition-domain`](../speech-recognition-domain/README.md)・[`feedback-domain`](../feedback-domain/README.md)・[`debug-domain`](../debug-domain/README.md)）に置く。どこに置くかは [`docs/architecture.md`](../../docs/architecture.md#domain-モジュールの振り分け基準) の基準に従う。以下の手動読み上げの説明に出る型には、`:core:manual-readout-domain` にあるものを含む。
 
 ## パッケージ構成
 
 シミュレーター固有コードの配置先は `kurou.kodriver.domain.<lmuwindows|acewindows|gt7ps5>.{model,repository,usecase}` とする。
 共通コードは `kurou.kodriver.domain` 直下の `model` / `repository` / `usecase` / `engine` に置く。
+機能領域ごとのドメインモジュールは `kurou.kodriver.domain.<autoreadout|telemetrylog|serverconnection|overlay|manualreadout|microphone|speechrecognition|feedback|debug>.{model,repository,usecase}`（必要に応じて `engine` / `util`）に置く。
 GT7・ACE・LMU はすべて移動済み。
 `:core:domain` は共通 `ReadoutItemKey` インターフェースと `ReadoutItemKeyRegistry` を提供する。シミュレーター別の sealed key、キー一覧 `*ReadoutItemKeys.kt`、および `*ReadoutDefaults.kt` は各 simulator domain に置く。キーを追加する際は、そのモジュールの `*ReadoutItemKeys.kt` にも登録する。`SpeechEvent` はシミュレーター別ドメインモジュールで実装し、手動読み上げ項目定義は各シミュレーターのドメインモジュール、simulatorId 集約は `:feature:manual-readout-detail` に置く。
-
-`kurou.kodriver.domain.util` の `isManualReadoutHotkeySupported()`（expect/actual）は手動読み上げのホットキー対応判定で、Windows デスクトップのみ true を返す。`:feature:manual-readout-list` と `:feature:manual-readout-detail` が共用する。
-
-## オーバーレイ文字サイズのプレビュー
-
-`PreviewOverlayTextSizeUseCase` は `OverlayTextSizePreferencesRepository.setPreviewOverlayTextSize` に
-一時値を渡す。`null` で解除し、`ObserveOverlayTextSizeUseCase` はプレビュー優先の現在値を配信する。
-永続化は `SaveOverlayTextSizeUseCase` が担当する。
-
-## オーバーレイ文字色のプレビュー
-
-`PreviewOverlayTextColorUseCase` は `OverlayTextColorPreferencesRepository.setPreviewOverlayTextColor` に
-一時値を渡す。`null` で解除し、`ObserveOverlayTextColorUseCase` はプレビュー優先の現在値を配信する。
-永続化は `SaveOverlayTextColorUseCase` が担当する。
-
-## オーバーレイ背景透明度のプレビュー
-
-`PreviewOverlayBackgroundOpacityUseCase` は `OverlayBackgroundOpacityPreferencesRepository.setPreviewOverlayBackgroundOpacity` に
-一時値を渡す。文字サイズと同様に `null` で解除し、`ObserveOverlayBackgroundOpacityUseCase` はプレビュー優先の現在値を配信する。
-永続化は `SaveOverlayBackgroundOpacityUseCase` が担当する。
-
-## 小さい音をカットする段階
-
-マイク設定の「小さい音をカット」は `MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN`〜`MAX`（0〜12、0はカットしない）の段階値として
-`MicrophoneCutQuietSoundPreferencesRepository` が保持する。既定値は3で、段階 × `MICROPHONE_CUT_QUIET_SOUND_LEVEL_STEP`（0.05）が
-音量ゲートのしきい値（既定は0.15）に当たる。`ObserveMicrophoneCutQuietSoundLevelUseCase` で購読し、
-`SaveMicrophoneCutQuietSoundLevelUseCase` が範囲外の値を拒否して保存する。「コマンド受付中もカットする」は `MICROPHONE_CUT_QUIET_SOUND_IN_COMMAND_DEFAULT`（false）を既定に、同じRepositoryの `observeMicrophoneCutQuietSoundInCommand` / `saveMicrophoneCutQuietSoundInCommand` と対応するUseCaseで扱う。
 
 手動の「燃料残り周回数」の仕様は [`core/lmu-windows-domain/README.md`](../../core/lmu-windows-domain/README.md) を参照。
 
@@ -83,12 +54,6 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 現行フィールドのProtoNumberは維持する。保存ファイル名の `auto_` 導入時は設定を意図的に初期化し、旧ファイルの移行は行わない。廃止したProtoNumber 1は再利用しない。
 
 オーバーレイ文字色は ARGB の Long として保存し、`OVERLAY_TEXT_COLOR_DEFAULT`（`0xFFFFC107L`）を既定値とする。`ObserveOverlayTextColorUseCase` は保存値を配信し、`SaveOverlayTextColorUseCase` は選択したARGB値をRepositoryへ保存する。
-
-## デバッグ読み上げ
-
-`DebugReadoutRequest` と `DebugReadoutRequestRepository`、送信・購読用の `RequestDebugReadoutUseCase` / `ObserveDebugReadoutRequestUseCase` を提供する。`ReadoutItemKey.topLevelEntriesOf(simulator)` は一覧項目だけを entries 順に返す。`DebugReadoutText` は入力文言を置換せず音声経路へ渡すイベントで、本文の再解決には copy を使う。
-
-`SpeechRecognitionTranscript`（認識途中の文字列と、直近に確定した発話の先頭候補）と `SpeechRecognitionTranscriptRepository`（`StateFlow` で最新の状態を保持）、送信・購読用の `ReportSpeechRecognitionTranscriptUseCase` / `ObserveSpeechRecognitionTranscriptUseCase` を提供する。聞き取りを行う `:feature:main` が通知し、オーバーレイなど他の feature が購読する（認識エンジンの聞き取りを購読し直すとマイクを二重に開くため、結果だけを共有する）。
 
 ## 手動読み上げセット
 
@@ -231,8 +196,6 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 
 
 手動読み上げ一覧の再生ボタン表示設定は `MANUAL_READOUT_PLAY_BUTTON_LAYOUT_ENABLED_DEFAULT`（false）を既定値とする。
-
-テレメトリログは読み上げの起点を `NarrationSource` で保持する。手動読み上げは `MANUAL`（`manual`）、それ以外（デバッグ読み上げを含む）は `AUTO`（`auto`）として保存する。
 
 
 LMUピットタイミングの燃料は `LmuWindowsReadoutItemKey.PitTiming.Fuel`（`lmu_windows_auto_pit_timing_fuel`）で保存する。

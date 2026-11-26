@@ -1,10 +1,10 @@
 package kurou.kodriver.feature.otherlist
 
-import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
-import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
-import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
-import kurou.kodriver.domain.model.OVERLAY_VISIBLE_DEFAULT
-import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_COLOR_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_SIZE_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_VISIBLE_DEFAULT
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 
 /** オーバーレイ設定フローの表示状態。 */
 public data class OtherListOverlaySettingsUiState(

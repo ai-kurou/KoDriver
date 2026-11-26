@@ -1,6 +1,6 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
-import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

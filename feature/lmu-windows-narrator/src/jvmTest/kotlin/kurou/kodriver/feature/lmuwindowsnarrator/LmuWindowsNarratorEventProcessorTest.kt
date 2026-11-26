@@ -24,6 +24,7 @@ import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
@@ -68,6 +69,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyRatio
+import kurou.kodriver.domain.lmuwindows.model.PitTimingSource
 import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
 import kurou.kodriver.domain.lmuwindows.model.SessionYellowFlagState
@@ -102,17 +104,15 @@ import kurou.kodriver.domain.lmuwindows.usecase.TyreTemperatureReadoutInput
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
-import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
+import kurou.kodriver.domain.telemetrylog.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.Test
 import kotlin.test.assertContains

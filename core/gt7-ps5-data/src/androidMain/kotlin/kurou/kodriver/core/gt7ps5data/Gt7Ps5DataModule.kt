@@ -10,14 +10,14 @@ import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5RemainingFuelLapsP
 import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.core.gt7ps5data.preferences.createGt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.core.gt7ps5data.repository.Gt7Ps5RepositoryImpl
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
-import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind

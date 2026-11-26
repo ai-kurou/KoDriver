@@ -21,11 +21,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
-import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.PreviewOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_COLOR_DEFAULT
+import kurou.kodriver.domain.overlay.repository.OverlayTextColorPreferencesRepository
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.PreviewOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayTextColorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.registerReadoutItemKeys
-import kurou.kodriver.domain.model.DebugReadoutRequest
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kotlin.test.BeforeTest

@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.OverlayTextSize
-import kurou.kodriver.domain.model.SpeechRecognitionTranscript
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionTranscript
 import kurou.kodriver.feature.narratoroverlay.generated.resources.Res
 import kurou.kodriver.feature.narratoroverlay.generated.resources.speech_recognition_unknown_word
 import org.jetbrains.compose.resources.stringResource

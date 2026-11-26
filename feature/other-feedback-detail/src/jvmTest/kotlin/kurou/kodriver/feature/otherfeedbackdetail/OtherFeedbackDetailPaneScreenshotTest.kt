@@ -10,12 +10,12 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.feedback.model.FeedbackType
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
 import org.junit.Test
 
 class OtherFeedbackDetailPaneScreenshotTest {

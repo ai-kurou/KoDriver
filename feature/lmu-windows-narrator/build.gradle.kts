@@ -11,8 +11,12 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.autoReadoutDomain)
+            implementation(projects.core.telemetryLogDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(projects.core.domain)
+            implementation(projects.core.debugDomain)
+            implementation(projects.core.manualReadoutDomain)
             implementation(projects.core.narrator)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)
@@ -31,6 +35,7 @@ kotlin {
 
 dependencies {
     testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(projects.core.manualReadoutDomain)
     testFixturesImplementation(projects.core.lmuWindowsDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)

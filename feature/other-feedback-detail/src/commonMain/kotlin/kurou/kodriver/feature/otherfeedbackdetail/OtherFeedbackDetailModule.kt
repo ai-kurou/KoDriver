@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.otherfeedbackdetail
 
-import kurou.kodriver.domain.usecase.CanSendFeedbackUseCase
-import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
-import kurou.kodriver.domain.usecase.SendFeedbackUseCase
+import kurou.kodriver.domain.feedback.usecase.CanSendFeedbackUseCase
+import kurou.kodriver.domain.feedback.usecase.SendFeedbackUseCase
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveTelemetryLogDetailUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

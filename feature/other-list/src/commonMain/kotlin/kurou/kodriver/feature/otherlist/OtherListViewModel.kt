@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
+import kurou.kodriver.domain.serverconnection.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 

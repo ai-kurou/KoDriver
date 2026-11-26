@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.gt7ps5.usecase.CheckGt7Ps5ConnectionUseCase
-import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
 /**

@@ -8,10 +8,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.model.OVERLAY_WINDOW_POSITION_UNSPECIFIED
-import kurou.kodriver.domain.model.OverlayWindowBounds
-import kurou.kodriver.domain.usecase.ObserveOverlayWindowBoundsUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayWindowBoundsUseCase
+import kurou.kodriver.domain.overlay.model.OVERLAY_WINDOW_POSITION_UNSPECIFIED
+import kurou.kodriver.domain.overlay.model.OverlayWindowBounds
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayWindowBoundsUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayWindowBoundsUseCase
 import org.koin.compose.koinInject
 
 /**

@@ -5,8 +5,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
-import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame

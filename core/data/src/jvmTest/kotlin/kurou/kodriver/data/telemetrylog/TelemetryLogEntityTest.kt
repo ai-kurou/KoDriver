@@ -2,10 +2,10 @@ package kurou.kodriver.data.telemetrylog
 
 import kurou.kodriver.data.registerReadoutItemKeys
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

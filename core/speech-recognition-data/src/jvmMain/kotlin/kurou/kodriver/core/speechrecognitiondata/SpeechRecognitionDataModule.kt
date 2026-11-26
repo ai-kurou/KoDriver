@@ -9,12 +9,12 @@ import kurou.kodriver.core.speechrecognitiondata.speech.RegistrySpeechCommandGui
 import kurou.kodriver.core.speechrecognitiondata.speech.SpeechTranscriberFactory
 import kurou.kodriver.core.speechrecognitiondata.speech.VoskSpeechTranscriberFactory
 import kurou.kodriver.core.speechrecognitiondata.speech.resolveVoskModelDirectory
-import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
-import kurou.kodriver.domain.repository.AudioInputDeviceRepository
-import kurou.kodriver.domain.repository.MicrophoneRepository
-import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
-import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
-import kurou.kodriver.domain.repository.SpeechRecognitionRepository
+import kurou.kodriver.domain.microphone.repository.AudioInputDeviceRepository
+import kurou.kodriver.domain.microphone.repository.MicrophoneRepository
+import kurou.kodriver.domain.microphone.repository.RecordAudioPermissionRepository
+import kurou.kodriver.domain.speechrecognition.engine.SpeechRecognitionChimePlayer
+import kurou.kodriver.domain.speechrecognition.repository.SpeechCommandGuideRepository
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 

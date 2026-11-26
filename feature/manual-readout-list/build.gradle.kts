@@ -13,6 +13,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.domain)
+            implementation(projects.core.manualReadoutDomain)
             implementation(projects.core.gt7Ps5Domain)
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.lmuWindowsDomain)

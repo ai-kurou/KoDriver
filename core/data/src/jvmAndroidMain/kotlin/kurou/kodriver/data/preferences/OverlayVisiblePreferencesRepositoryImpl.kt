@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
+import kurou.kodriver.domain.overlay.repository.OverlayVisiblePreferencesRepository
 
 internal class OverlayVisiblePreferencesRepositoryImpl(
     private val dataStore: DataStore<OverlayVisiblePreferences>,

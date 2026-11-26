@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.otherserveripdetail
 
-import kurou.kodriver.domain.usecase.CheckServerConnectivityUseCase
-import kurou.kodriver.domain.usecase.DiscoverWindowsServersUseCase
-import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
-import kurou.kodriver.domain.usecase.SaveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.usecase.CheckServerConnectivityUseCase
+import kurou.kodriver.domain.serverconnection.usecase.DiscoverWindowsServersUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.usecase.SaveServerIpUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

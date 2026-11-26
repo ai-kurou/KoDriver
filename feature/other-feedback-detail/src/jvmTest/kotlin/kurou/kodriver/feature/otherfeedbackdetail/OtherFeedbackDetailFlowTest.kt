@@ -14,15 +14,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.feedback.model.FeedbackType
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
-import kurou.kodriver.domain.model.TelemetryLogDetail
-import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLogDetail
+import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveTelemetryLogDetailUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

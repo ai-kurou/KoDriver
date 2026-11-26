@@ -6,11 +6,11 @@ import kurou.kodriver.domain.acewindows.model.matchAceWindowsManualReadoutPhrase
 import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.gt7ps5.model.matchGt7Ps5ManualReadoutPhrase
 import kurou.kodriver.domain.lmuwindows.model.matchLmuWindowsManualReadoutPhrase
-import kurou.kodriver.domain.model.ManualReadoutItemRequest
+import kurou.kodriver.domain.manualreadout.model.ManualReadoutItemRequest
+import kurou.kodriver.domain.manualreadout.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.containsSpeechRecognitionWakeWord
+import kurou.kodriver.domain.speechrecognition.model.containsSpeechRecognitionWakeWord
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.RequestManualReadoutItemUseCase
 
 /** 認識した候補を、ウェイクワード待ち・コマンド待ちの状態に応じて、ウェイクワードの検出か読み上げ項目の依頼に振り分ける。 */
 internal class SpeechRecognitionCommandHandler(

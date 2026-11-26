@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.model.OverlayWindowBounds
-import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveOverlayWindowBoundsUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayWindowBoundsUseCase
+import kurou.kodriver.domain.overlay.model.OverlayWindowBounds
+import kurou.kodriver.domain.overlay.repository.OverlayWindowBoundsPreferencesRepository
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayWindowBoundsUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayWindowBoundsUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module

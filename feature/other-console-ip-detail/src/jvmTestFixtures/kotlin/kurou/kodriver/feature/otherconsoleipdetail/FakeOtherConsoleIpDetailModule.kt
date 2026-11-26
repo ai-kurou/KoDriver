@@ -3,7 +3,7 @@ package kurou.kodriver.feature.otherconsoleipdetail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
 import org.koin.dsl.module
 
 /**

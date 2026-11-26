@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.KoDriverServerConnectionState
-import kurou.kodriver.domain.usecase.KoDriverServerConnectionStatus
+import kurou.kodriver.domain.serverconnection.usecase.KoDriverServerConnectionState
+import kurou.kodriver.domain.serverconnection.usecase.KoDriverServerConnectionStatus
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

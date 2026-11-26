@@ -1,6 +1,6 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
-import kurou.kodriver.domain.model.SpeechRecognitionChime
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionChime
 import kotlin.math.PI
 import kotlin.math.sin
 

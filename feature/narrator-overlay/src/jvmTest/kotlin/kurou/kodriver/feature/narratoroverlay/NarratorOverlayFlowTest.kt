@@ -8,12 +8,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
-import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.SpeechRecognitionTranscript
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionTranscript
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

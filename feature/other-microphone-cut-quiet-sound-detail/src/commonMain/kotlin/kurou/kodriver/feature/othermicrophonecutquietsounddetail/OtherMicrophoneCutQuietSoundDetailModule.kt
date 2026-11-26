@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.othermicrophonecutquietsounddetail
 
-import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
-import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
-import kurou.kodriver.domain.usecase.SaveMicrophoneCutQuietSoundInCommandUseCase
-import kurou.kodriver.domain.usecase.SaveMicrophoneCutQuietSoundLevelUseCase
+import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
+import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
+import kurou.kodriver.domain.microphone.usecase.SaveMicrophoneCutQuietSoundInCommandUseCase
+import kurou.kodriver.domain.microphone.usecase.SaveMicrophoneCutQuietSoundLevelUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

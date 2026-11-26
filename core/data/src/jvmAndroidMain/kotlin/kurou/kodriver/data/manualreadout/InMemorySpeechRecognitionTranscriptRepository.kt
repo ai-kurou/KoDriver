@@ -3,8 +3,8 @@ package kurou.kodriver.data.manualreadout
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kurou.kodriver.domain.model.SpeechRecognitionTranscript
-import kurou.kodriver.domain.repository.SpeechRecognitionTranscriptRepository
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionTranscript
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionTranscriptRepository
 
 /**
  * マイクが聞き取った文言をメモリに持つ。永続化はしない。

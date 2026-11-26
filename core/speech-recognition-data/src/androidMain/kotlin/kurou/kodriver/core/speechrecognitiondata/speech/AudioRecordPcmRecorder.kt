@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import kurou.kodriver.domain.model.MICROPHONE_SAMPLE_RATE_HZ
+import kurou.kodriver.domain.microphone.model.MICROPHONE_SAMPLE_RATE_HZ
 
 /**
  * Android の [AudioRecord] で [PcmRecorder] を実現する。呼び出し元でマイクの権限を確認してから使う。

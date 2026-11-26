@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.main
 
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.AudioInputDevice
+import kurou.kodriver.domain.microphone.model.AudioInputDevice
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

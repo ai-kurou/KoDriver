@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource

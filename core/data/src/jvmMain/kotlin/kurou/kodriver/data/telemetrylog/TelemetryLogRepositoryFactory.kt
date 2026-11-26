@@ -2,7 +2,7 @@ package kurou.kodriver.data.telemetrylog
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
 import java.io.File
 
 /**

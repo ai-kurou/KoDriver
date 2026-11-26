@@ -11,6 +11,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
+            implementation(projects.core.overlayDomain)
         }
         jvmTest.dependencies {
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
@@ -26,6 +27,7 @@ compose.resources {
 
 dependencies {
     testFixturesApi(projects.core.domain)
+    testFixturesApi(projects.core.overlayDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))

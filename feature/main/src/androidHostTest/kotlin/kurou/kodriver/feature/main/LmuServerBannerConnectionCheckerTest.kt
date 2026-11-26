@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.main
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
-import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.usecase.FetchServerVersionUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveServerIpUseCase
 
 class LmuServerBannerConnectionCheckerTest : ServerBannerConnectionCheckerTestContract() {
     override fun createStatusFlow(

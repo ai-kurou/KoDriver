@@ -9,6 +9,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.autoReadoutDomain)
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.designsystem)
         }

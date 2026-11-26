@@ -21,11 +21,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.model.OverlayTextSize
-import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.PreviewOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.repository.OverlayTextSizePreferencesRepository
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.PreviewOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayTextSizeUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

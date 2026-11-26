@@ -4,8 +4,14 @@ digraph G {
   ":app:androidApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":app:desktopApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:microphone-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:speech-recognition-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
+  ":core:speech-recognition-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":app:androidApp" -> ":core:speech-recognition-data"
   ":app:desktopApp" -> ":core:speech-recognition-data"
+  ":core:microphone-domain" -> ":core:domain"
   ":core:speech-recognition-data" -> ":core:domain"
+  ":core:speech-recognition-data" -> ":core:microphone-domain"
+  ":core:speech-recognition-data" -> ":core:speech-recognition-domain"
+  ":core:speech-recognition-domain" -> ":core:domain"
 }

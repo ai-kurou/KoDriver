@@ -13,7 +13,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 import org.junit.Rule
 import org.junit.Test
 

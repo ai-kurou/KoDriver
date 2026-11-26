@@ -1,8 +1,8 @@
 package kurou.kodriver.core.windowshotkeydata
 
 import kurou.kodriver.core.windowshotkeydata.repository.ManualReadoutHotkeyRepositoryImpl
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

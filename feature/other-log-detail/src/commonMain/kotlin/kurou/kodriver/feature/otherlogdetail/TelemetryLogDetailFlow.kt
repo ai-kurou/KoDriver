@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.domain.model.TelemetryLogDetail
-import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLogDetail
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveTelemetryLogDetailUseCase
 
 /** 選択したログIDから詳細の表示状態を組み立てる冷たい Flow。 */
 internal class TelemetryLogDetailFlow(

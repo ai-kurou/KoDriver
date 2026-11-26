@@ -37,12 +37,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.feedback.model.FeedbackType
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

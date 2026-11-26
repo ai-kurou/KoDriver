@@ -6,6 +6,7 @@ kotlin {
     android { namespace = "kurou.kodriver.feature.lmuwindowsautoreadout.remainingfueldetail" }
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.autoReadoutDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(projects.core.designsystem)
         }

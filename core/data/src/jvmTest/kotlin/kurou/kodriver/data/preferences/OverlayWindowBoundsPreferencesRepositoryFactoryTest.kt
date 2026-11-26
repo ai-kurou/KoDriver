@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.OverlayWindowBounds
+import kurou.kodriver.domain.overlay.model.OverlayWindowBounds
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test

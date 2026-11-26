@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
+import kurou.kodriver.domain.overlay.repository.OverlayTextColorPreferencesRepository
 
 internal class OverlayTextColorPreferencesRepositoryImpl(
     private val dataStore: DataStore<OverlayTextColorPreferences>,

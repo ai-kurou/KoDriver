@@ -3,7 +3,7 @@ package kurou.kodriver.data.preferences
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
-import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_SIZE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test

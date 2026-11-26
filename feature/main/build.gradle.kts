@@ -44,6 +44,10 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.core.domain)
+            implementation(projects.core.manualReadoutDomain)
+            implementation(projects.core.serverConnectionDomain)
+            implementation(projects.core.microphoneDomain)
+            implementation(projects.core.speechRecognitionDomain)
             implementation(projects.core.gt7Ps5Domain)
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.lmuWindowsDomain)
@@ -87,6 +91,7 @@ dependencies {
     testFixturesApi(projects.core.domain)
     testFixturesApi(projects.core.gt7Ps5Domain)
     testFixturesApi(projects.core.aceWindowsDomain)
+    testFixturesApi(projects.core.debugDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))

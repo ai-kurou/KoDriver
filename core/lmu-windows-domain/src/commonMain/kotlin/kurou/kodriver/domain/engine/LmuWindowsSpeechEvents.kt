@@ -19,6 +19,7 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEA
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.PitTimingSource
 import kurou.kodriver.domain.lmuwindows.model.defaultLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsBrakeWearReadoutText
@@ -28,7 +29,6 @@ import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsRemainingVirtualEn
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.lmuwindows.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.PitTimingSource
 
 /** LMU 由来の読み上げイベントを識別する共通マーカー。自由文言経路で本文を扱うため [ReadoutTextEvent] の契約を持つ。 */
 public sealed interface LmuWindowsSpeechEvent : ReadoutTextEvent

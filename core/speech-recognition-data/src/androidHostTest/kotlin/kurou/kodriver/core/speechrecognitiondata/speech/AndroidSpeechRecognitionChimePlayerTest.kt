@@ -13,7 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.SpeechRecognitionChime
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionChime
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals

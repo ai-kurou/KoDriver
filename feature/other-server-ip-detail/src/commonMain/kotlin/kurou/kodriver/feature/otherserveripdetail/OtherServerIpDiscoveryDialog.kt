@@ -12,7 +12,7 @@ import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
 import kurou.kodriver.core.designsystem.KoDriverRadioRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.DiscoveredServer
+import kurou.kodriver.domain.serverconnection.model.DiscoveredServer
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_cancel
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_confirm

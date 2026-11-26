@@ -13,6 +13,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.autoReadoutDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.gt7Ps5Domain)
@@ -67,6 +68,7 @@ compose.resources {
 
 dependencies {
     testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(projects.core.autoReadoutDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))

@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.otherfeedbackdetail
 
-import kurou.kodriver.domain.model.FeedbackType
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.feedback.model.FeedbackType
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
 
 private val EMAIL_REGEX = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
 

@@ -4,8 +4,8 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kurou.kodriver.domain.model.ManualReadoutItemRequest
-import kurou.kodriver.domain.repository.ManualReadoutItemSpokenRepository
+import kurou.kodriver.domain.manualreadout.model.ManualReadoutItemRequest
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemSpokenRepository
 
 /**
  * 読み上げられた項目単位の依頼を、購読中の画面へ配信する。購読者がいなければ捨てる（音声タブを開いていない間は何も起きない）。

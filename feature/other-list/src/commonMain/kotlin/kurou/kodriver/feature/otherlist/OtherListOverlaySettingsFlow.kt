@@ -2,11 +2,11 @@ package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayVisibleUseCase
 
 /** オーバーレイ設定の観測・表示状態と表示ON/OFFの保存を管理する。実行のライフサイクルは呼び出し元に従う。 */
 public class OtherListOverlaySettingsFlow(

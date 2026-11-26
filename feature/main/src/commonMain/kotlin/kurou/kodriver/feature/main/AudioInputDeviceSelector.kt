@@ -1,10 +1,10 @@
 package kurou.kodriver.feature.main
 
 import kotlinx.coroutines.flow.first
-import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
-import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
-import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
-import kurou.kodriver.domain.usecase.SaveSelectedAudioInputDeviceNameUseCase
+import kurou.kodriver.domain.microphone.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
+import kurou.kodriver.domain.microphone.usecase.GetAudioInputDevicesUseCase
+import kurou.kodriver.domain.microphone.usecase.ObserveSelectedAudioInputDeviceNameUseCase
+import kurou.kodriver.domain.microphone.usecase.SaveSelectedAudioInputDeviceNameUseCase
 
 /** 入力デバイスの一覧と、その中で選択中のデバイス。 */
 internal data class AudioInputDeviceList(

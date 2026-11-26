@@ -1,13 +1,13 @@
 package kurou.kodriver.feature.narratoroverlay
 
-import kurou.kodriver.domain.usecase.ObserveLatestNarratedTelemetryLogUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayWindowBoundsUseCase
-import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionTranscriptUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayWindowBoundsUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayWindowBoundsUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayWindowBoundsUseCase
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionTranscriptUseCase
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveLatestNarratedTelemetryLogUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module

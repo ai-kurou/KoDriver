@@ -19,7 +19,7 @@ Windows デスクトップでは、各セット行の左側にセット名・項
 - `ManualReadoutListViewModelTest.kt` / `ManualReadoutListModuleTest.kt`: 空一覧・一覧更新・末尾への追加保存・全シミュレーターの観測・保存・読み上げ依頼の Repository 解決を確認する JVM テスト。
 - `ManualReadoutListPaneWiringTest.kt`: `ManualReadoutContent` がシミュレーターごとの選択を保持し、離脱後の再表示でも詳細を表示することを確認する JVM テスト。
 - `ManualReadoutListPane.kt` / `ManualReadoutPlayTile.kt` / `ManualReadoutSetRow.kt` / `ManualReadoutHotkeyChip.kt` / `ManualReadoutHintSheet.kt` / `ManualReadoutHeaderControls.kt`: 一覧 UI を責務ごとに分割したファイル群。Pane が一覧本体と追加 FAB／タイル、PlayTile が再生タイル、SetRow が標準行と両表示共通の長押しメニュー・削除確認、HotkeyChip がホットキーチップ、HintSheet が説明シート、HeaderControls が表示切り替えセグメントを持つ。全体として、手動読み上げセット一覧の見出し（表示切り替えセグメント・セット数）・保存済みセットの行・再生ボタンの2列グリッド・説明シート・空状態・セット追加 FAB／タイルを表示する UI。タップ直後に約1.5秒の依頼中表示を出す（再生状態は購読できないためタップ起点の擬似表示）。
-- ホットキー説明と行のチップの表示に使う対応判定（Windows デスクトップのみ true）は `:core:domain` の `kurou.kodriver.domain.util.isManualReadoutHotkeySupported` を参照する。
+- ホットキー説明と行のチップの表示に使う対応判定（Windows デスクトップのみ true）は `:core:manual-readout-domain` の `kurou.kodriver.domain.manualreadout.util.isManualReadoutHotkeySupported` を参照する。
 - `src/commonMain/composeResources/values/strings.xml`: 見出し・セットのタイトルと項目数・読み上げボタン・説明シート・空状態・セット追加 FAB の表示文言。
 - `ManualReadoutHotkeyLabel.kt` / `ManualReadoutHotkeyLabelTest.kt`: 一覧専用のラベル生成と、全修飾キー・英数字・未割り当て・範囲外コードの検証。
 - `ManualReadoutListPaneRequestFeedbackTest.kt`: 両表示の依頼中表示・約1.5秒後の復帰・連打時の延長・項目なしの標準表示での表示と、長押しメニューの編集時・再生不可時に表示しないことを確認する JVM テスト。

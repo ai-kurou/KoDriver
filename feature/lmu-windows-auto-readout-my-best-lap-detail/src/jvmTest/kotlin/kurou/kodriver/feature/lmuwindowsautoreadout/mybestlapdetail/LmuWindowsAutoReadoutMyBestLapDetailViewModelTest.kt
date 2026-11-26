@@ -19,6 +19,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.autoreadout.repository.AutoReadoutPreferencesRepository
+import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.autoreadout.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -27,12 +30,9 @@ import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsMyBestLapReadoutTe
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
-import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import java.io.IOException
 import kotlin.test.AfterTest

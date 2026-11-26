@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
+import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.autoreadout.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsFuelReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsManualReadoutUseCase
@@ -39,14 +41,12 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassUse
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
-import kurou.kodriver.domain.usecase.NotifyManualReadoutItemSpokenUseCase
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyPressesUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutItemRequestsUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutRequestsUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
+import kurou.kodriver.domain.manualreadout.usecase.NotifyManualReadoutItemSpokenUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutHotkeyPressesUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutItemRequestsUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutRequestsUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
 internal data class VehicleApproachUseCases(

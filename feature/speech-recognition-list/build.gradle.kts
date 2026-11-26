@@ -13,6 +13,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.domain)
+            implementation(projects.core.manualReadoutDomain)
+            implementation(projects.core.speechRecognitionDomain)
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
         }

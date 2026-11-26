@@ -13,10 +13,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.gt7ps5.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UdpPortUseCase
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
-import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.serverconnection.usecase.ObserveConsoleAddressUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveServerIpUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

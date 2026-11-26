@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.otherlist
 
-import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.overlay_text_size_extra_large
 import kurou.kodriver.feature.otherlist.generated.resources.overlay_text_size_extra_small

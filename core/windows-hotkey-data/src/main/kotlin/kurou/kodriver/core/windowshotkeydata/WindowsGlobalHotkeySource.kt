@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kotlin.concurrent.thread
 
 /**

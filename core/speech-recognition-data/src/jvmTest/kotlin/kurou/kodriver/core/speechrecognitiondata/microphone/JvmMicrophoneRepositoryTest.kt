@@ -10,9 +10,9 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import kurou.kodriver.domain.model.AudioInputDevice
-import kurou.kodriver.domain.model.MicrophoneAudioEvent
-import kurou.kodriver.domain.model.MicrophoneFailureReason
+import kurou.kodriver.domain.microphone.model.AudioInputDevice
+import kurou.kodriver.domain.microphone.model.MicrophoneAudioEvent
+import kurou.kodriver.domain.microphone.model.MicrophoneFailureReason
 import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

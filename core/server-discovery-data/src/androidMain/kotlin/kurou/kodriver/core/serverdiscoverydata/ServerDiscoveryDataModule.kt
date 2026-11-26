@@ -1,8 +1,8 @@
 package kurou.kodriver.core.serverdiscoverydata
 
 import android.content.Context
-import kurou.kodriver.domain.repository.ServerConnectivityRepository
-import kurou.kodriver.domain.repository.WindowsServerDiscoveryRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerConnectivityRepository
+import kurou.kodriver.domain.serverconnection.repository.WindowsServerDiscoveryRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 

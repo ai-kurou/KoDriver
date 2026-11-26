@@ -41,13 +41,13 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
+import kurou.kodriver.domain.serverconnection.repository.AccessLocalNetworkPermissionRepository
+import kurou.kodriver.domain.serverconnection.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase

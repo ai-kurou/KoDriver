@@ -1,14 +1,14 @@
 package kurou.kodriver.feature.lmuwindowsautoreadout.remainingfueldetail
 
+import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.autoreadout.usecase.SaveAutoReadoutEnabledStateUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.SaveLmuWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel

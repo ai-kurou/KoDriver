@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.otheroverlaytextcolordetail
 
-import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.feature.otheroverlaytextcolordetail.generated.resources.Res
 import kurou.kodriver.feature.otheroverlaytextcolordetail.generated.resources.overlay_text_color_amber
 import kurou.kodriver.feature.otheroverlaytextcolordetail.generated.resources.overlay_text_color_blue

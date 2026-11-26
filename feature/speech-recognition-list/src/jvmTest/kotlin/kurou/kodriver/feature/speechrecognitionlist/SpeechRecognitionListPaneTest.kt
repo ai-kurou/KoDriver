@@ -15,8 +15,8 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
-import kurou.kodriver.domain.model.SpeechCommandGuideGroup
-import kurou.kodriver.domain.model.SpeechCommandGuideItem
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideGroup
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideItem
 import org.junit.Rule
 import org.junit.Test
 

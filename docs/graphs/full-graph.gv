@@ -1,26 +1,35 @@
 digraph G {
   rankdir=LR
-  size="1000,16.666667!"
-  graph [ranksep=0.8, nodesep=0.2]
-  node [shape=box, style="rounded,filled"]
+  graph [ranksep=1.0, nodesep=0.12]
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=16, width=3.2, height=0.42]
+  edge [arrowsize=0.6, penwidth=0.9]
   ":app:androidApp" [label=":app:androidApp", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:androidBenchmark" [label=":app:androidBenchmark", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:desktopApp" [label=":app:desktopApp", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:shared" [label=":app:shared", fillcolor="#FFE0B2", color="#FB8C00"]
   ":core:ace-windows-data" [label=":core:ace-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:ace-windows-domain" [label=":core:ace-windows-domain", fillcolor="#E1BEE7", color="#8E24AA"]
+  ":core:auto-readout-domain" [label=":core:auto-readout-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:data" [label=":core:data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:debug-domain" [label=":core:debug-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:designsystem" [label=":core:designsystem", fillcolor="#FFF9C4", color="#F9A825"]
   ":core:device-volume-data" [label=":core:device-volume-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:domain" [label=":core:domain", fillcolor="#E1BEE7", color="#8E24AA"]
+  ":core:feedback-domain" [label=":core:feedback-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:gt7-ps5-data" [label=":core:gt7-ps5-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:gt7-ps5-domain" [label=":core:gt7-ps5-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:lmu-windows-domain" [label=":core:lmu-windows-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:lmu-windows-rest-api-data" [label=":core:lmu-windows-rest-api-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:manual-readout-domain" [label=":core:manual-readout-domain", fillcolor="#E1BEE7", color="#8E24AA"]
+  ":core:microphone-domain" [label=":core:microphone-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:narrator" [label=":core:narrator", fillcolor="#FFF9C4", color="#F9A825"]
+  ":core:overlay-domain" [label=":core:overlay-domain", fillcolor="#E1BEE7", color="#8E24AA"]
+  ":core:server-connection-domain" [label=":core:server-connection-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:server-discovery-data" [label=":core:server-discovery-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:speech-recognition-data" [label=":core:speech-recognition-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:speech-recognition-domain" [label=":core:speech-recognition-domain", fillcolor="#E1BEE7", color="#8E24AA"]
+  ":core:telemetry-log-domain" [label=":core:telemetry-log-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:text-to-speech-data" [label=":core:text-to-speech-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-hotkey-data" [label=":core:windows-hotkey-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#FFF9C4", color="#F9A825"]
@@ -30,83 +39,132 @@ digraph G {
   "feature:ace-windows*" [label="feature:ace-windows*\n9 modules", fillcolor="#C8E6C9", color="#43A047"]
   "feature:gt7-ps5*" [label="feature:gt7-ps5*\n6 modules", fillcolor="#C8E6C9", color="#43A047"]
   "feature:lmu-windows*" [label="feature:lmu-windows*\n13 modules", fillcolor="#C8E6C9", color="#43A047"]
-  ":app:androidApp" -> ":app:androidBenchmark"
-  ":app:androidApp" -> ":app:shared"
-  ":app:androidApp" -> ":core:ace-windows-data"
-  ":app:androidApp" -> ":core:data"
-  ":app:androidApp" -> ":core:device-volume-data"
-  ":app:androidApp" -> ":core:gt7-ps5-data"
-  ":app:androidApp" -> ":core:lmu-windows-data"
-  ":app:androidApp" -> ":core:server-discovery-data"
-  ":app:androidApp" -> ":core:speech-recognition-data"
-  ":app:androidApp" -> ":core:text-to-speech-data"
-  ":app:androidApp" -> ":core:windows-startup-data"
-  ":app:androidBenchmark" -> ":app:androidApp"
-  ":app:desktopApp" -> ":app:shared"
-  ":app:desktopApp" -> ":core:ace-windows-data"
-  ":app:desktopApp" -> ":core:data"
-  ":app:desktopApp" -> ":core:device-volume-data"
-  ":app:desktopApp" -> ":core:gt7-ps5-data"
-  ":app:desktopApp" -> ":core:lmu-windows-data"
-  ":app:desktopApp" -> ":core:lmu-windows-rest-api-data"
-  ":app:desktopApp" -> ":core:server-discovery-data"
-  ":app:desktopApp" -> ":core:speech-recognition-data"
-  ":app:desktopApp" -> ":core:text-to-speech-data"
-  ":app:desktopApp" -> ":core:windows-hotkey-data"
-  ":app:desktopApp" -> ":core:windows-startup-data"
-  ":app:desktopApp" -> ":server"
-  ":app:shared" -> "feature"
-  ":app:shared" -> "feature:ace-windows*"
-  ":app:shared" -> "feature:gt7-ps5*"
-  ":app:shared" -> "feature:lmu-windows*"
-  ":core:ace-windows-data" -> ":core:ace-windows-domain"
-  ":core:ace-windows-data" -> ":core:domain"
-  ":core:ace-windows-data" -> ":core:windows-shared-memory"
-  ":core:ace-windows-domain" -> ":core:domain"
-  ":core:data" -> ":core:ace-windows-domain"
-  ":core:data" -> ":core:domain"
-  ":core:data" -> ":core:gt7-ps5-domain"
-  ":core:data" -> ":core:lmu-windows-domain"
-  ":core:device-volume-data" -> ":core:domain"
-  ":core:gt7-ps5-data" -> ":core:domain"
-  ":core:gt7-ps5-data" -> ":core:gt7-ps5-domain"
-  ":core:gt7-ps5-domain" -> ":core:domain"
-  ":core:lmu-windows-data" -> ":core:domain"
-  ":core:lmu-windows-data" -> ":core:lmu-windows-domain"
-  ":core:lmu-windows-data" -> ":core:windows-shared-memory"
-  ":core:lmu-windows-domain" -> ":core:domain"
-  ":core:lmu-windows-rest-api-data" -> ":core:domain"
-  ":core:lmu-windows-rest-api-data" -> ":core:lmu-windows-domain"
-  ":core:server-discovery-data" -> ":core:domain"
-  ":core:speech-recognition-data" -> ":core:domain"
-  ":core:text-to-speech-data" -> ":core:domain"
-  ":core:windows-hotkey-data" -> ":core:domain"
-  ":core:windows-startup-data" -> ":core:domain"
-  ":server" -> ":core:ace-windows-domain"
-  ":server" -> ":core:domain"
-  ":server" -> ":core:lmu-windows-domain"
-  "feature" -> ":core:ace-windows-domain"
-  "feature" -> ":core:designsystem"
-  "feature" -> ":core:domain"
-  "feature" -> ":core:gt7-ps5-domain"
-  "feature" -> ":core:lmu-windows-domain"
-  "feature:ace-windows*" -> ":core:ace-windows-domain"
-  "feature:ace-windows*" -> ":core:designsystem"
-  "feature:ace-windows*" -> ":core:domain"
-  "feature:ace-windows*" -> ":core:narrator"
-  "feature:gt7-ps5*" -> ":core:designsystem"
-  "feature:gt7-ps5*" -> ":core:domain"
-  "feature:gt7-ps5*" -> ":core:gt7-ps5-domain"
-  "feature:gt7-ps5*" -> ":core:narrator"
-  "feature:lmu-windows*" -> ":core:designsystem"
-  "feature:lmu-windows*" -> ":core:domain"
-  "feature:lmu-windows*" -> ":core:lmu-windows-domain"
-  "feature:lmu-windows*" -> ":core:narrator"
+  ":app:androidApp" -> ":app:androidBenchmark" [color="#FB8C0080"]
+  ":app:androidApp" -> ":app:shared" [color="#FB8C0080"]
+  ":app:androidApp" -> ":core:ace-windows-data" [color="#FB8C0080"]
+  ":app:androidApp" -> ":core:data" [color="#FB8C0080"]
+  ":app:androidApp" -> ":core:device-volume-data" [color="#FB8C0080"]
+  ":app:androidApp" -> ":core:gt7-ps5-data" [color="#FB8C0080"]
+  ":app:androidApp" -> ":core:lmu-windows-data" [color="#FB8C0080"]
+  ":app:androidApp" -> ":core:server-discovery-data" [color="#FB8C0080"]
+  ":app:androidApp" -> ":core:speech-recognition-data" [color="#FB8C0080"]
+  ":app:androidApp" -> ":core:text-to-speech-data" [color="#FB8C0080"]
+  ":app:androidApp" -> ":core:windows-startup-data" [color="#FB8C0080"]
+  ":app:androidBenchmark" -> ":app:androidApp" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":app:shared" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:ace-windows-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:device-volume-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:gt7-ps5-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:lmu-windows-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:lmu-windows-rest-api-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:server-discovery-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:speech-recognition-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:text-to-speech-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:windows-hotkey-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":core:windows-startup-data" [color="#FB8C0080"]
+  ":app:desktopApp" -> ":server" [color="#FB8C0080"]
+  ":app:shared" -> "feature" [color="#FB8C0080"]
+  ":app:shared" -> "feature:ace-windows*" [color="#FB8C0080"]
+  ":app:shared" -> "feature:gt7-ps5*" [color="#FB8C0080"]
+  ":app:shared" -> "feature:lmu-windows*" [color="#FB8C0080"]
+  ":core:ace-windows-data" -> ":core:ace-windows-domain" [color="#1E88E580"]
+  ":core:ace-windows-data" -> ":core:auto-readout-domain" [color="#1E88E580"]
+  ":core:ace-windows-data" -> ":core:domain" [color="#1E88E580"]
+  ":core:ace-windows-data" -> ":core:server-connection-domain" [color="#1E88E580"]
+  ":core:ace-windows-data" -> ":core:windows-shared-memory" [color="#1E88E580"]
+  ":core:ace-windows-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:auto-readout-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:data" -> ":core:ace-windows-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:auto-readout-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:debug-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:domain" [color="#1E88E580"]
+  ":core:data" -> ":core:feedback-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:gt7-ps5-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:lmu-windows-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:manual-readout-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:microphone-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:overlay-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:server-connection-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:speech-recognition-domain" [color="#1E88E580"]
+  ":core:data" -> ":core:telemetry-log-domain" [color="#1E88E580"]
+  ":core:debug-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:device-volume-data" -> ":core:domain" [color="#1E88E580"]
+  ":core:feedback-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:gt7-ps5-data" -> ":core:auto-readout-domain" [color="#1E88E580"]
+  ":core:gt7-ps5-data" -> ":core:domain" [color="#1E88E580"]
+  ":core:gt7-ps5-data" -> ":core:gt7-ps5-domain" [color="#1E88E580"]
+  ":core:gt7-ps5-data" -> ":core:server-connection-domain" [color="#1E88E580"]
+  ":core:gt7-ps5-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:lmu-windows-data" -> ":core:auto-readout-domain" [color="#1E88E580"]
+  ":core:lmu-windows-data" -> ":core:domain" [color="#1E88E580"]
+  ":core:lmu-windows-data" -> ":core:lmu-windows-domain" [color="#1E88E580"]
+  ":core:lmu-windows-data" -> ":core:server-connection-domain" [color="#1E88E580"]
+  ":core:lmu-windows-data" -> ":core:windows-shared-memory" [color="#1E88E580"]
+  ":core:lmu-windows-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:lmu-windows-rest-api-data" -> ":core:domain" [color="#1E88E580"]
+  ":core:lmu-windows-rest-api-data" -> ":core:lmu-windows-domain" [color="#1E88E580"]
+  ":core:manual-readout-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:microphone-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:overlay-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:server-connection-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:server-discovery-data" -> ":core:domain" [color="#1E88E580"]
+  ":core:server-discovery-data" -> ":core:server-connection-domain" [color="#1E88E580"]
+  ":core:speech-recognition-data" -> ":core:domain" [color="#1E88E580"]
+  ":core:speech-recognition-data" -> ":core:microphone-domain" [color="#1E88E580"]
+  ":core:speech-recognition-data" -> ":core:speech-recognition-domain" [color="#1E88E580"]
+  ":core:speech-recognition-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:telemetry-log-domain" -> ":core:domain" [color="#8E24AA80"]
+  ":core:text-to-speech-data" -> ":core:domain" [color="#1E88E580"]
+  ":core:windows-hotkey-data" -> ":core:domain" [color="#1E88E580"]
+  ":core:windows-hotkey-data" -> ":core:manual-readout-domain" [color="#1E88E580"]
+  ":core:windows-startup-data" -> ":core:domain" [color="#1E88E580"]
+  ":server" -> ":core:ace-windows-domain" [color="#D81B6080"]
+  ":server" -> ":core:domain" [color="#D81B6080"]
+  ":server" -> ":core:lmu-windows-domain" [color="#D81B6080"]
+  "feature" -> ":core:ace-windows-domain" [color="#43A04780"]
+  "feature" -> ":core:auto-readout-domain" [color="#43A04780"]
+  "feature" -> ":core:debug-domain" [color="#43A04780"]
+  "feature" -> ":core:designsystem" [color="#43A04780"]
+  "feature" -> ":core:domain" [color="#43A04780"]
+  "feature" -> ":core:feedback-domain" [color="#43A04780"]
+  "feature" -> ":core:gt7-ps5-domain" [color="#43A04780"]
+  "feature" -> ":core:lmu-windows-domain" [color="#43A04780"]
+  "feature" -> ":core:manual-readout-domain" [color="#43A04780"]
+  "feature" -> ":core:microphone-domain" [color="#43A04780"]
+  "feature" -> ":core:overlay-domain" [color="#43A04780"]
+  "feature" -> ":core:server-connection-domain" [color="#43A04780"]
+  "feature" -> ":core:speech-recognition-domain" [color="#43A04780"]
+  "feature" -> ":core:telemetry-log-domain" [color="#43A04780"]
+  "feature:ace-windows*" -> ":core:ace-windows-domain" [color="#43A04780"]
+  "feature:ace-windows*" -> ":core:auto-readout-domain" [color="#43A04780"]
+  "feature:ace-windows*" -> ":core:debug-domain" [color="#43A04780"]
+  "feature:ace-windows*" -> ":core:designsystem" [color="#43A04780"]
+  "feature:ace-windows*" -> ":core:domain" [color="#43A04780"]
+  "feature:ace-windows*" -> ":core:manual-readout-domain" [color="#43A04780"]
+  "feature:ace-windows*" -> ":core:narrator" [color="#43A04780"]
+  "feature:ace-windows*" -> ":core:telemetry-log-domain" [color="#43A04780"]
+  "feature:gt7-ps5*" -> ":core:auto-readout-domain" [color="#43A04780"]
+  "feature:gt7-ps5*" -> ":core:debug-domain" [color="#43A04780"]
+  "feature:gt7-ps5*" -> ":core:designsystem" [color="#43A04780"]
+  "feature:gt7-ps5*" -> ":core:domain" [color="#43A04780"]
+  "feature:gt7-ps5*" -> ":core:gt7-ps5-domain" [color="#43A04780"]
+  "feature:gt7-ps5*" -> ":core:manual-readout-domain" [color="#43A04780"]
+  "feature:gt7-ps5*" -> ":core:narrator" [color="#43A04780"]
+  "feature:gt7-ps5*" -> ":core:telemetry-log-domain" [color="#43A04780"]
+  "feature:lmu-windows*" -> ":core:auto-readout-domain" [color="#43A04780"]
+  "feature:lmu-windows*" -> ":core:debug-domain" [color="#43A04780"]
+  "feature:lmu-windows*" -> ":core:designsystem" [color="#43A04780"]
+  "feature:lmu-windows*" -> ":core:domain" [color="#43A04780"]
+  "feature:lmu-windows*" -> ":core:lmu-windows-domain" [color="#43A04780"]
+  "feature:lmu-windows*" -> ":core:manual-readout-domain" [color="#43A04780"]
+  "feature:lmu-windows*" -> ":core:narrator" [color="#43A04780"]
+  "feature:lmu-windows*" -> ":core:telemetry-log-domain" [color="#43A04780"]
   { rank=same; ":app:androidApp"; ":app:desktopApp"; }
   { rank=same; ":app:shared"; ":server"; }
   { rank=same; "feature"; "feature:ace-windows*"; "feature:lmu-windows*"; "feature:gt7-ps5*"; ":core:data"; ":core:ace-windows-data"; ":core:lmu-windows-data"; ":core:gt7-ps5-data"; ":core:lmu-windows-rest-api-data"; ":core:text-to-speech-data"; ":core:device-volume-data"; ":core:server-discovery-data"; ":core:speech-recognition-data"; ":core:windows-hotkey-data"; ":core:windows-startup-data"; }
   { rank=same; ":core:narrator"; ":core:designsystem"; ":core:windows-shared-memory"; }
-  { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; }
+  { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; ":core:auto-readout-domain"; ":core:telemetry-log-domain"; ":core:server-connection-domain"; ":core:overlay-domain"; ":core:manual-readout-domain"; ":core:microphone-domain"; ":core:speech-recognition-domain"; ":core:feedback-domain"; ":core:debug-domain"; }
   { rank=same; ":core:domain"; }
   ":app:androidApp" -> ":app:shared" [style=invis]
   ":app:shared" -> "feature" [style=invis]

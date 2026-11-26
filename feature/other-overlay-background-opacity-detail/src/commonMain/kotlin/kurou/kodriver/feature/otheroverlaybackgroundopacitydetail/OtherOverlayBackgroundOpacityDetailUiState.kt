@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.otheroverlaybackgroundopacitydetail
 
-import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
 
 /**
  * OtherOverlayBackgroundOpacityDetail 画面の表示状態。

@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.otheroverlaybackgroundopacitydetail
 
-import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
-import kurou.kodriver.domain.usecase.PreviewOverlayBackgroundOpacityUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.overlay.usecase.PreviewOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayBackgroundOpacityUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

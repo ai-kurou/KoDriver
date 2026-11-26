@@ -7,7 +7,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.text.TextStyle
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

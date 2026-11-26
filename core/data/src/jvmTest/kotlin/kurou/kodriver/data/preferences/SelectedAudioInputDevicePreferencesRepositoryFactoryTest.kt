@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
+import kurou.kodriver.domain.microphone.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test

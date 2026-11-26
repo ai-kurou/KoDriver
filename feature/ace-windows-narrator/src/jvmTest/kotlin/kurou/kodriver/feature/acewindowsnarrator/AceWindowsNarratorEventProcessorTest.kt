@@ -26,6 +26,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureDa
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorState
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
@@ -49,15 +50,14 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
-import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
+import kurou.kodriver.domain.telemetrylog.usecase.SaveTelemetryLogUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

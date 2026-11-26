@@ -2,8 +2,8 @@ package kurou.kodriver.core.speechrecognitiondata.speech
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
-import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
+import kurou.kodriver.domain.microphone.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
+import kurou.kodriver.domain.microphone.repository.MicrophoneCutQuietSoundPreferencesRepository
 
 internal class FakeMicrophoneCutQuietSoundPreferencesRepository(
     level: Int = MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT,

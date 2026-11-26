@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.otherloglist
 
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
 
 /**
  * TelemetryLogList 画面の表示状態。

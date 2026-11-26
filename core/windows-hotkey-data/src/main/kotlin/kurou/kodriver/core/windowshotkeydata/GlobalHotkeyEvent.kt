@@ -1,6 +1,6 @@
 package kurou.kodriver.core.windowshotkeydata
 
-import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 
 internal sealed interface GlobalHotkeyEvent {
     data class Registration(

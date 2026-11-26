@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.otheroverlaytextsizedetail
 
-import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 
 internal data class OtherOverlayTextSizeDetailUiState(
     // 保存値またはプレビュー値からなる、オーバーレイに適用中のサイズ。

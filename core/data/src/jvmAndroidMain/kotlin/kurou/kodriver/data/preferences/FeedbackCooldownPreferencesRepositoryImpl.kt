@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
+import kurou.kodriver.domain.feedback.repository.FeedbackCooldownPreferencesRepository
 
 internal class FeedbackCooldownPreferencesRepositoryImpl(
     private val dataStore: DataStore<FeedbackCooldownPreferences>,

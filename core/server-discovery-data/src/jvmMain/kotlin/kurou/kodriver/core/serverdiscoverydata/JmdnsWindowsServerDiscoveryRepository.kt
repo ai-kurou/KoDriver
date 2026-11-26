@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kurou.kodriver.domain.MdnsConstants
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.model.DiscoveredServer
-import kurou.kodriver.domain.repository.WindowsServerDiscoveryRepository
+import kurou.kodriver.domain.serverconnection.model.DiscoveredServer
+import kurou.kodriver.domain.serverconnection.repository.WindowsServerDiscoveryRepository
 import java.io.IOException
 import java.net.InetAddress
 import javax.jmdns.JmDNS

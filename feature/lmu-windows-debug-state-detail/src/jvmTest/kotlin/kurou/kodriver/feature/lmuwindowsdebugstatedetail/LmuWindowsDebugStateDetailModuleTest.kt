@@ -14,6 +14,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.debug.repository.DebugReadoutRequestRepository
+import kurou.kodriver.domain.debug.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.debug.usecase.DebugStateCardOrderUseCases
+import kurou.kodriver.domain.debug.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsCarGapRepository
@@ -41,10 +45,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassUse
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
-import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
-import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

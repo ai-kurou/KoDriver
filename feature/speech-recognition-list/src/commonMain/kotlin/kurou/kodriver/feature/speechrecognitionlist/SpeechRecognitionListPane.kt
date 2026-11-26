@@ -54,8 +54,8 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
-import kurou.kodriver.domain.model.SpeechCommandGuideGroup
-import kurou.kodriver.domain.model.SpeechCommandGuideItem
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideGroup
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideItem
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.Res
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_brake
 import kurou.kodriver.feature.speechrecognitionlist.generated.resources.speech_command_guide_category_fuel

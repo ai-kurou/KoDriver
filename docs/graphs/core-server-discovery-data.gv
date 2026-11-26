@@ -4,8 +4,11 @@ digraph G {
   ":app:androidApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":app:desktopApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:server-connection-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:server-discovery-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
   ":app:androidApp" -> ":core:server-discovery-data"
   ":app:desktopApp" -> ":core:server-discovery-data"
+  ":core:server-connection-domain" -> ":core:domain"
   ":core:server-discovery-data" -> ":core:domain"
+  ":core:server-discovery-data" -> ":core:server-connection-domain"
 }

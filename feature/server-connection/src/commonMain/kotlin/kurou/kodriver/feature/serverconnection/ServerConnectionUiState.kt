@@ -2,7 +2,7 @@ package kurou.kodriver.feature.serverconnection
 
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.KoDriverServerConnectionStatus
+import kurou.kodriver.domain.serverconnection.usecase.KoDriverServerConnectionStatus
 
 /**
  * ServerConnection 画面の表示状態。

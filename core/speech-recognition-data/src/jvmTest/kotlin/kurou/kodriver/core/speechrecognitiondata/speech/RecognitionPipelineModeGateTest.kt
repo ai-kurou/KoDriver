@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.SpeechRecognitionEvent
-import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 

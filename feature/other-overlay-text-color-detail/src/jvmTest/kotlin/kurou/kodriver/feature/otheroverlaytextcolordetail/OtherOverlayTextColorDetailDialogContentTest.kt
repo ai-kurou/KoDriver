@@ -11,7 +11,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_COLOR_DEFAULT
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

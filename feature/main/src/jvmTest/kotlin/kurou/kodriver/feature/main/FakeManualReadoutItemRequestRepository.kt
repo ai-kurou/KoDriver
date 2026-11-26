@@ -2,8 +2,8 @@ package kurou.kodriver.feature.main
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kurou.kodriver.domain.model.ManualReadoutItemRequest
-import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
+import kurou.kodriver.domain.manualreadout.model.ManualReadoutItemRequest
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemRequestRepository
 
 /** 発行された項目依頼を記録するだけのテスト用Repository。 */
 internal class FakeManualReadoutItemRequestRepository : ManualReadoutItemRequestRepository {

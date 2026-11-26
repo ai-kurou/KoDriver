@@ -13,6 +13,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5ManualReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
@@ -26,13 +27,12 @@ import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
-import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.NarrationSource
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome
+import kurou.kodriver.domain.telemetrylog.model.NarrationSource
+import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
+import kurou.kodriver.domain.telemetrylog.usecase.SaveTelemetryLogUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

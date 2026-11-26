@@ -17,7 +17,7 @@ import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
 import kurou.kodriver.core.designsystem.KoDriverRadioRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.Res
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_cancel
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_extra_large

@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
-import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
-import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
+import kurou.kodriver.domain.serverconnection.usecase.FetchServerVersionUseCase
+import kurou.kodriver.domain.serverconnection.usecase.ObserveServerIpUseCase
 
 /**
  * LmuServerBanner の接続状態を監視する実装。

@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.usecase.ObserveLatestNarratedTelemetryLogUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.ObserveSpeechRecognitionTranscriptUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionTranscriptUseCase
+import kurou.kodriver.domain.telemetrylog.usecase.ObserveLatestNarratedTelemetryLogUseCase
 
 internal class NarratorOverlayViewModel(
     observeLatestNarratedTelemetryLog: ObserveLatestNarratedTelemetryLogUseCase,

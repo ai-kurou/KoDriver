@@ -1,6 +1,6 @@
 package kurou.kodriver.data.manualreadout
 
-import kurou.kodriver.domain.model.SpeechRecognitionTranscript
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionTranscript
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

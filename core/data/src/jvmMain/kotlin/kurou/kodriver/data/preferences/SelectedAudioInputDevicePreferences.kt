@@ -3,7 +3,7 @@ package kurou.kodriver.data.preferences
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
+import kurou.kodriver.domain.microphone.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable

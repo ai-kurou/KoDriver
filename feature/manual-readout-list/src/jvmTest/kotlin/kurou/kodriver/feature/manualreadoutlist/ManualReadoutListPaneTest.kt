@@ -26,10 +26,10 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import io.mockk.mockk
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.manualreadout.util.isManualReadoutHotkeySupported
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
-import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

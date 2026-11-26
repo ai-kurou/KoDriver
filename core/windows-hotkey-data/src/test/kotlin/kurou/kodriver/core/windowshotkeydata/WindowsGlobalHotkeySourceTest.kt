@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
-import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

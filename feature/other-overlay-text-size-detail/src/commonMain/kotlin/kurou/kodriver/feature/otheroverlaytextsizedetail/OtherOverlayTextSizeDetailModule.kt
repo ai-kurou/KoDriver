@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.otheroverlaytextsizedetail
 
-import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.PreviewOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.PreviewOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayTextSizeUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

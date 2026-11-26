@@ -12,7 +12,7 @@ import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
 import kurou.kodriver.domain.model.KODRIVER_SERVER_RETRY_DELAY_MS_DEFAULT
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
 
 internal class WebSocketAceWindowsStatusRepository(
     private val serverIpRepository: ServerIpPreferencesRepository,

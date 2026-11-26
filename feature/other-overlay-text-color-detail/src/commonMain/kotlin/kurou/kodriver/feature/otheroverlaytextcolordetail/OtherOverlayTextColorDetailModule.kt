@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.otheroverlaytextcolordetail
 
-import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.PreviewOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.PreviewOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayTextColorUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

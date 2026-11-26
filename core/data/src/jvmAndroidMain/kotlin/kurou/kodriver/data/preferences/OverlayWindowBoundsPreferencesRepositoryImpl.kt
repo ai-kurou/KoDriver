@@ -2,8 +2,8 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.OverlayWindowBounds
-import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
+import kurou.kodriver.domain.overlay.model.OverlayWindowBounds
+import kurou.kodriver.domain.overlay.repository.OverlayWindowBoundsPreferencesRepository
 
 internal class OverlayWindowBoundsPreferencesRepositoryImpl(
     private val dataStore: DataStore<OverlayWindowBoundsPreferences>,

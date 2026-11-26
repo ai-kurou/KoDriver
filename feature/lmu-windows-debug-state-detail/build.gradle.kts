@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
+            implementation(projects.core.debugDomain)
             implementation(projects.core.lmuWindowsDomain)
         }
         jvmTest.dependencies {

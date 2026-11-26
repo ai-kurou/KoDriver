@@ -3,7 +3,7 @@ package kurou.kodriver.feature.otherloglist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.telemetrylog.model.TelemetryLog
 
 internal data class TelemetryLogListDeleteState(
     val isDeleting: Boolean = false,

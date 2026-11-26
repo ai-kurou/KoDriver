@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.runCapturingErrorsOrNull
-import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
+import kurou.kodriver.domain.telemetrylog.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
 /**

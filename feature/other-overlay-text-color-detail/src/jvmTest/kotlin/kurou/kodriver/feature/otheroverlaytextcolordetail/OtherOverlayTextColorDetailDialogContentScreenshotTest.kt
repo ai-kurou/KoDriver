@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_COLOR_DEFAULT
 import org.junit.Test
 
 class OtherOverlayTextColorDetailDialogContentScreenshotTest {

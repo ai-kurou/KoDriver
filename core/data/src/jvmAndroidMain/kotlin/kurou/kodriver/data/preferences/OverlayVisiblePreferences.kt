@@ -3,7 +3,7 @@ package kurou.kodriver.data.preferences
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import kurou.kodriver.domain.model.OVERLAY_VISIBLE_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_VISIBLE_DEFAULT
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable

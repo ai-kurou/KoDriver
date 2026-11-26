@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
 
 internal class ConsoleAddressPreferencesRepositoryImpl(
     private val dataStore: DataStore<ConsoleAddressPreferences>,

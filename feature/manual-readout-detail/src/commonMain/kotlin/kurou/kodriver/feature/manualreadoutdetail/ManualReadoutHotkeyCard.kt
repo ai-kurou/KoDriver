@@ -38,7 +38,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.KoDriverCollapsibleVisibility
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.simulatorDisplayName
-import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_clear

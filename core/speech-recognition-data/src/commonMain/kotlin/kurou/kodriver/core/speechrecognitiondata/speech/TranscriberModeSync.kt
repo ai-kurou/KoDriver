@@ -1,7 +1,7 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
 import kotlinx.coroutines.flow.StateFlow
-import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
 
 /**
  * Repository が保持するモードの変化を、音声の断片を渡す前に [SpeechTranscriber] へ反映する。

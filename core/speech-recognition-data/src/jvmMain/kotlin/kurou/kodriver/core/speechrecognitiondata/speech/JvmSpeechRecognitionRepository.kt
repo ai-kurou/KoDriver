@@ -10,17 +10,17 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.model.AudioInputDevice
-import kurou.kodriver.domain.model.MicrophoneAudioEvent
-import kurou.kodriver.domain.model.MicrophoneFailureReason
-import kurou.kodriver.domain.model.SpeechRecognitionEvent
-import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
-import kurou.kodriver.domain.model.SpeechRecognitionMode
-import kurou.kodriver.domain.repository.AudioInputDeviceRepository
-import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
-import kurou.kodriver.domain.repository.MicrophoneRepository
-import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
-import kurou.kodriver.domain.repository.SpeechRecognitionRepository
+import kurou.kodriver.domain.microphone.model.AudioInputDevice
+import kurou.kodriver.domain.microphone.model.MicrophoneAudioEvent
+import kurou.kodriver.domain.microphone.model.MicrophoneFailureReason
+import kurou.kodriver.domain.microphone.repository.AudioInputDeviceRepository
+import kurou.kodriver.domain.microphone.repository.MicrophoneCutQuietSoundPreferencesRepository
+import kurou.kodriver.domain.microphone.repository.MicrophoneRepository
+import kurou.kodriver.domain.microphone.repository.SelectedAudioInputDevicePreferencesRepository
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionRepository
 import kotlin.coroutines.cancellation.CancellationException
 
 /**

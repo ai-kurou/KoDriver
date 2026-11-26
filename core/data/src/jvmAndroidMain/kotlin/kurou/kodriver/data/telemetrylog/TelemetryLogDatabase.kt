@@ -38,7 +38,7 @@ internal val TELEMETRY_LOG_MIGRATION_2_3 =
     }
 
 /**
- * wasQueued（Boolean）を narrationOutcome（[kurou.kodriver.domain.model.NarrationOutcome] の id）へ
+ * wasQueued（Boolean）を narrationOutcome（[kurou.kodriver.domain.telemetrylog.model.NarrationOutcome] の id）へ
  * 置き換えるスキーマ変更。読み上げされなかった項目も記録するようになり、2値では表現できなくなったため。
  *
  * 既存行はすべて読み上げ済みのものしか記録していないため、wasQueued=1 を queued へ移す。0 の行は

@@ -1,7 +1,7 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
-import kurou.kodriver.domain.model.SPEECH_RECOGNITION_WAKE_WORDS
-import kurou.kodriver.domain.model.SPEECH_RECOGNITION_WAKE_WORD_GRAMMAR_PHRASES
+import kurou.kodriver.domain.speechrecognition.model.SPEECH_RECOGNITION_WAKE_WORDS
+import kurou.kodriver.domain.speechrecognition.model.SPEECH_RECOGNITION_WAKE_WORD_GRAMMAR_PHRASES
 
 /** ウェイクワード以外の音を受け止める、Voskの文法上の未知語。これが無いと別の語がウェイクワードに誤認される。 */
 private const val VOSK_UNKNOWN_WORD = "[unk]"

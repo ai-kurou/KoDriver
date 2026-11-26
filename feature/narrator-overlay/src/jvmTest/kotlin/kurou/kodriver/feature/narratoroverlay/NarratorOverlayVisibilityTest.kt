@@ -8,8 +8,8 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
-import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.overlay.repository.OverlayVisiblePreferencesRepository
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayVisibleUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module

@@ -6,8 +6,8 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
-import kurou.kodriver.domain.model.SpeechRecognitionChime
+import kurou.kodriver.domain.speechrecognition.engine.SpeechRecognitionChimePlayer
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionChime
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem

@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.OverlayTextSize
-import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.repository.OverlayTextSizePreferencesRepository
 import org.koin.dsl.module
 
 /**

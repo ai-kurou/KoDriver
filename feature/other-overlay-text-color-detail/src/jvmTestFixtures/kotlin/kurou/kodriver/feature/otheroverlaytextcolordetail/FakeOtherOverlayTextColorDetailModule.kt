@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
-import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_COLOR_DEFAULT
+import kurou.kodriver.domain.overlay.repository.OverlayTextColorPreferencesRepository
 import org.koin.dsl.module
 
 /** 実DataStoreへの書き込みを避けるテスト用モジュール。 */

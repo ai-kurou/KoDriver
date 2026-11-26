@@ -7,9 +7,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.model.SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS
-import kurou.kodriver.domain.model.SpeechRecognitionChime
-import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.model.SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionChime
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
 
 /**
  * 聞き取りのモード（ウェイクワード待ち・コマンド待ち・読み上げ中の停止）と、それに付随するコマンド待ちの時間切れ・確認音を管理する。

@@ -13,12 +13,12 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkey
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeyEvent
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeySource
-import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
+import kurou.kodriver.domain.manualreadout.model.ManualReadoutRequest
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
-import kurou.kodriver.domain.model.ManualReadoutRequest
 import kurou.kodriver.domain.model.ManualReadoutSet
-import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

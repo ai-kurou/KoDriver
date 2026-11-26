@@ -156,6 +156,7 @@ dependencies {
     add("jvmTestImplementation", testFixtures(projects.feature.otherVoiceDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherList))
     add("androidHostTestImplementation", testFixtures(projects.feature.otherThemeDetail))
+    add("androidHostTestImplementation", testFixtures(projects.feature.otherList))
     testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))
     testFixturesApi(testFixtures(projects.feature.gt7Ps5Narrator))
     testFixturesApi(testFixtures(projects.feature.autoReadoutList))

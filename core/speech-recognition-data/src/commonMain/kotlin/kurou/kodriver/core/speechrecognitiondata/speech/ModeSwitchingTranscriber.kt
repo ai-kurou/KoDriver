@@ -1,6 +1,6 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
-import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
 
 /** Vosk の `Recognizer` のうち [ModeSwitchingTranscriber] が使うものだけを取り出した窓口。Desktop と Android で `Recognizer` の実体が別なため分ける。 */
 internal interface VoskRecognizerPort : AutoCloseable {

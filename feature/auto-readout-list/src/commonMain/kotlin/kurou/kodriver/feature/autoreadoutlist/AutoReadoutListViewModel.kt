@@ -8,18 +8,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.autoreadout.usecase.ResolveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.autoreadout.usecase.SaveAutoReadoutEnabledStateUseCase
+import kurou.kodriver.domain.autoreadout.usecase.SaveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResolveAutoReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.SaveAutoReadoutEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
 

@@ -15,13 +15,13 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.SpeechCommandGuideGroup
-import kurou.kodriver.domain.model.SpeechCommandGuideItem
-import kurou.kodriver.domain.repository.ManualReadoutItemSpokenRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideGroup
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideItem
+import kurou.kodriver.domain.speechrecognition.repository.SpeechCommandGuideRepository
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.AfterTest

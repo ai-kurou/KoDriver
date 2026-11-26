@@ -30,7 +30,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
-import kurou.kodriver.domain.model.HotkeyRegistrationState
+import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.Simulator

@@ -11,7 +11,7 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import io.mockk.verify
-import kurou.kodriver.domain.model.MICROPHONE_SAMPLE_RATE_HZ
+import kurou.kodriver.domain.microphone.model.MICROPHONE_SAMPLE_RATE_HZ
 import org.junit.runner.RunWith
 import kotlin.test.AfterTest
 import kotlin.test.Test
