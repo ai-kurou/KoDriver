@@ -8,6 +8,7 @@ import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMem
 import kurou.kodriver.core.windowssharedmemory.datasource.FakeWindowsSharedMemoryReader
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsOverallPositionData
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import kotlin.test.Test
@@ -65,6 +66,20 @@ class AceWindowsGraphicsRepositoryImplsTest {
             val repo = AceWindowsGapRepositoryImpl(source = makeSource())
 
             assertEquals(AceWindowsGapData(0f, 0f, 0, List(13) { 0 }), repo.gapStream().first())
+        }
+
+    @Test
+    fun `BrakeTemperatureはreaderがopen済みのとき4輪分のブレーキ温度をemitする`() =
+        runTest {
+            val repo =
+                AceWindowsBrakeTemperatureRepositoryImpl(
+                    source = makeSource { it.putFloat(236, 300.0f) },
+                )
+
+            val result = repo.brakeTemperatureStream().first()
+
+            assertEquals(WheelIndex.entries.toSet(), result.wheels.keys)
+            assertEquals(CelsiusReading(300.0f), result.wheels[WheelIndex.FRONT_LEFT])
         }
 
     @Test
