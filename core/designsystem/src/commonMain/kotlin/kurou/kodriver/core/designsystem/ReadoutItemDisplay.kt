@@ -139,17 +139,39 @@ private fun vehicleDamageDisplayName(readoutItemKeyValue: String): String? =
         else -> null
     }
 
-/** LMU にのみ存在し、サブ項目を持たない単独の設定項目（ピットタイミング・バーチャルエネルギー残量・タイヤ摩耗）。 */
+/** 主に LMU の、サブ項目を持たない単独の設定項目（ピットタイミング・バーチャルエネルギー残量・タイヤ摩耗など）。ブレーキ温度は ACE と共有する。 */
 @Composable
 private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_auto_pit_timing" -> stringResource(Res.string.readout_item_pit_timing)
-        "lmu_windows_auto_remaining_virtual_energy" -> stringResource(Res.string.readout_item_remaining_virtual_energy)
-        "lmu_windows_auto_remaining_fuel" -> stringResource(Res.string.readout_item_remaining_fuel)
-        "lmu_windows_auto_tyre_wear" -> stringResource(Res.string.readout_item_tyre_wear)
-        "lmu_windows_auto_brake_temperature" -> stringResource(Res.string.readout_item_brake_temperature)
-        "lmu_windows_auto_brake_wear" -> stringResource(Res.string.readout_item_brake_wear)
-        else -> null
+        "lmu_windows_auto_pit_timing" -> {
+            stringResource(Res.string.readout_item_pit_timing)
+        }
+
+        "lmu_windows_auto_remaining_virtual_energy" -> {
+            stringResource(Res.string.readout_item_remaining_virtual_energy)
+        }
+
+        "lmu_windows_auto_remaining_fuel" -> {
+            stringResource(Res.string.readout_item_remaining_fuel)
+        }
+
+        "lmu_windows_auto_tyre_wear" -> {
+            stringResource(Res.string.readout_item_tyre_wear)
+        }
+
+        "lmu_windows_auto_brake_temperature", "ace_windows_auto_brake_temperature" -> {
+            stringResource(
+                Res.string.readout_item_brake_temperature,
+            )
+        }
+
+        "lmu_windows_auto_brake_wear" -> {
+            stringResource(Res.string.readout_item_brake_wear)
+        }
+
+        else -> {
+            null
+        }
     }
 
 /** LMU・GT7・ACE をまたいで存在する自己ベストラップ・燃料関連の項目。 */

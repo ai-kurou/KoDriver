@@ -65,6 +65,7 @@ class AutoReadoutItemCategoryTest {
                 AceWindowsReadoutItemKey.RemainingFuel.Root to ManualReadoutItemCategory.FUEL,
                 AceWindowsReadoutItemKey.RemainingFuelLaps.Root to ManualReadoutItemCategory.FUEL,
                 AceWindowsReadoutItemKey.TyreTemperature.Root to ManualReadoutItemCategory.TYRE,
+                AceWindowsReadoutItemKey.BrakeTemperature.Root to ManualReadoutItemCategory.BRAKE,
                 AceWindowsReadoutItemKey.MyBestLap.Root to ManualReadoutItemCategory.TIME,
             )
         for ((key, category) in expected) {

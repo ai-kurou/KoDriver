@@ -30,6 +30,7 @@ class AutoReadoutItemBackgroundTest {
             listOf(
                 LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                 LmuWindowsReadoutItemKey.BrakeWear.Root,
+                AceWindowsReadoutItemKey.BrakeTemperature.Root,
             )
         for (key in keys) {
             assertEquals(ReadoutBackground.BRAKE, autoReadoutBackground(key), key.value)

@@ -32,6 +32,10 @@ internal fun AceWindowsAutoReadoutItemDetailContent(itemType: AceWindowsAutoRead
             AceWindowsAutoReadoutVehicleApproachDetailPane()
         }
 
+        AceWindowsAutoReadoutListItemType.BrakeTemperature -> {
+            // 詳細画面は未実装のため、タイトルバーだけを表示する
+        }
+
         AceWindowsAutoReadoutListItemType.MyBestLap -> {
             AceWindowsAutoReadoutMyBestLapDetailPane()
         }
