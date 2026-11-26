@@ -1393,6 +1393,39 @@ class NarratorEngineTest {
         }
 
     @Test
+    fun `キャンセルされた再生が正常終了しても残したキューの公開状態へ引き継がない`() =
+        runTest {
+            val gate = CompletableDeferred<Unit>()
+            var observed: Pair<String?, Boolean>? = null
+            var engineRef: TestEngine? = null
+            val engine =
+                createEngine(
+                    FakeSoundPlayer(),
+                    isManualEvent = { it == CAR_LEFT },
+                    customSpeak = { event, _ ->
+                        if (event == RED_FLAG) {
+                            // 協調的でない読み上げを再現するため、キャンセル後も続けて正常終了する
+                            withContext(NonCancellable) { gate.await() }
+                            // 停止完了待ちが再開する前に実行されるよう、ここで積んでおく
+                            launch { observed = engineRef?.let { it.currentKey to it.currentIsManual } }
+                        }
+                    },
+                )
+            engineRef = engine
+            runCurrent()
+
+            engine.speak(RED_FLAG)
+            runCurrent()
+            engine.speak(CAR_LEFT, queue = true)
+            engine.speak(LEFT_APPROACH)
+            runCurrent()
+            gate.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals("${LEFT_APPROACH}_key" to false, observed)
+        }
+
+    @Test
     fun `読み上げが例外で終わった場合は記録して例外を伝播させない`() =
         runTest {
             val error = IllegalStateException("tts failed")

@@ -291,6 +291,8 @@ public class NarratorEngine<EVENT, START_TYPE, KEY>(
      * 引き継がないと、直前のイベントの手動フラグが次のイベントの優先度判定に残ってしまう。
      */
     private suspend fun finishPlayback() {
+        // キャンセルを握りつぶして正常終了した再生は、割り込んだ側の公開状態を上書きしない。
+        if (!currentCoroutineContext().isActive) return
         if (playJob === currentCoroutineContext().job) {
             _currentKey = null
             _currentIsManual = false
