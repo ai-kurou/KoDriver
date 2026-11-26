@@ -1,6 +1,7 @@
 package kurou.kodriver.core.acewindowsdata
 
 import android.content.Context
+import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsMyBestLapPreferencesRepository
@@ -18,6 +19,7 @@ import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsStatusRep
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.core.acewindowsdata.websocket.WebSocketAceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
@@ -45,6 +47,7 @@ public fun androidAceWindowsDataModule(context: Context): Module =
     module {
         single {
             AceWindowsAutoReadoutSettingsResetter(
+                brakeTemperaturePreferencesRepository = get(),
                 flagPreferencesRepository = get(),
                 flagReadoutTextPreferencesRepository = get(),
                 myBestLapPreferencesRepository = get(),
@@ -98,6 +101,9 @@ public fun androidAceWindowsDataModule(context: Context): Module =
         }
         single<AceWindowsTyreTemperaturePreferencesRepository> {
             createAceWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<AceWindowsBrakeTemperaturePreferencesRepository> {
+            createAceWindowsBrakeTemperaturePreferencesRepository(context.filesDir.absolutePath)
         }
         single<AceWindowsVehicleApproachPreferencesRepository> {
             createAceWindowsVehicleApproachPreferencesRepository(context.filesDir.absolutePath)

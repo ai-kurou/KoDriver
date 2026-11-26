@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -73,6 +74,13 @@ class AceWindowsObserveReadoutTextUseCasesTest {
             expected = "タイヤが過熱しています",
             observe = { observeOverheatReadoutText() },
             useCase = { ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase(it)() },
+        )
+
+        assertObserves<AceWindowsBrakeTemperaturePreferencesRepository>(
+            useCaseName = "ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase",
+            expected = "ブレーキが過熱しています",
+            observe = { observeOverheatReadoutText() },
+            useCase = { ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase(it)() },
         )
 
         assertObserves<AceWindowsVehicleApproachPreferencesRepository>(

@@ -112,6 +112,10 @@ public sealed interface AceWindowsReadoutItemKey : ReadoutItemKey {
             override val value: String = "ace_windows_auto_brake_temperature"
             override val supportsQueue: Boolean = true
         }
+
+        public data object OverheatWarning : BrakeTemperature {
+            override val value: String = "ace_windows_auto_brake_temperature_overheat_warning"
+        }
     }
 
     /** 手動読み上げ専用の前後車ギャップ項目。自動読み上げのスイッチは持たない。 */

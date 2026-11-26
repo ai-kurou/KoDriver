@@ -47,6 +47,10 @@ class AceWindowsPreferencesDataStoreFactoriesTest {
                 val dataStore = createAceWindowsTyreTemperaturePreferencesDataStore(dir)
                 dataStore.updateData { it.copy(highThresholdCelsius = 100) }
             }
+            assertWritesTo("ace_windows_auto_brake_temperature_preferences.pb") { dir ->
+                val dataStore = createAceWindowsBrakeTemperaturePreferencesDataStore(dir)
+                dataStore.updateData { it.copy(highThresholdCelsius = 900) }
+            }
             assertWritesTo("ace_windows_auto_vehicle_approach_preferences.pb") { dir ->
                 val dataStore = createAceWindowsVehicleApproachPreferencesDataStore(dir)
                 dataStore.updateData { it.copy(thresholdMeters = 7.0) }

@@ -1,0 +1,168 @@
+package kurou.kodriver.core.acewindowsdata.preferences
+
+import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BRAKE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
+import java.nio.file.Files
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class AceWindowsBrakeTemperaturePreferencesRepositoryImplTest {
+    @BeforeTest
+    fun setUp() {
+        registerAceWindowsReadoutItemKeys()
+    }
+
+    private val tempDir = Files.createTempDirectory("kodriver_ace_brake_temperature_preferences_test").toFile()
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
+    private val dataStore =
+        DataStoreFactory.create(
+            serializer = AceWindowsBrakeTemperaturePreferencesSerializer,
+            scope = dataStoreScope,
+            produceFile = { tempDir.resolve("brake_temperature.pb") },
+        )
+    private val repository = AceWindowsBrakeTemperaturePreferencesRepositoryImpl(dataStore)
+
+    @AfterTest
+    fun tearDown() {
+        tempDir.deleteRecursively()
+    }
+
+    @Test
+    fun `初期値は800度`() =
+        runTest {
+            assertEquals(
+                ACE_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+                repository.observeHighThresholdCelsius().first(),
+            )
+        }
+
+    @Test
+    fun `保存した高温閾値を取得できる`() =
+        runTest {
+            repository.saveHighThresholdCelsius(Celsius(900))
+
+            assertEquals(Celsius(900), repository.observeHighThresholdCelsius().first())
+        }
+
+    @Test
+    fun `高温閾値を上書き保存できる`() =
+        runTest {
+            repository.saveHighThresholdCelsius(Celsius(900))
+            repository.saveHighThresholdCelsius(Celsius(950))
+
+            assertEquals(Celsius(950), repository.observeHighThresholdCelsius().first())
+        }
+
+    @Test
+    fun `enabledStates の初期値は空Map`() =
+        runTest {
+            assertEquals(emptyMap(), repository.observeEnabledStates().first())
+        }
+
+    @Test
+    fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
+        runTest {
+            repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning to false),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
+        runTest {
+            repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, true)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning to false),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `異なるキーで保存した値がすべて保持される`() =
+        runTest {
+            repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, true)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.Root, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning to true,
+                    AceWindowsReadoutItemKey.BrakeTemperature.Root to false,
+                ),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `saveEnabledState後にsaveHighThresholdCelsiusを呼んでもenabledStatesは保持される`() =
+        runTest {
+            repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, false)
+            repository.saveHighThresholdCelsius(Celsius(900))
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning to false),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `文言の初期値と空白を含む保存値を取得でき他設定を維持する`() =
+        runTest {
+            assertEquals(
+                ACE_WINDOWS_BRAKE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                repository.observeOverheatReadoutText().first(),
+            )
+            repository.saveHighThresholdCelsius(Celsius(950))
+            repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, false)
+            listOf("注意{celsius}度", "", " ").forEach { text ->
+                repository.saveOverheatReadoutText(text)
+                assertEquals(text, repository.observeOverheatReadoutText().first())
+                assertEquals(Celsius(950), repository.observeHighThresholdCelsius().first())
+                assertEquals(
+                    mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning to false),
+                    repository.observeEnabledStates().first(),
+                )
+            }
+            repository.saveHighThresholdCelsius(Celsius(900))
+            repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.Root, true)
+            assertEquals(" ", repository.observeOverheatReadoutText().first())
+        }
+
+    @Test
+    fun `保存した設定をすべて既定値に戻せる`() =
+        runTest {
+            val defaultHighThresholdCelsius = repository.observeHighThresholdCelsius().first()
+            val defaultEnabledStates = repository.observeEnabledStates().first()
+            val defaultOverheatReadoutText = repository.observeOverheatReadoutText().first()
+
+            repository.saveHighThresholdCelsius(Celsius(177))
+            repository.saveEnabledState(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning, false)
+            repository.saveOverheatReadoutText("変更した文言")
+
+            assertNotEquals(AceWindowsBrakeTemperaturePreferencesSerializer.defaultValue, dataStore.data.first())
+            repository.resetToDefault()
+
+            assertEquals(AceWindowsBrakeTemperaturePreferencesSerializer.defaultValue, dataStore.data.first())
+            assertEquals(defaultHighThresholdCelsius, repository.observeHighThresholdCelsius().first())
+            assertEquals(defaultEnabledStates, repository.observeEnabledStates().first())
+            assertEquals(defaultOverheatReadoutText, repository.observeOverheatReadoutText().first())
+        }
+}
