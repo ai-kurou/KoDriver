@@ -201,14 +201,13 @@ class Gt7Ps5NarratorEventProcessorTest {
         }
 
     @Test
-    fun `自動再生中の手動読み上げは停止して割り込み再生する`() =
+    fun `自動再生中の手動読み上げは割り込み再生する`() =
         runTest {
             val key = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
             val event = Gt7Ps5ManualReadoutText(key, "手動")
             val resolved = event.withResolvedText("手動")
             every { ttsEngine.currentReadoutItemKey } returns key
             every { ttsEngine.currentIsManual } returns false
-            every { ttsEngine.stop() } just Runs
             every { ttsEngine.speak(resolved, false, true) } just Runs
             val json = slot<String>()
             coEvery {
@@ -225,7 +224,6 @@ class Gt7Ps5NarratorEventProcessorTest {
             createProcessor().processManualReadout(listOf(event), 0L, logContext)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.currentIsManual }
-            verify(exactly = 1) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.speak(resolved, false, true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
@@ -758,7 +756,6 @@ class Gt7Ps5NarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             every { ttsEngine.currentIsManual } returns false
-            every { ttsEngine.stop() } just Runs
             every { ttsEngine.speak(newEvent, false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -783,7 +780,6 @@ class Gt7Ps5NarratorEventProcessorTest {
                 logContext = logContext,
             )
 
-            verify(exactly = 1) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.speak(newEvent, false) }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.currentIsManual }

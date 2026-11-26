@@ -316,7 +316,7 @@ class LmuWindowsNarratorViewModelTest {
 
     private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
 
-    private val priorityAwareTts: PriorityAwareTts = mockk(relaxUnitFun = true)
+    private val priorityAwareTts: TextToSpeechEngine = mockk(relaxUnitFun = true)
 
     @BeforeTest
     fun setUp() {
@@ -753,27 +753,17 @@ class LmuWindowsNarratorViewModelTest {
         return ttsEngine
     }
 
-    private interface PriorityAwareTts : TextToSpeechEngine {
-        val stopCalled: Boolean
-    }
-
     private fun mockPriorityAwareTts(
         spokenTexts: MutableList<SpeechEvent>,
         initialKey: ReadoutItemKey?,
-    ): PriorityAwareTts {
-        var currentKey = initialKey
-        var stopCalled = false
+    ): TextToSpeechEngine {
+        val currentKey = initialKey
         every { priorityAwareTts.currentReadoutItemKey } answers { currentKey }
         every { priorityAwareTts.speak(capture(spokenTexts), queue = false) } just Runs
         every { priorityAwareTts.speak(capture(spokenTexts), queue = true) } just Runs
         every { priorityAwareTts.speak(capture(spokenTexts), queue = false, isManual = true) } just Runs
         every { priorityAwareTts.speak(capture(spokenTexts), queue = true, isManual = true) } just Runs
         every { priorityAwareTts.currentIsManual } returns false
-        every { priorityAwareTts.stop() } answers {
-            stopCalled = true
-            currentKey = null
-        }
-        every { priorityAwareTts.stopCalled } answers { stopCalled }
         return priorityAwareTts
     }
 
@@ -1894,7 +1884,6 @@ class LmuWindowsNarratorViewModelTest {
             flagChannel.send(clearFlags())
             flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
-            assertEquals(true, tts.stopCalled)
             assertEquals(listOf<SpeechEvent>(LmuWindowsBlueFlag(resolvedText = "ブルーフラッグ")), spokenTexts)
         }
 
@@ -1921,7 +1910,6 @@ class LmuWindowsNarratorViewModelTest {
             fakeTime = 50L
             channel.send(leftVehicleApproach(vehicleId = 1))
 
-            assertEquals(true, tts.stopCalled)
             assertEquals(listOf<SpeechEvent>(LmuWindowsCarLeft(resolvedText = "カーレフト")), spokenTexts)
         }
 
@@ -1948,7 +1936,6 @@ class LmuWindowsNarratorViewModelTest {
             fakeTime = 50L
             channel.send(leftVehicleApproach(vehicleId = 1))
 
-            assertEquals(false, tts.stopCalled)
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
 
@@ -1980,7 +1967,6 @@ class LmuWindowsNarratorViewModelTest {
             fakeTime = 50L
             channel.send(leftVehicleApproach(vehicleId = 1))
 
-            assertEquals(false, tts.stopCalled)
             assertEquals(listOf<SpeechEvent>(LmuWindowsCarLeft(resolvedText = "カーレフト")), spokenTexts)
         }
 

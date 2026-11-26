@@ -14,6 +14,8 @@ public interface TextToSpeechEngine {
     public val currentIsManual: Boolean get() = false
 
     /**
+     * [queue] が false の場合、再生中のイベントを止めてすぐに再生する。キューで追加してまだ再生を始めていない
+     * イベントは残し、このイベントの後に元の順で再生する。再生待ちも破棄する場合は [stop] を呼ぶ。
      * [isManual] が true の場合、手動読み上げとして再生する（[currentIsManual] に反映される）。
      * [playStartSound] が false の場合、本文の前の開始音を鳴らさない。
      */

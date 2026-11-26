@@ -1967,7 +1967,6 @@ class AceWindowsNarratorViewModelTest {
                 capture(mutableListOf<Boolean>()),
             )
         } just Runs
-        every { ttsEngine.stop() } just Runs
         return ttsEngine
     }
 

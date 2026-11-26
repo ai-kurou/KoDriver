@@ -9,7 +9,6 @@ class NarratorPriorityTest {
     @Test
     fun `キュー再生が有効なら優先度判定をせずキュー再生する`() {
         var spokenQueue: Boolean? = null
-        var stopped = false
 
         val result =
             speakWithPriority(
@@ -18,18 +17,15 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("new", "current"),
                 queueEnabled = true,
                 speak = { queue -> spokenQueue = queue },
-                stop = { stopped = true },
             )
 
         assertTrue(result)
         assertEquals(true, spokenQueue)
-        assertFalse(stopped)
     }
 
     @Test
     fun `再生中のイベントがない場合はそのまま読み上げる`() {
         var spokenQueue: Boolean? = null
-        var stopped = false
 
         val result =
             speakWithPriority(
@@ -38,18 +34,15 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("new"),
                 queueEnabled = false,
                 speak = { queue -> spokenQueue = queue },
-                stop = { stopped = true },
             )
 
         assertTrue(result)
         assertEquals(false, spokenQueue)
-        assertFalse(stopped)
     }
 
     @Test
     fun `再生中より優先度の低いイベントは読み上げない`() {
         var spoken = false
-        var stopped = false
 
         val result =
             speakWithPriority(
@@ -58,18 +51,15 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = false,
                 speak = { spoken = true },
-                stop = { stopped = true },
             )
 
         assertFalse(result)
         assertFalse(spoken)
-        assertFalse(stopped)
     }
 
     @Test
     fun `再生中と同じキーのイベントは優先度が等しいため読み上げない`() {
         var spoken = false
-        var stopped = false
 
         val result =
             speakWithPriority(
@@ -78,18 +68,15 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("same", "other"),
                 queueEnabled = false,
                 speak = { spoken = true },
-                stop = { stopped = true },
             )
 
         assertFalse(result)
         assertFalse(spoken)
-        assertFalse(stopped)
     }
 
     @Test
-    fun `再生中より優先度の高いイベントは停止してから読み上げる`() {
+    fun `再生中より優先度の高いイベントは非キューで割り込んで読み上げる`() {
         var spokenQueue: Boolean? = null
-        var stopped = false
 
         val result =
             speakWithPriority(
@@ -98,18 +85,15 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = false,
                 speak = { queue -> spokenQueue = queue },
-                stop = { stopped = true },
             )
 
         assertTrue(result)
         assertEquals(false, spokenQueue)
-        assertTrue(stopped)
     }
 
     @Test
     fun `autoReadoutOrderに含まれないキーは最も優先度が低いものとして扱う`() {
         var spoken = false
-        var stopped = false
 
         val result =
             speakWithPriority(
@@ -118,18 +102,15 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("current"),
                 queueEnabled = false,
                 speak = { spoken = true },
-                stop = { stopped = true },
             )
 
         assertFalse(result)
         assertFalse(spoken)
-        assertFalse(stopped)
     }
 
     @Test
     fun `再生中のキーがautoReadoutOrderに含まれない場合は新しいイベントを優先して読み上げる`() {
         var spokenQueue: Boolean? = null
-        var stopped = false
 
         val result =
             speakWithPriority(
@@ -138,16 +119,14 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("new"),
                 queueEnabled = false,
                 speak = { queue -> spokenQueue = queue },
-                stop = { stopped = true },
             )
 
         assertTrue(result)
         assertEquals(false, spokenQueue)
-        assertTrue(stopped)
     }
 
     @Test
-    fun `手動は再生中が自動なら優先度に関係なく停止して割り込む`() {
+    fun `手動は再生中が自動なら優先度に関係なく割り込む`() {
         val calls = mutableListOf<String>()
 
         val result =
@@ -157,13 +136,12 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("auto", "manual"),
                 queueEnabled = false,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 isManual = true,
                 currentIsManual = { false },
             )
 
         assertTrue(result)
-        assertEquals(listOf("stop", "speak:false"), calls)
+        assertEquals(listOf("speak:false"), calls)
     }
 
     @Test
@@ -177,7 +155,6 @@ class NarratorPriorityTest {
                 autoReadoutOrder = emptyList(),
                 queueEnabled = false,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 isManual = true,
                 currentIsManual = { true },
             )
@@ -187,7 +164,7 @@ class NarratorPriorityTest {
     }
 
     @Test
-    fun `手動は再生中がなければ停止せずそのまま読み上げる`() {
+    fun `手動は再生中がなければそのまま読み上げる`() {
         val calls = mutableListOf<String>()
 
         val result =
@@ -197,7 +174,6 @@ class NarratorPriorityTest {
                 autoReadoutOrder = emptyList(),
                 queueEnabled = true,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 isManual = true,
             )
 
@@ -216,7 +192,6 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("high", "low"),
                 queueEnabled = false,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 currentIsManual = { true },
             )
 
@@ -235,7 +210,6 @@ class NarratorPriorityTest {
                 autoReadoutOrder = listOf("auto", "manual"),
                 queueEnabled = true,
                 speak = { queue -> calls += "speak:$queue" },
-                stop = { calls += "stop" },
                 currentIsManual = { true },
             )
 
