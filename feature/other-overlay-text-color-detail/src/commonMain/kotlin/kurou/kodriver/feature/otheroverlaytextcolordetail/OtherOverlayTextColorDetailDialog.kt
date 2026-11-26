@@ -117,12 +117,22 @@ internal fun OtherOverlayTextColorDetailDialogContent(
             }
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onConfirm()
+                },
+            ) {
                 Text(stringResource(Res.string.overlay_text_color_ok))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onDismiss()
+                },
+            ) {
                 Text(stringResource(Res.string.overlay_text_color_cancel))
             }
         },

@@ -1,5 +1,9 @@
 package kurou.kodriver.feature.otheroverlaytextcolordetail
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -50,6 +54,29 @@ class OtherOverlayTextColorDetailDialogContentTest {
         rule.onNodeWithText("キャンセル").performClick()
 
         assertEquals(1, dismissCount)
+    }
+
+    @Test
+    fun `OKとキャンセルはそれぞれハプティックを一度発生させる`() {
+        val feedback = mutableListOf<HapticFeedbackType>()
+        val haptic =
+            object : HapticFeedback {
+                override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+                    feedback += hapticFeedbackType
+                }
+            }
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherOverlayTextColorDetailDialogContent(uiState = OtherOverlayTextColorDetailUiState())
+            }
+        }
+
+        rule.onNodeWithText("OK").performClick()
+        rule.runOnIdle { assertEquals(listOf(HapticFeedbackType.ContextClick), feedback) }
+        rule.onNodeWithText("キャンセル").performClick()
+        rule.runOnIdle {
+            assertEquals(listOf(HapticFeedbackType.ContextClick, HapticFeedbackType.ContextClick), feedback)
+        }
     }
 
     @Test
