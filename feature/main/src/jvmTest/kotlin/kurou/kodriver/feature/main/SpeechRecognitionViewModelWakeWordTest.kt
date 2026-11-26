@@ -16,12 +16,13 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.manualreadout.usecase.RequestManualReadoutItemUseCase
+import kurou.kodriver.domain.microphone.repository.RecordAudioPermissionRepository
+import kurou.kodriver.domain.microphone.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
 import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
-import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.speechrecognition.model.SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS
 import kurou.kodriver.domain.speechrecognition.model.SPEECH_RECOGNITION_RESUME_DELAY_MS
 import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionChime
@@ -33,7 +34,6 @@ import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionU
 import kurou.kodriver.domain.speechrecognition.usecase.PlaySpeechRecognitionChimeUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ReportSpeechRecognitionTranscriptUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.SetSpeechRecognitionModeUseCase
-import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 import kotlin.test.AfterTest

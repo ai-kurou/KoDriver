@@ -18,7 +18,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
-import kurou.kodriver.domain.model.toSpeechCommandGuideGroups
+import kurou.kodriver.domain.speechrecognition.model.toSpeechCommandGuideGroups
 import org.junit.Test
 
 private const val SNAPSHOT_DIR = "src/jvmTest/snapshots"

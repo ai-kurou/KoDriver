@@ -14,7 +14,6 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
-import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
@@ -50,12 +49,6 @@ class ObserveSettingsUseCasesTest {
             AndroidAudioUsage.ALARM,
             observe = { observeAndroidAudioUsage() },
             useCase = { ObserveAndroidAudioUsageUseCase(it)() },
-        )
-        assertObserves<DebugStateCardOrderPreferencesRepository, List<String>>(
-            "ObserveDebugStateCardOrderUseCase",
-            listOf("SESSION", "SIMULATOR"),
-            observe = { observeCardOrder() },
-            useCase = { ObserveDebugStateCardOrderUseCase(it)() },
         )
         assertObserves<DeviceVolumeRepository, Int>(
             "ObserveDeviceVolumeUseCase",

@@ -15,6 +15,7 @@ kotlin {
             implementation(projects.core.telemetryLogDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(projects.core.domain)
+            implementation(projects.core.debugDomain)
             implementation(projects.core.manualReadoutDomain)
             implementation(projects.core.narrator)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))

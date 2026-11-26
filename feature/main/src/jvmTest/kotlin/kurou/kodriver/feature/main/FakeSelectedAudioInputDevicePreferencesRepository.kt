@@ -4,13 +4,13 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
-import kurou.kodriver.domain.model.AudioInputDevice
-import kurou.kodriver.domain.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
-import kurou.kodriver.domain.repository.AudioInputDeviceRepository
-import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
-import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
-import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
-import kurou.kodriver.domain.usecase.SaveSelectedAudioInputDeviceNameUseCase
+import kurou.kodriver.domain.microphone.model.AudioInputDevice
+import kurou.kodriver.domain.microphone.model.SELECTED_AUDIO_INPUT_DEVICE_NAME_UNSPECIFIED
+import kurou.kodriver.domain.microphone.repository.AudioInputDeviceRepository
+import kurou.kodriver.domain.microphone.repository.SelectedAudioInputDevicePreferencesRepository
+import kurou.kodriver.domain.microphone.usecase.GetAudioInputDevicesUseCase
+import kurou.kodriver.domain.microphone.usecase.ObserveSelectedAudioInputDeviceNameUseCase
+import kurou.kodriver.domain.microphone.usecase.SaveSelectedAudioInputDeviceNameUseCase
 
 /** 選択したマイク名をメモリ上に保持するテスト用の Repository。 */
 internal class FakeSelectedAudioInputDevicePreferencesRepository(

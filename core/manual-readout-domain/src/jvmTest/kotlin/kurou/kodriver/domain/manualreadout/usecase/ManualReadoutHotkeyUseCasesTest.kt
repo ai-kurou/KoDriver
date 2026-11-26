@@ -9,9 +9,9 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kurou.kodriver.domain.manualreadout.model.ManualReadoutRequest
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
-import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.microphone.model.AudioInputDevice
 import kurou.kodriver.domain.microphone.model.MICROPHONE_CHANNEL_COUNT
 import kurou.kodriver.domain.microphone.model.MICROPHONE_SAMPLE_RATE_HZ
 import kurou.kodriver.domain.microphone.model.MICROPHONE_SAMPLE_SIZE_BITS
 import kurou.kodriver.domain.microphone.model.MicrophoneAudioEvent
 import kurou.kodriver.domain.microphone.model.MicrophoneFailureReason
 import kurou.kodriver.domain.microphone.repository.MicrophoneRepository
-import kurou.kodriver.domain.model.AudioInputDevice
 
 private const val MILLIS_PER_SECOND = 1_000
 private const val CHUNK_MILLIS = 100

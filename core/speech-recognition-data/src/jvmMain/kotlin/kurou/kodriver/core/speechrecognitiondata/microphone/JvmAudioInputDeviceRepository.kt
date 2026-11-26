@@ -3,8 +3,8 @@ package kurou.kodriver.core.speechrecognitiondata.microphone
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kurou.kodriver.domain.model.AudioInputDevice
-import kurou.kodriver.domain.repository.AudioInputDeviceRepository
+import kurou.kodriver.domain.microphone.model.AudioInputDevice
+import kurou.kodriver.domain.microphone.repository.AudioInputDeviceRepository
 
 /**
  * [AudioInputSource] が返す入力デバイスを一覧にする [AudioInputDeviceRepository]。

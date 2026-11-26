@@ -1,6 +1,5 @@
 package kurou.kodriver.domain.lmuwindows.model
 
-import kurou.kodriver.domain.model.PitTimingSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

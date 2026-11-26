@@ -7,8 +7,8 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SimulatorReadoutSpec
-import kurou.kodriver.domain.model.SpeechCommandGuideGroup
-import kurou.kodriver.domain.model.SpeechCommandGuideItem
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideGroup
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideItem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

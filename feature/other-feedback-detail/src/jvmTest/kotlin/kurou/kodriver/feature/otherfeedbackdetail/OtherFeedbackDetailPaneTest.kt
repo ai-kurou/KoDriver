@@ -37,7 +37,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.feedback.model.FeedbackType
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome

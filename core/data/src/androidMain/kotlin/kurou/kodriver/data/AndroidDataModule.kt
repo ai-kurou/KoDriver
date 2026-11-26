@@ -47,6 +47,10 @@ import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
 import kurou.kodriver.domain.autoreadout.repository.AutoReadoutPreferencesRepository
 import kurou.kodriver.domain.autoreadout.repository.AutoReadoutSettingsResetter
+import kurou.kodriver.domain.debug.repository.DebugReadoutRequestRepository
+import kurou.kodriver.domain.debug.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.feedback.repository.FeedbackCooldownPreferencesRepository
+import kurou.kodriver.domain.feedback.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemRequestRepository
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemSpokenRepository
@@ -63,11 +67,7 @@ import kurou.kodriver.domain.overlay.repository.OverlayVisiblePreferencesReposit
 import kurou.kodriver.domain.overlay.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
-import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
-import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
-import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
-import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository

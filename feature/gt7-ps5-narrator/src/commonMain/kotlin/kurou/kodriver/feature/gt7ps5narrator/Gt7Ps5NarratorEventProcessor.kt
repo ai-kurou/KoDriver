@@ -10,6 +10,7 @@ import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.runCatchingTelemetryLogSave
 import kurou.kodriver.core.narrator.speakWithOutcome
 import kurou.kodriver.core.narrator.toRawTelemetryLogJson
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -17,7 +18,6 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.gt7ps5.usecase.Gt7Ps5NarratorState
-import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome

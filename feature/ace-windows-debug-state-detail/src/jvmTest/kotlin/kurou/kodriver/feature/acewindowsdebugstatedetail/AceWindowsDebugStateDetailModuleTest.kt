@@ -32,11 +32,11 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLa
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.debug.repository.DebugReadoutRequestRepository
+import kurou.kodriver.domain.debug.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.debug.usecase.DebugStateCardOrderUseCases
+import kurou.kodriver.domain.debug.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
-import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
-import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

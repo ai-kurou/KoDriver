@@ -21,12 +21,12 @@ import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemSpokenRep
 import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.model.ManualReadoutItemCategory
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.SpeechCommandGuideGroup
-import kurou.kodriver.domain.model.SpeechCommandGuideItem
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideGroup
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideItem
+import kurou.kodriver.domain.speechrecognition.repository.SpeechCommandGuideRepository
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechCommandGuideUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ObserveSpeechCommandGuideUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

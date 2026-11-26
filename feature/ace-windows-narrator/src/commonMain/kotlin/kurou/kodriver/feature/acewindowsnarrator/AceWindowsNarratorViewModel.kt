@@ -40,6 +40,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproach
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.autoreadout.usecase.ObserveResolvedAutoReadoutOrderUseCase
+import kurou.kodriver.domain.debug.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.manualreadout.usecase.NotifyManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutHotkeyPressesUseCase
 import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutItemRequestsUseCase
@@ -55,7 +56,6 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.onEachCapturingErrors
-import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.time.Clock

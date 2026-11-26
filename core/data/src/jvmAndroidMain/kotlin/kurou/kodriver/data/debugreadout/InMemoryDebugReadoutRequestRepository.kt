@@ -3,8 +3,8 @@ package kurou.kodriver.data.debugreadout
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kurou.kodriver.domain.model.DebugReadoutRequest
-import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
+import kurou.kodriver.domain.debug.repository.DebugReadoutRequestRepository
 
 internal class InMemoryDebugReadoutRequestRepository : DebugReadoutRequestRepository {
     private val requests = MutableSharedFlow<DebugReadoutRequest>()

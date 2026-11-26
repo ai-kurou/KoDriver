@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechCommandGuideUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ObserveSpeechCommandGuideUseCase
 
 private const val STOP_TIMEOUT_MS = 5_000L
 

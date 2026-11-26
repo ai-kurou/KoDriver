@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kurou.kodriver.domain.model.AudioInputDevice
+import kurou.kodriver.domain.microphone.model.AudioInputDevice
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

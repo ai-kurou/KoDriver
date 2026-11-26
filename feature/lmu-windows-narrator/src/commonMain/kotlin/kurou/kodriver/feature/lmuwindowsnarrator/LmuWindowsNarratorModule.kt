@@ -10,6 +10,7 @@ import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutEnabledStates
 import kurou.kodriver.domain.autoreadout.usecase.ObserveAutoReadoutOrderUseCase
 import kurou.kodriver.domain.autoreadout.usecase.ObserveResolvedAutoReadoutOrderUseCase
 import kurou.kodriver.domain.autoreadout.usecase.ResolveAutoReadoutOrderUseCase
+import kurou.kodriver.domain.debug.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsBrakeReadoutUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.DetermineLmuWindowsFuelReadoutUseCase
@@ -82,7 +83,6 @@ import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCa
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.telemetrylog.usecase.SaveTelemetryLogUseCase
-import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase

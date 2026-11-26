@@ -48,6 +48,7 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyRatio
+import kurou.kodriver.domain.lmuwindows.model.PitTimingSource
 import kurou.kodriver.domain.lmuwindows.model.PrimaryFlag
 import kurou.kodriver.domain.lmuwindows.model.SectorFlagState
 import kurou.kodriver.domain.lmuwindows.model.SessionPhase
@@ -66,7 +67,6 @@ import kurou.kodriver.domain.model.LmuWindowsManualReadoutValue.Ratio
 import kurou.kodriver.domain.model.LmuWindowsManualReadoutValue.RemainingLaps
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_NO_ITEMS_TEXT
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys

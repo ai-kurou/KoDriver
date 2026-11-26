@@ -19,11 +19,11 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureDa
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.acewindows.usecase.AceWindowsNarratorState
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome

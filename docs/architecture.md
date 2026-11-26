@@ -21,6 +21,8 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:manual-readout-domain` | 手動読み上げのセット操作・読み上げ依頼・ホットキーのリポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-manual-readout-domain.svg) |
 | `:core:microphone-domain` | マイク入力と「小さい音をカット」設定のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-microphone-domain.svg) |
 | `:core:speech-recognition-domain` | 音声認識のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-speech-recognition-domain.svg) |
+| `:core:feedback-domain` | フィードバック送信のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-feedback-domain.svg) |
+| `:core:debug-domain` | デバッグ表示の読み上げ要求・カード順序のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-debug-domain.svg) |
 | `:core:data` | 共通 DataStore、HTTP/WebSocketクライアント、共通リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り（JVM）、設定永続化（JVM / Android）、Android WebSocketクライアント | [図](graphs/core-lmu-windows-data.svg) |
 | `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗用に `RepairAndRefuel` の DataSource・`wearables.brakes` のポーリング Repository と Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |
@@ -107,7 +109,7 @@ LMU のブレーキ摩耗は `:core:lmu-windows-rest-api-data` がデスクト�
    - `:core:domain` に残るコード、または2つ以上の domain モジュールが使う。domain モジュール同士は `:core:domain` 以外に依存できない。テストからの参照は、テスト用の型に置き換えられるなら数えない。feature・data からの参照は、どの domain にも依存できるため判定に使わない。
    - `:server` が使い、移動先の候補に `:server` が依存できない。
    - アプリ全体の設定・状態（テーマ、画面常時点灯、ハプティック、ウィンドウ位置、自動起動、音量、更新確認など）。機能領域とはみなさない。
-   - 読み上げの共通基盤（音声合成、声、開始音、再生状態、音声設定画面の起動）。機能領域とはみなさない。
+   - 読み上げの共通基盤（音声合成、声、開始音、再生状態、音声設定画面の起動、読み上げ実行の動きを決めるキュー設定と開始音の有効状態）。機能領域とはみなさない。
    - 特定のシミュレーターに依存しない単位を表す値の型。
 2. **既存の domain モジュールに置く**: 1に該当せず、その型を使う領域の domain モジュールがすでにある。
 3. **新しい `:core:<領域>-domain` を作る**: 1と2に該当せず、次の両方を満たす。

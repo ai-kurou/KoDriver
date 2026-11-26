@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.microphone.repository.MicrophoneCutQuietSoundPreferencesRepository
-import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
+import kurou.kodriver.domain.microphone.repository.RecordAudioPermissionRepository
 import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionEvent
 import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionFailureReason
 import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode

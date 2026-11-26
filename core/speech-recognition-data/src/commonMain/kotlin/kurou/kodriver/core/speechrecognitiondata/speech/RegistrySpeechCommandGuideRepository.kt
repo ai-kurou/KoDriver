@@ -2,9 +2,9 @@ package kurou.kodriver.core.speechrecognitiondata.speech
 
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.SpeechCommandGuideGroup
-import kurou.kodriver.domain.model.toSpeechCommandGuideGroups
-import kurou.kodriver.domain.repository.SpeechCommandGuideRepository
+import kurou.kodriver.domain.speechrecognition.model.SpeechCommandGuideGroup
+import kurou.kodriver.domain.speechrecognition.model.toSpeechCommandGuideGroups
+import kurou.kodriver.domain.speechrecognition.repository.SpeechCommandGuideRepository
 
 /**
  * [ReadoutItemKeyRegistry] に登録された手動読み上げの項目定義と語句から、音声タブの案内を組み立てる。

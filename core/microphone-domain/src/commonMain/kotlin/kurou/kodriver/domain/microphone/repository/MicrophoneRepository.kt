@@ -1,8 +1,8 @@
 package kurou.kodriver.domain.microphone.repository
 
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.microphone.model.AudioInputDevice
 import kurou.kodriver.domain.microphone.model.MicrophoneAudioEvent
-import kurou.kodriver.domain.model.AudioInputDevice
 
 /**
  * マイクから音声（PCM）を取得するRepository。

@@ -10,7 +10,6 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.AndroidAudioUsagePreferencesRepository
-import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LowVolumeWarningEnabledPreferencesRepository
@@ -63,11 +62,6 @@ class SaveSettingsUseCasesTest {
                 useCaseName = "SaveLowVolumeWarningEnabledUseCase",
                 save = { saveLowVolumeWarningEnabled(false) },
                 useCase = { SaveLowVolumeWarningEnabledUseCase(it)(false) },
-            )
-            assertSaves<DebugStateCardOrderPreferencesRepository>(
-                useCaseName = "SaveDebugStateCardOrderUseCase",
-                save = { saveCardOrder(listOf("SESSION", "SIMULATOR")) },
-                useCase = { SaveDebugStateCardOrderUseCase(it)(listOf("SESSION", "SIMULATOR")) },
             )
             assertSaves<MainWindowBoundsPreferencesRepository>(
                 useCaseName = "SaveMainWindowBoundsUseCase",

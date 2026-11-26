@@ -91,6 +91,7 @@ dependencies {
     testFixturesApi(projects.core.domain)
     testFixturesApi(projects.core.gt7Ps5Domain)
     testFixturesApi(projects.core.aceWindowsDomain)
+    testFixturesApi(projects.core.debugDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))

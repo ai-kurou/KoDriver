@@ -4,6 +4,8 @@
 
 - `:core:domain` にのみ依存する。パッケージ名は `kurou.kodriver.domain.microphone` 配下とする。
 
+`GetAudioInputDevicesUseCase` は `AudioInputDeviceRepository` から入力デバイス（マイク）の一覧を取得する。PCM形式は `MICROPHONE_*` 定数（16kHz・モノラル・16bit）で固定する。入力デバイスの型と選択の保存先、録音権限の確認（`CheckRecordAudioPermissionGrantedUseCase`）もこのモジュールに置く。
+
 ## 小さい音をカットする段階
 
 マイク設定の「小さい音をカット」は `MICROPHONE_CUT_QUIET_SOUND_LEVEL_MIN`〜`MAX`（0〜12、0はカットしない）の段階値として

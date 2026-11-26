@@ -5,8 +5,8 @@ import io.sentry.Scope
 import io.sentry.SentryOptions
 import io.sentry.protocol.SentryId
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.Feedback
-import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.feedback.model.Feedback
+import kurou.kodriver.domain.feedback.model.FeedbackType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs

@@ -415,6 +415,8 @@ tasks.register("generateModuleGraphImages") {
                         ":core:manual-readout-domain",
                         ":core:microphone-domain",
                         ":core:speech-recognition-domain",
+                        ":core:feedback-domain",
+                        ":core:debug-domain",
                     ),
                     listOf(":core:domain"),
                 )

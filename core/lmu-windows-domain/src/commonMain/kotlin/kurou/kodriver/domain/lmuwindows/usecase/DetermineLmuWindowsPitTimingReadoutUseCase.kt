@@ -6,8 +6,8 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.lmuwindows.model.PitTimingSource
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.readoutEnabled
 
 public class DetermineLmuWindowsPitTimingReadoutUseCase {

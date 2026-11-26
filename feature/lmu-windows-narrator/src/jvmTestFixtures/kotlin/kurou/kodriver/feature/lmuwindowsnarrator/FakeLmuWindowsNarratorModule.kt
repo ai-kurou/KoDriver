@@ -62,9 +62,9 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassReposit
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kurou.kodriver.domain.manualreadout.model.ManualReadoutRequest
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
-import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository

@@ -1,11 +1,11 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
+import kurou.kodriver.domain.debug.usecase.DebugStateCardOrderUseCases
+import kurou.kodriver.domain.debug.usecase.ObserveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.debug.usecase.RequestDebugReadoutUseCase
+import kurou.kodriver.domain.debug.usecase.ResolveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.debug.usecase.SaveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
-import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
-import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named

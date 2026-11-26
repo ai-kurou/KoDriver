@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.debug.repository.DebugStateCardOrderPreferencesRepository
 
 internal class DebugStateCardOrderPreferencesRepositoryImpl(
     private val dataStore: DataStore<DebugStateCardOrderPreferences>,

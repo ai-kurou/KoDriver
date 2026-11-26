@@ -13,11 +13,11 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemRequestRepository
+import kurou.kodriver.domain.microphone.model.AudioInputDevice
+import kurou.kodriver.domain.microphone.repository.AudioInputDeviceRepository
 import kurou.kodriver.domain.microphone.repository.MicrophoneCutQuietSoundPreferencesRepository
-import kurou.kodriver.domain.model.AudioInputDevice
-import kurou.kodriver.domain.repository.AudioInputDeviceRepository
-import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
-import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
+import kurou.kodriver.domain.microphone.repository.RecordAudioPermissionRepository
+import kurou.kodriver.domain.microphone.repository.SelectedAudioInputDevicePreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
 import kurou.kodriver.domain.speechrecognition.engine.SpeechRecognitionChimePlayer

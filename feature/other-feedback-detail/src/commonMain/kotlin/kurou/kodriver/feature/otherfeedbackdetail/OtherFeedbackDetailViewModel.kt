@@ -9,15 +9,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.feedback.model.FEEDBACK_EMAIL_MAX_LENGTH
+import kurou.kodriver.domain.feedback.model.FEEDBACK_MESSAGE_MAX_LENGTH
+import kurou.kodriver.domain.feedback.model.FEEDBACK_NAME_MAX_LENGTH
+import kurou.kodriver.domain.feedback.model.Feedback
+import kurou.kodriver.domain.feedback.model.FeedbackType
+import kurou.kodriver.domain.feedback.usecase.CanSendFeedbackUseCase
+import kurou.kodriver.domain.feedback.usecase.SendFeedbackUseCase
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.model.FEEDBACK_EMAIL_MAX_LENGTH
-import kurou.kodriver.domain.model.FEEDBACK_MESSAGE_MAX_LENGTH
-import kurou.kodriver.domain.model.FEEDBACK_NAME_MAX_LENGTH
-import kurou.kodriver.domain.model.Feedback
-import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.telemetrylog.usecase.ObserveTelemetryLogDetailUseCase
-import kurou.kodriver.domain.usecase.CanSendFeedbackUseCase
-import kurou.kodriver.domain.usecase.SendFeedbackUseCase
 
 internal class OtherFeedbackDetailViewModel(
     private val sendFeedback: SendFeedbackUseCase,

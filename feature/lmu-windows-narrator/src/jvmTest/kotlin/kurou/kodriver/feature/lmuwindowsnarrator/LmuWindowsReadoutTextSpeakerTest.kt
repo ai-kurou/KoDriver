@@ -29,6 +29,7 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
+import kurou.kodriver.domain.lmuwindows.model.PitTimingSource
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
@@ -55,7 +56,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageOv
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys

@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
+import kurou.kodriver.domain.microphone.repository.SelectedAudioInputDevicePreferencesRepository
 
 internal class SelectedAudioInputDevicePreferencesRepositoryImpl(
     private val dataStore: DataStore<SelectedAudioInputDevicePreferences>,

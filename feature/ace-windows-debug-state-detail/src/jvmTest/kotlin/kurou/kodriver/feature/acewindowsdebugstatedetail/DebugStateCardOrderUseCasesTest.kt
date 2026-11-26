@@ -9,11 +9,11 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
-import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.debug.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.debug.usecase.DebugStateCardOrderUseCases
+import kurou.kodriver.domain.debug.usecase.ObserveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.debug.usecase.ResolveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.debug.usecase.SaveDebugStateCardOrderUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

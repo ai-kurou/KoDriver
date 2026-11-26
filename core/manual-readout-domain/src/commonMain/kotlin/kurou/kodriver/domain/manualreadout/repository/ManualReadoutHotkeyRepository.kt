@@ -1,8 +1,8 @@
 package kurou.kodriver.domain.manualreadout.repository
 
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kurou.kodriver.domain.manualreadout.model.ManualReadoutRequest
-import kurou.kodriver.domain.model.HotkeyRegistrationState
 
 public interface ManualReadoutHotkeyRepository {
     public fun pressStream(): Flow<ManualReadoutRequest>

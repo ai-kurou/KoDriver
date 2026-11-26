@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
+import kurou.kodriver.domain.debug.usecase.DebugStateCardOrderFlow
+import kurou.kodriver.domain.debug.usecase.DebugStateCardOrderUseCases
+import kurou.kodriver.domain.debug.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.GT7_PS5_READOUT_ITEM_KEYS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.DebugStateCardOrderFlow
-import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
-import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 
 internal class Gt7Ps5DebugStateDetailViewModel(
     gt7Ps5UseCases: Gt7Ps5DebugStateUseCases,

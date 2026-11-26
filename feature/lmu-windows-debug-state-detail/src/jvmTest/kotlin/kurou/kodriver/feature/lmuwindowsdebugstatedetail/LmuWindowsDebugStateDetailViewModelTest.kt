@@ -19,6 +19,13 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.captureError
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
+import kurou.kodriver.domain.debug.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.debug.usecase.DebugStateCardOrderUseCases
+import kurou.kodriver.domain.debug.usecase.ObserveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.debug.usecase.RequestDebugReadoutUseCase
+import kurou.kodriver.domain.debug.usecase.ResolveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.debug.usecase.SaveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
@@ -75,7 +82,6 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageUs
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.PressureKpa
@@ -83,12 +89,6 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
-import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.usecase.DebugStateCardOrderUseCases
-import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
-import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
 import java.io.IOException

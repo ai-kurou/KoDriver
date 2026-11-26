@@ -18,6 +18,7 @@ import kurou.kodriver.domain.captureErrorTypeOnly
 import kurou.kodriver.domain.launchCapturingErrors
 import kurou.kodriver.domain.manualreadout.usecase.RequestManualReadoutItemUseCase
 import kurou.kodriver.domain.microphone.model.toMicrophoneCutQuietSoundThreshold
+import kurou.kodriver.domain.microphone.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
 import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
 import kurou.kodriver.domain.runCapturingErrors
@@ -32,7 +33,6 @@ import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionU
 import kurou.kodriver.domain.speechrecognition.usecase.PlaySpeechRecognitionChimeUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ReportSpeechRecognitionTranscriptUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.SetSpeechRecognitionModeUseCase
-import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
 

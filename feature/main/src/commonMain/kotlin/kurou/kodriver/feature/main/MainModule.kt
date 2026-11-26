@@ -7,10 +7,14 @@ import kurou.kodriver.domain.gt7ps5.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.lmuwindows.usecase.CheckLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.manualreadout.usecase.RequestManualReadoutItemUseCase
+import kurou.kodriver.domain.microphone.repository.AudioInputDeviceRepository
+import kurou.kodriver.domain.microphone.repository.SelectedAudioInputDevicePreferencesRepository
+import kurou.kodriver.domain.microphone.usecase.CheckRecordAudioPermissionGrantedUseCase
+import kurou.kodriver.domain.microphone.usecase.GetAudioInputDevicesUseCase
 import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
 import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
-import kurou.kodriver.domain.repository.AudioInputDeviceRepository
-import kurou.kodriver.domain.repository.SelectedAudioInputDevicePreferencesRepository
+import kurou.kodriver.domain.microphone.usecase.ObserveSelectedAudioInputDeviceNameUseCase
+import kurou.kodriver.domain.microphone.usecase.SaveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.serverconnection.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.PlaySpeechRecognitionChimeUseCase
@@ -18,8 +22,6 @@ import kurou.kodriver.domain.speechrecognition.usecase.ReportSpeechRecognitionTr
 import kurou.kodriver.domain.speechrecognition.usecase.SetSpeechRecognitionModeUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
-import kurou.kodriver.domain.usecase.CheckRecordAudioPermissionGrantedUseCase
-import kurou.kodriver.domain.usecase.GetAudioInputDevicesUseCase
 import kurou.kodriver.domain.usecase.ObserveDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase
@@ -27,7 +29,6 @@ import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLowVolumeWarningUseCase
 import kurou.kodriver.domain.usecase.ObserveMainWindowBoundsUseCase
-import kurou.kodriver.domain.usecase.ObserveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
@@ -36,7 +37,6 @@ import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveMainWindowBoundsUseCase
-import kurou.kodriver.domain.usecase.SaveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel

@@ -3,7 +3,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.PitTimingSource
+import kurou.kodriver.domain.lmuwindows.model.PitTimingSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -7,6 +7,7 @@ import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.runCatchingTelemetryLogSave
 import kurou.kodriver.core.narrator.speakWithOutcome
+import kurou.kodriver.domain.debug.model.DebugReadoutRequest
 import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -24,7 +25,6 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.lmuwindows.usecase.TyreTemperatureReadoutInput
-import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.telemetrylog.model.NarrationOutcome

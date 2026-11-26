@@ -2,7 +2,7 @@
 
 package kurou.kodriver.core.speechrecognitiondata.speech
 
-import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
+import kurou.kodriver.domain.microphone.repository.RecordAudioPermissionRepository
 
 internal class FakeRecordAudioPermissionRepository(
     var granted: Boolean = true,

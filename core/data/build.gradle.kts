@@ -38,6 +38,8 @@ kotlin {
             implementation(projects.core.microphoneDomain)
             implementation(projects.core.overlayDomain)
             implementation(projects.core.speechRecognitionDomain)
+            implementation(projects.core.feedbackDomain)
+            implementation(projects.core.debugDomain)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)
             implementation(project.dependencies.platform(libs.koin.bom))
