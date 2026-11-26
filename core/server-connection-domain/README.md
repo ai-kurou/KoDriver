@@ -5,3 +5,9 @@
 - `:core:domain` にのみ依存する。パッケージ名は `kurou.kodriver.domain.serverconnection` 配下とする。
 - `MdnsConstants` は `:server` も使う。`:server` はこのモジュールに依存できないため `:core:domain` に置く。
 - `ConnectionCheckDefaults` は `:core:domain` の `ObserveTelemetryReceivingUseCase` も使うため `:core:domain` に置く。
+
+<!-- MODULE-GRAPH-START -->
+## Module Dependencies
+
+![Module Graph](../../docs/graphs/core-server-connection-domain.svg)
+<!-- MODULE-GRAPH-END -->

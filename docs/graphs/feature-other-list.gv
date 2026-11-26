@@ -9,6 +9,8 @@ digraph G {
   ":core:manual-readout-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:microphone-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:overlay-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:server-connection-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:telemetry-log-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":feature:other-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:other-list"
   ":core:auto-readout-domain" -> ":core:domain"
@@ -16,8 +18,12 @@ digraph G {
   ":core:manual-readout-domain" -> ":core:domain"
   ":core:microphone-domain" -> ":core:domain"
   ":core:overlay-domain" -> ":core:domain"
+  ":core:server-connection-domain" -> ":core:domain"
+  ":core:telemetry-log-domain" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
   ":feature:other-list" -> ":core:auto-readout-domain"
+  ":feature:other-list" -> ":core:telemetry-log-domain"
+  ":feature:other-list" -> ":core:server-connection-domain"
   ":feature:other-list" -> ":core:manual-readout-domain"
   ":feature:other-list" -> ":core:microphone-domain"
   ":feature:other-list" -> ":core:overlay-domain"

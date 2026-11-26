@@ -5,10 +5,13 @@ digraph G {
   ":core:designsystem" [fillcolor="#FFF9C4", color="#F9A825", penwidth=1]
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:gt7-ps5-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:server-connection-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":feature:other-console-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:other-console-ip-detail"
   ":core:gt7-ps5-domain" -> ":core:domain"
+  ":core:server-connection-domain" -> ":core:domain"
   ":feature:other-console-ip-detail" -> ":core:domain"
+  ":feature:other-console-ip-detail" -> ":core:server-connection-domain"
   ":feature:other-console-ip-detail" -> ":core:gt7-ps5-domain"
   ":feature:other-console-ip-detail" -> ":core:designsystem"
 }

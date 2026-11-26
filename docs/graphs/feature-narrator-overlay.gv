@@ -7,14 +7,17 @@ digraph G {
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:overlay-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:speech-recognition-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:telemetry-log-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:narrator-overlay"
   ":core:ace-windows-domain" -> ":core:domain"
   ":core:overlay-domain" -> ":core:domain"
   ":core:speech-recognition-domain" -> ":core:domain"
+  ":core:telemetry-log-domain" -> ":core:domain"
   ":feature:narrator-overlay" -> ":core:domain"
   ":feature:narrator-overlay" -> ":core:designsystem"
   ":feature:narrator-overlay" -> ":core:overlay-domain"
+  ":feature:narrator-overlay" -> ":core:telemetry-log-domain"
   ":feature:narrator-overlay" -> ":core:speech-recognition-domain"
   ":feature:narrator-overlay" -> ":core:ace-windows-domain"
 }
