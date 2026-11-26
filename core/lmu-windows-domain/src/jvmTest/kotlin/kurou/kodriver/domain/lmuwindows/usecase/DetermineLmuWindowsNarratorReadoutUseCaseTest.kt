@@ -2358,6 +2358,50 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `無限大のブレーキ温度だけでは過熱と判定しない`() {
+        val decision =
+            brakeUseCase.determineBrakeTemperatureOverheat(
+                state = LmuWindowsNarratorState(),
+                data = brakeTemperature(fl = Double.POSITIVE_INFINITY),
+                settings = settings(brakeTemperatureHighThresholdCelsius = 650),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(false, decision.state.brakeOverheating)
+    }
+
+    @Test
+    fun `NaNのブレーキ温度があっても残りの車輪が冷えれば過熱状態を解除する`() {
+        val decision =
+            brakeUseCase.determineBrakeTemperatureOverheat(
+                state = LmuWindowsNarratorState(brakeOverheating = true),
+                data = brakeTemperature(fl = Double.NaN),
+                settings = settings(brakeTemperatureHighThresholdCelsius = 650),
+            )
+
+        assertEquals(false, decision.state.brakeOverheating)
+    }
+
+    @Test
+    fun `全輪のブレーキ温度がNaNや無限大なら過熱状態を保つ`() {
+        val decision =
+            brakeUseCase.determineBrakeTemperatureOverheat(
+                state = LmuWindowsNarratorState(brakeOverheating = true),
+                data =
+                    brakeTemperature(
+                        fl = Double.NaN,
+                        fr = Double.POSITIVE_INFINITY,
+                        rl = Double.NEGATIVE_INFINITY,
+                        rr = Double.NaN,
+                    ),
+                settings = settings(brakeTemperatureHighThresholdCelsius = 650),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.brakeOverheating)
+    }
+
+    @Test
     fun `ブレーキ高温状態が継続しても再度読み上げない`() {
         val state = LmuWindowsNarratorState(brakeOverheating = true)
         val decision =
