@@ -367,9 +367,14 @@ public class DetermineAceWindowsNarratorReadoutUseCase {
         data: AceWindowsBrakeTemperatureData,
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
+        // NaN・無限大は判定の対象から外す。
+        val finiteCelsius =
+            data.wheels.values
+                .map { it.value }
+                .filter { it.isFinite() }
         val nextOverheating =
             determineHysteresisState(
-                valuesCelsius = data.wheels.values.map { it.value },
+                valuesCelsius = finiteCelsius,
                 highThresholdCelsius = settings.brakeTemperatureHighThresholdCelsius.value.toFloat(),
                 hysteresisCelsius = BRAKE_OVERHEAT_HYSTERESIS_CELSIUS,
                 currentState = state.brakeOverheating,

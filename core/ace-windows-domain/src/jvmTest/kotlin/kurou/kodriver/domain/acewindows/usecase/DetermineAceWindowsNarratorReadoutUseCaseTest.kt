@@ -1368,6 +1368,47 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         }
     }
 
+    @Test
+    fun `無限大のブレーキ温度だけでは過熱と判定しない`() {
+        val decision = determineBrake(AceWindowsNarratorState(), Float.POSITIVE_INFINITY)
+
+        assertEquals(emptyList(), decision.events)
+        assertEquals(false, decision.state.brakeOverheating)
+    }
+
+    @Test
+    fun `NaNのブレーキ温度があっても残りの車輪が冷えれば過熱状態を解除する`() {
+        val decision =
+            DetermineAceWindowsNarratorReadoutUseCase().determineBrakeTemperatureOverheat(
+                state = AceWindowsNarratorState(brakeOverheating = true),
+                data =
+                    AceWindowsBrakeTemperatureData(
+                        mapOf(
+                            WheelIndex.FRONT_LEFT to CelsiusReading(Float.NaN),
+                            WheelIndex.FRONT_RIGHT to CelsiusReading(20f),
+                        ),
+                    ),
+                settings =
+                    AceWindowsNarratorReadoutSettings(
+                        enabledStates = emptyMap(),
+                        remainingFuelThresholdPercentage = 30,
+                        brakeTemperatureHighThresholdCelsius = Celsius(800),
+                    ),
+            )
+
+        assertEquals(false, decision.state.brakeOverheating)
+    }
+
+    @Test
+    fun `ブレーキ温度が非有限値だけなら過熱状態を保つ`() {
+        listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY).forEach { value ->
+            val decision = determineBrake(AceWindowsNarratorState(brakeOverheating = true), value)
+
+            assertEquals(emptyList(), decision.events)
+            assertEquals(true, decision.state.brakeOverheating)
+        }
+    }
+
     private fun determineBrake(
         state: AceWindowsNarratorState,
         celsius: Float,
