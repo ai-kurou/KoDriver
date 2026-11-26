@@ -26,7 +26,6 @@ digraph G {
   ":core:speech-recognition-data" [label=":core:speech-recognition-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:speech-recognition-domain" [label=":core:speech-recognition-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:text-to-speech-data" [label=":core:text-to-speech-data", fillcolor="#BBDEFB", color="#1E88E5"]
-  ":core:voice-domain" [label=":core:voice-domain", fillcolor="#E1BEE7", color="#8E24AA"]
   ":core:windows-hotkey-data" [label=":core:windows-hotkey-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#FFF9C4", color="#F9A825"]
   ":core:windows-startup-data" [label=":core:windows-startup-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -95,8 +94,6 @@ digraph G {
   ":core:speech-recognition-data" -> ":core:speech-recognition-domain"
   ":core:speech-recognition-domain" -> ":core:domain"
   ":core:text-to-speech-data" -> ":core:domain"
-  ":core:text-to-speech-data" -> ":core:voice-domain"
-  ":core:voice-domain" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:manual-readout-domain"
   ":core:windows-startup-data" -> ":core:domain"
@@ -112,7 +109,6 @@ digraph G {
   "feature" -> ":core:microphone-domain"
   "feature" -> ":core:overlay-domain"
   "feature" -> ":core:speech-recognition-domain"
-  "feature" -> ":core:voice-domain"
   "feature:ace-windows*" -> ":core:ace-windows-domain"
   "feature:ace-windows*" -> ":core:designsystem"
   "feature:ace-windows*" -> ":core:domain"
@@ -132,7 +128,7 @@ digraph G {
   { rank=same; ":app:shared"; ":server"; }
   { rank=same; "feature"; "feature:ace-windows*"; "feature:lmu-windows*"; "feature:gt7-ps5*"; ":core:data"; ":core:ace-windows-data"; ":core:lmu-windows-data"; ":core:gt7-ps5-data"; ":core:lmu-windows-rest-api-data"; ":core:text-to-speech-data"; ":core:device-volume-data"; ":core:server-discovery-data"; ":core:speech-recognition-data"; ":core:windows-hotkey-data"; ":core:windows-startup-data"; }
   { rank=same; ":core:narrator"; ":core:designsystem"; ":core:windows-shared-memory"; }
-  { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; ":core:overlay-domain"; ":core:manual-readout-domain"; ":core:voice-domain"; ":core:microphone-domain"; ":core:speech-recognition-domain"; }
+  { rank=same; ":core:lmu-windows-domain"; ":core:ace-windows-domain"; ":core:gt7-ps5-domain"; ":core:overlay-domain"; ":core:manual-readout-domain"; ":core:microphone-domain"; ":core:speech-recognition-domain"; }
   { rank=same; ":core:domain"; }
   ":app:androidApp" -> ":app:shared" [style=invis]
   ":app:shared" -> "feature" [style=invis]

@@ -18,7 +18,6 @@ digraph G {
   ":core:speech-recognition-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:speech-recognition-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:text-to-speech-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
-  ":core:voice-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:windows-hotkey-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:windows-startup-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":feature:ace-windows-auto-readout-brake-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -108,8 +107,6 @@ digraph G {
   ":core:speech-recognition-data" -> ":core:speech-recognition-domain"
   ":core:speech-recognition-domain" -> ":core:domain"
   ":core:text-to-speech-data" -> ":core:domain"
-  ":core:text-to-speech-data" -> ":core:voice-domain"
-  ":core:voice-domain" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:manual-readout-domain"
   ":core:windows-startup-data" -> ":core:domain"
@@ -227,11 +224,8 @@ digraph G {
   ":feature:other-server-ip-detail" -> ":core:domain"
   ":feature:other-theme-detail" -> ":core:domain"
   ":feature:other-voice-detail" -> ":core:domain"
-  ":feature:other-voice-detail" -> ":core:voice-domain"
   ":feature:other-voice-pitch-detail" -> ":core:domain"
-  ":feature:other-voice-pitch-detail" -> ":core:voice-domain"
   ":feature:other-voice-speed-detail" -> ":core:domain"
-  ":feature:other-voice-speed-detail" -> ":core:voice-domain"
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:lmu-windows-domain"
   ":feature:server-connection" -> ":core:domain"
