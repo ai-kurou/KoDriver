@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="brake_temperature_description">ブレーキ温度の過熱警告を設定します。自動読み上げは準備中のため、現在は読み上げを行いません。</string>
+    <string name="brake_temperature_description">いずれかのブレーキが過熱閾値以上になると読み上げます。一度過熱を判定すると、すべてのブレーキが閾値より100℃以上下がるまで再び読み上げません。</string>
     <string name="brake_temperature_overheat_warning_card_title">過熱警告</string>
     <string name="brake_temperature_high_threshold_subtitle">過熱閾値</string>
     <string name="brake_temperature_high_threshold_description">過熱とみなすブレーキ温度は%1$d℃以上です。</string>

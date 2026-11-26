@@ -132,10 +132,12 @@ class AceWindowsNarratorFlowTest {
             val flags = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(mapOf(key to true))
             val tyres = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(mapOf(key to false))
             val approach = MutableSharedFlow<Map<ReadoutItemKey, Boolean>>(replay = 1)
+            val brakeKey = AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning
+            val brakes = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             val values = mutableListOf<Map<ReadoutItemKey, Boolean>>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 AceWindowsNarratorFlow(emptyFlow())
-                    .mergedEnabledStates(list, flags, tyres, approach)
+                    .mergedEnabledStates(list, flags, tyres, approach, brakes)
                     .collect { values += it }
             }
             runCurrent()
@@ -153,5 +155,8 @@ class AceWindowsNarratorFlowTest {
             list.update { mapOf(key to true) }
             runCurrent()
             assertEquals(mapOf<ReadoutItemKey, Boolean>(key to true), values.last())
+            brakes.update { mapOf(key to false, brakeKey to true) }
+            runCurrent()
+            assertEquals(mapOf<ReadoutItemKey, Boolean>(key to false, brakeKey to true), values.last())
         }
 }

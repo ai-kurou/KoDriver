@@ -14,6 +14,7 @@ import kurou.kodriver.core.windowshotkeydata.windowsHotkeyDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
@@ -23,6 +24,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
@@ -387,6 +389,11 @@ class DesktopKoinModuleGraphTest {
                         single<AceWindowsRemainingFuelLapsRepository> {
                             object : AceWindowsRemainingFuelLapsRepository {
                                 override fun remainingFuelLapsStream() = emptyFlow<AceWindowsRemainingFuelLapsData>()
+                            }
+                        }
+                        single<AceWindowsBrakeTemperatureRepository> {
+                            object : AceWindowsBrakeTemperatureRepository {
+                                override fun brakeTemperatureStream() = emptyFlow<AceWindowsBrakeTemperatureData>()
                             }
                         }
                         single<AceWindowsTyreCarcassTemperatureRepository> {

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsBrakeOverheat
 import kurou.kodriver.domain.engine.AceWindowsCarGapCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
@@ -64,6 +66,7 @@ class AceWindowsReadoutTextSpeakerTest {
     }
 
     private val observeFlagText: ObserveAceWindowsFlagReadoutTextUseCase = mockk()
+    private val observeBrakeOverheat: ObserveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeTyreOverheat: ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeVehicleApproach: ObserveAceWindowsVehicleApproachReadoutTextUseCase = mockk()
     private val observeRemainingFuel: ObserveAceWindowsRemainingFuelReadoutTextUseCase = mockk()
@@ -86,6 +89,7 @@ class AceWindowsReadoutTextSpeakerTest {
                     vehicleApproach = observeVehicleApproach,
                     tyreOverheat = observeTyreOverheat,
                     myBestLap = observeMyBestLap,
+                    brakeOverheat = observeBrakeOverheat,
                 ),
             checkTextToSpeechAvailable = checkAvailable,
             speakText = speakText,
@@ -469,6 +473,37 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 1) { checkAvailable() }
             coVerify(exactly = 1) { speakText("判定時の本文", volume = 42) }
             confirmVerified(observeTyreOverheat, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `ブレーキ過熱は保存文言の温度を整形して読み上げる`() =
+        runTest {
+            val event = AceWindowsBrakeOverheat(850)
+            every { observeBrakeOverheat() } returns flowOf("過熱 {celsius}度、{celsius}")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("過熱 850度、850", volume = 42) } just Runs
+            assertEquals("過熱 850度、850", speaker.readoutText(event))
+            speaker(event, 42)
+            assertEquals(true, isAceWindowsCustomSpeakEvent(event))
+            verify(exactly = 2) { observeBrakeOverheat() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("過熱 850度、850", volume = 42) }
+            confirmVerified(observeBrakeOverheat, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `ブレーキ過熱の解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
+        runTest {
+            val event = AceWindowsBrakeOverheat(850, "判定時の本文")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("判定時の本文", volume = 42) } just Runs
+            assertEquals("判定時の本文", speaker.readoutText(event))
+            coEvery { checkAvailable() } returns false
+            speaker(event, 42)
+            verify(exactly = 0) { observeBrakeOverheat() }
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("判定時の本文", volume = 42) }
+            confirmVerified(observeBrakeOverheat, checkAvailable, speakText)
         }
 
     @Test

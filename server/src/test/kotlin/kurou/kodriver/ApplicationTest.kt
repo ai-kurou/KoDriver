@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
@@ -29,6 +30,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
@@ -38,6 +40,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
@@ -854,6 +857,88 @@ class ApplicationTest {
                     install(WebSockets)
                 }.webSocket("/ws/lmu_windows/tyre_carcass_temperature") {
                     repository.emit(tyreCarcassTemperatureData1)
+
+                    val message =
+                        withTimeout(1_000) {
+                            (incoming.receive() as Frame.Text).readText()
+                        }
+                    assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_1, message)
+                }
+        }
+
+    @Test
+    fun `ACEブレーキ温度情報をJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeAceWindowsBrakeTemperatureRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        lmuWindows =
+                            LmuWindowsServerUseCases(
+                                observeLmuWindowsRaceFlags =
+                                    ObserveLmuWindowsRaceFlagsUseCase(
+                                        FakeLmuWindowsFlagRepository(),
+                                    ),
+                                observeLmuWindowsVehicleApproach =
+                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                        EmptyLmuWindowsVehicleApproachRepository,
+                                    ),
+                                observeLmuWindowsVehicleDamage =
+                                    ObserveLmuWindowsVehicleDamageUseCase(
+                                        EmptyLmuWindowsVehicleDamageRepository,
+                                    ),
+                                observeLmuWindowsTyreCarcassTemperature =
+                                    ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                                    ),
+                                observeLmuWindowsBrakeTemperature =
+                                    ObserveLmuWindowsBrakeTemperatureUseCase(
+                                        EmptyLmuWindowsBrakeTemperatureRepository,
+                                    ),
+                                observeLmuWindowsVehicleClass =
+                                    ObserveLmuWindowsVehicleClassUseCase(
+                                        EmptyLmuWindowsVehicleClassRepository,
+                                    ),
+                                observeLmuWindowsTyreWear =
+                                    ObserveLmuWindowsTyreWearUseCase(
+                                        EmptyLmuWindowsTyreWearRepository,
+                                    ),
+                                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                                observeLmuWindowsVirtualEnergy =
+                                    ObserveLmuWindowsVirtualEnergyUseCase(
+                                        EmptyLmuWindowsVirtualEnergyRepository,
+                                    ),
+                                observeLmuWindowsPitStatus =
+                                    ObserveLmuWindowsPitStatusUseCase(
+                                        EmptyLmuWindowsPitStatusRepository,
+                                    ),
+                                observeLmuWindowsBrakeWear =
+                                    ObserveLmuWindowsBrakeWearUseCase(EmptyLmuWindowsBrakeWearRepository),
+                                observeLmuWindowsTyreDetached =
+                                    ObserveLmuWindowsTyreDetachedUseCase(
+                                        EmptyLmuWindowsTyreDetachedRepository,
+                                    ),
+                                observeLmuWindowsCarGap =
+                                    ObserveLmuWindowsCarGapUseCase(EmptyLmuWindowsCarGapRepository),
+                                observeLmuWindowsClassCarGap =
+                                    ObserveLmuWindowsClassCarGapUseCase(EmptyLmuWindowsClassCarGapRepository),
+                            ),
+                        aceWindows =
+                            emptyAceWindowsServerUseCases().copy(
+                                observeAceWindowsBrakeTemperature =
+                                    ObserveAceWindowsBrakeTemperatureUseCase(
+                                        repository,
+                                    ),
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/brake_temperature") {
+                    repository.emit(AceWindowsBrakeTemperatureData(tyreCarcassTemperatureData1.wheels))
 
                     val message =
                         withTimeout(1_000) {
@@ -3506,6 +3591,7 @@ class ApplicationTest {
                         single<AceWindowsFuelRepository> { EmptyAceWindowsFuelRepository }
                         single<AceWindowsFlagRepository> { EmptyAceWindowsFlagRepository }
                         single<AceWindowsStatusRepository> { EmptyAceWindowsStatusRepository }
+                        single<AceWindowsBrakeTemperatureRepository> { FakeAceWindowsBrakeTemperatureRepository() }
                         single<AceWindowsTyreCarcassTemperatureRepository> {
                             EmptyAceWindowsTyreCarcassTemperatureRepository
                         }
@@ -3974,6 +4060,16 @@ private class FakeAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCar
     override fun tyreCarcassTemperatureStream(): Flow<AceWindowsTyreCarcassTemperatureData> = channel.receiveAsFlow()
 
     fun emit(data: AceWindowsTyreCarcassTemperatureData) {
+        channel.trySend(data)
+    }
+}
+
+private class FakeAceWindowsBrakeTemperatureRepository : AceWindowsBrakeTemperatureRepository {
+    private val channel = Channel<AceWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+
+    override fun brakeTemperatureStream(): Flow<AceWindowsBrakeTemperatureData> = channel.receiveAsFlow()
+
+    fun emit(data: AceWindowsBrakeTemperatureData) {
         channel.trySend(data)
     }
 }
