@@ -150,6 +150,13 @@ class Gt7Ps5UdpSourceTest {
         }
 
     @Test
+    fun `再接続の待ち時間は回数に応じて延び上限で頭打ちになる`() {
+        assertEquals(1_000L, Gt7Ps5UdpSource.bindRetryDelayMillis(0))
+        assertEquals(5_000L, Gt7Ps5UdpSource.bindRetryDelayMillis(4))
+        assertEquals(5_000L, Gt7Ps5UdpSource.bindRetryDelayMillis(29))
+    }
+
+    @Test
     fun `タイムアウト発生時にハートビートを再送する`() =
         runBlocking {
             val socket = FakeUdpSocket()
