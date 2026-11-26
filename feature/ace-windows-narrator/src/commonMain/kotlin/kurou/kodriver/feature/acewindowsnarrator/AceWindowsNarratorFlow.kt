@@ -27,14 +27,16 @@ internal class AceWindowsNarratorFlow(
         flagEnabledStates: Flow<Map<ReadoutItemKey, Boolean>>,
         tyreTemperatureEnabledStates: Flow<Map<ReadoutItemKey, Boolean>>,
         vehicleApproachEnabledStates: Flow<Map<ReadoutItemKey, Boolean>>,
+        brakeTemperatureEnabledStates: Flow<Map<ReadoutItemKey, Boolean>>,
     ): Flow<Map<ReadoutItemKey, Boolean>> =
         combine(
             listEnabledStates,
             flagEnabledStates,
             tyreTemperatureEnabledStates,
             vehicleApproachEnabledStates,
-        ) { readoutStates, flagStates, tyreTemperatureStates, vehicleApproachStates ->
-            readoutStates + flagStates + tyreTemperatureStates + vehicleApproachStates
+            brakeTemperatureEnabledStates,
+        ) { readoutStates, flagStates, tyreTemperatureStates, vehicleApproachStates, brakeTemperatureStates ->
+            readoutStates + flagStates + tyreTemperatureStates + vehicleApproachStates + brakeTemperatureStates
         }
 
     /** ACE 非選択時は値を補完せず、購読中のテレメトリをキャンセルする。 */

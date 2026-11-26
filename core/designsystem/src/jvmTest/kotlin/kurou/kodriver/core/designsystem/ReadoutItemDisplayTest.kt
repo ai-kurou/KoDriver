@@ -25,6 +25,7 @@ class ReadoutItemDisplayTest {
             "lmu_windows_auto_red_flag" to "レッドフラッグ",
             "lmu_windows_auto_brake_temperature" to "ブレーキ温度",
             "ace_windows_auto_tyre_temperature" to "タイヤ温度",
+            "ace_windows_auto_brake_temperature" to "ブレーキ温度",
             "lmu_windows_auto_brake_wear" to "ブレーキ摩耗",
             "lmu_windows_auto_vehicle_damage" to "車両故障",
             "lmu_windows_auto_overheat" to "オーバーヒート",

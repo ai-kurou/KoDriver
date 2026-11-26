@@ -1,5 +1,6 @@
 package kurou.kodriver.core.acewindowsdata
 
+import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsMyBestLapPreferencesRepository
@@ -7,6 +8,7 @@ import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsRemainingF
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.core.acewindowsdata.preferences.createAceWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsMyBestLapPreferencesRepository
@@ -26,6 +28,7 @@ public fun desktopAceWindowsPreferencesDataModule(directory: String): Module =
     module {
         single {
             AceWindowsAutoReadoutSettingsResetter(
+                brakeTemperaturePreferencesRepository = get(),
                 flagPreferencesRepository = get(),
                 flagReadoutTextPreferencesRepository = get(),
                 myBestLapPreferencesRepository = get(),
@@ -52,6 +55,9 @@ public fun desktopAceWindowsPreferencesDataModule(directory: String): Module =
         }
         single<AceWindowsTyreTemperaturePreferencesRepository> {
             createAceWindowsTyreTemperaturePreferencesRepository(directory = directory)
+        }
+        single<AceWindowsBrakeTemperaturePreferencesRepository> {
+            createAceWindowsBrakeTemperaturePreferencesRepository(directory = directory)
         }
         single<AceWindowsVehicleApproachPreferencesRepository> {
             createAceWindowsVehicleApproachPreferencesRepository(directory = directory)

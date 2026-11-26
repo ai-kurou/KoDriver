@@ -18,6 +18,12 @@ import kotlin.test.assertNotEquals
 class AceWindowsAutoReadoutSettingsResetterDataStoreTest {
     private val tempDir = Files.createTempDirectory("auto_readout_reset_test").toFile()
     private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
+    private val brakeTemperatureDataStore =
+        DataStoreFactory.create(
+            serializer = AceWindowsBrakeTemperaturePreferencesSerializer,
+            scope = dataStoreScope,
+            produceFile = { tempDir.resolve("brakeTemperature.pb") },
+        )
     private val flagDataStore =
         DataStoreFactory.create(
             serializer = AceWindowsFlagPreferencesSerializer,
@@ -62,6 +68,10 @@ class AceWindowsAutoReadoutSettingsResetterDataStoreTest {
         )
     private val resetter =
         AceWindowsAutoReadoutSettingsResetter(
+            brakeTemperaturePreferencesRepository =
+                AceWindowsBrakeTemperaturePreferencesRepositoryImpl(
+                    brakeTemperatureDataStore,
+                ),
             flagPreferencesRepository = AceWindowsFlagPreferencesRepositoryImpl(flagDataStore),
             flagReadoutTextPreferencesRepository =
                 AceWindowsFlagReadoutTextPreferencesRepositoryImpl(
@@ -95,6 +105,7 @@ class AceWindowsAutoReadoutSettingsResetterDataStoreTest {
     @Test
     fun `全対象のDataStoreを既定値へ戻す`() =
         runTest {
+            changeBrakeTemperatureSettings()
             changeFlagSettings()
             changeFlagReadoutTextSettings()
             changeMyBestLapSettings()
@@ -103,6 +114,10 @@ class AceWindowsAutoReadoutSettingsResetterDataStoreTest {
             changeTyreTemperatureSettings()
             changeVehicleApproachSettings()
 
+            assertNotEquals(
+                AceWindowsBrakeTemperaturePreferencesSerializer.defaultValue,
+                brakeTemperatureDataStore.data.first(),
+            )
             assertNotEquals(AceWindowsFlagPreferencesSerializer.defaultValue, flagDataStore.data.first())
             assertNotEquals(
                 AceWindowsFlagReadoutTextPreferencesSerializer.defaultValue,
@@ -128,6 +143,10 @@ class AceWindowsAutoReadoutSettingsResetterDataStoreTest {
 
             resetter.resetToDefault()
 
+            assertEquals(
+                AceWindowsBrakeTemperaturePreferencesSerializer.defaultValue,
+                brakeTemperatureDataStore.data.first(),
+            )
             assertEquals(AceWindowsFlagPreferencesSerializer.defaultValue, flagDataStore.data.first())
             assertEquals(
                 AceWindowsFlagReadoutTextPreferencesSerializer.defaultValue,
@@ -148,6 +167,16 @@ class AceWindowsAutoReadoutSettingsResetterDataStoreTest {
                 vehicleApproachDataStore.data.first(),
             )
         }
+
+    private suspend fun changeBrakeTemperatureSettings() {
+        brakeTemperatureDataStore.updateData {
+            it.copy(
+                highThresholdCelsius = it.highThresholdCelsius + 1,
+                enabledStates = mapOf("saved_key" to false),
+                overheatReadoutText = "変更した文言",
+            )
+        }
+    }
 
     private suspend fun changeFlagSettings() {
         flagDataStore.updateData {

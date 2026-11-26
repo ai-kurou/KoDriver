@@ -4,6 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -73,6 +74,19 @@ class AceWindowsSaveReadoutTextUseCasesTest {
             expected = "タイヤが過熱しています",
             save = { saveOverheatReadoutText(it) },
             useCase = { repository, text -> SaveAceWindowsTyreTemperatureOverheatReadoutTextUseCase(repository)(text) },
+        )
+
+        assertSaves<AceWindowsBrakeTemperaturePreferencesRepository>(
+            useCaseName = "SaveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase",
+            input = "  ブレーキが過熱しています  ",
+            expected = "ブレーキが過熱しています",
+            save = { saveOverheatReadoutText(it) },
+            useCase = {
+                repository,
+                text,
+                ->
+                SaveAceWindowsBrakeTemperatureOverheatReadoutTextUseCase(repository)(text)
+            },
         )
 
         assertSaves<AceWindowsVehicleApproachPreferencesRepository>(

@@ -54,7 +54,7 @@ class AutoReadoutListViewModelAceWindowsTest {
     }
 
     @Test
-    fun `ace_windowsを選択するとlistPaneにフラッグと車両接近と燃料残り周回数と燃料残量とタイヤ温度と自己ベストラップアイテムが表示される`() =
+    fun `ace_windowsを選択するとlistPaneにフラッグと車両接近と燃料残り周回数と燃料残量とタイヤ温度とブレーキ温度と自己ベストラップアイテムが表示される`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.AceWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -80,6 +80,7 @@ class AutoReadoutListViewModelAceWindowsTest {
                     AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
                     AceWindowsReadoutItemKey.RemainingFuel.Root,
                     AceWindowsReadoutItemKey.TyreTemperature.Root,
+                    AceWindowsReadoutItemKey.BrakeTemperature.Root,
                     AceWindowsReadoutItemKey.MyBestLap.Root,
                 ),
                 state.items,
@@ -87,12 +88,14 @@ class AutoReadoutListViewModelAceWindowsTest {
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.Flag.Root])
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.VehicleApproach.Root])
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.TyreTemperature.Root])
+            assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.BrakeTemperature.Root])
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.RemainingFuel.Root])
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.RemainingFuelLaps.Root])
             assertEquals(false, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.MyBestLap.Root])
             assertEquals(false, state.queueEnabledStates[AceWindowsReadoutItemKey.Flag.Root])
             assertEquals(null, state.queueEnabledStates[AceWindowsReadoutItemKey.VehicleApproach.Root])
             assertEquals(true, state.queueEnabledStates[AceWindowsReadoutItemKey.TyreTemperature.Root])
+            assertEquals(true, state.queueEnabledStates[AceWindowsReadoutItemKey.BrakeTemperature.Root])
             assertEquals(true, state.queueEnabledStates[AceWindowsReadoutItemKey.RemainingFuel.Root])
             assertEquals(true, state.queueEnabledStates[AceWindowsReadoutItemKey.RemainingFuelLaps.Root])
             assertEquals(false, state.queueEnabledStates[AceWindowsReadoutItemKey.MyBestLap.Root])

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
@@ -26,6 +27,7 @@ class AceWindowsServerUseCasesTest {
     private val aceWindowsFuelRepository: AceWindowsFuelRepository = mockk()
     private val aceWindowsFlagRepository: AceWindowsFlagRepository = mockk()
     private val aceWindowsStatusRepository: AceWindowsStatusRepository = mockk()
+    private val aceWindowsBrakeTemperatureRepository: AceWindowsBrakeTemperatureRepository = mockk()
     private val aceWindowsTyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository = mockk()
     private val aceWindowsVehicleApproachRepository: AceWindowsVehicleApproachRepository = mockk()
     private val aceWindowsBestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
@@ -38,6 +40,7 @@ class AceWindowsServerUseCasesTest {
         every { aceWindowsFuelRepository.fuelStream() } returns emptyFlow()
         every { aceWindowsFlagRepository.flagStream() } returns emptyFlow()
         every { aceWindowsStatusRepository.statusStream() } returns emptyFlow()
+        every { aceWindowsBrakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
         every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
         every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
         every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
@@ -51,6 +54,7 @@ class AceWindowsServerUseCasesTest {
                         single<AceWindowsFuelRepository> { aceWindowsFuelRepository }
                         single<AceWindowsFlagRepository> { aceWindowsFlagRepository }
                         single<AceWindowsStatusRepository> { aceWindowsStatusRepository }
+                        single<AceWindowsBrakeTemperatureRepository> { aceWindowsBrakeTemperatureRepository }
                         single<AceWindowsTyreCarcassTemperatureRepository> {
                             aceWindowsTyreCarcassTemperatureRepository
                         }
@@ -67,6 +71,7 @@ class AceWindowsServerUseCasesTest {
             useCases.observeAceWindowsFuel()
             useCases.observeAceWindowsFlag()
             useCases.observeAceWindowsStatus()
+            useCases.observeAceWindowsBrakeTemperature()
             useCases.observeAceWindowsTyreCarcassTemperature()
             useCases.observeAceWindowsVehicleApproach()
             useCases.observeAceWindowsBestLapTime()
@@ -76,6 +81,7 @@ class AceWindowsServerUseCasesTest {
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
+            verify(exactly = 1) { aceWindowsBrakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
@@ -86,6 +92,7 @@ class AceWindowsServerUseCasesTest {
                 aceWindowsFuelRepository,
                 aceWindowsFlagRepository,
                 aceWindowsStatusRepository,
+                aceWindowsBrakeTemperatureRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
@@ -105,6 +112,7 @@ class AceWindowsServerUseCasesTest {
             assertEquals(emptyList(), useCases.observeAceWindowsFuel().toList())
             assertEquals(emptyList(), useCases.observeAceWindowsFlag().toList())
             assertEquals(emptyList(), useCases.observeAceWindowsStatus().toList())
+            assertEquals(emptyList(), useCases.observeAceWindowsBrakeTemperature().toList())
             assertEquals(emptyList(), useCases.observeAceWindowsTyreCarcassTemperature().toList())
             assertEquals(emptyList(), useCases.observeAceWindowsVehicleApproach().toList())
             assertEquals(emptyList(), useCases.observeAceWindowsBestLapTime().toList())

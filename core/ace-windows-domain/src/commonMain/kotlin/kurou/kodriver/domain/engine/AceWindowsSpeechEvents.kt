@@ -3,6 +3,7 @@ package kurou.kodriver.domain.engine
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BRAKE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT
@@ -22,6 +23,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_READO
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsCarGapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
@@ -170,6 +172,21 @@ public data class AceWindowsTyreOverheat(
         )
 
     override fun withResolvedText(text: String): AceWindowsTyreOverheat = copy(resolvedText = text)
+}
+
+/** 判定時点の過熱閾値と解決済み本文を保持するブレーキ過熱イベント。 */
+public data class AceWindowsBrakeOverheat(
+    val celsius: Int,
+    override val resolvedText: String? = null,
+) : AceWindowsSpeechEvent {
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.BrakeTemperature.Root
+    override val narratedText: String =
+        formatAceWindowsBrakeTemperatureReadoutText(
+            ACE_WINDOWS_BRAKE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+            celsius,
+        )
+
+    override fun withResolvedText(text: String): AceWindowsBrakeOverheat = copy(resolvedText = text)
 }
 
 /**

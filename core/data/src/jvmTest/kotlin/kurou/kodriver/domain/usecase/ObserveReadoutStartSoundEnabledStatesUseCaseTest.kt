@@ -56,6 +56,7 @@ class ObserveReadoutStartSoundEnabledStatesUseCaseTest {
                     AceWindowsReadoutItemKey.RemainingFuel.Root to true,
                     AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
                     AceWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    AceWindowsReadoutItemKey.BrakeTemperature.Root to true,
                     AceWindowsReadoutItemKey.MyBestLap.Root to true,
                 ),
                 useCase().first(),

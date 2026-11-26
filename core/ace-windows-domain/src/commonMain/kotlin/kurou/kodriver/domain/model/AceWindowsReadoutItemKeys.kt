@@ -28,6 +28,8 @@ public val ACE_WINDOWS_READOUT_ITEM_KEYS: List<ReadoutItemKey> =
         AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled,
         AceWindowsReadoutItemKey.TyreTemperature.Root,
         AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+        AceWindowsReadoutItemKey.BrakeTemperature.Root,
+        AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning,
         AceWindowsReadoutItemKey.MyBestLap.Root,
         AceWindowsReadoutItemKey.MyBestLap.DetailEnabled,
         AceWindowsReadoutItemKey.CarGap.Root,

@@ -2,6 +2,7 @@ digraph G {
   rankdir=TB
   node [shape=box, style="rounded,filled"]
   ":core:designsystem" [fillcolor="#FFF9C4", color="#F9A825", penwidth=2.5]
+  ":feature:ace-windows-auto-readout-brake-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -51,6 +52,7 @@ digraph G {
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-auto-readout-brake-temperature-detail" -> ":core:designsystem"
   ":feature:ace-windows-auto-readout-flag-detail" -> ":core:designsystem"
   ":feature:ace-windows-auto-readout-my-best-lap-detail" -> ":core:designsystem"
   ":feature:ace-windows-auto-readout-remaining-fuel-detail" -> ":core:designsystem"

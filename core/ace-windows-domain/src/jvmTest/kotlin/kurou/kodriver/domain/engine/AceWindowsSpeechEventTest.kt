@@ -151,6 +151,7 @@ class AceWindowsSpeechEventTest {
                 AceWindowsOrangeCircleFlag(),
                 AceWindowsRedYellowStripesFlag(),
                 AceWindowsTyreOverheat(110),
+                AceWindowsBrakeOverheat(850),
                 AceWindowsVehicleApproach(),
                 AceWindowsMyBestLap(83_456),
             )
@@ -269,6 +270,20 @@ class AceWindowsSpeechEventTest {
             AceWindowsReadoutItemKey.VehicleApproach.Root,
             AceWindowsVehicleApproach().readoutItemKey,
         )
+    }
+
+    @Test
+    fun `ACEブレーキ過熱は閾値と判定時本文を保持する`() {
+        val event = AceWindowsBrakeOverheat(850)
+
+        assertEquals(AceWindowsReadoutItemKey.BrakeTemperature.Root, event.readoutItemKey)
+        assertEquals(null, event.resolvedText)
+
+        val resolved = event.withResolvedText("過熱注意")
+
+        assertEquals(850, resolved.celsius)
+        assertEquals("過熱注意", resolved.resolvedText)
+        assertEquals("ブレーキ温度は850℃以上", resolved.narratedText)
     }
 
     @Test

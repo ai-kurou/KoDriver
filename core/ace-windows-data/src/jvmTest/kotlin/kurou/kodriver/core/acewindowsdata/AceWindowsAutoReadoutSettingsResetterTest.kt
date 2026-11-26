@@ -5,6 +5,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsMyBestLapPreferencesRepository
@@ -17,6 +18,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
 
 class AceWindowsAutoReadoutSettingsResetterTest {
+    private val brakeTemperaturePreferencesRepository: AceWindowsBrakeTemperaturePreferencesRepository = mockk()
     private val flagPreferencesRepository: AceWindowsFlagPreferencesRepository = mockk()
     private val flagReadoutTextPreferencesRepository: AceWindowsFlagReadoutTextPreferencesRepository = mockk()
     private val myBestLapPreferencesRepository: AceWindowsMyBestLapPreferencesRepository = mockk()
@@ -26,6 +28,7 @@ class AceWindowsAutoReadoutSettingsResetterTest {
     private val vehicleApproachPreferencesRepository: AceWindowsVehicleApproachPreferencesRepository = mockk()
     private val resetter =
         AceWindowsAutoReadoutSettingsResetter(
+            brakeTemperaturePreferencesRepository = brakeTemperaturePreferencesRepository,
             flagPreferencesRepository = flagPreferencesRepository,
             flagReadoutTextPreferencesRepository = flagReadoutTextPreferencesRepository,
             myBestLapPreferencesRepository = myBestLapPreferencesRepository,
@@ -38,6 +41,7 @@ class AceWindowsAutoReadoutSettingsResetterTest {
     @Test
     fun `対象のRepositoryをすべて一度ずつリセットする`() =
         runTest {
+            coEvery { brakeTemperaturePreferencesRepository.resetToDefault() } returns Unit
             coEvery { flagPreferencesRepository.resetToDefault() } returns Unit
             coEvery { flagReadoutTextPreferencesRepository.resetToDefault() } returns Unit
             coEvery { myBestLapPreferencesRepository.resetToDefault() } returns Unit
@@ -48,6 +52,7 @@ class AceWindowsAutoReadoutSettingsResetterTest {
 
             resetter.resetToDefault()
 
+            coVerify(exactly = 1) { brakeTemperaturePreferencesRepository.resetToDefault() }
             coVerify(exactly = 1) { flagPreferencesRepository.resetToDefault() }
             coVerify(exactly = 1) { flagReadoutTextPreferencesRepository.resetToDefault() }
             coVerify(exactly = 1) { myBestLapPreferencesRepository.resetToDefault() }
@@ -56,6 +61,7 @@ class AceWindowsAutoReadoutSettingsResetterTest {
             coVerify(exactly = 1) { tyreTemperaturePreferencesRepository.resetToDefault() }
             coVerify(exactly = 1) { vehicleApproachPreferencesRepository.resetToDefault() }
             confirmVerified(
+                brakeTemperaturePreferencesRepository,
                 flagPreferencesRepository,
                 flagReadoutTextPreferencesRepository,
                 myBestLapPreferencesRepository,
@@ -70,11 +76,13 @@ class AceWindowsAutoReadoutSettingsResetterTest {
     fun `途中で失敗したら例外を伝播し後続を実行しない`() =
         runTest {
             val failure = IllegalStateException("reset failed")
+            coEvery { brakeTemperaturePreferencesRepository.resetToDefault() } returns Unit
             coEvery { flagPreferencesRepository.resetToDefault() } returns Unit
             coEvery { flagReadoutTextPreferencesRepository.resetToDefault() } throws failure
 
             assertSame(failure, assertFailsWith<IllegalStateException> { resetter.resetToDefault() })
 
+            coVerify(exactly = 1) { brakeTemperaturePreferencesRepository.resetToDefault() }
             coVerify(exactly = 1) { flagPreferencesRepository.resetToDefault() }
             coVerify(exactly = 1) { flagReadoutTextPreferencesRepository.resetToDefault() }
             coVerify(exactly = 0) { myBestLapPreferencesRepository.resetToDefault() }
@@ -83,6 +91,7 @@ class AceWindowsAutoReadoutSettingsResetterTest {
             coVerify(exactly = 0) { tyreTemperaturePreferencesRepository.resetToDefault() }
             coVerify(exactly = 0) { vehicleApproachPreferencesRepository.resetToDefault() }
             confirmVerified(
+                brakeTemperaturePreferencesRepository,
                 flagPreferencesRepository,
                 flagReadoutTextPreferencesRepository,
                 myBestLapPreferencesRepository,

@@ -13,13 +13,13 @@ ACE (Assetto Corsa EVO) Windows版の開始音WAV再生・自由文言TTSとア�
 `AceWindowsReadoutTextSpeaker` の自由文言をOS標準TTSで読み上げる。
 ACEの自由文言イベントは `ReadoutTextEvent` を継承する sealed interface `AceWindowsSpeechEvent` を実装する。
 全10種類のフラッグは、その下位の sealed interface `AceWindowsFlagSpeechEvent` にまとめる。
-残燃料周回数・残燃料・タイヤ過熱・車両接近・自己ベストラップの5種類は `AceWindowsSpeechEvent` を直接実装する。
+残燃料周回数・残燃料・タイヤ過熱・ブレーキ過熱・車両接近・自己ベストラップの6種類は `AceWindowsSpeechEvent` を直接実装する。
 SpeakerはACEイベントと `DebugReadoutText` を対象とし、ACE本文とフラッグ本文を網羅的な `when` で解決する。
 他シミュレーターのイベントは、解決済み本文を持つ場合も読み上げない。
 イベント別のWAVは持たず、WAVは開始音のみ。開始音のパスは `AceWindowsNarratorModule.kt` で定義する。
 `SoundPlayer` 等の音声再生基盤の実装は `:core:narrator` を参照。
 
-自動読み上げ各項目（フラッグ・車両接近・タイヤ過熱・燃料残量・燃料残り周回数・自己ベストラップ）の既定文言・保存先・プレースホルダー・開始音のキー、
+自動読み上げ各項目（フラッグ・車両接近・タイヤ過熱・ブレーキ過熱・燃料残量・燃料残り周回数・自己ベストラップ）の既定文言・保存先・プレースホルダー・開始音のキー、
 および全項目共通の動作（`resolvedText` の保持、空白・TTS利用不可時の `SKIPPED`、WAVへフォールバックしないこと）は
 [`docs/readout-item-key-wiring.md`](../../docs/readout-item-key-wiring.md) から辿れる ACE の項目表を正とする。
 
