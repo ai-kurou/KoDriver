@@ -1,6 +1,10 @@
 package kurou.kodriver.feature.otherloglist
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -125,22 +129,29 @@ internal fun TelemetryLogListPane(
     scrollToTopRequest: Int = 0,
 ) {
     KoDriverListEntrance(modifier = modifier.fillMaxSize()) {
-        if (uiState.logs.isEmpty()) {
-            TelemetryLogEmptyState(
-                selectedSimulator = uiState.selectedSimulator,
-                modifier = Modifier.fillMaxSize(),
-            )
-            return@KoDriverListEntrance
-        }
-
-        key(uiState.selectedSimulator) {
-            TelemetryLogListContent(
-                uiState = uiState,
-                onLogClick = onLogClick,
-                onFeedbackClick = onFeedbackClick,
-                onDeleteClick = onDeleteClick,
-                scrollToTopRequest = scrollToTopRequest,
-            )
+        // 空の状態と一覧が入れ替わるときだけフェードする。退場する側は切り替え前の uiState を表示し続ける。
+        AnimatedContent(
+            targetState = uiState,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            contentKey = { it.logs.isEmpty() },
+            label = "telemetryLogListEmptyState",
+        ) { animatedUiState ->
+            if (animatedUiState.logs.isEmpty()) {
+                TelemetryLogEmptyState(
+                    selectedSimulator = animatedUiState.selectedSimulator,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                key(animatedUiState.selectedSimulator) {
+                    TelemetryLogListContent(
+                        uiState = animatedUiState,
+                        onLogClick = onLogClick,
+                        onFeedbackClick = onFeedbackClick,
+                        onDeleteClick = onDeleteClick,
+                        scrollToTopRequest = scrollToTopRequest,
+                    )
+                }
+            }
         }
     }
 }

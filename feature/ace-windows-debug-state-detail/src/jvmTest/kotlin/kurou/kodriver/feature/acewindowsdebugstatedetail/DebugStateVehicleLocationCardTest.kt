@@ -1,6 +1,9 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -94,5 +97,29 @@ class DebugStateVehicleLocationCardTest {
 
         rule.onNodeWithText("ステータス: 不明").assertIsDisplayed()
         rule.onNodeWithText("不明").assertIsDisplayed()
+    }
+
+    @Test
+    fun `値の更新は即座に切り替え未取得との切り替えだけをフェードする`() {
+        val live = AceWindowsStatusData(AceWindowsStatusType.LIVE, AceWindowsCarLocation.TRACK)
+        var status by mutableStateOf<AceWindowsStatusData?>(live)
+        rule.setContent {
+            MaterialTheme {
+                VehicleLocationContent(status)
+            }
+        }
+        rule.onNodeWithText("Track（コース上）").assertIsDisplayed()
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle { status = live.copy(carLocation = AceWindowsCarLocation.PITLANE) }
+        rule.mainClock.advanceTimeByFrame()
+        rule.onNodeWithText("PitLane（ピットレーン）").assertExists()
+        rule.onNodeWithText("Track（コース上）").assertDoesNotExist()
+        rule.runOnIdle { status = null }
+        rule.mainClock.advanceTimeBy(50)
+        rule.onNodeWithText("PitLane（ピットレーン）").assertExists()
+        rule.onNodeWithText("未取得").assertExists()
+        rule.mainClock.autoAdvance = true
+        rule.waitForIdle()
+        rule.onNodeWithText("PitLane（ピットレーン）").assertDoesNotExist()
     }
 }

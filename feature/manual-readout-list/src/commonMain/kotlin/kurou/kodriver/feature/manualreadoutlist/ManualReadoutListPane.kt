@@ -6,6 +6,9 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -301,7 +304,17 @@ internal fun ManualReadoutListPaneContent(
                     }
                 }
             }
-            if (!uiState.playButtonLayoutEnabled) {
+            AnimatedVisibility(
+                visible = !uiState.playButtonLayoutEnabled,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut(),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(KoDriverSpacing.large)
+                        // 共通シェルが右下に重ねる音声認識のチップの上に置く
+                        .padding(bottom = bottomEndOverlayInset),
+            ) {
                 ExtendedFloatingActionButton(
                     onClick = addSet,
                     icon = {
@@ -311,12 +324,6 @@ internal fun ManualReadoutListPaneContent(
                         )
                     },
                     text = { Text(stringResource(Res.string.manual_readout_list_add_set)) },
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(KoDriverSpacing.large)
-                            // 共通シェルが右下に重ねる音声認識のチップの上に置く
-                            .padding(bottom = bottomEndOverlayInset),
                 )
             }
         }

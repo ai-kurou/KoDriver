@@ -275,4 +275,21 @@ class SpeechRecognitionCardTest {
             assertEquals(true, rule.onAllNodesWithText(right).fetchSemanticsNodes().isNotEmpty())
         }
     }
+
+    @Test
+    fun `音量ゲージは音量がなくなると退場してから消える`() {
+        val uiState = mutableStateOf(SpeechRecognitionUiState(level = 0.5f))
+        rule.setContent {
+            KoDriverTheme {
+                SpeechRecognitionCard(uiState = uiState.value, onDeviceMenuOpen = {}, onDeviceSelected = {})
+            }
+        }
+        rule.onNodeWithContentDescription("マイクの入力音量").assertIsDisplayed()
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle { uiState.value = SpeechRecognitionUiState() }
+        rule.mainClock.advanceTimeBy(100)
+        rule.onNodeWithContentDescription("マイクの入力音量").assertExists()
+        rule.mainClock.advanceTimeBy(300)
+        rule.onNodeWithContentDescription("マイクの入力音量").assertDoesNotExist()
+    }
 }

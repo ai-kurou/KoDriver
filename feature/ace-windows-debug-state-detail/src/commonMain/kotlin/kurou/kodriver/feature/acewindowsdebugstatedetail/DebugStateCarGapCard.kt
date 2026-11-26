@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.DebugStateFadeContent
 import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
@@ -18,6 +19,20 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CarGapContent(
+    gap: AceWindowsGapData?,
+    overallPosition: AceWindowsOverallPositionData?,
+) {
+    // 未取得と取得済みの切り替えだけをフェードする。値の更新ではフェードし直さない。
+    DebugStateFadeContent(
+        state = gap to overallPosition,
+        contentKey = { it.first == null && it.second == null },
+    ) { (animatedGap, position) ->
+        CarGapBody(animatedGap, position)
+    }
+}
+
+@Composable
+private fun CarGapBody(
     gap: AceWindowsGapData?,
     overallPosition: AceWindowsOverallPositionData?,
 ) {

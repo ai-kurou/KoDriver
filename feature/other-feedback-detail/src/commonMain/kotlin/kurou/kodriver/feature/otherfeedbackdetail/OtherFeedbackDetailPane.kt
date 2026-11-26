@@ -1,6 +1,10 @@
 package kurou.kodriver.feature.otherfeedbackdetail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +32,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -46,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverCollapsibleVisibility
 import kurou.kodriver.core.designsystem.KoDriverRadioRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -173,13 +182,10 @@ public fun OtherFeedbackDetailPaneContent(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            if (uiState.attachedTelemetryLog != null) {
-                Spacer(modifier = Modifier.height(KoDriverSpacing.small))
-                AttachedTelemetryLogChip(
-                    telemetryLog = uiState.attachedTelemetryLog,
-                    onDetach = onDetachTelemetryLog,
-                )
-            }
+            AttachedTelemetryLogSection(
+                telemetryLog = uiState.attachedTelemetryLog,
+                onDetach = onDetachTelemetryLog,
+            )
             Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             FeedbackStatus(uiState)
             FeedbackSendButton(uiState = uiState, onSend = onSendWithHaptic)
@@ -352,10 +358,17 @@ private fun FeedbackSendButton(
         enabled = uiState.canSend,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        if (uiState.sendStatus == FeedbackSendStatus.Sending) {
-            CircularProgressIndicator(modifier = Modifier.size(20.dp))
-        } else {
-            Text(stringResource(Res.string.feedback_send))
+        AnimatedContent(
+            targetState = uiState.sendStatus == FeedbackSendStatus.Sending,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            contentAlignment = Alignment.Center,
+            label = "feedbackSendButtonContent",
+        ) { sending ->
+            if (sending) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp))
+            } else {
+                Text(stringResource(Res.string.feedback_send))
+            }
         }
     }
 }
@@ -372,6 +385,26 @@ private fun FeedbackTypeOption(
         label = label,
         onClick = { onTypeSelected(type) },
     )
+}
+
+@Composable
+private fun AttachedTelemetryLogSection(
+    telemetryLog: TelemetryLog?,
+    onDetach: () -> Unit,
+) {
+    // 外した後も退場アニメーション中は、直前の添付ログを表示し続ける。
+    var lastTelemetryLog by remember { mutableStateOf(telemetryLog) }
+    if (telemetryLog != null) {
+        lastTelemetryLog = telemetryLog
+    }
+    KoDriverCollapsibleVisibility(visible = telemetryLog != null) {
+        lastTelemetryLog?.let {
+            Column {
+                Spacer(modifier = Modifier.height(KoDriverSpacing.small))
+                AttachedTelemetryLogChip(telemetryLog = it, onDetach = onDetach)
+            }
+        }
+    }
 }
 
 @Composable

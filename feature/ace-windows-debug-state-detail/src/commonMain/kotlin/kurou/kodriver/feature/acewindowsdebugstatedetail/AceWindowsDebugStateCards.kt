@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import kurou.kodriver.core.designsystem.DebugStateFadeContent
 import kurou.kodriver.core.designsystem.DebugStateStatusChip
 import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
@@ -114,6 +115,17 @@ private fun aceStatusTypeDisplayName(status: AceWindowsStatusType): String =
 
 @Composable
 internal fun AceWindowsVehicleLocationContent(aceWindowsStatus: AceWindowsStatusData?) {
+    // 未取得と取得済みの切り替えだけをフェードする。値の更新ではフェードし直さない。
+    DebugStateFadeContent(
+        state = aceWindowsStatus,
+        contentKey = { it == null },
+    ) { status ->
+        AceWindowsVehicleLocationBody(status)
+    }
+}
+
+@Composable
+private fun AceWindowsVehicleLocationBody(aceWindowsStatus: AceWindowsStatusData?) {
     if (aceWindowsStatus == null) {
         DebugStateUnavailableContent()
         return
@@ -132,6 +144,20 @@ internal fun AceWindowsVehicleLocationContent(aceWindowsStatus: AceWindowsStatus
 
 @Composable
 internal fun AceWindowsFuelContent(
+    aceWindowsFuel: AceWindowsFuelData?,
+    aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData?,
+) {
+    // 未取得と取得済みの切り替えだけをフェードする。値の更新ではフェードし直さない。
+    DebugStateFadeContent(
+        state = aceWindowsFuel to aceWindowsRemainingFuelLaps,
+        contentKey = { it.first == null },
+    ) { (fuel, remainingFuelLaps) ->
+        AceWindowsFuelBody(fuel, remainingFuelLaps)
+    }
+}
+
+@Composable
+private fun AceWindowsFuelBody(
     aceWindowsFuel: AceWindowsFuelData?,
     aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData?,
 ) {
@@ -165,6 +191,17 @@ internal fun AceWindowsFuelContent(
 
 @Composable
 internal fun AceWindowsNearbyVehiclesContent(vehicleApproach: AceWindowsVehicleApproachData?) {
+    // 未取得と取得済みの切り替えだけをフェードする。値の更新ではフェードし直さない。
+    DebugStateFadeContent(
+        state = vehicleApproach,
+        contentKey = { it == null },
+    ) { approach ->
+        AceWindowsNearbyVehiclesBody(approach)
+    }
+}
+
+@Composable
+private fun AceWindowsNearbyVehiclesBody(vehicleApproach: AceWindowsVehicleApproachData?) {
     val sortedVehicles =
         remember(vehicleApproach?.nearbyVehicles) {
             vehicleApproach?.nearbyVehicles.orEmpty().sortedBy { it.distanceMeters }

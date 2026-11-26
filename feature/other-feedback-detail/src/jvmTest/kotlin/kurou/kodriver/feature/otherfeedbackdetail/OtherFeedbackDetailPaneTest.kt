@@ -424,4 +424,32 @@ class OtherFeedbackDetailPaneTest {
         rule.onNodeWithText("名前").assertIsNotFocused()
         rule.onNodeWithText("メールアドレス").assertIsFocused()
     }
+
+    @Test
+    fun `添付ログを外すと退場中はチップを保持して完了後に消える`() {
+        var attached by
+            mutableStateOf<TelemetryLog?>(
+                TelemetryLog(
+                    id = 42L,
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
+                    narratedText = "イエローフラッグ",
+                    narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationSource = NarrationSource.AUTO,
+                    telemetryJson = "",
+                ),
+            )
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState(attachedTelemetryLog = attached))
+            }
+        }
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle { attached = null }
+        rule.mainClock.advanceTimeBy(100)
+        rule.onNodeWithText("テレメトリログ #42 を添付").assertExists()
+        rule.mainClock.advanceTimeBy(300)
+        rule.onNodeWithText("テレメトリログ #42 を添付").assertDoesNotExist()
+    }
 }

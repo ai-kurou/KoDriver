@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import kurou.kodriver.core.designsystem.DebugStateFadeContent
 import kurou.kodriver.core.designsystem.DebugStateHeatTile
 import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -22,6 +23,17 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TyreCarcassTemperatureContent(tyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData?) {
+    // 未取得と取得済みの切り替えだけをフェードする。値の更新ではフェードし直さない。
+    DebugStateFadeContent(
+        state = tyreCarcassTemperature,
+        contentKey = { it?.wheels == null },
+    ) { temperature ->
+        TyreCarcassTemperatureBody(temperature)
+    }
+}
+
+@Composable
+private fun TyreCarcassTemperatureBody(tyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData?) {
     val wheels = tyreCarcassTemperature?.wheels
     if (wheels == null) {
         DebugStateUnavailableContent()

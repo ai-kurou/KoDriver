@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import kurou.kodriver.core.designsystem.DebugStateFadeContent
 import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.DebugStateWheelTemperatureTile
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -23,8 +24,19 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TyreTemperatureContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
+    // 未取得と取得済みの切り替えだけをフェードする。値の更新ではフェードし直さない。
+    DebugStateFadeContent(
+        state = gt7Ps5Telemetry,
+        contentKey = { availableTyreTemperature(it) == null },
+    ) { telemetry ->
+        TyreTemperatureBody(telemetry)
+    }
+}
+
+@Composable
+private fun TyreTemperatureBody(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
     val wheels =
-        gt7Ps5Telemetry?.tyreTemperature?.takeUnless { it.isUnavailable() }?.let {
+        availableTyreTemperature(gt7Ps5Telemetry)?.let {
             mapOf(
                 WheelIndex.FRONT_LEFT to it.frontLeftCelsius,
                 WheelIndex.FRONT_RIGHT to it.frontRightCelsius,
@@ -67,6 +79,9 @@ internal fun TyreTemperatureContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
         }
     }
 }
+
+private fun availableTyreTemperature(gt7Ps5Telemetry: Gt7Ps5TelemetryData?): Gt7Ps5TyreTemperatureData? =
+    gt7Ps5Telemetry?.tyreTemperature?.takeUnless { it.isUnavailable() }
 
 // GT7は取得できないタイヤ温度を全輪0fで通知するため、全輪0℃は未取得として扱う。
 private fun Gt7Ps5TyreTemperatureData.isUnavailable(): Boolean =
