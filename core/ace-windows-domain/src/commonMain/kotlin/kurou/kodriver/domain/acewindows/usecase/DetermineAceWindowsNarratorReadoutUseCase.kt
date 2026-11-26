@@ -330,11 +330,13 @@ public class DetermineAceWindowsNarratorReadoutUseCase {
         return AceWindowsNarratorReadoutDecision(nextState, listOfNotNull(event))
     }
 
-    /** 全輪の最大カーカス温度。過熱判定済み（1輪以上が閾値以上）の場合のみ呼ぶ。 */
-    private fun maxCelsius(data: AceWindowsTyreCarcassTemperatureData): Int {
-        val maxReading = data.wheels.values.maxOf { it.value }
-        return maxReading.roundToInt()
-    }
+    /**
+     * 有限値の全輪カーカス温度。NaN・無限大は判定と最大値の対象から外す（NaN は roundToInt で例外になる）。
+     */
+    private fun finiteCelsius(data: AceWindowsTyreCarcassTemperatureData): List<Float> =
+        data.wheels.values
+            .map { it.value }
+            .filter { it.isFinite() }
 
     public fun determineTyreTemperatureOverheat(
         state: AceWindowsNarratorState,
@@ -342,9 +344,10 @@ public class DetermineAceWindowsNarratorReadoutUseCase {
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
+        val celsius = finiteCelsius(data)
         val nextOverheating =
             determineHysteresisState(
-                valuesCelsius = data.wheels.values.map { it.value },
+                valuesCelsius = celsius,
                 highThresholdCelsius = hotThreshold,
                 hysteresisCelsius = TYRE_OVERHEAT_HYSTERESIS_CELSIUS,
                 currentState = state.tyreOverheating,
@@ -355,7 +358,7 @@ public class DetermineAceWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(tyreOverheating = nextOverheating),
-            events = if (shouldAnnounce) listOf(AceWindowsTyreOverheat(maxCelsius(data))) else emptyList(),
+            events = if (shouldAnnounce) listOf(AceWindowsTyreOverheat(celsius.max().roundToInt())) else emptyList(),
         )
     }
 

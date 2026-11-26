@@ -2009,6 +2009,61 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `NaNや無限大のタイヤ温度は除外して有限値の最高温度で過熱と低温を読み上げる`() {
+        val input =
+            tyreTemperatureInput(
+                fl = 96.0,
+                fr = Double.NaN,
+                rl = Double.POSITIVE_INFINITY,
+                rr = 20.0,
+                raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+            )
+        val overheat =
+            tyreUseCase.determineTyreTemperatureOverheat(
+                LmuWindowsNarratorState(),
+                input,
+                settings(tyreTemperatureHighThresholdCelsius = 90),
+            )
+        val cold =
+            tyreUseCase.determineTyreTemperatureLow(
+                LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+                input,
+                settings(),
+            )
+
+        assertEquals(listOf(LmuWindowsTyreOverheat(96)), overheat.events)
+        assertEquals(listOf(LmuWindowsTyreCold(96)), cold.events)
+    }
+
+    @Test
+    fun `全輪のタイヤ温度がNaNや無限大なら過熱も低温も読み上げない`() {
+        val input =
+            tyreTemperatureInput(
+                fl = Double.NaN,
+                fr = Double.POSITIVE_INFINITY,
+                rl = Double.NEGATIVE_INFINITY,
+                rr = Double.NaN,
+                raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+            )
+        val overheat =
+            tyreUseCase.determineTyreTemperatureOverheat(
+                LmuWindowsNarratorState(),
+                input,
+                settings(tyreTemperatureHighThresholdCelsius = 90),
+            )
+        val cold =
+            tyreUseCase.determineTyreTemperatureLow(
+                LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+                input,
+                settings(),
+            )
+
+        assertEquals(emptyList(), overheat.events)
+        assertEquals(false, overheat.state.tyreOverheating)
+        assertEquals(emptyList(), cold.events)
+    }
+
+    @Test
     fun `過熱と低温の警告は全輪の最高温度を四捨五入する`() {
         listOf(99.5 to 100, 99.4 to 99).forEach { (temperature, expected) ->
             WheelIndex.entries.forEach { hottestWheel ->
