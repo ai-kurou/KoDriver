@@ -17,12 +17,12 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.model.SpeechRecognitionEvent
-import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
-import kurou.kodriver.domain.model.SpeechRecognitionMode
-import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
+import kurou.kodriver.domain.microphone.repository.MicrophoneCutQuietSoundPreferencesRepository
 import kurou.kodriver.domain.repository.RecordAudioPermissionRepository
-import kurou.kodriver.domain.repository.SpeechRecognitionRepository
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionRepository
 
 /** 1回に読み取る音声の長さ（16kHz・モノラル・16bit PCM で100ミリ秒分のバイト数）。 */
 internal const val VOSK_READ_CHUNK_BYTES = 3_200

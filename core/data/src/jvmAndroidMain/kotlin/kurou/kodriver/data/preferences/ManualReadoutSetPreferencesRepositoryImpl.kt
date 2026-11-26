@@ -2,9 +2,9 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
-import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 
 internal class ManualReadoutSetPreferencesRepositoryImpl(
     private val dataStore: DataStore<ManualReadoutSetPreferences>,

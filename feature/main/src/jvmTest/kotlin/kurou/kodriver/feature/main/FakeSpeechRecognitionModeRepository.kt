@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
-import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
-import kurou.kodriver.domain.model.SpeechRecognitionChime
-import kurou.kodriver.domain.model.SpeechRecognitionEvent
-import kurou.kodriver.domain.model.SpeechRecognitionMode
-import kurou.kodriver.domain.model.SpeechRecognitionTranscript
 import kurou.kodriver.domain.repository.SpeechPlaybackStateRepository
-import kurou.kodriver.domain.repository.SpeechRecognitionRepository
-import kurou.kodriver.domain.repository.SpeechRecognitionTranscriptRepository
+import kurou.kodriver.domain.speechrecognition.engine.SpeechRecognitionChimePlayer
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionChime
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionTranscript
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionRepository
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionTranscriptRepository
 
 /** [SpeechRecognitionRepository.setMode] で渡されたモードを記録するフェイク。認識イベントは流さない。 */
 internal class FakeSpeechRecognitionModeRepository : SpeechRecognitionRepository {

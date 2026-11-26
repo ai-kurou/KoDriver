@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.speechrecognitionlist
 
-import kurou.kodriver.domain.usecase.ObserveManualReadoutItemSpokenUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutItemSpokenUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSpeechCommandGuideUseCase
 import org.koin.core.module.Module

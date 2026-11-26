@@ -16,7 +16,6 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:lmu-windows-domain` | LMU固有のドメインモデル・シミュレーター固有の sealed `ReadoutItemKey` subtype・registry spec と読み上げ既定値、リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-lmu-windows-domain.svg) |
 | `:core:overlay-domain` | 読み上げオーバーレイ設定のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-overlay-domain.svg) |
 | `:core:manual-readout-domain` | 手動読み上げのセット操作・読み上げ依頼・ホットキーのリポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-manual-readout-domain.svg) |
-| `:core:voice-domain` | 読み上げ音声の一覧取得と音声設定の保存のユースケース（`:core:domain` に依存） | [図](graphs/core-voice-domain.svg) |
 | `:core:microphone-domain` | マイク入力と「小さい音をカット」設定のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-microphone-domain.svg) |
 | `:core:speech-recognition-domain` | 音声認識のモデル・リポジトリ抽象・ユースケース（`:core:domain` に依存） | [図](graphs/core-speech-recognition-domain.svg) |
 | `:core:data` | 共通 DataStore、HTTP/WebSocketクライアント、共通リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |

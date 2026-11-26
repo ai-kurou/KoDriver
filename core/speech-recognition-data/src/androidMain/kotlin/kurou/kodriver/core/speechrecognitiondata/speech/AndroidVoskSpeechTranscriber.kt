@@ -2,7 +2,7 @@ package kurou.kodriver.core.speechrecognitiondata.speech
 
 import android.content.Context
 import android.content.res.AssetManager
-import kurou.kodriver.domain.model.MICROPHONE_SAMPLE_RATE_HZ
+import kurou.kodriver.domain.microphone.model.MICROPHONE_SAMPLE_RATE_HZ
 import org.vosk.LibVosk
 import org.vosk.LogLevel
 import org.vosk.Model

@@ -1,8 +1,8 @@
 package kurou.kodriver.data.preferences
 
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 
 /**
  * ManualReadoutSetPreferences Repository の永続化実装を、指定したシミュレーター専用に生成する。

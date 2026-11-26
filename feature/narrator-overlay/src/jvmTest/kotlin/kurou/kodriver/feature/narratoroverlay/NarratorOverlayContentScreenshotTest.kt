@@ -12,10 +12,10 @@ import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.NarrationSource
-import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.SpeechRecognitionTranscript
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionTranscript
 import org.junit.Test
 
 class NarratorOverlayContentScreenshotTest {

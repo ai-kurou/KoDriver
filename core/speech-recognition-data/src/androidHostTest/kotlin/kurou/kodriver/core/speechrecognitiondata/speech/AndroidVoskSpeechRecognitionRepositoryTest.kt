@@ -18,9 +18,9 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import kurou.kodriver.domain.model.SpeechRecognitionEvent
-import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
-import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
 import java.util.Collections
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch

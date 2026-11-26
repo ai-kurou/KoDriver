@@ -1,13 +1,13 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
+import kurou.kodriver.domain.manualreadout.usecase.DeleteManualReadoutSetUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCase
+import kurou.kodriver.domain.manualreadout.usecase.RetryManualReadoutHotkeyRegistrationUseCase
+import kurou.kodriver.domain.manualreadout.usecase.UpdateManualReadoutSetUseCase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
-import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named

@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
 
 internal class ManualReadoutPlayButtonLayoutPreferencesRepositoryImpl(
     private val dataStore: DataStore<ManualReadoutPlayButtonLayoutPreferences>,

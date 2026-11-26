@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.overlay.usecase.PreviewOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.runCapturingErrors
-import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
-import kurou.kodriver.domain.usecase.PreviewOverlayBackgroundOpacityUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayBackgroundOpacityUseCase
 
 internal class OtherOverlayBackgroundOpacityDetailViewModel(
     observeOverlayBackgroundOpacity: ObserveOverlayBackgroundOpacityUseCase,

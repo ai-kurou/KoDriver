@@ -3,9 +3,9 @@ package kurou.kodriver.data.preferences
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import kurou.kodriver.domain.model.OVERLAY_WINDOW_HEIGHT_DEFAULT
-import kurou.kodriver.domain.model.OVERLAY_WINDOW_POSITION_UNSPECIFIED
-import kurou.kodriver.domain.model.OVERLAY_WINDOW_WIDTH_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_WINDOW_HEIGHT_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_WINDOW_POSITION_UNSPECIFIED
+import kurou.kodriver.domain.overlay.model.OVERLAY_WINDOW_WIDTH_DEFAULT
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable

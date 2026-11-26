@@ -2,7 +2,7 @@
 
 マイク入力と「小さい音をカット」設定のモデル、Repository インターフェース、UseCase。
 
-- `:core:domain` にのみ依存する。パッケージ名は `kurou.kodriver.domain` のまま（`:core:domain` と同一パッケージを分割して持つ）。
+- `:core:domain` にのみ依存する。パッケージ名は `kurou.kodriver.domain.microphone` 配下とする。
 
 ## 小さい音をカットする段階
 

@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.PreviewOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayTextSizeUseCase
 import kurou.kodriver.domain.runCapturingErrors
-import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.PreviewOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayTextSizeUseCase
 
 /**
  * OtherOverlayTextSizeDetail 画面の状態管理とユーザー操作を扱う ViewModel。

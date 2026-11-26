@@ -24,11 +24,11 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkey
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeyEvent
 import kurou.kodriver.core.windowshotkeydata.GlobalHotkeySource
+import kurou.kodriver.domain.manualreadout.model.ManualReadoutRequest
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
-import kurou.kodriver.domain.model.ManualReadoutRequest
-import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
-import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 
 internal class ManualReadoutHotkeyRepositoryImpl(
     private val source: GlobalHotkeySource,

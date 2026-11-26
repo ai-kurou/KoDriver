@@ -1,11 +1,11 @@
 package kurou.kodriver.feature.manualreadoutlist
 
-import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
-import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutPlayButtonLayoutEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
-import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
-import kurou.kodriver.domain.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
+import kurou.kodriver.domain.manualreadout.usecase.AddManualReadoutSetUseCase
+import kurou.kodriver.domain.manualreadout.usecase.DeleteManualReadoutSetUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutPlayButtonLayoutEnabledUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCase
+import kurou.kodriver.domain.manualreadout.usecase.RequestManualReadoutUseCase
+import kurou.kodriver.domain.manualreadout.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named

@@ -3,9 +3,9 @@ package kurou.kodriver.data.hotkey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kurou.kodriver.domain.manualreadout.model.ManualReadoutRequest
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.model.HotkeyRegistrationState
-import kurou.kodriver.domain.model.ManualReadoutRequest
-import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
 
 internal class UnsupportedManualReadoutHotkeyRepository : ManualReadoutHotkeyRepository {
     override fun pressStream(): Flow<ManualReadoutRequest> = emptyFlow()

@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.captureErrorTypeOnly
-import kurou.kodriver.domain.model.SpeechRecognitionEvent
-import kurou.kodriver.domain.model.SpeechRecognitionFailureReason
-import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionEvent
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionFailureReason
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
 import kotlin.coroutines.cancellation.CancellationException
 
 /**

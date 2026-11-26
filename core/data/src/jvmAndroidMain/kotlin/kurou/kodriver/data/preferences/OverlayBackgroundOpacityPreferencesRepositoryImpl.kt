@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
+import kurou.kodriver.domain.overlay.repository.OverlayBackgroundOpacityPreferencesRepository
 
 internal class OverlayBackgroundOpacityPreferencesRepositoryImpl(
     private val dataStore: DataStore<OverlayBackgroundOpacityPreferences>,

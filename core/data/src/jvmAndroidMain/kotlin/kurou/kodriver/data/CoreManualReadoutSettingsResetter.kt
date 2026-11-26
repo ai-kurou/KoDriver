@@ -1,8 +1,8 @@
 package kurou.kodriver.data
 
-import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
-import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
-import kurou.kodriver.domain.repository.ManualReadoutSettingsResetter
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSettingsResetter
 
 internal class CoreManualReadoutSettingsResetter(
     private val lmuWindowsManualReadoutSetPreferencesRepository: ManualReadoutSetPreferencesRepository,

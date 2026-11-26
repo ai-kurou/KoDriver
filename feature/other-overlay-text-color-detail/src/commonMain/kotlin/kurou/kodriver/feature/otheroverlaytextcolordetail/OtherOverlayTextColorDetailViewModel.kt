@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.PreviewOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayTextColorUseCase
 import kurou.kodriver.domain.runCapturingErrors
-import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.PreviewOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayTextColorUseCase
 
 /** オーバーレイ文字色の保存値とダイアログ内の選択を管理する。 */
 internal class OtherOverlayTextColorDetailViewModel internal constructor(

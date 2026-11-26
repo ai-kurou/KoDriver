@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.model.ManualReadoutRequest
+import kurou.kodriver.domain.manualreadout.model.ManualReadoutRequest
+import kurou.kodriver.domain.manualreadout.usecase.AddManualReadoutSetUseCase
+import kurou.kodriver.domain.manualreadout.usecase.DeleteManualReadoutSetUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutPlayButtonLayoutEnabledUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCase
+import kurou.kodriver.domain.manualreadout.usecase.RequestManualReadoutUseCase
+import kurou.kodriver.domain.manualreadout.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
 import kurou.kodriver.domain.model.ManualReadoutSet
-import kurou.kodriver.domain.usecase.AddManualReadoutSetUseCase
-import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutPlayButtonLayoutEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
-import kurou.kodriver.domain.usecase.RequestManualReadoutUseCase
-import kurou.kodriver.domain.usecase.SaveManualReadoutPlayButtonLayoutEnabledUseCase
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

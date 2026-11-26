@@ -2,7 +2,7 @@
 
 読み上げオーバーレイ（表示状態・ウィンドウ位置・文字サイズ・文字色・背景透明度）のモデル、Repository インターフェース、UseCase。
 
-- `:core:domain` にのみ依存する。パッケージ名は `kurou.kodriver.domain` のまま（`:core:domain` と同一パッケージを分割して持つ）。
+- `:core:domain` にのみ依存する。パッケージ名は `kurou.kodriver.domain.overlay` 配下とする。
 
 ## オーバーレイ文字サイズのプレビュー
 

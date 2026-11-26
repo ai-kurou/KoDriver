@@ -410,7 +410,6 @@ tasks.register("generateModuleGraphImages") {
                         ":core:gt7-ps5-domain",
                         ":core:overlay-domain",
                         ":core:manual-readout-domain",
-                        ":core:voice-domain",
                         ":core:microphone-domain",
                         ":core:speech-recognition-domain",
                     ),

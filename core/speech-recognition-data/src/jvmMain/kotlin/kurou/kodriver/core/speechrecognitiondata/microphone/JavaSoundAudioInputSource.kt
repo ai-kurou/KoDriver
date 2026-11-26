@@ -1,8 +1,8 @@
 package kurou.kodriver.core.speechrecognitiondata.microphone
 
-import kurou.kodriver.domain.model.MICROPHONE_CHANNEL_COUNT
-import kurou.kodriver.domain.model.MICROPHONE_SAMPLE_RATE_HZ
-import kurou.kodriver.domain.model.MICROPHONE_SAMPLE_SIZE_BITS
+import kurou.kodriver.domain.microphone.model.MICROPHONE_CHANNEL_COUNT
+import kurou.kodriver.domain.microphone.model.MICROPHONE_SAMPLE_RATE_HZ
+import kurou.kodriver.domain.microphone.model.MICROPHONE_SAMPLE_SIZE_BITS
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.DataLine

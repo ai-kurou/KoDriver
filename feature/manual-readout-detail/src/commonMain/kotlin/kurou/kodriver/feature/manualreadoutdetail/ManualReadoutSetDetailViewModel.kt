@@ -10,23 +10,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kurou.kodriver.domain.launchCapturingErrors
+import kurou.kodriver.domain.manualreadout.model.isManualReadoutHotkeyVirtualKeyCode
+import kurou.kodriver.domain.manualreadout.usecase.DeleteManualReadoutSetUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
+import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCase
+import kurou.kodriver.domain.manualreadout.usecase.RetryManualReadoutHotkeyRegistrationUseCase
+import kurou.kodriver.domain.manualreadout.usecase.UpdateManualReadoutSetUseCase
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.isManualReadoutHotkeyVirtualKeyCode
 import kurou.kodriver.domain.model.normalizeReadoutCustomText
 import kurou.kodriver.domain.model.takeManualReadoutSetName
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
-import kurou.kodriver.domain.usecase.DeleteManualReadoutSetUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
-import kurou.kodriver.domain.usecase.ObserveManualReadoutSetsUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
-import kurou.kodriver.domain.usecase.RetryManualReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
-import kurou.kodriver.domain.usecase.UpdateManualReadoutSetUseCase
 
 @Suppress("LongParameterList")
 internal class ManualReadoutSetDetailViewModel(

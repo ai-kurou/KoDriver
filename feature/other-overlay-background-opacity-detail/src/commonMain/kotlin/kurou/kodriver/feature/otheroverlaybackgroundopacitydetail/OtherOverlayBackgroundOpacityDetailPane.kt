@@ -17,8 +17,8 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_MAX
-import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_MIN
+import kurou.kodriver.domain.overlay.model.OVERLAY_BACKGROUND_OPACITY_MAX
+import kurou.kodriver.domain.overlay.model.OVERLAY_BACKGROUND_OPACITY_MIN
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.Res
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.opacity_description
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.opacity_label

@@ -60,9 +60,9 @@ import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.core.designsystem.RestoreRowFocusOnReturn
 import kurou.kodriver.core.designsystem.handleListGridArrowKey
 import kurou.kodriver.core.designsystem.handleListRowArrowKey
+import kurou.kodriver.domain.manualreadout.util.isManualReadoutHotkeySupported
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_add_set
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_list_empty_title

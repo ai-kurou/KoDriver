@@ -36,11 +36,11 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutRequestRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.ManualReadoutPlayButtonLayoutEnabledPreferencesRepository
-import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
-import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource

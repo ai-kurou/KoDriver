@@ -4,8 +4,8 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kurou.kodriver.domain.model.ManualReadoutItemRequest
-import kurou.kodriver.domain.repository.ManualReadoutItemRequestRepository
+import kurou.kodriver.domain.manualreadout.model.ManualReadoutItemRequest
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutItemRequestRepository
 
 /**
  * 購読中の Narrator に項目単位の依頼を配信する。購読開始前の依頼は再配信しない。

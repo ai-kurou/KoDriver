@@ -34,7 +34,7 @@ import kurou.kodriver.core.designsystem.KoDriverAlertDialog
 import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.feature.otheroverlaytextcolordetail.generated.resources.Res
 import kurou.kodriver.feature.otheroverlaytextcolordetail.generated.resources.overlay_text_color_cancel
 import kurou.kodriver.feature.otheroverlaytextcolordetail.generated.resources.overlay_text_color_ok

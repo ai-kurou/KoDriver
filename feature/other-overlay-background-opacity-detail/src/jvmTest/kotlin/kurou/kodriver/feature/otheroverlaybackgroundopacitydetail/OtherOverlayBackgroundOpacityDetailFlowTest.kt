@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

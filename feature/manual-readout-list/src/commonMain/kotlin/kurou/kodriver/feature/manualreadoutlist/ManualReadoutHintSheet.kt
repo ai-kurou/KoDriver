@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverHintRow
 import kurou.kodriver.core.designsystem.KoDriverHintSheetRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
-import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
+import kurou.kodriver.domain.manualreadout.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_description
 import kurou.kodriver.feature.manualreadoutlist.generated.resources.manual_readout_hint_delete_title

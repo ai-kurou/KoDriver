@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
+import kurou.kodriver.domain.microphone.repository.MicrophoneCutQuietSoundPreferencesRepository
 
 internal class MicrophoneCutQuietSoundPreferencesRepositoryImpl(
     private val dataStore: DataStore<MicrophoneCutQuietSoundPreferences>,

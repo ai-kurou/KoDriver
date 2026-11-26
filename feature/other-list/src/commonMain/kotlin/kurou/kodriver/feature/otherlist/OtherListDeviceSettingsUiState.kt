@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.otherlist
 
+import kurou.kodriver.domain.microphone.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
 import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
-import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
 import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
 import kurou.kodriver.domain.model.ThemeMode
 

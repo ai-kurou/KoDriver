@@ -18,11 +18,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.captureError
-import kurou.kodriver.domain.repository.MicrophoneCutQuietSoundPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
-import kurou.kodriver.domain.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
-import kurou.kodriver.domain.usecase.SaveMicrophoneCutQuietSoundInCommandUseCase
-import kurou.kodriver.domain.usecase.SaveMicrophoneCutQuietSoundLevelUseCase
+import kurou.kodriver.domain.microphone.repository.MicrophoneCutQuietSoundPreferencesRepository
+import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundInCommandUseCase
+import kurou.kodriver.domain.microphone.usecase.ObserveMicrophoneCutQuietSoundLevelUseCase
+import kurou.kodriver.domain.microphone.usecase.SaveMicrophoneCutQuietSoundInCommandUseCase
+import kurou.kodriver.domain.microphone.usecase.SaveMicrophoneCutQuietSoundLevelUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

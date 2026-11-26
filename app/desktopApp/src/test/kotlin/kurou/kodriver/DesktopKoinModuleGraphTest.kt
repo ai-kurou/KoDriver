@@ -43,12 +43,12 @@ import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelLapsR
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.acewindows.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutRequestRepository
+import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AutoReadoutSettingsResetter
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
-import kurou.kodriver.domain.repository.ManualReadoutHotkeyRepository
-import kurou.kodriver.domain.repository.ManualReadoutRequestRepository
-import kurou.kodriver.domain.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule

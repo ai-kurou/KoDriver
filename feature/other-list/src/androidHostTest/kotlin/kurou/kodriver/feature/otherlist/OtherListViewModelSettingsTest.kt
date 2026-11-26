@@ -10,13 +10,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
-import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
-import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_SIZE_DEFAULT
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

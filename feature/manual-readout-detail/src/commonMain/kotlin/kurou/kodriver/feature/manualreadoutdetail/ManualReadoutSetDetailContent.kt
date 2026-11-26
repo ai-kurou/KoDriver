@@ -36,6 +36,7 @@ import kurou.kodriver.core.designsystem.KoDriverDestructiveConfirmDialog
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.core.designsystem.rememberTextInsertState
+import kurou.kodriver.domain.manualreadout.util.isManualReadoutHotkeySupported
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -44,7 +45,6 @@ import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKeyRegistry
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutClassCarGapItem
 import kurou.kodriver.domain.model.isLmuWindowsManualReadoutTemperatureItem
-import kurou.kodriver.domain.util.isManualReadoutHotkeySupported
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_cancel
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_car_gap_hint

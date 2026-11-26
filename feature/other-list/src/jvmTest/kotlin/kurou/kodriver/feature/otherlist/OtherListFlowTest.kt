@@ -14,10 +14,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AndroidAudioUsage
-import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kotlin.test.Test

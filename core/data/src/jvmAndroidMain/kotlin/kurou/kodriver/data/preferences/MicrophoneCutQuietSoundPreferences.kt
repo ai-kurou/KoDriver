@@ -3,8 +3,8 @@ package kurou.kodriver.data.preferences
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_IN_COMMAND_DEFAULT
-import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
+import kurou.kodriver.domain.microphone.model.MICROPHONE_CUT_QUIET_SOUND_IN_COMMAND_DEFAULT
+import kurou.kodriver.domain.microphone.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable

@@ -10,16 +10,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.OverlayTextSize
-import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
-import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
-import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
-import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
-import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
-import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
+import kurou.kodriver.domain.overlay.repository.OverlayBackgroundOpacityPreferencesRepository
+import kurou.kodriver.domain.overlay.repository.OverlayTextColorPreferencesRepository
+import kurou.kodriver.domain.overlay.repository.OverlayTextSizePreferencesRepository
+import kurou.kodriver.domain.overlay.repository.OverlayVisiblePreferencesRepository
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextColorUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.overlay.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.overlay.usecase.SaveOverlayVisibleUseCase
 import kotlin.test.Test
 
 class OtherListOverlaySettingsFlowTest {

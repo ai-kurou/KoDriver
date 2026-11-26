@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import kurou.kodriver.domain.model.SpeechRecognitionChime
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionChime
 import java.util.concurrent.CountDownLatch
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.SourceDataLine

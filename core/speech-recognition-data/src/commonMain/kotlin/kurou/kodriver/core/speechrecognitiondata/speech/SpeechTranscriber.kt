@@ -1,6 +1,6 @@
 package kurou.kodriver.core.speechrecognitiondata.speech
 
-import kurou.kodriver.domain.model.SpeechRecognitionMode
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
 
 /**
  * PCM音声を文字列に変換するエンジン。OS・ライブラリ依存部分をここに閉じ込め、Repository側はフェイクで検証する。

@@ -6,8 +6,8 @@ import android.media.AudioTrack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import kurou.kodriver.domain.engine.SpeechRecognitionChimePlayer
-import kurou.kodriver.domain.model.SpeechRecognitionChime
+import kurou.kodriver.domain.speechrecognition.engine.SpeechRecognitionChimePlayer
+import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionChime
 
 /**
  * Android版の確認音プレイヤー。確認音の波形（[SpeechRecognitionChime.pcm]）を静的な [AudioTrack] に載せて鳴らし、鳴り終わるまで待つ。

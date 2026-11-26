@@ -3,7 +3,7 @@ package kurou.kodriver.data.manualreadout
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ManualReadoutItemRequest
+import kurou.kodriver.domain.manualreadout.model.ManualReadoutItemRequest
 import kurou.kodriver.domain.model.Simulator
 import kotlin.test.Test
 import kotlin.test.assertEquals

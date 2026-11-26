@@ -1,18 +1,13 @@
 package kurou.kodriver.feature.otherlist
 
 import kurou.kodriver.domain.gt7ps5.model.GT7_PS5_UDP_PORT_DEFAULT
+import kurou.kodriver.domain.microphone.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
 import kurou.kodriver.domain.model.ANDROID_AUDIO_USAGE_DEFAULT
 import kurou.kodriver.domain.model.AndroidAudioUsage
 import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
-import kurou.kodriver.domain.model.MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT
-import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
-import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
-import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
-import kurou.kodriver.domain.model.OVERLAY_VISIBLE_DEFAULT
-import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.SOUND_VOLUME_DEFAULT
@@ -21,6 +16,11 @@ import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_COLOR_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_TEXT_SIZE_DEFAULT
+import kurou.kodriver.domain.overlay.model.OVERLAY_VISIBLE_DEFAULT
+import kurou.kodriver.domain.overlay.model.OverlayTextSize
 
 /**
  * OtherList 画面の表示状態。
