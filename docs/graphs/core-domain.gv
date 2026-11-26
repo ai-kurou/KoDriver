@@ -96,6 +96,7 @@ digraph G {
   ":core:windows-hotkey-data" -> ":core:domain"
   ":core:windows-startup-data" -> ":core:domain"
   ":feature:ace-windows-auto-readout-brake-temperature-detail" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-brake-temperature-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-auto-readout-flag-detail" -> ":core:domain"
   ":feature:ace-windows-auto-readout-flag-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-auto-readout-my-best-lap-detail" -> ":core:domain"
