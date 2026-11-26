@@ -16,6 +16,7 @@ digraph G {
   ":core:text-to-speech-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:windows-hotkey-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:windows-startup-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":feature:ace-windows-auto-readout-brake-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-auto-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -94,6 +95,7 @@ digraph G {
   ":core:text-to-speech-data" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:domain"
   ":core:windows-startup-data" -> ":core:domain"
+  ":feature:ace-windows-auto-readout-brake-temperature-detail" -> ":core:domain"
   ":feature:ace-windows-auto-readout-flag-detail" -> ":core:domain"
   ":feature:ace-windows-auto-readout-flag-detail" -> ":core:ace-windows-domain"
   ":feature:ace-windows-auto-readout-my-best-lap-detail" -> ":core:domain"

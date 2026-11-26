@@ -275,7 +275,7 @@
 <title>feature:ace&#45;windows*</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M633.5,-984.23C633.5,-984.23 487.75,-984.23 487.75,-984.23 481.75,-984.23 475.75,-978.23 475.75,-972.23 475.75,-972.23 475.75,-953.73 475.75,-953.73 475.75,-947.73 481.75,-941.73 487.75,-941.73 487.75,-941.73 633.5,-941.73 633.5,-941.73 639.5,-941.73 645.5,-947.73 645.5,-953.73 645.5,-953.73 645.5,-972.23 645.5,-972.23 645.5,-978.23 639.5,-984.23 633.5,-984.23"/>
 <text xml:space="preserve" text-anchor="middle" x="560.62" y="-966.93" font-family="Times,serif" font-size="14.00">feature:ace&#45;windows*</text>
-<text xml:space="preserve" text-anchor="middle" x="560.62" y="-949.68" font-family="Times,serif" font-size="14.00">8 modules</text>
+<text xml:space="preserve" text-anchor="middle" x="560.62" y="-949.68" font-family="Times,serif" font-size="14.00">9 modules</text>
 </g>
 <!-- :app:shared&#45;&gt;feature:ace&#45;windows* -->
 <g id="edge27" class="edge">
