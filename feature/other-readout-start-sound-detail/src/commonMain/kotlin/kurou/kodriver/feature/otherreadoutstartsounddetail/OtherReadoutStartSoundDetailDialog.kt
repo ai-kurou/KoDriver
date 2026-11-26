@@ -1,26 +1,17 @@
 package kurou.kodriver.feature.otherreadoutstartsounddetail
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverAlertDialog
+import kurou.kodriver.core.designsystem.KoDriverDialogTextButton
+import kurou.kodriver.core.designsystem.KoDriverRadioRow
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutStartSoundType
@@ -69,12 +60,7 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
     onDismiss: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val haptic = LocalHapticFeedback.current
-    val onTypeSelectedWithHaptic: (ReadoutStartSoundType) -> Unit = { type ->
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        onTypeSelected(type)
-    }
-    AlertDialog(
+    KoDriverAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.readout_start_sound_title)) },
         text = {
@@ -91,46 +77,25 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
                                 stringResource(Res.string.readout_start_sound_formula_radio)
                             }
                         }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .selectable(
-                                    selected = uiState.pendingType == type,
-                                    role = Role.RadioButton,
-                                    onClick = { onTypeSelectedWithHaptic(type) },
-                                ),
-                    ) {
-                        RadioButton(
-                            selected = uiState.pendingType == type,
-                            onClick = null,
-                            modifier = Modifier.size(48.dp),
-                        )
-                        Text(label)
-                    }
+                    KoDriverRadioRow(
+                        selected = uiState.pendingType == type,
+                        label = label,
+                        onClick = { onTypeSelected(type) },
+                    )
                 }
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onConfirm()
-                },
-            ) {
-                Text(stringResource(Res.string.readout_start_sound_ok))
-            }
+            KoDriverDialogTextButton(
+                text = stringResource(Res.string.readout_start_sound_ok),
+                onClick = onConfirm,
+            )
         },
         dismissButton = {
-            TextButton(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onDismiss()
-                },
-            ) {
-                Text(stringResource(Res.string.readout_start_sound_cancel))
-            }
+            KoDriverDialogTextButton(
+                text = stringResource(Res.string.readout_start_sound_cancel),
+                onClick = onDismiss,
+            )
         },
         modifier = modifier,
     )

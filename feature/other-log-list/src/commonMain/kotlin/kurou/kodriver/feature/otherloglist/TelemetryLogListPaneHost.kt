@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -19,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverModalBottomSheet
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.LocalBottomEndOverlayInset
 import kurou.kodriver.feature.otherloglist.generated.resources.Res
@@ -93,7 +93,7 @@ internal fun TelemetryLogListPaneHostContent(
     }
 
     uiState.selectedLogId?.let { selectedLogId ->
-        ModalBottomSheet(
+        KoDriverModalBottomSheet(
             onDismissRequest = onLogDetailDismiss,
             sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden),
         ) {

@@ -30,3 +30,13 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: build/reports/kover/report.xml
+
+      # テストが失敗した場合のみ、失敗詳細を含む JUnit XML を成果物として残す（flaky テストの原因調査用）
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unit-test-results
+          path: "**/build/test-results/**/*.xml"
+          retention-days: 7
+          if-no-files-found: ignore
