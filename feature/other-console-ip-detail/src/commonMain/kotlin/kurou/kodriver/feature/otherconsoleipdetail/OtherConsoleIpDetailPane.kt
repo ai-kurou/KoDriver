@@ -139,7 +139,7 @@ public fun OtherConsoleIpDetailPaneContent(
     }
     val onSaveConfirmedByKeyboard: () -> Unit = {
         if (uiState.isInputValid && uiState.inputAddress.isNotEmpty()) {
-            onSave()
+            onSaveWithHaptic()
         }
     }
     val currentOnDismiss by rememberUpdatedState(onDismiss)
