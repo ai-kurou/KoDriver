@@ -14,6 +14,7 @@ import java.net.SocketException
 import java.util.Collections
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class MdnsAddressesTest {
     private val lan: InetAddress = InetAddress.getByName("192.168.1.10")
@@ -100,5 +101,15 @@ class MdnsAddressesTest {
         } finally {
             unmockkStatic(Sentry::class)
         }
+    }
+
+    @Test
+    fun `列挙の指定を省略すると実際のインターフェースからアドレスを返す`() {
+        assertTrue(mdnsAddresses(localHostProvider = { localHost }).isNotEmpty())
+    }
+
+    @Test
+    fun `ローカルホストの指定を省略すると実際のローカルホストのアドレスを返す`() {
+        assertEquals(listOf(InetAddress.getLocalHost()), mdnsAddresses(interfacesProvider = { emptyList() }))
     }
 }
