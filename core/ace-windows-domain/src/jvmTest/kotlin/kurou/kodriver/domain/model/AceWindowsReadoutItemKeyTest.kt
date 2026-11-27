@@ -26,6 +26,14 @@ class AceWindowsReadoutItemKeyTest {
     }
 
     @Test
+    fun `ACE brake temperature auto readout is off by default while start sound and queue stay on`() {
+        val key = AceWindowsReadoutItemKey.BrakeTemperature.Root
+        assertEquals(false, ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT[key])
+        assertEquals(true, ACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT[key])
+        assertEquals(true, ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT[key])
+    }
+
+    @Test
     fun `ACE defaults cover all TopLevel keys and queueable keys`() {
         val topLevel = ACE_WINDOWS_READOUT_ITEM_KEYS.filterIsInstance<ReadoutItemKey.TopLevel>()
         assertEquals(topLevel.toSet(), ACE_WINDOWS_AUTO_READOUT_ENABLED_STATE_DEFAULT.keys)

@@ -132,7 +132,7 @@ class ObserveAutoReadoutEnabledStatesUseCaseTest {
         }
 
     @Test
-    fun `ace_windowsは保存済みの値がなくてもデフォルトのtrueが反映される`() =
+    fun `ace_windowsは保存済みの値がなくてもデフォルト値が反映される`() =
         runTest {
             val repo = createAutoReadoutPreferencesRepository(repository)
             val useCase = ObserveAutoReadoutEnabledStatesUseCase(repo)
@@ -142,7 +142,7 @@ class ObserveAutoReadoutEnabledStatesUseCaseTest {
                     AceWindowsReadoutItemKey.Flag.Root to true,
                     AceWindowsReadoutItemKey.VehicleApproach.Root to true,
                     AceWindowsReadoutItemKey.TyreTemperature.Root to true,
-                    AceWindowsReadoutItemKey.BrakeTemperature.Root to true,
+                    AceWindowsReadoutItemKey.BrakeTemperature.Root to false,
                     AceWindowsReadoutItemKey.RemainingFuel.Root to true,
                     AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
                     AceWindowsReadoutItemKey.MyBestLap.Root to false,
