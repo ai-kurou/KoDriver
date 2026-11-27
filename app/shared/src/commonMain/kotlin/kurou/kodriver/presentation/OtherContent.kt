@@ -169,6 +169,8 @@ private fun handleOtherItemClick(
 
         OtherListItemType.WindowsSpeechUnavailable -> onOpenWindowsSpeechSettings()
 
+        OtherListItemType.WakeWordHotkey -> Unit
+
         OtherListItemType.ShowLogs,
         OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,

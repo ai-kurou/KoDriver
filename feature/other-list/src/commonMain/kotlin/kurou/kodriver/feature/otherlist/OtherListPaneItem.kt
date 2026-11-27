@@ -364,6 +364,7 @@ internal fun OtherListItem(
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.MicrophoneCutQuietSound,
+                OtherListItemType.WakeWordHotkey,
                 OtherListItemType.ShowLogs,
                 OtherListItemType.DeleteAllLogs,
                 OtherListItemType.ResetAutoReadoutSettings,
@@ -460,6 +461,8 @@ private fun handleOtherListItemClick(
         OtherListItemType.AndroidAudioUsage -> {
             onItemClick(item)
         }
+
+        OtherListItemType.WakeWordHotkey -> {}
 
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,

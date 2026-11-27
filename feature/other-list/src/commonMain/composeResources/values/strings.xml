@@ -13,6 +13,7 @@
     <string name="item_microphone_cut_quiet_sound">小さい音をカット</string>
     <string name="item_microphone_cut_quiet_sound_summary">レベル %1$d</string>
     <string name="item_microphone_cut_quiet_sound_summary_off">オフ（カットしない）</string>
+    <string name="item_wake_word_hotkey">ウェイクワードホットキー</string>
     <string name="item_overlay_text_size">文字サイズ</string>
     <string name="item_overlay_background_opacity">背景の透明度</string>
     <string name="item_overlay_background_opacity_summary">%1$d%</string>

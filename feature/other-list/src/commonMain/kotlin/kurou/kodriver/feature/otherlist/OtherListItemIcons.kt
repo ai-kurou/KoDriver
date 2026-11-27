@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.FormatColorText
 import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.GraphicEq
+import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.MicOff
 import androidx.compose.material.icons.outlined.NewReleases
@@ -42,7 +43,7 @@ internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageV
 
         is OtherListItemType.OverlaySettings -> otherOverlaySettingsItemLeadingIconVector(itemType)
 
-        OtherListItemType.MicrophoneCutQuietSound -> Icons.Outlined.MicOff
+        is OtherListItemType.MicrophoneSettings -> otherMicrophoneSettingsItemLeadingIconVector(itemType)
 
         is OtherListItemType.AppSettings -> otherAppSettingsItemLeadingIconVector(itemType)
 
@@ -88,6 +89,12 @@ private fun otherOverlaySettingsItemLeadingIconVector(itemType: OtherListItemTyp
         OtherListItemType.OverlayTextSize -> Icons.Outlined.FormatSize
         OtherListItemType.OverlayTextColor -> Icons.Outlined.FormatColorText
         OtherListItemType.OverlayBackgroundOpacity -> Icons.Outlined.Opacity
+    }
+
+private fun otherMicrophoneSettingsItemLeadingIconVector(itemType: OtherListItemType.MicrophoneSettings): ImageVector =
+    when (itemType) {
+        OtherListItemType.MicrophoneCutQuietSound -> Icons.Outlined.MicOff
+        OtherListItemType.WakeWordHotkey -> Icons.Outlined.Keyboard
     }
 
 private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType.AppSettings): ImageVector =

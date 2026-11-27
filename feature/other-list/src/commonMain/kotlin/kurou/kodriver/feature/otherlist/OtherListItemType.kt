@@ -93,6 +93,10 @@ public sealed interface OtherListItemType {
         override val id: String = "microphone_cut_quiet_sound"
     }
 
+    public data object WakeWordHotkey : MicrophoneSettings {
+        override val id: String = "wake_word_hotkey"
+    }
+
     public data object DynamicColor : AppSettings {
         override val id: String = "dynamic_color"
     }
@@ -164,6 +168,7 @@ public sealed interface OtherListItemType {
                 OverlayTextColor,
                 OverlayBackgroundOpacity,
                 MicrophoneCutQuietSound,
+                WakeWordHotkey,
                 DynamicColor,
                 HapticFeedback,
                 Startup,

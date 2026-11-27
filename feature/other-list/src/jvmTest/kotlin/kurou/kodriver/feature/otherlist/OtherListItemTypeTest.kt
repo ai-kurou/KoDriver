@@ -95,6 +95,7 @@ class OtherListItemTypeTest {
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.MicrophoneCutQuietSound,
+                OtherListItemType.WakeWordHotkey,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.Startup,
@@ -195,9 +196,9 @@ class OtherListItemTypeTest {
     }
 
     @Test
-    fun `MicrophoneSettingsには小さい音をカットだけが所属しマイク設定セクションに表示する`() {
+    fun `MicrophoneSettingsには小さい音をカットとウェイクワードホットキーが所属しマイク設定セクションに表示する`() {
         assertEquals(
-            setOf(OtherListItemType.MicrophoneCutQuietSound),
+            setOf(OtherListItemType.MicrophoneCutQuietSound, OtherListItemType.WakeWordHotkey),
             OtherListItemType.entries.filterIsInstance<OtherListItemType.MicrophoneSettings>().toSet(),
         )
         assertEquals(OtherListSection.MicrophoneSettings, OtherListItemType.MicrophoneCutQuietSound.section())
@@ -205,6 +206,12 @@ class OtherListItemTypeTest {
         assertEquals(
             OtherListItemType.MicrophoneCutQuietSound,
             OtherListItemType.fromId("microphone_cut_quiet_sound"),
+        )
+        assertEquals(OtherListSection.MicrophoneSettings, OtherListItemType.WakeWordHotkey.section())
+        assertEquals("wake_word_hotkey", OtherListItemType.WakeWordHotkey.id)
+        assertEquals(
+            OtherListItemType.WakeWordHotkey,
+            OtherListItemType.fromId("wake_word_hotkey"),
         )
     }
 

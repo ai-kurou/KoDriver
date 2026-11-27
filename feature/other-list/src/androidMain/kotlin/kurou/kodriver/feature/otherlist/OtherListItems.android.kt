@@ -13,6 +13,7 @@ internal actual fun buildOtherListItems(): List<OtherListItemType> {
 private val excludedItems =
     setOf(
         OtherListItemType.DebugState,
+        OtherListItemType.WakeWordHotkey,
         OtherListItemType.WindowsSpeechUnavailable,
         OtherListItemType.Startup,
         OtherListItemType.OverlayVisible,
