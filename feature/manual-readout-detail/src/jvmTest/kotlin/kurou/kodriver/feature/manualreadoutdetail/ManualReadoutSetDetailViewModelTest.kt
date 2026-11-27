@@ -596,13 +596,14 @@ class ManualReadoutSetDetailViewModelTest {
                 vm.removeItem(key)
                 vm.moveItem(-1, 0)
                 vm.moveItem(0, MANUAL_READOUT_SET_ITEM_MAX)
+                vm.moveItem(0, -1)
                 vm.moveItem(0, 0)
                 vm.moveItem(0, MANUAL_READOUT_SET_ITEM_MAX - 1)
                 assertEquals(moved, sets.value.single())
                 sets.value = listOf(selected)
                 vm.addItem(key)
                 assertEquals(selected, sets.value.single())
-                verify(exactly = 9) { repository.observeSets() }
+                verify(exactly = 10) { repository.observeSets() }
                 coVerify(exactly = 1) { repository.updateSet(moved) }
                 confirmVerified(repository)
             } finally {
@@ -857,6 +858,36 @@ class ManualReadoutSetDetailViewModelTest {
                 verify(exactly = 6) { repository.observeSets() }
                 coVerify(exactly = 1) { repository.updateSet(assigned) }
                 coVerify(exactly = 1) { repository.updateSet(original) }
+                confirmVerified(repository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `同じキーでも修飾キーが異なる他セットのホットキーとは重複とみなさない`() =
+        runTest(dispatcher) {
+            val original = ManualReadoutSet("target", hotkeyModifiers = ManualReadoutHotkeyModifiers.CTRL_SHIFT)
+            val other =
+                ManualReadoutSet(
+                    "other",
+                    hotkeyVirtualKeyCode = 0x41,
+                    hotkeyModifiers = ManualReadoutHotkeyModifiers.ALT_SHIFT,
+                )
+            val assigned = original.copy(hotkeyVirtualKeyCode = 0x41)
+            val sets = MutableStateFlow(listOf(other, original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(other, assigned) }
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                vm.assignHotkey(0x41)
+
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                assertEquals(0x41, vm.uiState.first().hotkeyVirtualKeyCode)
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(assigned) }
                 confirmVerified(repository)
             } finally {
                 collection.cancel()

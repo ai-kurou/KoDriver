@@ -64,6 +64,15 @@ class LmuWindowsFuelBaselineTrackerTest {
     }
 
     @Test
+    fun `容量が有限でない場合は起点を更新しない`() {
+        tracker.update(telemetry(10.0, 4))
+        assertEquals(
+            LmuWindowsFuelBaseline(10.0, 4),
+            tracker.update(telemetry(60.0, 5, capacityLiters = Double.POSITIVE_INFINITY)),
+        )
+    }
+
+    @Test
     fun `容量0の欠測燃料は起点と消費履歴を更新しない`() {
         tracker.update(telemetry(20.0, 2))
 

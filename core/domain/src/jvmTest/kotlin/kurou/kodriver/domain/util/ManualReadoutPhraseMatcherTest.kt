@@ -33,6 +33,12 @@ class ManualReadoutPhraseMatcherTest {
     }
 
     @Test
+    fun `英字だけの語句は後ろに英字が続く位置を飛ばし同じ発話の後の単独の位置で一致する`() {
+        assertNull(matchManualReadoutItemKey(listOf("vest"), phrases))
+        assertEquals("ve", matchManualReadoutItemKey(listOf("vestとVE"), phrases))
+    }
+
+    @Test
     fun `空白と英字の大文字小文字を無視する`() {
         assertEquals("ve", matchManualReadoutItemKey(listOf("v e"), phrases))
         assertEquals("fuel", matchManualReadoutItemKey(listOf("燃 料"), phrases))
