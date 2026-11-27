@@ -83,7 +83,7 @@ ACE Windows の補足は次のとおり。
 
 - 対応項目は保存順に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）まで処理する。
 - 手動値は `AceWindowsManualReadoutItem(key, textTemplate, value)` で受け取る。自己ベストラップ以外は鮮度判定済みの値を渡す。
-- 自己ベストラップは鮮度を判定しない。サーバーは `MY_BEST_LAP` を `distinctUntilChanged` で配信し、値が変わらない間は Android に再送しないため、5秒で失効させると読めなくなる。シミュレーター切り替え時は最新値と受信時刻をクリアする。
+- 自己ベストラップは鮮度を判定しない。サーバーは `MY_BEST_LAP` を `distinctUntilChanged` で配信し、データ全体（`bestLapTimeMs` と `currentLap`）が変わらない間は Android に再送しない。周回中は5秒を超えて再送されないことがあり、5秒で失効させると読めなくなる。シミュレーター切り替え時は最新値と受信時刻をクリアする。
 - 全項目の文言が空白なら空文字とする。
 - 一覧は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root` を含むため、手動の「燃料残量」を選択できる。開始音・ログ・手動優先の読み上げには既存の `RemainingFuel.Root` を使う。
 
