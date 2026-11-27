@@ -2,6 +2,7 @@ package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import androidx.compose.runtime.Immutable
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
@@ -22,6 +23,7 @@ internal data class AceWindowsDebugState(
     val tyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null,
     val gap: AceWindowsGapData? = null,
     val overallPosition: AceWindowsOverallPositionData? = null,
+    val brakeTemperature: AceWindowsBrakeTemperatureData? = null,
 )
 
 internal val aceWindowsSupportedCardKeys =
@@ -31,6 +33,7 @@ internal val aceWindowsSupportedCardKeys =
         AceWindowsDebugStateCardKey.FLAG_INFO,
         AceWindowsDebugStateCardKey.FUEL_CONSUMPTION,
         AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+        AceWindowsDebugStateCardKey.BRAKE_TEMPERATURE,
         AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
         AceWindowsDebugStateCardKey.BEST_LAP,
         AceWindowsDebugStateCardKey.CAR_GAP,

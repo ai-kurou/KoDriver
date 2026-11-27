@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
@@ -16,7 +17,7 @@ import org.koin.core.module.Module
  * 各 UseCase が必要とする Repository は composition root で束ねたモジュールから解決する。
  */
 internal fun Module.aceWindowsDebugStateDefinitions() {
-    factory { AceWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { AceWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { ObserveAceWindowsFuelUseCase(get()) }
     factory { ObserveAceWindowsFlagUseCase(get()) }
     factory { ObserveAceWindowsStatusUseCase(get()) }
@@ -26,4 +27,5 @@ internal fun Module.aceWindowsDebugStateDefinitions() {
     factory { ObserveAceWindowsRemainingFuelLapsUseCase(get()) }
     factory { ObserveAceWindowsGapUseCase(get()) }
     factory { ObserveAceWindowsOverallPositionUseCase(get()) }
+    factory { ObserveAceWindowsBrakeTemperatureUseCase(get()) }
 }

@@ -7,6 +7,7 @@ public enum class AceWindowsDebugStateCardKey {
     SIDE_BY_SIDE_VEHICLES,
     BEST_LAP,
     TYRE_CARCASS_TEMPERATURE,
+    BRAKE_TEMPERATURE,
     FUEL_CONSUMPTION,
     CAR_GAP,
 }

@@ -12,6 +12,7 @@ internal val defaultDebugStateCardOrder =
         AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
         AceWindowsDebugStateCardKey.BEST_LAP,
         AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+        AceWindowsDebugStateCardKey.BRAKE_TEMPERATURE,
         AceWindowsDebugStateCardKey.FUEL_CONSUMPTION,
         AceWindowsDebugStateCardKey.CAR_GAP,
     )

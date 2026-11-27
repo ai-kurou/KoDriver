@@ -23,6 +23,11 @@
     <string name="debug_state_tyre_carcass_temperature_fr">FR %1$s℃</string>
     <string name="debug_state_tyre_carcass_temperature_rl">RL %1$s℃</string>
     <string name="debug_state_tyre_carcass_temperature_rr">RR %1$s℃</string>
+    <string name="debug_state_brake_temperature_title">ブレーキ温度</string>
+    <string name="debug_state_brake_temperature_fl">FL %1$s℃</string>
+    <string name="debug_state_brake_temperature_fr">FR %1$s℃</string>
+    <string name="debug_state_brake_temperature_rl">RL %1$s℃</string>
+    <string name="debug_state_brake_temperature_rr">RR %1$s℃</string>
     <string name="debug_state_fuel_consumption_title">燃料消費</string>
     <string name="debug_state_fuel_consumption_remaining_laps">残り %1$s周</string>
     <string name="debug_state_fuel_consumption_remaining_percent">残量 %1$s%</string>
