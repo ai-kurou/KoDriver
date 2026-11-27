@@ -75,13 +75,13 @@ class OtherListPaneMicrophoneTest {
     }
 
     @Test
-    fun `ウェイクワードホットキーをクリックしても選択を通知せず選択状態にもしない`() {
+    fun `ウェイクワードホットキーをクリックすると選択を通知する`() {
+        every { onItemClick(OtherListItemType.WakeWordHotkey) } returns Unit
         setPane(items = listOf(OtherListItemType.WakeWordHotkey))
 
         rule.onNodeWithText("ウェイクワードホットキー").performClick()
 
-        rule.onNodeWithText("ウェイクワードホットキー").assertIsNotSelected()
-        verify(exactly = 0) { onItemClick(OtherListItemType.WakeWordHotkey) }
+        verify(exactly = 1) { onItemClick(OtherListItemType.WakeWordHotkey) }
         confirmVerified(onItemClick)
     }
 

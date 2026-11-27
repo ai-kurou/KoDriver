@@ -261,7 +261,7 @@
 <title>feature</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M845.75,-1305.72C845.75,-1305.72 639.35,-1305.72 639.35,-1305.72 633.35,-1305.72 627.35,-1299.72 627.35,-1293.72 627.35,-1293.72 627.35,-1270.72 627.35,-1270.72 627.35,-1264.72 633.35,-1258.72 639.35,-1258.72 639.35,-1258.72 845.75,-1258.72 845.75,-1258.72 851.75,-1258.72 857.75,-1264.72 857.75,-1270.72 857.75,-1270.72 857.75,-1293.72 857.75,-1293.72 857.75,-1299.72 851.75,-1305.72 845.75,-1305.72"/>
 <text xml:space="preserve" text-anchor="middle" x="742.55" y="-1286.52" font-family="Helvetica,sans-Serif" font-size="16.00">feature</text>
-<text xml:space="preserve" text-anchor="middle" x="742.55" y="-1267.02" font-family="Helvetica,sans-Serif" font-size="16.00">26 modules</text>
+<text xml:space="preserve" text-anchor="middle" x="742.55" y="-1267.02" font-family="Helvetica,sans-Serif" font-size="16.00">27 modules</text>
 </g>
 <!-- :app:shared&#45;&gt;feature -->
 <g id="edge26" class="edge">
