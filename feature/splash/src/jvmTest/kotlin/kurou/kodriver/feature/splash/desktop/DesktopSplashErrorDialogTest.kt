@@ -34,4 +34,23 @@ class DesktopSplashErrorDialogTest {
 
         assertTrue(confirmed)
     }
+
+    @Test
+    fun `サーバー起動失敗のダイアログは内容を表示し閉じるボタンでonConfirmを呼ぶ`() {
+        var confirmed = false
+
+        rule.setContent {
+            MaterialTheme {
+                DesktopSplashServerErrorDialog(onConfirm = { confirmed = true })
+            }
+        }
+
+        rule.onNodeWithText("サーバーを起動できませんでした").assertIsDisplayed()
+        rule.onNodeWithText("Android端末への配信は使えません", substring = true).assertIsDisplayed()
+
+        rule.onNodeWithText("閉じる").performClick()
+        rule.waitForIdle()
+
+        assertTrue(confirmed)
+    }
 }

@@ -113,4 +113,38 @@ class DesktopSplashHostTest {
 
         assertEquals("初期化に失敗しました", errored?.message)
     }
+
+    @Test
+    fun `サーバー起動が失敗するとダイアログを閉じた後に起動を続ける`() {
+        var serverError: Throwable? = null
+        var errored: Throwable? = null
+        var finishedCount = 0
+
+        rule.setContent {
+            MaterialTheme {
+                DesktopSplashHost(
+                    appVersion = "1.0.0",
+                    initializeModules = {},
+                    startServer = { error("bind に失敗しました") },
+                    onFinished = { finishedCount++ },
+                    onServerStartError = { serverError = it },
+                    onError = { errored = it },
+                )
+            }
+        }
+
+        rule.waitForIdle()
+
+        assertEquals("bind に失敗しました", serverError?.message)
+        rule.onNodeWithText("サーバーを起動できませんでした").assertIsDisplayed()
+        assertEquals(0, finishedCount)
+
+        rule.onNodeWithText("閉じる").performClick()
+        rule.waitForIdle()
+
+        rule.onNodeWithText("起動が完了しました").assertIsDisplayed()
+        rule.onNodeWithText("サーバーを起動できませんでした").assertDoesNotExist()
+        assertEquals(1, finishedCount)
+        assertEquals(null, errored)
+    }
 }
