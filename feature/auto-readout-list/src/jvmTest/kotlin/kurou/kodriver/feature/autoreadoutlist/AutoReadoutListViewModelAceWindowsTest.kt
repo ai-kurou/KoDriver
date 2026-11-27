@@ -88,7 +88,7 @@ class AutoReadoutListViewModelAceWindowsTest {
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.Flag.Root])
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.VehicleApproach.Root])
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.TyreTemperature.Root])
-            assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.BrakeTemperature.Root])
+            assertEquals(false, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.BrakeTemperature.Root])
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.RemainingFuel.Root])
             assertEquals(true, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.RemainingFuelLaps.Root])
             assertEquals(false, state.autoReadoutEnabledStates[AceWindowsReadoutItemKey.MyBestLap.Root])

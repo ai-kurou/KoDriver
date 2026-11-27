@@ -1355,7 +1355,11 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                enabledOverrides = mapOf(AceWindowsReadoutItemKey.MyBestLap.Root to true),
+                enabledOverrides =
+                    mapOf(
+                        AceWindowsReadoutItemKey.MyBestLap.Root to true,
+                        AceWindowsReadoutItemKey.BrakeTemperature.Root to true,
+                    ),
                 remainingFuelLapsThreshold = 2,
                 selectedSimulator = Simulator.LmuWindows,
             )
@@ -1561,7 +1565,11 @@ class AceWindowsNarratorViewModelTest {
             val brakeTemperatureChannel = Channel<AceWindowsBrakeTemperatureData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
             val ttsEngine = mockTts(spokenTexts)
-            stubReadoutDefaults(thresholdPercentage = 30, brakeTemperatureHighThresholdCelsius = 700)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.BrakeTemperature.Root to true),
+                brakeTemperatureHighThresholdCelsius = 700,
+            )
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -1614,6 +1622,7 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.BrakeTemperature.Root to true),
                 brakeTemperatureEnabledOverrides =
                     mapOf(AceWindowsReadoutItemKey.BrakeTemperature.OverheatWarning to false),
             )
