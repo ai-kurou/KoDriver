@@ -113,4 +113,43 @@ class ManualReadoutSetDetailPaneHotkeyTest {
         rule.onNodeWithText("登録に失敗しました（エラーコード: 5）").assertDoesNotExist()
         rule.onNodeWithText("再試行").assertDoesNotExist()
     }
+
+    @Test
+    fun `重複エラーと登録状態は退場中も直近の内容を保持して完了後に消える`() {
+        val registrationText = "他のアプリが使用中のため登録できません"
+        val conflictText = "Gran Turismo 7（PS5） のセット2で使用中のため割り当てできません"
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.Gt7Ps5.id,
+                    setNumber = 1,
+                    hotkeyVirtualKeyCode = 0x41,
+                    hotkeyRegistrationState = HotkeyRegistrationState.Conflict,
+                    hotkeyConflict = ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = {},
+                    onDelete = {},
+                    showHotkey = true,
+                )
+            }
+        }
+        rule.onNodeWithText(registrationText).assertExists()
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle {
+            state.value = state.value.copy(hotkeyVirtualKeyCode = null, hotkeyConflict = null)
+        }
+        rule.mainClock.advanceTimeBy(100)
+        rule.onNodeWithText(conflictText).assertExists()
+        rule.onNodeWithText(registrationText).assertExists()
+        rule.onNodeWithText("再試行").assertExists()
+        rule.mainClock.advanceTimeBy(300)
+        rule.onNodeWithText(conflictText).assertDoesNotExist()
+        rule.onNodeWithText(registrationText).assertDoesNotExist()
+        rule.onNodeWithText("再試行").assertDoesNotExist()
+    }
 }

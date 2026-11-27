@@ -66,6 +66,18 @@ internal fun ManualReadoutHotkeyCard(
     showGuideLink: Boolean = true,
 ) {
     val haptic = LocalHapticFeedback.current
+    val conflictText = manualReadoutHotkeyConflictText(state.hotkeyConflict)
+    val showRegistration =
+        state.hotkeyVirtualKeyCode != null && state.hotkeyRegistrationState != HotkeyRegistrationState.Unsupported
+    // 非表示への切り替えで入力が消えても、退場アニメーション中は最後の表示内容を保つ。
+    var lastConflictText by remember { mutableStateOf(conflictText) }
+    var lastRegistrationState by remember { mutableStateOf(state.hotkeyRegistrationState) }
+    if (conflictText != null) {
+        lastConflictText = conflictText
+    }
+    if (showRegistration) {
+        lastRegistrationState = state.hotkeyRegistrationState
+    }
     DetailPaneCard(
         title = stringResource(Res.string.manual_readout_hotkey_title),
         modifier = Modifier.testTag("manual_readout_hotkey_card"),
@@ -79,16 +91,17 @@ internal fun ManualReadoutHotkeyCard(
                         modifier = Modifier.weight(1f),
                     )
                 }
-                val conflictText = manualReadoutHotkeyConflictText(state.hotkeyConflict)
-                if (conflictText != null) Text(conflictText, color = MaterialTheme.colorScheme.error)
+                KoDriverCollapsibleVisibility(visible = conflictText != null) {
+                    Text(lastConflictText.orEmpty(), color = MaterialTheme.colorScheme.error)
+                }
                 TextButton(onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     onClear()
                 }, enabled = state.hotkeyVirtualKeyCode != null) {
                     Text(stringResource(Res.string.manual_readout_hotkey_clear))
                 }
-                if (state.hotkeyVirtualKeyCode != null) {
-                    ManualReadoutHotkeyRegistration(state.hotkeyRegistrationState) {
+                KoDriverCollapsibleVisibility(visible = showRegistration) {
+                    ManualReadoutHotkeyRegistration(lastRegistrationState) {
                         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         onRetry()
                     }
@@ -186,8 +199,21 @@ private fun ManualReadoutHotkeyRegistration(
     registration: HotkeyRegistrationState,
     onRetry: () -> Unit,
 ) {
-    // Unsupported は何も表示しない。Crossfade を置くと空の子要素が増えて親の spacedBy の間隔だけが残るため、置かない。
-    if (registration == HotkeyRegistrationState.Unsupported) return
+    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
+        ManualReadoutHotkeyRegistrationStatus(registration)
+        KoDriverCollapsibleVisibility(
+            visible =
+                registration is HotkeyRegistrationState.Conflict || registration is HotkeyRegistrationState.Failed,
+        ) {
+            TextButton(onClick = onRetry) {
+                Text(stringResource(Res.string.manual_readout_hotkey_registration_retry))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ManualReadoutHotkeyRegistrationStatus(registration: HotkeyRegistrationState) {
     Crossfade(targetState = registration, label = "manualReadoutHotkeyRegistration") { animatedRegistration ->
         when (animatedRegistration) {
             HotkeyRegistrationState.Unsupported -> {
@@ -213,11 +239,6 @@ private fun ManualReadoutHotkeyRegistration(
                     ),
                 )
             }
-        }
-    }
-    if (registration is HotkeyRegistrationState.Conflict || registration is HotkeyRegistrationState.Failed) {
-        TextButton(onClick = onRetry) {
-            Text(stringResource(Res.string.manual_readout_hotkey_registration_retry))
         }
     }
 }
