@@ -2,6 +2,7 @@ package kurou.kodriver.feature.othervoicedetail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -39,6 +40,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
@@ -53,6 +55,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.PlayingEqualizer
 import kurou.kodriver.core.designsystem.koDriverMonospaceTextStyle
+import kurou.kodriver.core.designsystem.listRowSelectionAnimationSpec
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.othervoicedetail.generated.resources.Res
@@ -317,9 +320,13 @@ private fun VoiceCard(
     val colors = MaterialTheme.colorScheme
     Surface(
         shape = MaterialTheme.shapes.large,
-        color = if (selected) colors.primaryContainer else colors.surfaceContainerLow,
-        contentColor = if (selected) colors.onPrimaryContainer else colors.onSurface,
-        border = BorderStroke(CARD_BORDER_WIDTH, if (selected) colors.primary else colors.outlineVariant),
+        color = animateSelectionColor(if (selected) colors.primaryContainer else colors.surfaceContainerLow),
+        contentColor = animateSelectionColor(if (selected) colors.onPrimaryContainer else colors.onSurface),
+        border =
+            BorderStroke(
+                CARD_BORDER_WIDTH,
+                animateSelectionColor(if (selected) colors.primary else colors.outlineVariant),
+            ),
         modifier =
             modifier.selectable(
                 selected = selected,
@@ -362,7 +369,7 @@ private fun VoiceCardLabel(
         Text(
             voice.cultureName,
             style = koDriverMonospaceTextStyle(),
-            color = if (selected) colors.onPrimaryContainer else colors.onSurfaceVariant,
+            color = animateSelectionColor(if (selected) colors.onPrimaryContainer else colors.onSurfaceVariant),
         )
     }
 }
@@ -380,8 +387,11 @@ private fun VoicePreviewButton(
         shape = MaterialTheme.shapes.extraLarge,
         colors =
             IconButtonDefaults.filledTonalIconButtonColors(
-                containerColor = if (selected) colors.primary else colors.surfaceContainerHighest,
-                contentColor = if (selected) colors.onPrimary else colors.primary,
+                containerColor =
+                    animateSelectionColor(
+                        if (selected) colors.primary else colors.surfaceContainerHighest,
+                    ),
+                contentColor = animateSelectionColor(if (selected) colors.onPrimary else colors.primary),
             ),
     ) {
         if (previewing) {
@@ -408,8 +418,8 @@ private fun VoiceAvatar(
     Box(modifier = modifier.size(AVATAR_SIZE)) {
         Surface(
             shape = MaterialTheme.shapes.extraLarge,
-            color = if (selected) colors.primary else colors.surfaceContainerHighest,
-            contentColor = if (selected) colors.onPrimary else colors.onSurfaceVariant,
+            color = animateSelectionColor(if (selected) colors.primary else colors.surfaceContainerHighest),
+            contentColor = animateSelectionColor(if (selected) colors.onPrimary else colors.onSurfaceVariant),
             modifier = Modifier.fillMaxSize(),
         ) {
             Box(contentAlignment = Alignment.Center) {
@@ -436,6 +446,17 @@ private fun VoiceAvatar(
             }
         }
     }
+}
+
+/** 選択状態で変わる色を、一覧の行の選択と同じ速さで切り替える。 */
+@Composable
+private fun animateSelectionColor(target: Color): Color {
+    val color by animateColorAsState(
+        targetValue = target,
+        animationSpec = listRowSelectionAnimationSpec(),
+        label = "selectionColor",
+    )
+    return color
 }
 
 @Preview(showBackground = true)

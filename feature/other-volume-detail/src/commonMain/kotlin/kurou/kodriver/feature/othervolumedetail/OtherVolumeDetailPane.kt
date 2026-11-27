@@ -1,5 +1,9 @@
 package kurou.kodriver.feature.othervolumedetail
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -140,11 +144,17 @@ public fun OtherVolumeDetailPaneContent(
                     contentDescription = null,
                 )
                 Spacer(Modifier.width(KoDriverSpacing.small))
-                Text(
-                    stringResource(
-                        if (uiState.isPreviewing) Res.string.volume_preview_stop else Res.string.volume_preview,
-                    ),
-                )
+                AnimatedContent(
+                    targetState = uiState.isPreviewing,
+                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    label = "volumePreviewLabel",
+                ) { previewing ->
+                    Text(
+                        stringResource(
+                            if (previewing) Res.string.volume_preview_stop else Res.string.volume_preview,
+                        ),
+                    )
+                }
             }
             DetailPaneSubtitle(
                 text = stringResource(Res.string.device_volume_subtitle),

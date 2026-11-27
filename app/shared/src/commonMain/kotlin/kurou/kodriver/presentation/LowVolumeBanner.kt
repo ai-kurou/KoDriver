@@ -1,5 +1,7 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -102,17 +104,23 @@ internal fun LowVolumeBanner(
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.small),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(
-                        imageVector =
+                    Crossfade(
+                        targetState =
                             if (uiState.deviceVolume != null) {
                                 Icons.AutoMirrored.Filled.VolumeDown
                             } else {
                                 Icons.AutoMirrored.Filled.VolumeOff
                             },
-                        contentDescription = null,
-                        tint = contentColor,
-                        modifier = Modifier.size(18.dp),
-                    )
+                        animationSpec = tween(BANNER_ENTER_MILLIS),
+                        label = "lowVolumeBannerIcon",
+                    ) { icon ->
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = contentColor,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
                     Text(stringResource(message), style = MaterialTheme.typography.labelMedium, color = contentColor)
                 }
             }
