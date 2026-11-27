@@ -426,6 +426,34 @@ class OtherFeedbackDetailPaneTest {
     }
 
     @Test
+    fun `添付ログを外すと退場中はチップを保持して完了後に消える`() {
+        var attached by
+            mutableStateOf<TelemetryLog?>(
+                TelemetryLog(
+                    id = 42L,
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
+                    narratedText = "イエローフラッグ",
+                    narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationSource = NarrationSource.AUTO,
+                    telemetryJson = "",
+                ),
+            )
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState(attachedTelemetryLog = attached))
+            }
+        }
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle { attached = null }
+        rule.mainClock.advanceTimeBy(100)
+        rule.onNodeWithText("テレメトリログ #42 を添付").assertExists()
+        rule.mainClock.advanceTimeBy(300)
+        rule.onNodeWithText("テレメトリログ #42 を添付").assertDoesNotExist()
+    }
+
+    @Test
     fun `送信状態の切り替え中は前後の文言が重なり完了後は新しい文言だけになる`() {
         var sendStatus by mutableStateOf<FeedbackSendStatus>(FeedbackSendStatus.Sending)
         rule.setContent {

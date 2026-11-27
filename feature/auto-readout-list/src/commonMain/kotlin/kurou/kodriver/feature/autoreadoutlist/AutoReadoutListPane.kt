@@ -298,20 +298,20 @@ private fun LazyListScope.autoReadoutHeaderItems(
     if (isAceSelected) {
         item(key = "acePreReleaseNotice") {
             AcePreReleaseNotice(
-                modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+                modifier = Modifier.animateItem().padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
             )
         }
     }
     if (isGt7Ps5DesktopHintShown) {
         item(key = "gt7Ps5DesktopReadoutHint") {
             Gt7Ps5DesktopAutoReadoutHintRow(
-                modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+                modifier = Modifier.animateItem().padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
             )
         }
     }
     item(key = "priorityHint") {
         PriorityHintRow(
-            modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+            modifier = Modifier.animateItem().padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
         )
     }
 }

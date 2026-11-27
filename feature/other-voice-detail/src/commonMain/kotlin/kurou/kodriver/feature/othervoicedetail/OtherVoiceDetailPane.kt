@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.othervoicedetail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
@@ -7,6 +8,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -394,16 +396,23 @@ private fun VoicePreviewButton(
                 contentColor = animateSelectionColor(if (selected) colors.onPrimary else colors.primary),
             ),
     ) {
-        if (previewing) {
-            PlayingEqualizer(
-                contentDescription =
-                    stringResource(Res.string.voice_preview_stop_description, voice.displayName),
-            )
-        } else {
-            Icon(
-                Icons.Default.PlayArrow,
-                contentDescription = stringResource(Res.string.voice_preview_description, voice.displayName),
-            )
+        AnimatedContent(
+            targetState = previewing,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            contentAlignment = Alignment.Center,
+            label = "voicePreviewIcon",
+        ) { animatedPreviewing ->
+            if (animatedPreviewing) {
+                PlayingEqualizer(
+                    contentDescription =
+                        stringResource(Res.string.voice_preview_stop_description, voice.displayName),
+                )
+            } else {
+                Icon(
+                    Icons.Default.PlayArrow,
+                    contentDescription = stringResource(Res.string.voice_preview_description, voice.displayName),
+                )
+            }
         }
     }
 }

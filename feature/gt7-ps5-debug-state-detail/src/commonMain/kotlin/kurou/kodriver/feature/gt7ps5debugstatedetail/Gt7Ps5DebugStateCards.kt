@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.DebugStateFadeContent
 import kurou.kodriver.core.designsystem.DebugStateUnavailableContent
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.gt7ps5.model.Gt7Ps5TelemetryData
@@ -16,6 +17,17 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FuelConsumptionContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
+    // 未取得と取得済みの切り替えだけをフェードする。値の更新ではフェードし直さない。
+    DebugStateFadeContent(
+        state = gt7Ps5Telemetry,
+        contentKey = { calculateGt7FuelRemainingPercent(it) == null },
+    ) { telemetry ->
+        FuelConsumptionBody(telemetry)
+    }
+}
+
+@Composable
+private fun FuelConsumptionBody(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
     val remainingPercent = calculateGt7FuelRemainingPercent(gt7Ps5Telemetry)
     if (remainingPercent == null) {
         DebugStateUnavailableContent()

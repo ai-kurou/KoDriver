@@ -1,6 +1,10 @@
 package kurou.kodriver.feature.otherandroidaudiousagedetail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -357,13 +361,20 @@ private fun AndroidAudioUsagePreviewButton(
                 contentColor = animateSelectionColor(if (selected) colors.onPrimary else colors.primary),
             ),
     ) {
-        if (previewing) {
-            PlayingEqualizer(stringResource(Res.string.audio_usage_preview_stop_description, label))
-        } else {
-            Icon(
-                Icons.Default.PlayArrow,
-                contentDescription = stringResource(Res.string.audio_usage_preview_description, label),
-            )
+        AnimatedContent(
+            targetState = previewing,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            contentAlignment = Alignment.Center,
+            label = "audioUsagePreviewIcon",
+        ) { animatedPreviewing ->
+            if (animatedPreviewing) {
+                PlayingEqualizer(stringResource(Res.string.audio_usage_preview_stop_description, label))
+            } else {
+                Icon(
+                    Icons.Default.PlayArrow,
+                    contentDescription = stringResource(Res.string.audio_usage_preview_description, label),
+                )
+            }
         }
     }
 }

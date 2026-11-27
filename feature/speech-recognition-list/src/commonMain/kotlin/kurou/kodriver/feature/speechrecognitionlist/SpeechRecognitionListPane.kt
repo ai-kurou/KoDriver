@@ -132,10 +132,11 @@ internal fun SpeechRecognitionListPaneContent(
         verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
         if (uiState.isAceSelected) {
-            item(key = "acePreReleaseNotice") { AcePreReleaseNotice() }
+            item(key = "acePreReleaseNotice") { AcePreReleaseNotice(modifier = Modifier.animateItem()) }
         }
-        item { WakeWordGuide() }
-        item { recognitionCard() }
+        // 上の通知が出入りしたときに位置をアニメーションできるよう、固定のキーを付ける。
+        item(key = "wakeWordGuide") { Box(modifier = Modifier.animateItem()) { WakeWordGuide() } }
+        item(key = "recognitionCard") { Box(modifier = Modifier.animateItem()) { recognitionCard() } }
         uiState.groups.forEach { group ->
             item(key = "category-${group.category.name}") {
                 CategoryHeader(group.category, group.items.size, modifier = Modifier.animateItem())

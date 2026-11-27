@@ -298,4 +298,24 @@ class TelemetryLogListPaneTest {
             }
         }
     }
+
+    @Test
+    fun `最後のログを削除すると一覧と空の状態が重なってから空の状態だけになる`() {
+        val uiState = mutableStateOf(TelemetryLogListUiState(logs = listOf(createTelemetryLog(id = 1))))
+        rule.setContent {
+            KoDriverTheme {
+                TelemetryLogListPane(uiState = uiState.value)
+            }
+        }
+        rule.onNodeWithText("読み上げ結果").assertIsDisplayed()
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle { uiState.value = TelemetryLogListUiState() }
+        rule.mainClock.advanceTimeBy(50)
+        rule.onNodeWithText("読み上げ結果").assertExists()
+        rule.onNodeWithText("ログはまだありません").assertExists()
+        rule.mainClock.autoAdvance = true
+        rule.waitForIdle()
+        rule.onNodeWithText("読み上げ結果").assertDoesNotExist()
+        rule.onNodeWithText("ログはまだありません").assertIsDisplayed()
+    }
 }

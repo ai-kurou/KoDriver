@@ -122,24 +122,40 @@ private fun SpeechRecognitionCardContent(
     ) {
         SpeechRecognitionCardHeader(uiState, onInfoClick)
         // 入力デバイスを選べるのはデスクトップだけ。Android では一覧が空のままなので表示しない
-        if (uiState.devices.isNotEmpty() && uiState.deviceName != null) {
-            AudioInputDeviceDropdown(
-                devices = uiState.devices,
-                selected = uiState.deviceName,
-                onMenuOpen = onDeviceMenuOpen,
-                onSelected = onDeviceSelected,
-            )
+        val showDevices = uiState.devices.isNotEmpty() && uiState.deviceName != null
+        var lastDevices by remember { mutableStateOf(uiState.devices) }
+        var lastDeviceName by remember { mutableStateOf(uiState.deviceName) }
+        if (showDevices) {
+            lastDevices = uiState.devices
+            lastDeviceName = uiState.deviceName
         }
-        uiState.level?.let { level ->
-            val animatedLevel by animateFloatAsState(
-                targetValue = level,
-                animationSpec = tween(durationMillis = LEVEL_ANIMATION_MILLIS),
-            )
-            LevelGauge(
-                level = animatedLevel,
-                cutThreshold = uiState.effectiveCutThreshold,
-                modifier = Modifier.semantics { contentDescription = levelDescription },
-            )
+        KoDriverCollapsibleVisibility(visible = showDevices) {
+            lastDeviceName?.let { deviceName ->
+                AudioInputDeviceDropdown(
+                    devices = lastDevices,
+                    selected = deviceName,
+                    onMenuOpen = onDeviceMenuOpen,
+                    onSelected = onDeviceSelected,
+                )
+            }
+        }
+        // 退場アニメーション中もゲージが消えないよう、最後の音量を保持する
+        var lastLevel by remember { mutableStateOf(uiState.level) }
+        if (uiState.level != null) {
+            lastLevel = uiState.level
+        }
+        KoDriverCollapsibleVisibility(visible = uiState.level != null) {
+            lastLevel?.let { level ->
+                val animatedLevel by animateFloatAsState(
+                    targetValue = level,
+                    animationSpec = tween(durationMillis = LEVEL_ANIMATION_MILLIS),
+                )
+                LevelGauge(
+                    level = animatedLevel,
+                    cutThreshold = uiState.effectiveCutThreshold,
+                    modifier = Modifier.semantics { contentDescription = levelDescription },
+                )
+            }
         }
         val hasHistory = uiState.partialText.isNotEmpty() || uiState.recognized.isNotEmpty()
         // 退場アニメーション中も中身が空にならないよう、最後に空でなかった履歴を保持する
