@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -10,6 +11,7 @@ import kurou.kodriver.feature.main.LowVolumeWarningUiState
 import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertTrue
 
 class WarningBannersTest {
     @get:Rule
@@ -97,5 +99,34 @@ class WarningBannersTest {
         rule.mainClock.advanceTimeBy(400)
         rule.onNodeWithText("音声読み上げを利用できません").assertDoesNotExist()
         rule.onNodeWithText("KoDriverの音量が低くなっています").assertIsDisplayed()
+    }
+
+    @Test
+    fun `バナーの出現中は下の内容が徐々に押し下げられる`() {
+        val reason = mutableStateOf<TtsUnavailableGuidance?>(null)
+        rule.setContent {
+            AppTheme {
+                Column {
+                    WarningBanners(false, reason.value, {}, LowVolumeWarningUiState(), {}, {})
+                    Text("下の内容")
+                }
+            }
+        }
+
+        fun contentTop() =
+            rule
+                .onNodeWithText("下の内容")
+                .fetchSemanticsNode()
+                .boundsInRoot.top
+        val initialTop = contentTop()
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle { reason.value = TtsUnavailableGuidance.EngineMissing }
+        rule.mainClock.advanceTimeBy(100)
+        val middleTop = contentTop()
+        rule.mainClock.advanceTimeBy(400)
+        val finalTop = contentTop()
+
+        assertTrue(middleTop > initialTop)
+        assertTrue(middleTop < finalTop)
     }
 }

@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -67,6 +68,7 @@ private val HISTORY_MAX_HEIGHT = 120.dp
 private val LEVEL_GAUGE_HEIGHT = 12.dp
 
 /** 入力音量ゲージの値変化を滑らかに見せるためのアニメーション時間(ミリ秒)。 */
+private const val MIC_TINT_ANIMATION_MILLIS = 200
 private const val LEVEL_ANIMATION_MILLIS = 100
 
 /** 閾値の線の太さと、バーの上下へはみ出す長さ。 */
@@ -180,16 +182,17 @@ private fun SpeechRecognitionCardHeader(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
     ) {
-        Icon(
-            imageVector = Icons.Filled.Mic,
-            contentDescription = null,
-            tint =
+        val micTint by animateColorAsState(
+            targetValue =
                 if (uiState.enabled) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 },
+            label = "speechRecognitionMicTint",
+            animationSpec = tween(durationMillis = MIC_TINT_ANIMATION_MILLIS),
         )
+        Icon(imageVector = Icons.Filled.Mic, contentDescription = null, tint = micTint)
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(Res.string.speech_recognition_title),
