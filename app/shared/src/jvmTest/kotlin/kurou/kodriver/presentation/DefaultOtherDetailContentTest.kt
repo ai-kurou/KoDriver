@@ -118,6 +118,25 @@ class DefaultOtherDetailContentTest {
     }
 
     @Test
+    fun `ウェイクワードホットキーを選択すると説明を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DefaultOtherDetailContent(
+                    itemType = OtherListItemType.WakeWordHotkey,
+                    selectedSimulatorId = "",
+                    canNavigateBack = false,
+                    onBack = {},
+                    feedbackTelemetryLogId = null,
+                    feedbackAttachRequestId = 0L,
+                )
+            }
+        }
+
+        rule.onNodeWithText("ウェイクワードホットキー").assertIsDisplayed()
+        rule.onNodeWithText("ホットキーを押すことで、ウェイクワードを話したときと同じようにコマンドの受付を始める機能の設定です。").assertIsDisplayed()
+    }
+
+    @Test
     fun `ログを表示でフィードバック送信を選ぶとonFeedbackSelectedにログIDを渡す`() {
         fakeTelemetryLogRepository.emit(
             listOf(

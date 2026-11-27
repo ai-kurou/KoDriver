@@ -227,7 +227,7 @@ class OtherContentTest {
     }
 
     @Test
-    fun `ウェイクワードホットキーをタップしても選択や詳細遷移を行わない`() {
+    fun `ウェイクワードホットキーをタップすると選択して詳細ペインへ遷移する`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false
         var detailDisplayed = false
@@ -251,9 +251,9 @@ class OtherContentTest {
         rule.onNodeWithText("ウェイクワードホットキー").assertExists().performTouchInput { click() }
         rule.waitForIdle()
 
-        assertEquals(null, selectedItem)
-        assertFalse(backEnabled)
-        assertFalse(detailDisplayed)
+        assertEquals(OtherListItemType.WakeWordHotkey, selectedItem)
+        assertTrue(backEnabled)
+        assertTrue(detailDisplayed)
     }
 
     @Test

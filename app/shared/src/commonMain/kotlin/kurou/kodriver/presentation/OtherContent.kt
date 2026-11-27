@@ -169,8 +169,6 @@ private fun handleOtherItemClick(
 
         OtherListItemType.WindowsSpeechUnavailable -> onOpenWindowsSpeechSettings()
 
-        OtherListItemType.WakeWordHotkey -> Unit
-
         OtherListItemType.ShowLogs,
         OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
@@ -184,6 +182,7 @@ private fun handleOtherItemClick(
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.MicrophoneCutQuietSound,
+        OtherListItemType.WakeWordHotkey,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,

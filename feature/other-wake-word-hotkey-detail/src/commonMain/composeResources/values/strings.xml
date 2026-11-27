@@ -1,0 +1,4 @@
+<resources>
+    <string name="wake_word_hotkey_title">ウェイクワードホットキー</string>
+    <string name="wake_word_hotkey_description">ホットキーを押すことで、ウェイクワードを話したときと同じようにコマンドの受付を始める機能の設定です。</string>
+</resources>

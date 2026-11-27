@@ -462,8 +462,6 @@ private fun handleOtherListItemClick(
             onItemClick(item)
         }
 
-        OtherListItemType.WakeWordHotkey -> {}
-
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
@@ -477,6 +475,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.MicrophoneCutQuietSound,
+        OtherListItemType.WakeWordHotkey,
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         OtherListItemType.ShowLogs,
