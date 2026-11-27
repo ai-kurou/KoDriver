@@ -85,6 +85,9 @@ class ManualReadoutSetDetailPaneAddSheetTest {
                     "タイヤ",
                     "1",
                     "タイヤ温度",
+                    "ブレーキ",
+                    "1",
+                    "ブレーキ温度",
                 ),
         )
     }

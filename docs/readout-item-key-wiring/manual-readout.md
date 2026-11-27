@@ -66,9 +66,9 @@ GT7 PS5 の補足は次のとおり。
 - 空欄テンプレートなら、0周以下やデータ無しでも読まない。
 - GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持ち衝突しない。
 
-### ACE Windows（4項目）
+### ACE Windows（6項目）
 
-キーは `AceWindowsReadoutItemKey.` の接頭辞を省略し、`value` の値（`ace_windows_` 接頭辞）を括弧内に示す。手動項目の順は「燃料残量」「燃料残り周回数」「自己ベストラップ」「タイヤ温度」。
+キーは `AceWindowsReadoutItemKey.` の接頭辞を省略し、`value` の値（`ace_windows_` 接頭辞）を括弧内に示す。手動項目の順は「燃料残量」「燃料残り周回数」「自己ベストラップ」「タイヤ温度」「ブレーキ温度」「前後車ギャップ」。
 
 | 項目 | キー | データ源と単位 | 既定文言（定数名） | データなし・特殊条件 | 補足 |
 | --- | --- | --- | --- | --- | --- |
@@ -76,6 +76,7 @@ GT7 PS5 の補足は次のとおり。
 | 燃料残り周回数 | `RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`） | `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部（周）（`currentRemainingFuelLaps`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」） | 未受信・鮮度切れ・非有限・負値・1,000周（`ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX`）超は「燃料残り周回数はデータがありません」 | ちょうど0と1周未満の正数は整数部へ切り捨てて0周を返す。 |
 | 自己ベストラップ | `MyBestLap.Root.value`（`ace_windows_auto_my_best_lap`） | 最新ベストラップ（ms）。5秒以内かつ正値のときだけ渡す | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 未受信・鮮度切れ・0以下はデータ無し | 既定文言を `formatAceWindowsMyBestLapReadoutText` で整形する。 |
 | タイヤ温度 | `TyreTemperature.Root.value`（`ace_windows_auto_tyre_temperature`） | `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい最高値を四捨五入した整数℃（`currentMaxTyreTemperatureCelsius`） | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 未受信・鮮度切れ・有効な温度なし・ACE以外への切り替え後は「タイヤ温度はデータがありません」 | 既存の `formatAceWindowsTyreTemperatureReadoutText` と `findUnknownAceWindowsTyreTemperatureReadoutPlaceholders` を使う。詳細画面のカテゴリはタイヤ、プレビューは90℃。自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。 |
+| ブレーキ温度 | `BrakeTemperature.Root.value`（`ace_windows_auto_brake_temperature`） | `AceWindowsBrakeTemperatureData.wheels` の有限かつ0より大きい最高値を四捨五入した整数℃（`currentMaxBrakeTemperatureCelsius`） | `ACE_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT`（「ブレーキ温度は{celsius}℃」） | 未受信・鮮度切れ・有効な温度なし・ACE以外への切り替え後は「ブレーキ温度はデータがありません」 | 既存の `formatAceWindowsBrakeTemperatureReadoutText` と `findUnknownAceWindowsBrakeTemperatureReadoutPlaceholders` を使う。詳細画面のカテゴリはブレーキ、プレビューは500℃。自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。開始音・ログは `RemainingFuel.Root`。 |
 | 前後車ギャップ | `CarGap.Root.value`（`ace_windows_auto_car_gap`） | `AceWindowsGapData`（前車・後車との符号付き秒数）。5秒以内のものを `AceWindowsManualReadoutItem.gap` に渡す | `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」） | 未受信・鮮度切れ・ACE以外への切り替え後は「前後車とのギャップはデータがありません」 | 手動専用で自動スイッチなし。`{ahead}`は単位なしの数値「1.5」、`{behind}`は「2.3」（絶対値・小数1桁）。0・非有限値は節ごと「前方車なし」「後方車なし」に置換し、節を含まない文言では「なし」に置換する。読み上げ時の開始音・ログは他のACE手動項目と同じ `RemainingFuel.Root`、試聴の開始音は `VehicleApproach.Root`。プレビューは1.5秒・2.3秒。 |
 
 ACE Windows の補足は次のとおり。

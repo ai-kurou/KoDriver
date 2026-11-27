@@ -10,6 +10,7 @@ private const val PREVIEW_ENERGY_PERCENT = 50
 private const val PREVIEW_REMAINING_FUEL_LAPS = 5
 private const val PREVIEW_BEST_LAP_TIME_MS = 83_456
 private const val PREVIEW_TYRE_TEMPERATURE_CELSIUS = 90
+private const val PREVIEW_BRAKE_TEMPERATURE_CELSIUS = 500
 private const val PREVIEW_CAR_GAP_AHEAD_SECONDS = 1.5f
 private const val PREVIEW_CAR_GAP_BEHIND_SECONDS = 2.3f
 
@@ -50,6 +51,15 @@ public val aceWindowsManualReadoutItemDefinitions: Map<String, ManualReadoutItem
             ACE_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER,
             ::findUnknownAceWindowsTyreTemperatureReadoutPlaceholders,
             { formatAceWindowsTyreTemperatureReadoutText(it, PREVIEW_TYRE_TEMPERATURE_CELSIUS) },
+        ),
+        manualReadoutItemDefinitionOf(
+            AceWindowsReadoutItemKey.BrakeTemperature.Root,
+            ManualReadoutItemCategory.BRAKE,
+            "ブレーキ温度",
+            ACE_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT,
+            ACE_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER,
+            ::findUnknownAceWindowsBrakeTemperatureReadoutPlaceholders,
+            { formatAceWindowsBrakeTemperatureReadoutText(it, PREVIEW_BRAKE_TEMPERATURE_CELSIUS) },
         ),
         manualReadoutItemDefinitionOf(
             AceWindowsReadoutItemKey.CarGap.Root,

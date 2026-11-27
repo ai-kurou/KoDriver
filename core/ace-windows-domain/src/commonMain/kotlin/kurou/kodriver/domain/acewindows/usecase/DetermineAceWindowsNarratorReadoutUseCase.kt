@@ -16,6 +16,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemName
+import kurou.kodriver.domain.acewindows.model.formatAceWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsCarGapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.acewindows.model.formatAceWindowsRemainingFuelLapsReadoutText
@@ -25,6 +26,7 @@ import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.AceWindowsBrakeOverheat
+import kurou.kodriver.domain.engine.AceWindowsBrakeTemperatureCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsCarGapCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
@@ -135,6 +137,7 @@ public class DetermineAceWindowsNarratorReadoutUseCase {
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value -> manualRemainingFuelLapsValue(item)
             AceWindowsReadoutItemKey.MyBestLap.Root.value -> manualMyBestLapValue(item)
             AceWindowsReadoutItemKey.TyreTemperature.Root.value -> manualTyreTemperatureValue(item)
+            AceWindowsReadoutItemKey.BrakeTemperature.Root.value -> manualBrakeTemperatureValue(item)
             AceWindowsReadoutItemKey.CarGap.Root.value -> manualCarGapValue(item)
             else -> null
         }
@@ -152,6 +155,16 @@ public class DetermineAceWindowsNarratorReadoutUseCase {
 
     /** 未受信・鮮度切れ・全輪が非有限または0以下の場合はデータなしとして扱う。 */
     public fun currentMaxTyreTemperatureCelsius(data: AceWindowsTyreCarcassTemperatureData?): Int? {
+        val wheels = data?.wheels ?: return null
+        return wheels.values
+            .map { it.value }
+            .filter { it.isFinite() && it > 0f }
+            .maxOrNull()
+            ?.roundToInt()
+    }
+
+    /** 未受信・鮮度切れ・全輪が非有限または0以下の場合はデータなしとして扱う。 */
+    public fun currentMaxBrakeTemperatureCelsius(data: AceWindowsBrakeTemperatureData?): Int? {
         val wheels = data?.wheels ?: return null
         return wheels.values
             .map { it.value }
@@ -452,6 +465,17 @@ public class DetermineAceWindowsNarratorReadoutUseCase {
         /** 給油による燃料残り周回数の増加とみなす、前回基準の次の整数からの余裕（周）。 */
         private const val REFUEL_HYSTERESIS_LAPS = 0.5f
     }
+}
+
+private fun manualBrakeTemperatureValue(item: AceWindowsManualReadoutItem): ReadoutTextEvent {
+    val data = (item.value as? ManualReadoutValue.Celsius)?.value
+    val celsius = data ?: 0
+    val event =
+        AceWindowsBrakeTemperatureCurrentValue(
+            celsius,
+            formatAceWindowsBrakeTemperatureReadoutText(item.textTemplate, celsius),
+        )
+    return withManualNoDataText(item, event, data != null)
 }
 
 /** 前後車ギャップは前後2つの値を [AceWindowsManualReadoutItem.gap] で受け取る。未受信・鮮度切れ（null）はデータなし。 */

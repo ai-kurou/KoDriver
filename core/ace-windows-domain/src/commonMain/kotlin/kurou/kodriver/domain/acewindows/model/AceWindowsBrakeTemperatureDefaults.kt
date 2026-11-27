@@ -16,3 +16,6 @@ public const val ACE_WINDOWS_BRAKE_TEMPERATURE_CELSIUS_PLACEHOLDER: String = "{c
 
 /** ACE (Assetto Corsa EVO) のブレーキ過熱警告の読み上げ文言のデフォルト値。 */
 public const val ACE_WINDOWS_BRAKE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT: String = "ブレーキ温度は{celsius}℃以上"
+
+/** ACE の手動読み上げで使うブレーキ温度の既定文言。 */
+internal const val ACE_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT = "ブレーキ温度は{celsius}℃"

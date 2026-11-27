@@ -284,6 +284,7 @@ private fun isManualReadoutLapsItem(itemKey: String): Boolean =
 
 private fun isManualReadoutTemperatureItem(itemKey: String): Boolean =
     itemKey == AceWindowsReadoutItemKey.TyreTemperature.Root.value ||
+        itemKey == AceWindowsReadoutItemKey.BrakeTemperature.Root.value ||
         itemKey == Gt7Ps5ReadoutItemKey.TyreTemperature.Root.value ||
         isLmuWindowsManualReadoutTemperatureItem(itemKey)
 

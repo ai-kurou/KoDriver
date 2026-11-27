@@ -780,6 +780,54 @@ class AceWindowsNarratorViewModelTest {
             )
         }
 
+    @Test
+    fun `手動ブレーキ温度は5秒以内なら最高温度を読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                expectedText = "ブレーキ温度は485℃",
+                valueAgeMs = 5_000L,
+                switchSimulator = false,
+                itemKeys = listOf(AceWindowsReadoutItemKey.BrakeTemperature.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動ブレーキ温度は未受信ならデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                expectedText = "ブレーキ温度はデータがありません",
+                valueAgeMs = null,
+                switchSimulator = false,
+                itemKeys = listOf(AceWindowsReadoutItemKey.BrakeTemperature.Root.value),
+            )
+        }
+
+    @Test
+    fun `手動ブレーキ温度は5秒超ならデータなしを読む`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = false,
+                expectedText = "ブレーキ温度はデータがありません",
+                valueAgeMs = 5_001L,
+                switchSimulator = false,
+                itemKeys = listOf(AceWindowsReadoutItemKey.BrakeTemperature.Root.value),
+            )
+        }
+
+    @Test
+    fun `シミュレーターを切り替えると手動ブレーキ温度の現在値をクリアする`() =
+        runTest(testDispatcher) {
+            assertManualReadout(
+                hotkey = true,
+                expectedText = "ブレーキ温度はデータがありません",
+                valueAgeMs = 0L,
+                switchSimulator = true,
+                itemKeys = listOf(AceWindowsReadoutItemKey.BrakeTemperature.Root.value),
+            )
+        }
+
     private suspend fun TestScope.assertManualReadout(
         hotkey: Boolean,
         fuelAgeMs: Long? = null,
@@ -827,6 +875,7 @@ class AceWindowsNarratorViewModelTest {
         val bestLapChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
         val tyreChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val gapChannel = Channel<AceWindowsGapData>(Channel.UNLIMITED)
+        val brakeChannel = Channel<AceWindowsBrakeTemperatureData>(Channel.UNLIMITED)
         val viewModel =
             createViewModel(
                 fuelChannel,
@@ -835,6 +884,7 @@ class AceWindowsNarratorViewModelTest {
                 remainingFuelLapsChannel = lapsChannel,
                 bestLapTimeChannel = bestLapChannel,
                 tyreCarcassTemperatureChannel = tyreChannel,
+                brakeTemperatureChannel = brakeChannel,
                 currentTimeMs = { nowMs },
             )
         try {
@@ -846,23 +896,10 @@ class AceWindowsNarratorViewModelTest {
             }
             if (valueAgeMs != null) {
                 nowMs = 100L - valueAgeMs
-                when {
-                    AceWindowsReadoutItemKey.MyBestLap.Root.value in items -> {
-                        bestLapChannel.send(AceWindowsBestLapTimeData(83_456))
-                    }
-
-                    AceWindowsReadoutItemKey.TyreTemperature.Root.value in items -> {
-                        tyreChannel.send(tyreCarcassTemperature(84.5f))
-                    }
-
-                    AceWindowsReadoutItemKey.CarGap.Root.value in items -> {
-                        gapChannel.send(AceWindowsGapData(1.5f, -2.34f))
-                    }
-
-                    else -> {
-                        lapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 5.9f))
-                    }
-                }
+                sendManualReadoutValue(
+                    items,
+                    ManualValueChannels(bestLapChannel, tyreChannel, brakeChannel, gapChannel, lapsChannel),
+                )
                 runCurrent()
             }
             nowMs = 100L
@@ -881,6 +918,41 @@ class AceWindowsNarratorViewModelTest {
             verifyManualReadout(event, json.captured)
         } finally {
             viewModel.viewModelScope.cancel()
+        }
+    }
+
+    private class ManualValueChannels(
+        val bestLap: Channel<AceWindowsBestLapTimeData>,
+        val tyre: Channel<AceWindowsTyreCarcassTemperatureData>,
+        val brake: Channel<AceWindowsBrakeTemperatureData>,
+        val gap: Channel<AceWindowsGapData>,
+        val laps: Channel<AceWindowsRemainingFuelLapsData>,
+    )
+
+    private suspend fun sendManualReadoutValue(
+        items: List<String>,
+        channels: ManualValueChannels,
+    ) {
+        when {
+            AceWindowsReadoutItemKey.MyBestLap.Root.value in items -> {
+                channels.bestLap.send(AceWindowsBestLapTimeData(83_456))
+            }
+
+            AceWindowsReadoutItemKey.TyreTemperature.Root.value in items -> {
+                channels.tyre.send(tyreCarcassTemperature(84.5f))
+            }
+
+            AceWindowsReadoutItemKey.BrakeTemperature.Root.value in items -> {
+                channels.brake.send(brakeTemperature(fl = 484.5f))
+            }
+
+            AceWindowsReadoutItemKey.CarGap.Root.value in items -> {
+                channels.gap.send(AceWindowsGapData(1.5f, -2.34f))
+            }
+
+            else -> {
+                channels.laps.send(AceWindowsRemainingFuelLapsData(remainingLaps = 5.9f))
+            }
         }
     }
 

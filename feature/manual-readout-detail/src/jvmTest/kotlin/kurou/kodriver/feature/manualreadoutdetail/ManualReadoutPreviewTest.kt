@@ -60,6 +60,15 @@ class ManualReadoutPreviewTest {
     }
 
     @Test
+    fun `ACEブレーキ温度をサンプル温度に置換する`() {
+        val key = AceWindowsReadoutItemKey.BrakeTemperature.Root.value
+        val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.AceWindows.id, selectedItemKeys = listOf(key))
+        assertEquals("ブレーキ温度は500℃", manualReadoutPreview(state))
+        assertEquals("温度500 {other}", manualReadoutPreview(state.copy(itemTexts = mapOf(key to "温度{celsius} {other}"))))
+        assertEquals("", manualReadoutPreview(state.copy(itemTexts = mapOf(key to ""))))
+    }
+
+    @Test
     fun `ACE前後車ギャップをサンプル秒数に置換する`() {
         val key = AceWindowsReadoutItemKey.CarGap.Root.value
         val state = ManualReadoutSetDetailUiState(simulatorId = Simulator.AceWindows.id, selectedItemKeys = listOf(key))

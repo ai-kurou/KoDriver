@@ -90,6 +90,43 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動ブレーキ温度は有限かつ正の最高温度を四捨五入する`() {
+        assertEquals(null, useCase.currentMaxBrakeTemperatureCelsius(null))
+        assertEquals(null, useCase.currentMaxBrakeTemperatureCelsius(AceWindowsBrakeTemperatureData(emptyMap())))
+        listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, 0f, -1f).forEach { value ->
+            val invalid = AceWindowsBrakeTemperatureData(mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(value)))
+            assertEquals(null, useCase.currentMaxBrakeTemperatureCelsius(invalid))
+        }
+        val data =
+            AceWindowsBrakeTemperatureData(
+                mapOf(
+                    WheelIndex.FRONT_LEFT to CelsiusReading(Float.NaN),
+                    WheelIndex.FRONT_RIGHT to CelsiusReading(400f),
+                    WheelIndex.REAR_LEFT to CelsiusReading(449.5f),
+                    WheelIndex.REAR_RIGHT to CelsiusReading(0f),
+                ),
+            )
+        assertEquals(450, useCase.currentMaxBrakeTemperatureCelsius(data))
+    }
+
+    @Test
+    fun `手動ブレーキ温度は文言とデータなしと空欄を扱い自動警告状態を維持する`() {
+        val key = AceWindowsReadoutItemKey.BrakeTemperature.Root.value
+        val state = AceWindowsNarratorState(brakeOverheating = true)
+        listOf(
+            AceWindowsManualReadoutItem(key, "温度{celsius}℃ {other}", ManualReadoutValue.Celsius(500)) to
+                "温度500℃ {other}",
+            AceWindowsManualReadoutItem(key, "ブレーキ温度は{celsius}℃", null) to "ブレーキ温度はデータがありません",
+            AceWindowsManualReadoutItem(key, "", null) to "",
+            AceWindowsManualReadoutItem(key, "", ManualReadoutValue.Celsius(500)) to "",
+        ).forEach { (item, expected) ->
+            val decision = useCase.determineManualReadout(state, listOf(item))
+            assertEquals(state, decision.state)
+            assertEquals(expected, (decision.events.single() as AceWindowsManualReadoutText).text)
+        }
+    }
+
+    @Test
     fun `手動前後車ギャップは文言とデータなしと空欄を扱い状態を維持する`() {
         val key = AceWindowsReadoutItemKey.CarGap.Root.value
         val state = AceWindowsNarratorState(vehicleApproaching = true)

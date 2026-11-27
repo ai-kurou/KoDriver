@@ -44,6 +44,17 @@ class AceWindowsSpeechEventTest {
     }
 
     @Test
+    fun `ACEの手動ブレーキ温度はRootキーと既定文言と解決済み本文を持つ`() {
+        val event = AceWindowsBrakeTemperatureCurrentValue(500)
+
+        assertEquals(AceWindowsReadoutItemKey.BrakeTemperature.Root, event.readoutItemKey)
+        assertEquals(500, event.celsius)
+        assertEquals("ブレーキ温度は500℃", event.narratedText)
+        assertEquals("温度500", event.withResolvedText("温度500").narratedText)
+        assertEquals("", event.withResolvedText("").narratedText)
+    }
+
+    @Test
     fun `ACEの手動前後車ギャップは車両接近のキーと既定文言と解決済み本文を持つ`() {
         val gap = AceWindowsGapData(1.5f, -2.3f)
         val event = AceWindowsCarGapCurrentValue(gap)

@@ -30,6 +30,17 @@ class AceWindowsManualReadoutPhraseMatcherTest {
     }
 
     @Test
+    fun `ブレーキ温度の発話はブレーキ温度の項目キーを返す`() {
+        listOf("ブレーキ温度を教えて", "ブレーキの温度", "ブレーキ熱").forEach { phrase ->
+            assertEquals(
+                AceWindowsReadoutItemKey.BrakeTemperature.Root.value,
+                matchAceWindowsManualReadoutItemKey(listOf(phrase)),
+                phrase,
+            )
+        }
+    }
+
+    @Test
     fun `燃料周回や助詞付きの周回数の質問は燃料残量より優先する`() {
         assertEquals(
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value,
