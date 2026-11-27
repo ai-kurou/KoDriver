@@ -144,6 +144,56 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `観測が5秒を超えて途切れて周回が変わると前周と復帰した周を消費量に採用しない`() {
+        var state = LmuWindowsNarratorState()
+
+        fun track(
+            lap: Int,
+            percent: Int,
+            observedAtMs: Long,
+        ): LmuWindowsPitTimingTrackingState {
+            state =
+                pitTimingUseCase.trackFuelLaps(
+                    state,
+                    lapTelemetry(lap, 90_000L),
+                    LmuWindowsRemainingFuelData(percent),
+                    observedAtMs,
+                )
+            return state.fuelLapsTrackingState
+        }
+
+        track(0, 100, 0L)
+        track(1, 90, 5_000L)
+        track(1, 88, 6_000L)
+        val resumed = track(2, 70, 11_001L)
+        assertEquals(null, resumed.lastValidLapConsumption)
+        assertEquals(false, resumed.currentLapStartedAtBoundary)
+        track(2, 65, 12_000L)
+        val afterResumedLap = track(3, 60, 13_000L)
+        assertEquals(null, afterResumedLap.lastValidLapConsumption)
+        assertEquals(true, afterResumedLap.currentLapStartedAtBoundary)
+        track(3, 50, 14_000L)
+        val completed = track(4, 49, 19_000L)
+        assertEquals(0.1, assertNotNull(completed.lastValidLapConsumption), 1e-10)
+    }
+
+    @Test
+    fun `同じ周の中で観測が途切れても周の消費量は採用する`() {
+        var state = LmuWindowsNarratorState()
+        listOf(Triple(0, 100, 0L), Triple(1, 90, 100L), Triple(1, 80, 60_000L), Triple(2, 79, 60_100L))
+            .forEach { (lap, percent, observedAtMs) ->
+                state =
+                    pitTimingUseCase.trackFuelLaps(
+                        state,
+                        lapTelemetry(lap, 90_000L),
+                        LmuWindowsRemainingFuelData(percent),
+                        observedAtMs,
+                    )
+            }
+        assertEquals(0.1, assertNotNull(state.fuelLapsTrackingState.lastValidLapConsumption), 1e-10)
+    }
+
+    @Test
     fun `燃料追跡は非有限と範囲外の精密割合を無視し両端は受け入れる`() {
         val state =
             LmuWindowsNarratorState(
@@ -2963,7 +3013,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val midLap1Decision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = firstLapDecision.state,
+                state = firstLapDecision.state.observedJustBefore(45_000L),
                 telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
                 settings = settings(),
@@ -2972,7 +3022,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         // ラップ1完走時の消費率(0.1)が、ラップ2開始時に次回以降の推定基準として採用される。
         val lapStartDecision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = midLap1Decision.state,
+                state = midLap1Decision.state.observedJustBefore(90_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.8),
                 settings = settings(pitTimingVirtualEnergyLapsThreshold = 3),
@@ -2980,7 +3030,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val decision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = lapStartDecision.state,
+                state = lapStartDecision.state.observedJustBefore(150_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
                 settings = settings(pitTimingVirtualEnergyLapsThreshold = 3),
@@ -3018,7 +3068,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val midLap1Decision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = firstLapDecision.state,
+                state = firstLapDecision.state.observedJustBefore(45_000L),
                 telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
                 settings = settings(energySource = LmuWindowsEnergySource.Fuel),
@@ -3027,7 +3077,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         // ラップ1完走時の消費率(0.1)が、ラップ2開始時に次回以降の推定基準として採用される。
         val lapStartDecision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = midLap1Decision.state,
+                state = midLap1Decision.state.observedJustBefore(90_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.8),
                 settings =
@@ -3039,7 +3089,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val decision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = lapStartDecision.state,
+                state = lapStartDecision.state.observedJustBefore(150_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
                 settings =
@@ -3077,7 +3127,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val midLap1Decision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = firstLapDecision.state,
+                state = firstLapDecision.state.observedJustBefore(45_000L),
                 telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
                 settings = settings(enabledStates = pitTimingDisabledStates),
@@ -3085,7 +3135,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val lapStartDecision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = midLap1Decision.state,
+                state = midLap1Decision.state.observedJustBefore(90_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.8),
                 settings = settings(enabledStates = pitTimingDisabledStates),
@@ -3094,7 +3144,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         // 平均消費量(0.1)の計算に成功した後、項目が無効なため読み上げない早期returnに到達する。
         val decision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = lapStartDecision.state,
+                state = lapStartDecision.state.observedJustBefore(150_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
                 settings = settings(enabledStates = pitTimingDisabledStates),
@@ -3179,7 +3229,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val midLap1Decision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = firstLapDecision.state,
+                state = firstLapDecision.state.observedJustBefore(50_000L),
                 telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
                 settings = settings(),
@@ -3187,7 +3237,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val lap2StartDecision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = midLap1Decision.state,
+                state = midLap1Decision.state.observedJustBefore(100_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.85),
                 settings = settings(),
@@ -3195,7 +3245,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val firstWarningDecision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = lap2StartDecision.state,
+                state = lap2StartDecision.state.observedJustBefore(170_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
                 settings = settings(),
@@ -3412,7 +3462,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val midLap1Decision =
             pitTimingUseCase.determinePitTimingTyreWear(
-                state = firstLapDecision.state,
+                state = firstLapDecision.state.observedJustBefore(45_000L),
                 telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
                 tyreWear = tyreWear(fl = 0.9, fr = 1.0, rl = 1.0, rr = 1.0),
                 settings = settings(),
@@ -3420,7 +3470,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val lapStartDecision =
             pitTimingUseCase.determinePitTimingTyreWear(
-                state = midLap1Decision.state,
+                state = midLap1Decision.state.observedJustBefore(90_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
                 tyreWear = tyreWear(fl = 0.8, fr = 1.0, rl = 1.0, rr = 1.0),
                 settings = settings(pitTimingTyreWearLapsThreshold = 3),
@@ -3428,7 +3478,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val decision =
             pitTimingUseCase.determinePitTimingTyreWear(
-                state = lapStartDecision.state,
+                state = lapStartDecision.state.observedJustBefore(150_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
                 tyreWear = tyreWear(fl = 0.05, fr = 1.0, rl = 1.0, rr = 1.0),
                 settings = settings(pitTimingTyreWearLapsThreshold = 3),
@@ -3492,7 +3542,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val midLap1Decision =
             pitTimingUseCase.determinePitTimingTyreWear(
-                state = firstLapDecision.state,
+                state = firstLapDecision.state.observedJustBefore(50_000L),
                 telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
                 tyreWear = tyreWear(fl = 0.9),
                 settings = settings(),
@@ -3500,7 +3550,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val lap2StartDecision =
             pitTimingUseCase.determinePitTimingTyreWear(
-                state = midLap1Decision.state,
+                state = midLap1Decision.state.observedJustBefore(100_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
                 tyreWear = tyreWear(fl = 0.85),
                 settings = settings(),
@@ -3508,7 +3558,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
         val firstWarningDecision =
             pitTimingUseCase.determinePitTimingTyreWear(
-                state = lap2StartDecision.state,
+                state = lap2StartDecision.state.observedJustBefore(170_000L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
                 tyreWear = tyreWear(fl = 0.05),
                 settings = settings(),
@@ -3546,7 +3596,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         samples.forEachIndexed { index, (lap, value) ->
             val decision =
                 pitTimingUseCase.determinePitTimingVirtualEnergy(
-                    state = state,
+                    state = state.observedJustBefore(index * 168_056L),
                     telemetry = lapTelemetry(currentLap = lap, bestLapTimeMs = 168_056L),
                     virtualEnergy = remainingVirtualEnergy(remainingRatio = value),
                     settings = settings(pitTimingVirtualEnergyLapsThreshold = 5),
@@ -3558,7 +3608,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         }
         val completed =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = state,
+                state = state.observedJustBefore(672_224L),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 168_056L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.58),
                 settings = settings(),
@@ -3573,7 +3623,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         listOf(7 to 0.9, 7 to 0.8, 8 to 0.79, 8 to 0.78).forEachIndexed { index, (lap, value) ->
             val decision =
                 pitTimingUseCase.determinePitTimingTyreWear(
-                    state = state,
+                    state = state.observedJustBefore(index * 90_000L),
                     telemetry = lapTelemetry(currentLap = lap, bestLapTimeMs = 90_000L),
                     tyreWear = tyreWear(fl = value),
                     settings = settings(),
@@ -3585,7 +3635,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         }
         val completed =
             pitTimingUseCase.determinePitTimingTyreWear(
-                state = state,
+                state = state.observedJustBefore(360_000L),
                 telemetry = lapTelemetry(currentLap = 9, bestLapTimeMs = 90_000L),
                 tyreWear = tyreWear(fl = 0.77),
                 settings = settings(),
@@ -3601,7 +3651,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         listOf(1 to 1.0, 1 to 0.9, 2 to 0.85, 2 to 0.05).forEachIndexed { index, (lap, value) ->
             val decision =
                 pitTimingUseCase.determinePitTimingVirtualEnergy(
-                    state = state,
+                    state = state.observedJustBefore(index * 100_000L),
                     telemetry = lapTelemetry(currentLap = lap, bestLapTimeMs = 100_000L),
                     virtualEnergy = remainingVirtualEnergy(remainingRatio = value),
                     settings = settings(),
@@ -3617,7 +3667,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         listOf(0.052, 0.054, 0.056).forEachIndexed { index, value ->
             val decision =
                 pitTimingUseCase.determinePitTimingVirtualEnergy(
-                    state = state,
+                    state = state.observedJustBefore(300_016L + index * 16L),
                     telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
                     virtualEnergy = remainingVirtualEnergy(remainingRatio = value),
                     settings = settings(),
@@ -3633,7 +3683,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         }
         val nextLap =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = state,
+                state = state.observedJustBefore(400_000L),
                 telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 100_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
                 settings = settings(),
@@ -3643,7 +3693,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         assertEquals(0.05, nextLap.state.pitTimingVirtualEnergyTrackingState.refillBaselineValue, 1e-9)
         val warning =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
-                state = nextLap.state,
+                state = nextLap.state.observedJustBefore(470_000L),
                 telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 100_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.04),
                 settings = settings(),
@@ -3873,6 +3923,16 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             assertEquals(emptyList<SpeechEvent>(), decision.events)
         }
     }
+}
+
+/** 周回の境界の直前まで観測が続いていた状態にする。テストでは周内の観測を省略するため。 */
+private fun LmuWindowsNarratorState.observedJustBefore(observedAtMs: Long): LmuWindowsNarratorState {
+    val previousAtMs = observedAtMs - 16L
+    return copy(
+        pitTimingVirtualEnergyTrackingState =
+            pitTimingVirtualEnergyTrackingState.copy(observedAtMs = previousAtMs),
+        pitTimingTyreWearTrackingState = pitTimingTyreWearTrackingState.copy(observedAtMs = previousAtMs),
+    )
 }
 
 private fun fuelReadyState() =
