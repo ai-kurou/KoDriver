@@ -3294,6 +3294,39 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `同じセッションでラップ数が戻ったらバーチャルエネルギーの基準値をリセットする`() {
+        val lateDecision =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                state =
+                    LmuWindowsNarratorState(
+                        lastAnnouncedPitTimingVirtualEnergyLaps = 2,
+                        lastPitTimingVirtualEnergyEvaluationLap = 5,
+                    ),
+                telemetry = lapTelemetry(currentLap = 5, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.3, session = 10),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+
+        val restartDecision =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                state = lateDecision.state,
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0, session = 10),
+                settings = settings(),
+                observedAtMs = 10_000L,
+            )
+
+        val trackingState = restartDecision.state.pitTimingVirtualEnergyTrackingState
+        assertEquals(emptyList<SpeechEvent>(), restartDecision.events)
+        assertEquals(true, trackingState.isNewSession)
+        assertEquals(1, trackingState.currentLap)
+        assertEquals(1.0, trackingState.refillBaselineValue)
+        assertEquals(-1, restartDecision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
+        assertEquals(-1, restartDecision.state.lastPitTimingVirtualEnergyEvaluationLap)
+    }
+
+    @Test
     fun `周回数が戻ったらタイヤ摩耗の読み上げ済み周回数と評価周をリセットして基準値を取り直す`() {
         val lateRaceDecision =
             pitTimingUseCase.determinePitTimingTyreWear(

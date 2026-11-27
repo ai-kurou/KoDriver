@@ -959,6 +959,64 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `バーチャルエネルギー残量が無い周期のイベントは状態と設定と観測時刻だけをログに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every {
+                ttsEngine.speak(
+                    LmuWindowsRemainingVirtualEnergyWarning(50, resolvedText = "閾値50%です"),
+                    queue = false,
+                )
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    narratedText = "閾値50%です",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor { "閾値50%です" }
+
+            processor.processRemainingVirtualEnergy(
+                remainingVirtualEnergy = null,
+                events = listOf(LmuWindowsRemainingVirtualEnergyWarning(50)),
+                autoReadoutOrder = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            val telemetryJson = telemetryJsonSlot.captured
+            val root = Json.parseToJsonElement(telemetryJson).jsonObject
+            assertEquals(setOf("state", "settings", "observedAtMs"), root.keys)
+            assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) {
+                ttsEngine.speak(
+                    LmuWindowsRemainingVirtualEnergyWarning(50, resolvedText = "閾値50%です"),
+                    false,
+                )
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    narratedText = "閾値50%です",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    narrationSource = NarrationSource.AUTO,
+                    telemetryJson = telemetryJson,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `読み上げたフラッグイベントを直前と現在のフラッグデータとともに保存する`() =
         runTest {
             val telemetryJsonSlot = slot<String>()

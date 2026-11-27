@@ -164,6 +164,20 @@ class OtherServerIpDetailDiscoveryViewModelTest {
         }
 
     @Test
+    fun `検出結果がないまま検出ダイアログを確定しても入力欄を変えない`() =
+        runTest {
+            every { repository.serverIp() } returns ipFlow
+            val viewModel = createViewModel(discoveredServers = emptyList())
+            viewModel.uiState.first()
+
+            viewModel.onDiscoveryDialogConfirm()
+
+            assertEquals("192.168.1.1", viewModel.uiState.first().inputIp)
+            verify(exactly = 1) { repository.serverIp() }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `ローカルネットワークの権限がない間は検出を始めない`() =
         runTest {
             every { repository.serverIp() } returns ipFlow
