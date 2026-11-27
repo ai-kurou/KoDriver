@@ -5,6 +5,7 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.finiteCelsius
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.usecase.determineHysteresisState
 import kotlin.math.roundToInt
@@ -20,11 +21,7 @@ public class DetermineLmuWindowsTyreReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
         val data = input.tyreCarcassTemperature
-        // NaN・無限大は判定と最大値の対象から外す（NaN は roundToInt で例外になる）。
-        val finiteCelsius =
-            data.wheels.values
-                .map { it.value }
-                .filter { it.isFinite() }
+        val finiteCelsius = data.wheels.values.finiteCelsius()
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
         val nextOverheating =
             determineHysteresisState(
@@ -63,10 +60,7 @@ public class DetermineLmuWindowsTyreReadoutUseCase {
             previousGamePhase != null &&
                 raceFlags.gamePhase != previousGamePhase &&
                 raceFlags.gamePhase in settings.tyreTemperatureLowWarningPhases
-        val finiteCelsius =
-            data.wheels.values
-                .map { it.value }
-                .filter { it.isFinite() }
+        val finiteCelsius = data.wheels.values.finiteCelsius()
         val anyCold = finiteCelsius.any { it <= TYRE_LOW_WARNING_THRESHOLD_CELSIUS }
         val shouldAnnounce =
             enteringTargetPhase && anyCold &&

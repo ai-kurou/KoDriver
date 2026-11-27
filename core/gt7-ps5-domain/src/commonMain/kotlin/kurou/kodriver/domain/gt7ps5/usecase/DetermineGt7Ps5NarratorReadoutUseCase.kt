@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.Gt7Ps5ManualReadoutItem
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.finiteCelsius
 import kurou.kodriver.domain.model.joinManualReadoutTexts
 import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.usecase.determineHysteresisState
@@ -252,8 +253,8 @@ public class DetermineGt7Ps5NarratorReadoutUseCase {
                 telemetry.tyreTemperature.rearLeftCelsius,
                 telemetry.tyreTemperature.rearRightCelsius,
             )
-        // NaN・無限大は判定と最大値の対象から外す（NaN は roundToInt で例外になる）。手動読み上げ側と揃える。
-        val finiteCelsius = wheels.map { it.value }.filter { it.isFinite() }
+        // 手動読み上げ側と揃えて非有限値を外す。
+        val finiteCelsius = wheels.finiteCelsius()
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
         val nextOverheating =
             determineHysteresisState(

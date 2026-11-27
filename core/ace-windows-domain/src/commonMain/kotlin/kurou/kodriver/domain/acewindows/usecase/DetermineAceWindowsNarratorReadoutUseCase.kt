@@ -50,6 +50,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutValue
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.finiteCelsius
 import kurou.kodriver.domain.model.joinManualReadoutTexts
 import kurou.kodriver.domain.model.manualReadoutNoDataText
 import kurou.kodriver.domain.model.readoutEnabled
@@ -330,21 +331,13 @@ public class DetermineAceWindowsNarratorReadoutUseCase {
         return AceWindowsNarratorReadoutDecision(nextState, listOfNotNull(event))
     }
 
-    /**
-     * 有限値の全輪カーカス温度。NaN・無限大は判定と最大値の対象から外す（NaN は roundToInt で例外になる）。
-     */
-    private fun finiteCelsius(data: AceWindowsTyreCarcassTemperatureData): List<Float> =
-        data.wheels.values
-            .map { it.value }
-            .filter { it.isFinite() }
-
     public fun determineTyreTemperatureOverheat(
         state: AceWindowsNarratorState,
         data: AceWindowsTyreCarcassTemperatureData,
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
-        val celsius = finiteCelsius(data)
+        val celsius = data.wheels.values.finiteCelsius()
         val nextOverheating =
             determineHysteresisState(
                 valuesCelsius = celsius,
@@ -367,14 +360,9 @@ public class DetermineAceWindowsNarratorReadoutUseCase {
         data: AceWindowsBrakeTemperatureData,
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
-        // NaN・無限大は判定の対象から外す。
-        val finiteCelsius =
-            data.wheels.values
-                .map { it.value }
-                .filter { it.isFinite() }
         val nextOverheating =
             determineHysteresisState(
-                valuesCelsius = finiteCelsius,
+                valuesCelsius = data.wheels.values.finiteCelsius(),
                 highThresholdCelsius = settings.brakeTemperatureHighThresholdCelsius.value.toFloat(),
                 hysteresisCelsius = BRAKE_OVERHEAT_HYSTERESIS_CELSIUS,
                 currentState = state.brakeOverheating,

@@ -2,6 +2,7 @@ package kurou.kodriver.presentation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -72,6 +73,9 @@ import kurou.kodriver.feature.otherlist.rememberOpenTtsSettings
 import kurou.kodriver.feature.speechrecognitionlist.SpeechRecognitionListPane
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
+private const val TAB_FADE_IN_MILLIS = 300
+private const val TAB_FADE_OUT_MILLIS = 200
 
 /** 下部ナビバー表示時に、ナビバーの直上へ重ねる要素（Snackbar・音声認識チップ）の下余白。 */
 private val NAVIGATION_BAR_OVERLAY_BOTTOM_OFFSET = 96.dp
@@ -554,7 +558,9 @@ private fun AppScreenScaffold(
                 )
                 AnimatedContent(
                     targetState = navigationState.current,
-                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    transitionSpec = {
+                        fadeIn(tween(TAB_FADE_IN_MILLIS)) togetherWith fadeOut(tween(TAB_FADE_OUT_MILLIS))
+                    },
                     modifier = Modifier.weight(1f),
                 ) { destination ->
                     AppDestinationContent(

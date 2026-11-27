@@ -76,6 +76,22 @@ class VoskSpeechTranscriberTest {
     }
 
     @Test
+    fun `JSONのnullや数値でない信頼度は値が無いものとして扱う`() {
+        assertNull(parseVoskPartial("""{"partial":null}"""))
+        assertNull(parseVoskFinal("""{"alternatives":[{"text":null,"confidence":0.9}]}"""))
+        assertNull(parseVoskFinal("""{"alternatives":[{"text":"  ","confidence":0.9}]}"""))
+        val json =
+            """
+            {"alternatives":[
+              {"text":"b","confidence":"高"},
+              {"text":"a","confidence":0.1}
+            ]}
+            """.trimIndent()
+
+        assertEquals(SpeechTranscript.Final(listOf("a", "b")), parseVoskFinal(json))
+    }
+
+    @Test
     fun `モデルのディレクトリがあるときだけ利用できる`() {
         val directory = Files.createTempDirectory("vosk-model-test").toFile()
         try {

@@ -49,6 +49,7 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * シミュレーター選択項目のドロップダウン矢印アイコンを、メニュー展開時に回転させる角度。
  */
+private const val DROPDOWN_ARROW_ROTATION_MILLIS = 200
 internal const val HALF_ROTATION_DEGREES = 180f
 
 /**
@@ -143,7 +144,10 @@ internal fun AppScreenPrimarySimulatorNavItem(
             },
             label = {
                 val dropdownArrowRotation by
-                    animateFloatAsState(targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f)
+                    animateFloatAsState(
+                        targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f,
+                        animationSpec = tween(DROPDOWN_ARROW_ROTATION_MILLIS),
+                    )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = appScreenPrimarySimulatorLabel(selectedSimulatorId),
@@ -185,7 +189,11 @@ internal fun AppScreenPrimarySimulatorNavItem(
                 modifier = Modifier.size(PrimarySimulatorRailHeaderIconSize),
             )
             Spacer(modifier = Modifier.height(AppSpacing.extraSmall))
-            val dropdownArrowRotation by animateFloatAsState(targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f)
+            val dropdownArrowRotation by
+                animateFloatAsState(
+                    targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f,
+                    animationSpec = tween(DROPDOWN_ARROW_ROTATION_MILLIS),
+                )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = appScreenPrimarySimulatorLabel(selectedSimulatorId).replace(" (", "\n("),
