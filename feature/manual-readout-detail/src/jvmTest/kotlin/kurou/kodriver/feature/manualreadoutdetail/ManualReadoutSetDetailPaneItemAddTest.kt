@@ -145,6 +145,32 @@ class ManualReadoutSetDetailPaneItemAddTest {
     }
 
     @Test
+    fun `ACEのブレーキ温度を追加すると既定文言とプレビューと摂氏の挿入を表示する`() {
+        val state =
+            mutableStateOf(
+                ManualReadoutSetDetailUiState(
+                    simulatorId = Simulator.AceWindows.id,
+                    setNumber = 1,
+                    availableItemKeys = aceWindowsManualReadoutItemDefinitions.keys.toList(),
+                ),
+            )
+        rule.setContent {
+            KoDriverTheme {
+                ManualReadoutSetDetailPane(
+                    uiState = state.value,
+                    onAddItem = { state.value = state.value.copy(selectedItemKeys = listOf(it)) },
+                    onDelete = {},
+                )
+            }
+        }
+        rule.onNodeWithText("＋ 項目を追加").performClick()
+        rule.onNodeWithText("ブレーキ温度").performScrollTo().performClick()
+        rule.onNodeWithTag("manual_readout_preview_sentence").assertTextEquals("ブレーキ温度は500℃")
+        rule.onNodeWithText("{celsius}を挿入").assertExists()
+        rule.onNodeWithText("{celsius} は現在の項目の最高温度（℃）に置き換わります").assertExists()
+    }
+
+    @Test
     fun `GT7の自己ベストラップを追加すると既定文言とプレビューを表示する`() {
         val state =
             mutableStateOf(

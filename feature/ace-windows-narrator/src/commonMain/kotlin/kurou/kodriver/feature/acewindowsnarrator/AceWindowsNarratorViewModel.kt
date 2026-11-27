@@ -13,6 +13,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_REMAINING_FUEL_THRESHO
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.model.AceWindowsRemainingFuelLapsData
@@ -217,6 +218,8 @@ internal class AceWindowsNarratorViewModel(
     private var latestFuelLapsReceivedAtMs = 0L
     private var latestTyreTemperature: AceWindowsTyreCarcassTemperatureData? = null
     private var latestTyreTemperatureReceivedAtMs = 0L
+    private var latestBrakeTemperature: AceWindowsBrakeTemperatureData? = null
+    private var latestBrakeTemperatureReceivedAtMs = 0L
     private var latestBestLap: AceWindowsBestLapTimeData? = null
     private var latestGap: AceWindowsGapData? = null
     private var latestGapReceivedAtMs = 0L
@@ -240,6 +243,8 @@ internal class AceWindowsNarratorViewModel(
         latestFuelLapsReceivedAtMs = 0L
         latestTyreTemperature = null
         latestTyreTemperatureReceivedAtMs = 0L
+        latestBrakeTemperature = null
+        latestBrakeTemperatureReceivedAtMs = 0L
     }
 
     private val currentSettings: AceWindowsNarratorReadoutSettings
@@ -356,6 +361,11 @@ internal class AceWindowsNarratorViewModel(
                 observedAtMs - latestTyreTemperatureReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
             }
         val celsius = determineAceWindowsNarratorReadout.currentMaxTyreTemperatureCelsius(tyreTemperature)
+        val brakeTemperature =
+            latestBrakeTemperature?.takeIf {
+                observedAtMs - latestBrakeTemperatureReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS
+            }
+        val brakeCelsius = determineAceWindowsNarratorReadout.currentMaxBrakeTemperatureCelsius(brakeTemperature)
         val percent = determineAceWindowsNarratorReadout.currentRemainingFuelPercent(fuel)
         val laps = determineAceWindowsNarratorReadout.currentRemainingFuelLaps(fuelLaps)
         val gap = latestGap?.takeIf { observedAtMs - latestGapReceivedAtMs <= NARRATOR_CURRENT_VALUE_MAX_AGE_MS }
@@ -375,6 +385,10 @@ internal class AceWindowsNarratorViewModel(
 
                         AceWindowsReadoutItemKey.TyreTemperature.Root.value -> {
                             celsius?.let { ManualReadoutValue.Celsius(it) }
+                        }
+
+                        AceWindowsReadoutItemKey.BrakeTemperature.Root.value -> {
+                            brakeCelsius?.let { ManualReadoutValue.Celsius(it) }
                         }
 
                         else -> {
@@ -558,6 +572,8 @@ internal class AceWindowsNarratorViewModel(
         brakeTemperatureFlow
             .onEachCapturingErrors { brakeTemperature ->
                 val observedAtMs = currentTimeMs()
+                latestBrakeTemperature = brakeTemperature
+                latestBrakeTemperatureReceivedAtMs = observedAtMs
                 val state = narratorState
                 val settings = currentSettings
                 val decision =

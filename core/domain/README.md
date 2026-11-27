@@ -166,7 +166,7 @@ ACE の手動読み上げは、一覧の ▶ と Windows のセットホット�
 LMU の Virtual Energy は「バーチャルエネルギー」、省略表記は「エネルギー」に統一する。
 読み上げの既定文言とリセット値にもこの表記を使う。保存済みの自由文言はユーザー設定として保持し、自動置換しない。
 
-ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`TyreTemperature`、`CarGap` の順。
+ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`TyreTemperature`、`BrakeTemperature`、`CarGap` の順。
 手動「タイヤ温度」は既存の `AceWindowsReadoutItemKey.TyreTemperature.Root` を使い、
 `currentMaxTyreTemperatureCelsius` で `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい
 最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
@@ -176,6 +176,14 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
 開始音とログには既存の `RemainingFuel.Root` を使い、手動優先で読み上げる。
+
+手動「ブレーキ温度」は既存の `AceWindowsReadoutItemKey.BrakeTemperature.Root` を使い、
+`currentMaxBrakeTemperatureCelsius` で `AceWindowsBrakeTemperatureData.wheels` の有限かつ0より大きい
+最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
+「ブレーキ温度はデータがありません」を読む。既定文言は `ACE_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT`
+（「ブレーキ温度は{celsius}℃」）。詳細画面ではブレーキカテゴリ、プレビューは500℃。
+自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
+開始音とログには他の ACE 手動項目と同じ `RemainingFuel.Root` を使う。
 
 手動「前後車ギャップ」は新設の `AceWindowsReadoutItemKey.CarGap.Root`（`ace_windows_auto_car_gap`）を使う手動専用の1項目で、
 自動読み上げのスイッチ・保存設定は持たない（LMU の `ClassCarGap.Root` と同様に前後を1項目にまとめる）。

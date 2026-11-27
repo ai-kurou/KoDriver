@@ -26,6 +26,7 @@ import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
 import kurou.kodriver.domain.engine.AceWindowsBrakeOverheat
+import kurou.kodriver.domain.engine.AceWindowsBrakeTemperatureCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsCarGapCurrentValue
 import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
 import kurou.kodriver.domain.engine.AceWindowsGreenFlag
@@ -121,6 +122,19 @@ class AceWindowsReadoutTextSpeakerTest {
     fun `手動タイヤ温度本文を再生する`() =
         runTest {
             val event = AceWindowsTyreTemperatureCurrentValue(90)
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText(event.narratedText, volume = 80) } just Runs
+            assertEquals(event.narratedText, speaker.readoutText(event))
+            speaker(event, 80)
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText(event.narratedText, volume = 80) }
+            confirmVerified(checkAvailable, speakText)
+        }
+
+    @Test
+    fun `手動ブレーキ温度本文を再生する`() =
+        runTest {
+            val event = AceWindowsBrakeTemperatureCurrentValue(500)
             coEvery { checkAvailable() } returns true
             coEvery { speakText(event.narratedText, volume = 80) } just Runs
             assertEquals(event.narratedText, speaker.readoutText(event))

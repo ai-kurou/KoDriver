@@ -1,6 +1,6 @@
 # manual-readout-detail
 
-手動読み上げセットの詳細・編集を担う feature モジュール。シミュレーター ID とセット ID を受け取り、セット名（未設定時は作成時に採番された固定番号）によるタイトルと保存済みの選択項目を表示する。LMU は「バーチャルエネルギー残量」「燃料残量」「タイヤ摩耗」「ブレーキ残量」「ブレーキ温度」「タイヤ温度」「自己ベストラップ」「バーチャルエネルギーの残り周回数」「タイヤ摩耗の残り周回数」「燃料残り周回数」「クラス内前後車とのギャップ」の11項目、GT7 は「燃料残量」「燃料残り周回数」「タイヤ温度」「自己ベストラップ」の4項目、ACE は「燃料残量」「燃料残り周回数」「自己ベストラップ」「タイヤ温度」「前後車とのギャップ」の5項目に対応する。「その他」詳細と同じ `DetailPaneScaffold` を使い、`canNavigateBack` が true の場合に戻るボタンを表示し、`onBack` を通知する。「読み上げる項目」カードには `selectedItemKeys` の順で選択済み項目のみを表示し、各行にドラッグハンドル・項目名・削除ボタンと既存の文言入力欄を置く。カテゴリ色の細いバーは、ドラッグハンドルの行から文言入力欄の下まで1本で通す。
+手動読み上げセットの詳細・編集を担う feature モジュール。シミュレーター ID とセット ID を受け取り、セット名（未設定時は作成時に採番された固定番号）によるタイトルと保存済みの選択項目を表示する。LMU は「バーチャルエネルギー残量」「燃料残量」「タイヤ摩耗」「ブレーキ残量」「ブレーキ温度」「タイヤ温度」「自己ベストラップ」「バーチャルエネルギーの残り周回数」「タイヤ摩耗の残り周回数」「燃料残り周回数」「クラス内前後車とのギャップ」の11項目、GT7 は「燃料残量」「燃料残り周回数」「タイヤ温度」「自己ベストラップ」の4項目、ACE は「燃料残量」「燃料残り周回数」「自己ベストラップ」「タイヤ温度」「ブレーキ温度」「前後車とのギャップ」の6項目に対応する。「その他」詳細と同じ `DetailPaneScaffold` を使い、`canNavigateBack` が true の場合に戻るボタンを表示し、`onBack` を通知する。「読み上げる項目」カードには `selectedItemKeys` の順で選択済み項目のみを表示し、各行にドラッグハンドル・項目名・削除ボタンと既存の文言入力欄を置く。カテゴリ色の細いバーは、ドラッグハンドルの行から文言入力欄の下まで1本で通す。
 
 ## 項目カタログ
 
@@ -14,6 +14,7 @@
 | ACE Windows | 燃料残り周回数 | `RemainingFuelLaps.Root`（`ace_windows_auto_remaining_fuel_laps`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ |
 | ACE Windows | 自己ベストラップ | `MyBestLap.Root`（`ace_windows_auto_my_best_lap`） | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 「自己ベストラップはデータがありません」 | タイムカテゴリ |
 | ACE Windows | タイヤ温度 | `TyreTemperature.Root`（`ace_windows_auto_tyre_temperature`） | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 「タイヤ温度はデータがありません」 | タイヤカテゴリ。プレビュー90℃ |
+| ACE Windows | ブレーキ温度 | `BrakeTemperature.Root`（`ace_windows_auto_brake_temperature`） | `ACE_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT`（「ブレーキ温度は{celsius}℃」） | 「ブレーキ温度はデータがありません」 | ブレーキカテゴリ。プレビュー500℃ |
 | ACE Windows | 前後車ギャップ | `CarGap.Root`（`ace_windows_auto_car_gap`） | `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」） | 「前後車とのギャップはデータがありません」 | タイムカテゴリ。プレビュー前方1.5秒・後方2.3秒 |
 | LMU Windows | 燃料残量 | `RemainingFuel.Root`（`lmu_windows_auto_remaining_fuel`） | `LMU_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 「燃料残量はデータがありません」 | 燃料カテゴリ |
 | LMU Windows | 燃料残り周回数 | `RemainingFuel.Laps.value`（`lmu_windows_auto_remaining_fuel_laps`） | `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）。0周は `LMU_WINDOWS_MANUAL_READOUT_FUEL_LAPS_EMPTY_TEXT_DEFAULT`（「燃料は残り1周未満」） | 「燃料残り周回数はデータがありません」 | 燃料カテゴリ |
@@ -44,7 +45,7 @@ LMU のキーは `LmuWindowsReadoutItemKey.` の接頭辞を省略して記載�
 | `{ahead}` `{behind}` | ACE の前後車ギャップ（`ACE_WINDOWS_CAR_GAP_AHEAD_PLACEHOLDER` / `ACE_WINDOWS_CAR_GAP_BEHIND_PLACEHOLDER`） | 単位なしの数値（例 `1.5` `2.3`）。0は節ごと「前方車なし」「後方車なし」、節を含まない文言では「なし」 | 挿入チップは「前方{ahead}秒、後方{behind}秒」をまとめて挿入・`{ahead}` `{behind}` 以外は未知として警告 |
 
 
-「＋ 項目を追加」から Desktop / Android 共通の `ModalBottomSheet` を開き、未選択項目をカテゴリ別に表示する。シートのタイトルは「読み上げる項目を選択」とし、残り枠の文言と選択数のセグメントバーを表示する。カテゴリ見出しにはアイコンと候補数、カテゴリごとにまとめた選択行には丸い追加アイコンを表示する。カテゴリと項目名は domain の `ManualReadoutItemDefinition`（`category` / `name`）を唯一の定義元とし（読み上げの「○○はデータがありません」と同じ名称）、現在は「バーチャルエネルギー」の LMU「バーチャルエネルギー残量」「バーチャルエネルギーの残り周回数」と「燃料」の LMU「燃料残量」「燃料残り周回数」・GT7「燃料残量」「燃料残り周回数」・ACE「燃料残量」「燃料残り周回数」と「タイヤ」の LMU「タイヤ摩耗」「タイヤ摩耗の残り周回数」「タイヤ温度」・GT7「タイヤ温度」・ACE「タイヤ温度」、「ブレーキ」の「ブレーキ残量」「ブレーキ温度」、「タイム」の LMU・GT7・ACE「自己ベストラップ」と LMU「クラス内前後車とのギャップ」。選択すると末尾へ追加して閉じる。候補はスクロールでき、シート外のタップ・スワイプ・Esc で閉じる。選択数と上限（3件）は常時表示し、3件選択時は削除してから追加するよう案内する。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX` に達した場合は追加ボタンを無効化する。未選択時は短い説明と追加ボタンを表示する。
+「＋ 項目を追加」から Desktop / Android 共通の `ModalBottomSheet` を開き、未選択項目をカテゴリ別に表示する。シートのタイトルは「読み上げる項目を選択」とし、残り枠の文言と選択数のセグメントバーを表示する。カテゴリ見出しにはアイコンと候補数、カテゴリごとにまとめた選択行には丸い追加アイコンを表示する。カテゴリと項目名は domain の `ManualReadoutItemDefinition`（`category` / `name`）を唯一の定義元とし（読み上げの「○○はデータがありません」と同じ名称）、現在は「バーチャルエネルギー」の LMU「バーチャルエネルギー残量」「バーチャルエネルギーの残り周回数」と「燃料」の LMU「燃料残量」「燃料残り周回数」・GT7「燃料残量」「燃料残り周回数」・ACE「燃料残量」「燃料残り周回数」と「タイヤ」の LMU「タイヤ摩耗」「タイヤ摩耗の残り周回数」「タイヤ温度」・GT7「タイヤ温度」・ACE「タイヤ温度」、「ブレーキ」の LMU「ブレーキ残量」「ブレーキ温度」・ACE「ブレーキ温度」、「タイム」の LMU・GT7・ACE「自己ベストラップ」と LMU「クラス内前後車とのギャップ」。選択すると末尾へ追加して閉じる。候補はスクロールでき、シート外のタップ・スワイプ・Esc で閉じる。選択数と上限（3件）は常時表示し、3件選択時は削除してから追加するよう案内する。未選択項目がない場合、または domain の `MANUAL_READOUT_SET_ITEM_MAX` に達した場合は追加ボタンを無効化する。未選択時は短い説明と追加ボタンを表示する。
 
 項目追加ボタン・ピッカーでの選択・選択項目の削除・試聴開始／停止・セット名の編集開始と明示的な確定・ホットキーの有効なキー入力／解除／再試行／修飾キー操作では、既存の `ContextClick` 触覚フィードバックを行う。文言入力・並べ替え・フォーカス喪失によるセット名の自動保存・状態更新では追加の通知を行わない。
 
@@ -142,7 +143,7 @@ ACE の「燃料残量」は `AceWindowsReadoutItemKey.RemainingFuel.Root.value`
 ACE の「燃料残り周回数」は `AceWindowsReadoutItemKey.RemainingFuelLaps.Root.value` を使い、既定文言は `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）、挿入プレースホルダーは `ACE_WINDOWS_REMAINING_FUEL_LAPS_PLACEHOLDER`、未知プレースホルダー検出は `findUnknownAceWindowsRemainingFuelLapsReadoutPlaceholders` を使う。試聴は5周のサンプル値で置換する。
 ACE の「自己ベストラップ」は `AceWindowsReadoutItemKey.MyBestLap.Root.value` を使い、共有の項目名表示と `formatAceWindowsMyBestLapReadoutText` による試聴を行う。
 
-ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`TyreTemperature` の順。
+ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`TyreTemperature`、`BrakeTemperature`、`CarGap` の順。
 手動「タイヤ温度」は既存の `AceWindowsReadoutItemKey.TyreTemperature.Root` を使い、
 `currentMaxTyreTemperatureCelsius` で `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい
 最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
@@ -152,6 +153,14 @@ ACE の手動項目は `RemainingFuel`、`RemainingFuelLaps`、`MyBestLap`、`Ty
 `AceWindowsTyreTemperatureCurrentValue` の本文をセットの保存順に連結し、空欄は読み上げない。
 自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
 開始音とログには既存の `RemainingFuel.Root` を使い、手動優先で読み上げる。
+
+手動「ブレーキ温度」は既存の `AceWindowsReadoutItemKey.BrakeTemperature.Root` を使い、
+`currentMaxBrakeTemperatureCelsius` で `AceWindowsBrakeTemperatureData.wheels` の有限かつ0より大きい
+最高値を四捨五入した整数℃を取得する。未受信・受信から5秒超・有効な温度なし・ACE以外への切り替え後は
+「ブレーキ温度はデータがありません」を読む。既定文言は `ACE_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT`
+（「ブレーキ温度は{celsius}℃」）。詳細画面ではブレーキカテゴリ、プレビューは500℃。
+自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。
+開始音とログには他の ACE 手動項目と同じ `RemainingFuel.Root` を使う。
 
 項目定義（`manualReadoutItemDefinitions`）と SimHub 案内の表示有無は、`ReadoutItemKeyRegistry` に登録された
 `ManualReadoutSimulatorSpec` から引く（詳細は `core/domain/README.md`）。

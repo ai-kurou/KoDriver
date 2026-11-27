@@ -6,6 +6,7 @@ import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_BRAKE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT
 import kurou.kodriver.domain.acewindows.model.ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT
@@ -284,6 +285,22 @@ public data class AceWindowsTyreTemperatureCurrentValue(
             )
 
     override fun withResolvedText(text: String): AceWindowsTyreTemperatureCurrentValue = copy(resolvedText = text)
+}
+
+/** ACE のブレーキ温度現在値。手動読み上げではセット内の文言を優先する。 */
+public data class AceWindowsBrakeTemperatureCurrentValue(
+    val celsius: Int,
+    override val resolvedText: String? = null,
+) : AceWindowsSpeechEvent {
+    override val readoutItemKey: ReadoutItemKey = AceWindowsReadoutItemKey.BrakeTemperature.Root
+    override val narratedText: String =
+        resolvedText
+            ?: formatAceWindowsBrakeTemperatureReadoutText(
+                ACE_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT,
+                celsius,
+            )
+
+    override fun withResolvedText(text: String): AceWindowsBrakeTemperatureCurrentValue = copy(resolvedText = text)
 }
 
 /** ACE の前後車ギャップ現在値。手動読み上げではセット内の文言を優先する。開始音・優先度は車両接近と同じキーを使う。 */
