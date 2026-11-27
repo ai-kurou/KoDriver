@@ -96,6 +96,7 @@ class LmuWindowsTyreDetachedRepositoryImplTest {
         val buffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, config.activeVehicles.toByte())
         buffer.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, config.playerIdx.toByte())
+        buffer.put(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE, 1)
 
         val vehicleBase = TELEMETRY_BASE + OFF_TELEM_INFO + config.playerIdx * VEHICLE_STRIDE
         WheelIndex.entries.forEach { wheel ->
@@ -117,6 +118,7 @@ class LmuWindowsTyreDetachedRepositoryImplTest {
         const val TELEMETRY_BASE = 128_464
         const val OFF_ACTIVE_VEHICLES = 0
         const val OFF_PLAYER_VEHICLE_IDX = 1
+        const val OFF_PLAYER_HAS_VEHICLE = 2
         const val OFF_TELEM_INFO = 4
         const val VEHICLE_STRIDE = 1_888
         const val OFF_WHEELS = 848

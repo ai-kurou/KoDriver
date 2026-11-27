@@ -36,6 +36,7 @@ class LmuWindowsMapperTest {
         const val TELEMETRY_BASE = 128464
         const val OFF_ACTIVE_VEHICLES = 0
         const val OFF_PLAYER_VEHICLE_IDX = 1
+        const val OFF_PLAYER_HAS_VEHICLE = 2
         const val OFF_TELEM_INFO = 4
         const val VEHICLE_STRIDE = 1888
 
@@ -69,6 +70,7 @@ class LmuWindowsMapperTest {
             val buf = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
             buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, (playerIdx + 1).toByte())
             buf.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, playerIdx.toByte())
+            buf.put(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE, 1)
             return buf
         }
 
@@ -320,6 +322,16 @@ class LmuWindowsMapperTest {
         val buf = emptyBuffer(playerIdx = 1)
         buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 1)
 
+        assertEquals(null, LmuWindowsMapper.readTelemetryElapsedTime(buf))
+    }
+
+    @Test
+    fun `playerHasVehicleがfalseならindexが有効でも自車なしとして扱う`() {
+        val buf = emptyBuffer(playerIdx = 0)
+        buf.put(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE, 0)
+
+        assertEquals(null, LmuWindowsMapper.findPlayerVehicleBase(buf))
+        assertEquals(null, LmuWindowsMapper.map(buf))
         assertEquals(null, LmuWindowsMapper.readTelemetryElapsedTime(buf))
     }
 

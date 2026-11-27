@@ -276,7 +276,7 @@ rF2 プラグイン側にのみ存在する構造体（`rF2Rules`, `rF2MultiRule
 |---|---|---|---|
 | `activeVehicles` | uint8 | 128464+0 | アクティブ車両数 |
 | `playerVehicleIdx` | uint8 | 128464+1 | プレイヤー車両の `telemInfo` インデックス |
-| `playerHasVehicle` | bool | 128464+2 | プレイヤーが車両を持っているか |
+| `playerHasVehicle` | bool | 128464+2 | プレイヤーが車両を持っているか。`false` の間は自車のテレメトリと並走状況を配信しない |
 | `telemInfo[104]` | LMUVehicleTelemetry×104 | 128464+4 | 車両テレメトリ配列（stride 1,888 bytes） |
 
 n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
