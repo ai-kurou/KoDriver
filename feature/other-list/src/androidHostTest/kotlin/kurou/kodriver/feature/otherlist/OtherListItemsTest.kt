@@ -30,6 +30,11 @@ class OtherListItemsTest {
     }
 
     @Test
+    fun `Androidではウェイクワードホットキーを一覧に含めない`() {
+        assertFalse(buildOtherListItems().contains(OtherListItemType.WakeWordHotkey))
+    }
+
+    @Test
     fun `AndroidではAndroid向けTTS案内と読み上げ音声が一覧に含まれる`() {
         val items = buildOtherListItems()
 

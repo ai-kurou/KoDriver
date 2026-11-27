@@ -200,6 +200,7 @@ internal fun DefaultOtherDetailContent(
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.WindowsSpeechUnavailable,
+        OtherListItemType.WakeWordHotkey,
         -> {
         }
     }
