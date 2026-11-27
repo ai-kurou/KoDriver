@@ -29,12 +29,15 @@ JVM の起動から Compose 初期化・Koin モジュール構築・Ktor サー
 - `runInitialization` … 進捗を更新しながら初期化処理を順に実行する `DesktopSplashProgress` 拡張関数。
 - `DesktopSplashScreen` … `SplashBackdrop` の上に、アプリアイコン・進捗バー・フェーズ名を左側に表示する Composable。枠なしの透過ウィンドウに表示する前提で、角丸にして背景だけを少し透けさせる。起動完了（`READY`）で光が画面を横切り、終わると `onReadyAnimationFinished` を一度通知する。
 - `DesktopSplashErrorDialog` … 初期化に失敗したことを通知するダイアログ。
+- `DesktopSplashServerErrorDialog` … サーバーの起動に失敗したことを通知するダイアログ。
 
 進捗ホルダーは Koin 起動前に生成する必要があるため、DI モジュールは提供せず、`:app:shared` の `DesktopSplashHost` から `DesktopSplashProgress` を直接生成して駆動する。`:app:desktopApp` の `main.kt` は枠なし・透過のスプラッシュ専用ウィンドウ（720×405dp、画面中央）を開き、`DesktopSplashHost` に Koin 構築・サーバー起動処理を渡して配線する。
 
 `DesktopSplashHost` は初期化完了後、この通知を受けてから `onFinished` を通知する。`main.kt` はそれとメインウィンドウの位置・サイズの復元がそろってから、スプラッシュのウィンドウを閉じてメインウィンドウと（設定がオンなら）オーバーレイを開く。
 
-初期化処理が例外をスローした場合、スプラッシュ画面が完了しないまま停止するのを避けるため、`DesktopSplashHost` は `DesktopSplashErrorDialog` を表示する。ダイアログを閉じると `onError` が通知され、`main.kt` は Sentry へ送信のうえアプリを終了する。
+サーバー起動の失敗（ポート8080が使用中など）では起動を止めない。`DesktopSplashHost` は `onServerStartError` を通知して `DesktopSplashServerErrorDialog` を表示し、閉じた後に初期化を続ける。`main.kt` は例外を Sentry へ送信する。
+
+サーバー起動以外の初期化処理が例外をスローした場合、スプラッシュ画面が完了しないまま停止するのを避けるため、`DesktopSplashHost` は `DesktopSplashErrorDialog` を表示する。ダイアログを閉じると `onError` が通知され、`main.kt` は Sentry へ送信のうえアプリを終了する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

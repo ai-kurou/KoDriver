@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import kurou.kodriver.feature.splash.generated.resources.Res
 import kurou.kodriver.feature.splash.generated.resources.desktop_splash_error_close
 import kurou.kodriver.feature.splash.generated.resources.desktop_splash_error_title
+import kurou.kodriver.feature.splash.generated.resources.desktop_splash_server_error_message
+import kurou.kodriver.feature.splash.generated.resources.desktop_splash_server_error_title
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -27,9 +29,38 @@ public fun DesktopSplashErrorDialog(
     message: String,
     onConfirm: () -> Unit,
 ) {
+    SplashErrorAlertDialog(
+        title = stringResource(Res.string.desktop_splash_error_title),
+        message = message,
+        onConfirm = onConfirm,
+    )
+}
+
+/**
+ * サーバーの起動に失敗したことを通知するダイアログ。
+ *
+ * 起動は継続できるため、閉じるボタンの押下で [onConfirm] を呼び、呼び出し側に起動の続行を委ねる。
+ *
+ * @param onConfirm 閉じるボタン押下時に呼ばれるコールバック。
+ */
+@Composable
+public fun DesktopSplashServerErrorDialog(onConfirm: () -> Unit) {
+    SplashErrorAlertDialog(
+        title = stringResource(Res.string.desktop_splash_server_error_title),
+        message = stringResource(Res.string.desktop_splash_server_error_message),
+        onConfirm = onConfirm,
+    )
+}
+
+@Composable
+private fun SplashErrorAlertDialog(
+    title: String,
+    message: String,
+    onConfirm: () -> Unit,
+) {
     AlertDialog(
         onDismissRequest = onConfirm,
-        title = { Text(stringResource(Res.string.desktop_splash_error_title)) },
+        title = { Text(title) },
         // スプラッシュの小さいウィンドウ内に表示するため、長いエラー文はスクロールできるようにする。
         text = { Text(message, modifier = Modifier.verticalScroll(rememberScrollState())) },
         confirmButton = {

@@ -1,6 +1,8 @@
 <resources>
     <string name="desktop_splash_error_title">起動に失敗しました</string>
     <string name="desktop_splash_error_close">閉じる</string>
+    <string name="desktop_splash_server_error_title">サーバーを起動できませんでした</string>
+    <string name="desktop_splash_server_error_message">Android端末への配信は使えませんが、このPCの機能は利用できます。ポート8080を別のアプリが使用していないか確認してください。</string>
     <string name="desktop_splash_initializing_modules">モジュールを初期化しています…</string>
     <string name="desktop_splash_starting_server">サーバーを起動しています…</string>
     <string name="desktop_splash_ready">起動が完了しました</string>

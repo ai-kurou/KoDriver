@@ -54,6 +54,17 @@ private const val SENTRY_DSN =
 private val SPLASH_WINDOW_SIZE = DpSize(720.dp, 405.dp)
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 
+private suspend fun startKoDriverServer(koin: Koin): KoDriverServer =
+    withContext(Dispatchers.IO) {
+        val server = createKoDriverServer(koin)
+        // 起動に失敗した場合もアプリは動き続けるため、確保済みのスレッドを解放する。
+        runCatching { server.start() }
+            .onFailure { server.stop() }
+            .getOrThrow()
+        Runtime.getRuntime().addShutdownHook(Thread { server.stop() })
+        server
+    }
+
 /**
  * アプリケーションを起動するエントリーポイント。
  */
@@ -149,13 +160,10 @@ public fun main() {
                             }
                         },
                         startServer = {
-                            withContext(Dispatchers.IO) {
-                                val startedServer = createKoDriverServer(requireNotNull(koin)).also { it.start() }
-                                server = startedServer
-                                Runtime.getRuntime().addShutdownHook(Thread { startedServer.stop() })
-                            }
+                            server = startKoDriverServer(requireNotNull(koin))
                         },
                         onFinished = { splashFinished = true },
+                        onServerStartError = { Sentry.captureException(it) },
                         onError = { throwable ->
                             Sentry.captureException(throwable)
                             exitApplication()
