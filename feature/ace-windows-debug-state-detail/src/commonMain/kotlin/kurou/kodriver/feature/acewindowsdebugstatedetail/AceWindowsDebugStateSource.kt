@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFuelData
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
@@ -16,6 +17,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusData
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
@@ -35,6 +37,7 @@ internal data class AceWindowsDebugStateUseCases(
     val observeRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsUseCase,
     val observeGap: ObserveAceWindowsGapUseCase,
     val observeOverallPosition: ObserveAceWindowsOverallPositionUseCase,
+    val observeBrakeTemperature: ObserveAceWindowsBrakeTemperatureUseCase,
 )
 
 internal class AceWindowsDebugStateSource(
@@ -68,6 +71,13 @@ internal class AceWindowsDebugStateSource(
             .observeTyreCarcassTemperature()
             .onEach {
                 markCardsReceived(setOf(AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE))
+            }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val brakeTemperature: StateFlow<AceWindowsBrakeTemperatureData?> =
+        useCases
+            .observeBrakeTemperature()
+            .onEach {
+                markCardsReceived(setOf(AceWindowsDebugStateCardKey.BRAKE_TEMPERATURE))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val vehicleApproach: StateFlow<AceWindowsVehicleApproachData?> =
@@ -122,19 +132,24 @@ internal class AceWindowsDebugStateSource(
             )
         }.stateIn(scope, SharingStarted.Eagerly, AceWindowsDebugState())
 
+    // combine の型付きオーバーロードは5引数までのため、温度は先にまとめる。
+    private val temperatures =
+        combine(tyreCarcassTemperature, brakeTemperature, ::Pair)
+
     val state: StateFlow<AceWindowsDebugState> =
         combine(
             base,
             vehicleApproach,
-            tyreCarcassTemperature,
+            temperatures,
             gap,
             overallPosition,
-        ) { base, vehicleApproach, tyreCarcassTemperature, gap, overallPosition ->
+        ) { base, vehicleApproach, (tyreCarcassTemperature, brakeTemperature), gap, overallPosition ->
             base.copy(
                 gap = gap,
                 overallPosition = overallPosition,
                 vehicleApproach = vehicleApproach,
                 tyreCarcassTemperature = tyreCarcassTemperature,
+                brakeTemperature = brakeTemperature,
             )
         }.stateIn(scope, SharingStarted.Eagerly, AceWindowsDebugState())
 }

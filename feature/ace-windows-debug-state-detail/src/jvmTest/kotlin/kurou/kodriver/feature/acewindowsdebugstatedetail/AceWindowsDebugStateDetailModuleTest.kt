@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
@@ -56,6 +58,7 @@ class AceWindowsDebugStateDetailModuleTest {
     private val aceWindowsGapRepository: AceWindowsGapRepository = mockk()
     private val aceWindowsRemainingFuelLapsRepository: AceWindowsRemainingFuelLapsRepository = mockk()
     private val aceWindowsStatusRepository: AceWindowsStatusRepository = mockk()
+    private val aceWindowsBrakeTemperatureRepository: AceWindowsBrakeTemperatureRepository = mockk()
     private val aceWindowsTyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository = mockk()
     private val aceWindowsVehicleApproachRepository: AceWindowsVehicleApproachRepository = mockk()
     private val debugStateCardOrderPreferencesRepository: DebugStateCardOrderPreferencesRepository = mockk()
@@ -80,6 +83,7 @@ class AceWindowsDebugStateDetailModuleTest {
         every { aceWindowsOverallPositionRepository.overallPositionStream() } returns emptyFlow()
         every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
         every { aceWindowsStatusRepository.statusStream() } returns emptyFlow()
+        every { aceWindowsBrakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
         every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
         every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
         every { debugStateCardOrderPreferencesRepository.observeCardOrder() } returns emptyFlow()
@@ -96,6 +100,7 @@ class AceWindowsDebugStateDetailModuleTest {
                         single<AceWindowsOverallPositionRepository> { aceWindowsOverallPositionRepository }
                         single<AceWindowsRemainingFuelLapsRepository> { aceWindowsRemainingFuelLapsRepository }
                         single<AceWindowsStatusRepository> { aceWindowsStatusRepository }
+                        single<AceWindowsBrakeTemperatureRepository> { aceWindowsBrakeTemperatureRepository }
                         single<AceWindowsTyreCarcassTemperatureRepository> {
                             aceWindowsTyreCarcassTemperatureRepository
                         }
@@ -117,6 +122,7 @@ class AceWindowsDebugStateDetailModuleTest {
             assertNotNull(koin.get<ObserveAceWindowsOverallPositionUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsFlagUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsStatusUseCase>())
+            assertNotNull(koin.get<ObserveAceWindowsBrakeTemperatureUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsTyreCarcassTemperatureUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsVehicleApproachUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsBestLapTimeUseCase>())

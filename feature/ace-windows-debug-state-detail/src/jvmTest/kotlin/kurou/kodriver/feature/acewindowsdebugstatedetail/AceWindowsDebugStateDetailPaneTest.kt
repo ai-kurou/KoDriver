@@ -89,7 +89,7 @@ class AceWindowsDebugStateDetailPaneTest {
     }
 
     @Test
-    fun `ACEの8枚だけを表示し未受信の7枚は未取得になる`() {
+    fun `ACEの9枚だけを表示し未受信の8枚は未取得になる`() {
         rule.setContent {
             MaterialTheme {
                 AceWindowsDebugStateDetailPaneContent(
@@ -109,12 +109,13 @@ class AceWindowsDebugStateDetailPaneTest {
             "並走車両",
             "自己ベストラップ",
             "タイヤカーカス温度",
+            "ブレーキ温度",
             "燃料消費",
             "総合順位と前後車両との時間差",
         ).forEach { title ->
             rule.onNodeWithText(title).assertIsDisplayed()
         }
-        rule.onAllNodesWithText("未取得").assertCountEquals(7)
+        rule.onAllNodesWithText("未取得").assertCountEquals(8)
         rule.onNodeWithText("車両クラス").assertDoesNotExist()
     }
 

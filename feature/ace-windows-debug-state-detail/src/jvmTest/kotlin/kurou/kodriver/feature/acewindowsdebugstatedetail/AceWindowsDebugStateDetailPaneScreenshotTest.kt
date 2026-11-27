@@ -10,6 +10,7 @@ import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
@@ -65,6 +66,16 @@ class AceWindowsDebugStateDetailPaneScreenshotTest {
                                 listOf(
                                     AceWindowsNearbyVehicleData(distanceMeters = 12.34),
                                     AceWindowsNearbyVehicleData(distanceMeters = 3.06),
+                                ),
+                        ),
+                    brakeTemperature =
+                        AceWindowsBrakeTemperatureData(
+                            wheels =
+                                mapOf(
+                                    WheelIndex.FRONT_LEFT to CelsiusReading(399.0f),
+                                    WheelIndex.FRONT_RIGHT to CelsiusReading(600.0f),
+                                    WheelIndex.REAR_LEFT to CelsiusReading(850.0f),
+                                    WheelIndex.REAR_RIGHT to CelsiusReading(1000.0f),
                                 ),
                         ),
                     tyreCarcassTemperature =

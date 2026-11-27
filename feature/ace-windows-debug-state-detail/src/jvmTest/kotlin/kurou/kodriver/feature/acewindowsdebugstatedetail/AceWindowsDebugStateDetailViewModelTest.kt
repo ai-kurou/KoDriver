@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.acewindows.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsCarLocation
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagData
 import kurou.kodriver.domain.acewindows.model.AceWindowsFlagType
@@ -32,6 +33,7 @@ import kurou.kodriver.domain.acewindows.model.AceWindowsStatusType
 import kurou.kodriver.domain.acewindows.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.acewindows.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
@@ -41,6 +43,7 @@ import kurou.kodriver.domain.acewindows.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.acewindows.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.acewindows.usecase.ObserveAceWindowsGapUseCase
@@ -95,6 +98,8 @@ class AceWindowsDebugStateDetailViewModelTest {
 
     private val tyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository = mockk()
 
+    private val brakeTemperatureRepository: AceWindowsBrakeTemperatureRepository = mockk()
+
     private val vehicleApproachRepository: AceWindowsVehicleApproachRepository = mockk()
 
     private val bestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
@@ -131,6 +136,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                     observeRemainingFuelLaps = ObserveAceWindowsRemainingFuelLapsUseCase(remainingFuelLapsRepository),
                     observeGap = ObserveAceWindowsGapUseCase(gapRepository),
                     observeOverallPosition = ObserveAceWindowsOverallPositionUseCase(overallPositionRepository),
+                    observeBrakeTemperature = ObserveAceWindowsBrakeTemperatureUseCase(brakeTemperatureRepository),
                 ),
             cardOrderUseCases =
                 DebugStateCardOrderUseCases(
@@ -150,6 +156,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -188,6 +195,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -200,6 +208,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -217,6 +226,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -241,6 +251,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -252,6 +263,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -269,6 +281,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -304,6 +317,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -315,6 +329,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -332,6 +347,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -367,6 +383,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -378,6 +395,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -395,6 +413,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns flow
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -419,6 +438,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -430,6 +450,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -447,6 +468,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns flow
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -471,6 +493,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -482,6 +505,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -499,6 +523,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns flow
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -523,6 +548,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -534,6 +560,62 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
+                vehicleApproachRepository,
+                bestLapTimeRepository,
+                remainingFuelLapsRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `ブレーキ温度の受信だけで対応カードを有効にして状態を反映する`() =
+        runTest {
+            val flow = MutableSharedFlow<AceWindowsBrakeTemperatureData>()
+            every { overallPositionRepository.overallPositionStream() } returns emptyFlow()
+            every { gapRepository.gapStream() } returns emptyFlow()
+            every { fuelRepository.fuelStream() } returns emptyFlow()
+            every { flagRepository.flagStream() } returns emptyFlow()
+            every { statusRepository.statusStream() } returns emptyFlow()
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns flow
+            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
+            every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+            viewModel.uiState.first()
+            testScheduler.runCurrent()
+
+            val data = AceWindowsBrakeTemperatureData(wheels = emptyMap())
+            flow.emit(data)
+            testScheduler.runCurrent()
+            val state = viewModel.uiState.first()
+
+            assertEquals(data, state.aceWindows.brakeTemperature)
+            assertEquals(
+                setOf(AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.BRAKE_TEMPERATURE),
+                state.enabledCardKeys,
+            )
+            verify(exactly = 1) { overallPositionRepository.overallPositionStream() }
+            verify(exactly = 1) { gapRepository.gapStream() }
+            verify(exactly = 1) { fuelRepository.fuelStream() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { statusRepository.statusStream() }
+            verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                overallPositionRepository,
+                gapRepository,
+                fuelRepository,
+                flagRepository,
+                statusRepository,
+                tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -551,6 +633,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns flow
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -575,6 +658,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -586,6 +670,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -603,6 +688,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns flow
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -627,6 +713,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -638,6 +725,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -655,6 +743,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns flow
@@ -679,6 +768,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -690,6 +780,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -711,6 +802,8 @@ class AceWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(AceWindowsStatusData(AceWindowsStatusType.LIVE, AceWindowsCarLocation.TRACK))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(AceWindowsTyreCarcassTemperatureData(wheels = emptyMap()))
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(AceWindowsBrakeTemperatureData(wheels = emptyMap()))
             every { vehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(AceWindowsVehicleApproachData(nearbyVehicles = emptyList()))
             every { bestLapTimeRepository.bestLapTimeStream() } returns
@@ -731,6 +824,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                     flag = AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG),
                     status = AceWindowsStatusData(AceWindowsStatusType.LIVE, AceWindowsCarLocation.TRACK),
                     tyreCarcassTemperature = AceWindowsTyreCarcassTemperatureData(wheels = emptyMap()),
+                    brakeTemperature = AceWindowsBrakeTemperatureData(wheels = emptyMap()),
                     vehicleApproach = AceWindowsVehicleApproachData(nearbyVehicles = emptyList()),
                     bestLapTime = AceWindowsBestLapTimeData(bestLapTimeMs = 83_456),
                     remainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = 3.5f),
@@ -753,6 +847,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -764,6 +859,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -780,6 +876,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -804,6 +901,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -815,6 +913,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -831,6 +930,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -853,6 +953,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -865,6 +966,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,
@@ -885,6 +987,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { statusRepository.statusStream() } returns emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
             every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
             every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
@@ -909,6 +1012,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { statusRepository.statusStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { bestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { remainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -921,6 +1025,7 @@ class AceWindowsDebugStateDetailViewModelTest {
                 flagRepository,
                 statusRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleApproachRepository,
                 bestLapTimeRepository,
                 remainingFuelLapsRepository,

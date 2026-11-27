@@ -29,6 +29,7 @@ private val debugStateCardStyles =
         AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to DebugStateCardStyle("↔", DebugStateCardAccent.TERTIARY),
         AceWindowsDebugStateCardKey.BEST_LAP to DebugStateCardStyle("🏆", DebugStateCardAccent.TERTIARY),
         AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to DebugStateCardStyle("◎", DebugStateCardAccent.ERROR),
+        AceWindowsDebugStateCardKey.BRAKE_TEMPERATURE to DebugStateCardStyle("◉", DebugStateCardAccent.ERROR),
         AceWindowsDebugStateCardKey.FUEL_CONSUMPTION to DebugStateCardStyle("⛽", DebugStateCardAccent.WARNING),
         AceWindowsDebugStateCardKey.CAR_GAP to DebugStateCardStyle("↕", DebugStateCardAccent.TERTIARY),
     )
