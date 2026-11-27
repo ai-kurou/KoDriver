@@ -9,7 +9,10 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
 private const val LMU_WINDOWS_FUEL_PERCENTAGE_SCALE = 100.0
 private const val LMU_WINDOWS_FUEL_PERCENTAGE_MAX = 100
 
-/** 燃料容量が取得できない（0以下の）テレメトリは流さない。Android のダミー値もここで除外される。 */
+/**
+ * 燃料容量が取得できない（0以下の）テレメトリは流さない。Android のダミー値もここで除外される。
+ * 現在量・容量のいずれかが非有限のテレメトリも、残量0%と誤判定しないよう流さない。
+ */
 public class ObserveLmuWindowsFuelUseCase(
     private val repository: LmuWindowsRepository,
 ) {
@@ -18,6 +21,7 @@ public class ObserveLmuWindowsFuelUseCase(
             .telemetryStream()
             .map { it.fuel }
             .filter { it.capacityLiters.value > 0.0 }
+            .filter { it.currentLiters.value.isFinite() && it.capacityLiters.value.isFinite() }
             .map { fuel ->
                 val percent = fuel.currentLiters.value / fuel.capacityLiters.value * LMU_WINDOWS_FUEL_PERCENTAGE_SCALE
                 val exactPercent = percent.coerceIn(0.0, LMU_WINDOWS_FUEL_PERCENTAGE_MAX.toDouble())
