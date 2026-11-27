@@ -57,10 +57,7 @@ private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 private suspend fun startKoDriverServer(koin: Koin): KoDriverServer =
     withContext(Dispatchers.IO) {
         val server = createKoDriverServer(koin)
-        // 起動に失敗した場合もアプリは動き続けるため、確保済みのスレッドを解放する。
-        runCatching { server.start() }
-            .onFailure { server.stop() }
-            .getOrThrow()
+        server.startOrStop()
         Runtime.getRuntime().addShutdownHook(Thread { server.stop() })
         server
     }
