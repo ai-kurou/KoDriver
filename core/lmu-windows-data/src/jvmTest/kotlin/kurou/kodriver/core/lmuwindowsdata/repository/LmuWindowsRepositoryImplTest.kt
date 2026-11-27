@@ -35,12 +35,14 @@ class LmuWindowsRepositoryImplTest {
     private fun withPlayerVehicle(buffer: java.nio.ByteBuffer) {
         buffer.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 1)
         buffer.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, 0)
+        buffer.put(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE, 1)
     }
 
     private companion object {
         const val TELEMETRY_BASE = 128_464
         const val OFF_ACTIVE_VEHICLES = 0
         const val OFF_PLAYER_VEHICLE_IDX = 1
+        const val OFF_PLAYER_HAS_VEHICLE = 2
     }
 
     @Test
@@ -191,6 +193,28 @@ class LmuWindowsRepositoryImplTest {
         runBlocking {
             // playerVehicleIdx/activeVehicles を設定しない = activeVehicles 0 のまま
             val fake = FakeWindowsSharedMemoryReader(initialOpen = true, bufferSize = 135_000)
+            val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
+            val emitCount = AtomicInteger(0)
+
+            val job = launch { repo.telemetryStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
+
+            assertEquals(0, emitCount.get())
+        }
+
+    @Test
+    fun `playerHasVehicleがfalseのときはemitしない`() =
+        runBlocking {
+            val fake =
+                FakeWindowsSharedMemoryReader(
+                    initialOpen = true,
+                    bufferSize = 135_000,
+                    configureBuffer = {
+                        withPlayerVehicle(it)
+                        it.put(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE, 0)
+                    },
+                )
             val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
             val emitCount = AtomicInteger(0)
 

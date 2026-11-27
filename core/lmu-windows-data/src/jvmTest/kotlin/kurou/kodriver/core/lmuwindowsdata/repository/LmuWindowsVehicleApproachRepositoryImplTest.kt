@@ -253,6 +253,26 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
         }
 
     @Test
+    fun `playerHasVehicle が false の場合は emit しない`() =
+        runBlocking {
+            val buffer = buildBuffer(activeVehicles = 2, playerIdx = 0, opponents = listOf(VehiclePos(posX = 3.0)))
+            buffer.put(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE, 0)
+            val fakeReader = FakeVehicleApproachMemoryReader(buffer)
+            val repo =
+                LmuWindowsVehicleApproachRepositoryImpl(
+                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
+                    source = makeSource(fakeReader),
+                )
+            var emitCount = 0
+
+            val job = launch { repo.vehicleApproachStream().collect { emitCount++ } }
+            delay(50)
+            job.cancelAndJoin()
+
+            assertEquals(0, emitCount)
+        }
+
+    @Test
     fun `activeVehicles が0の場合は emit しない`() =
         runBlocking {
             val fakeReader = FakeVehicleApproachMemoryReader(buildBuffer(activeVehicles = 0, playerIdx = 0))
@@ -523,6 +543,7 @@ private data class VehiclePos(
 private const val TELEMETRY_BASE = 128_464
 private const val OFF_ACTIVE_VEHICLES = 0
 private const val OFF_PLAYER_VEHICLE_IDX = 1
+private const val OFF_PLAYER_HAS_VEHICLE = 2
 private const val OFF_TELEM_INFO = 4
 private const val VEHICLE_STRIDE = 1_888
 private const val OFF_POS_X = 160
@@ -543,6 +564,7 @@ private fun buildBuffer(
 
     buffer.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, activeVehicles.toByte())
     buffer.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, playerIdx.toByte())
+    buffer.put(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE, 1)
 
     val plrBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
     buffer.putDouble(plrBase + OFF_ORI_ROW2_X, 0.0) // atan2(0,-1)=PI

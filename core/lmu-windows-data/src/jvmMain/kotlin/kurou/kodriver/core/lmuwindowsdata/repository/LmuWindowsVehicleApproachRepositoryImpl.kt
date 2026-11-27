@@ -42,7 +42,7 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
             val maxCount = maxVehicleCount(buffer)
             val activeVehicles = LmuWindowsMapper.readActiveVehicleCount(buffer).coerceAtMost(maxCount)
             val playerIdx = LmuWindowsMapper.readPlayerVehicleIdx(buffer)
-            if (activeVehicles > 0 && playerIdx < activeVehicles) {
+            if (LmuWindowsMapper.readPlayerHasVehicle(buffer) && playerIdx < activeVehicles) {
                 computeVehicleApproach(
                     buffer,
                     activeVehicles,

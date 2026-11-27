@@ -97,6 +97,7 @@ internal object LmuWindowsMapper {
 
     private const val OFF_ACTIVE_VEHICLES = 0
     private const val OFF_PLAYER_VEHICLE_IDX = 1
+    private const val OFF_PLAYER_HAS_VEHICLE = 2
     private const val OFF_TELEM_INFO = 4
     private const val VEHICLE_STRIDE = 1888
 
@@ -161,10 +162,11 @@ internal object LmuWindowsMapper {
     }
 
     /**
-     * activeVehicles / playerVehicleIdx を検証したうえで、プレイヤー車両の telemInfo 先頭オフセットを返す。
-     * 車両が存在しない場合は null を返す。
+     * playerHasVehicle / activeVehicles / playerVehicleIdx を検証したうえで、プレイヤー車両の telemInfo 先頭オフセットを返す。
+     * 自車がない場合（playerHasVehicle が false。このとき playerVehicleIdx が自車を指すとは限らない）や車両が存在しない場合は null を返す。
      */
     internal fun findPlayerVehicleBase(buffer: ByteBuffer): Int? {
+        if (!readPlayerHasVehicle(buffer)) return null
         val activeVehicles = readActiveVehicleCount(buffer)
         val playerIdx = readPlayerVehicleIdx(buffer)
         if (activeVehicles == 0 || playerIdx >= activeVehicles) return null
@@ -180,6 +182,10 @@ internal object LmuWindowsMapper {
     /** telemetry セグメントの playerVehicleIdx (uint8) を返す。 */
     internal fun readPlayerVehicleIdx(buffer: ByteBuffer): Int =
         buffer.readUint8(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX)
+
+    /** telemetry セグメントの playerHasVehicle (bool) を返す。 */
+    internal fun readPlayerHasVehicle(buffer: ByteBuffer): Boolean =
+        buffer.readUint8(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE) != 0
 
     /** プレイヤー車両の mElapsedTime を返す。不正なインデックスや未接続時は null を返す。 */
     internal fun readTelemetryElapsedTime(buffer: ByteBuffer): Double? {
