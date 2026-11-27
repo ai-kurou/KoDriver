@@ -3267,12 +3267,14 @@ class LmuWindowsNarratorViewModelTest {
                 queueEnabledOverrides = mapOf(LmuWindowsReadoutItemKey.BrakeWear.Root to false),
             )
 
+            // 新品の厚みを先に受け取り、次の周期で残量20%以下の警告を発生させる。
+            channel.send(brakeWearData(thickness = 0.036f))
             channel.send(brakeWearData(thickness = 0.026f))
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
 
             every { tts.currentReadoutItemKey } returns null
             every { tts.currentIsManual } returns false
-            channel.send(brakeWearData(thickness = 0.025f))
+            channel.send(brakeWearData(thickness = 0.026f))
 
             assertEquals(
                 listOf<SpeechEvent>(LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキは残り20%以下")),
