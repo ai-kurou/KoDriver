@@ -14,7 +14,7 @@ Android は非対応実装を使い、キー未割り当て・非対応時は登
 ### 共通ルール
 
 - 対象は保存済みセットの項目のうち、シミュレーターごとの手動項目一覧（下表）に含まれるものだけとする。
-- 最新値は受信から5秒以内（`NARRATOR_CURRENT_VALUE_MAX_AGE_MS`）のものだけを使う。未受信・受信から5秒超・非有限・範囲外は「データ無し」として扱う。
+- 最新値は受信から5秒以内（`NARRATOR_CURRENT_VALUE_MAX_AGE_MS`）のものだけを使う。未受信・受信から5秒超・非有限・範囲外は「データ無し」として扱う。例外は ACE の自己ベストラップで、鮮度を判定しない（下の ACE の補足を参照）。
 - データ無しの項目は「<項目名>はデータがありません」を保存順に「、」で連結する。各項目を個別に判定し、全項目がデータ無しでも項目ごとの文を連結する（先頭 `MANUAL_READOUT_SET_ITEM_MAX` 件まで）。
 - 本文は保存順に項目の文言を並べ、空欄（空白のみの文言）を除外して「、」で連結した1イベントにまとめる。全項目の文言が空欄なら空文字とする。
 - 文言はセットの `itemTexts` を使い、未保存なら手動専用の既定文言（下表の定数名）を使う。プレースホルダーは既存の `format…ReadoutText` で置換する。
@@ -74,7 +74,7 @@ GT7 PS5 の補足は次のとおり。
 | --- | --- | --- | --- | --- | --- |
 | 燃料残量 | `RemainingFuel.Root.value`（`ace_windows_auto_remaining_fuel`） | `AceWindowsFuelData.remainingPercent`（0〜100）を四捨五入した整数％（`currentRemainingFuelPercent`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_TEXT_DEFAULT`（「燃料は残り{percent}%」） | 未受信・鮮度切れ・非有限・0未満・100超は「燃料残量はデータがありません」 | 既存の `formatAceWindowsRemainingFuelReadoutText` で置換する。`remainingFuelWarned` 等の判定状態は変更しない。 |
 | 燃料残り周回数 | `RemainingFuelLaps.Root.value`（`ace_windows_auto_remaining_fuel_laps`） | `AceWindowsRemainingFuelLapsData.remainingLaps` の整数部（周）（`currentRemainingFuelLaps`） | `ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」） | 未受信・鮮度切れ・非有限・負値・1,000周（`ACE_WINDOWS_MANUAL_READOUT_REMAINING_FUEL_LAPS_MAX`）超は「燃料残り周回数はデータがありません」 | ちょうど0と1周未満の正数は整数部へ切り捨てて0周を返す。 |
-| 自己ベストラップ | `MyBestLap.Root.value`（`ace_windows_auto_my_best_lap`） | 最新ベストラップ（ms）。5秒以内かつ正値のときだけ渡す | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 未受信・鮮度切れ・0以下はデータ無し | 既定文言を `formatAceWindowsMyBestLapReadoutText` で整形する。 |
+| 自己ベストラップ | `MyBestLap.Root.value`（`ace_windows_auto_my_best_lap`） | 最新ベストラップ（ms）。受信からの経過時間によらず、正値のときだけ渡す | `ACE_WINDOWS_MANUAL_READOUT_MY_BEST_LAP_TEXT_DEFAULT`（「自己ベストラップ {laptime}」） | 未受信・0以下はデータ無し | 既定文言を `formatAceWindowsMyBestLapReadoutText` で整形する。 |
 | タイヤ温度 | `TyreTemperature.Root.value`（`ace_windows_auto_tyre_temperature`） | `AceWindowsTyreCarcassTemperatureData.wheels` の有限かつ0より大きい最高値を四捨五入した整数℃（`currentMaxTyreTemperatureCelsius`） | `ACE_WINDOWS_MANUAL_READOUT_TYRE_TEMPERATURE_TEXT_DEFAULT`（「タイヤ温度は{celsius}℃」） | 未受信・鮮度切れ・有効な温度なし・ACE以外への切り替え後は「タイヤ温度はデータがありません」 | 既存の `formatAceWindowsTyreTemperatureReadoutText` と `findUnknownAceWindowsTyreTemperatureReadoutPlaceholders` を使う。詳細画面のカテゴリはタイヤ、プレビューは90℃。自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。 |
 | ブレーキ温度 | `BrakeTemperature.Root.value`（`ace_windows_auto_brake_temperature`） | `AceWindowsBrakeTemperatureData.wheels` の有限かつ0より大きい最高値を四捨五入した整数℃（`currentMaxBrakeTemperatureCelsius`） | `ACE_WINDOWS_MANUAL_READOUT_BRAKE_TEMPERATURE_TEXT_DEFAULT`（「ブレーキ温度は{celsius}℃」） | 未受信・鮮度切れ・有効な温度なし・ACE以外への切り替え後は「ブレーキ温度はデータがありません」 | 既存の `formatAceWindowsBrakeTemperatureReadoutText` と `findUnknownAceWindowsBrakeTemperatureReadoutPlaceholders` を使う。詳細画面のカテゴリはブレーキ、プレビューは500℃。自動過熱警告のしきい値・ヒステリシス・スイッチ判定は適用せず、警告状態も変更しない。開始音・ログは `RemainingFuel.Root`。 |
 | 前後車ギャップ | `CarGap.Root.value`（`ace_windows_auto_car_gap`） | `AceWindowsGapData`（前車・後車との符号付き秒数）。5秒以内のものを `AceWindowsManualReadoutItem.gap` に渡す | `ACE_WINDOWS_MANUAL_READOUT_CAR_GAP_TEXT_DEFAULT`（「前方{ahead}秒、後方{behind}秒」） | 未受信・鮮度切れ・ACE以外への切り替え後は「前後車とのギャップはデータがありません」 | 手動専用で自動スイッチなし。`{ahead}`は単位なしの数値「1.5」、`{behind}`は「2.3」（絶対値・小数1桁）。0・非有限値は節ごと「前方車なし」「後方車なし」に置換し、節を含まない文言では「なし」に置換する。読み上げ時の開始音・ログは他のACE手動項目と同じ `RemainingFuel.Root`、試聴の開始音は `VehicleApproach.Root`。プレビューは1.5秒・2.3秒。 |
@@ -82,7 +82,8 @@ GT7 PS5 の補足は次のとおり。
 ACE Windows の補足は次のとおり。
 
 - 対応項目は保存順に先頭 `MANUAL_READOUT_SET_ITEM_MAX`（3件）まで処理する。
-- 手動値は鮮度判定済みの `AceWindowsManualReadoutItem(key, textTemplate, value)` で受け取る。シミュレーター切り替え時は最新値と受信時刻をクリアする。
+- 手動値は `AceWindowsManualReadoutItem(key, textTemplate, value)` で受け取る。自己ベストラップ以外は鮮度判定済みの値を渡す。
+- 自己ベストラップは鮮度を判定しない。サーバーは `MY_BEST_LAP` を `distinctUntilChanged` で配信し、値が変わらない間は Android に再送しないため、5秒で失効させると読めなくなる。シミュレーター切り替え時は最新値と受信時刻をクリアする。
 - 全項目の文言が空白なら空文字とする。
 - 一覧は既存の `AceWindowsReadoutItemKey.RemainingFuel.Root` を含むため、手動の「燃料残量」を選択できる。開始音・ログ・手動優先の読み上げには既存の `RemainingFuel.Root` を使う。
 
