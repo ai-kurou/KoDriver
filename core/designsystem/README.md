@@ -156,6 +156,14 @@ list/detail 構成の画面の一覧ペインの初期幅は `KoDriverListPaneWi
 
 `KoDriverCollapsibleVisibility` は、高さを伸縮させながらフェードして出入りする（表示300ms・非表示200ms）。親の `Arrangement.spacedBy` の間隔が残らないよう、非表示中は子要素を配置しない。伸縮の基準は `expandFrom`（既定は上端）で指定する。手動読み上げ詳細のホットキー設定まわりは下端、手動読み上げ一覧のホットキーチップと音声認識カードの履歴は上端を使う。
 
+## ホットキーカード
+
+`KoDriverHotkeyCard` は、修飾キーのドロップダウンとキー入力欄でホットキーを割り当てるカード。割り当ての解除、エラー文言、登録状態と再試行、操作の説明、案内リンクを表示する。固定文言は `KoDriverHotkeyCardTexts`、登録状態は `KoDriverHotkeyRegistration` で渡し、どちらも呼び出し側で解決する。domain に依存しないため、修飾キーは任意の型で受け取り、表示名は `modifierLabel` で解決する。保存・重複判定・ホットキー登録・案内の遷移先は呼び出し側が担う。
+
+- 入力欄は読み取り専用で、フォーカス中に数字・英字キーを押すと `onAssign` に仮想キーコードを通知する。対応表と表示名は `HotkeyKey.kt` の `hotkeyVirtualKeyCode` / `hotkeyDisplayName` を使う。
+- キー入力・解除・再試行・修飾キー操作・案内リンクは、部品内で `ContextClick` ハプティックを発生させる。呼び出し側で重ねて発生させないこと。
+- テストタグは `testTagPrefix` を接頭辞にした `_card` / `_key` / `_modifiers` / `_modifiers_<値>`。
+
 ## 詳細ペインのタイトル
 
 `DetailPaneTopAppBar` のタイトルは1行で表示し、バーの幅に収まらない場合は末尾を省略する。
