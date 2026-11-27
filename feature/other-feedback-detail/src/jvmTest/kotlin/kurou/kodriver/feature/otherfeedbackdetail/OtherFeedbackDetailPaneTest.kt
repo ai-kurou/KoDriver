@@ -452,4 +452,24 @@ class OtherFeedbackDetailPaneTest {
         rule.mainClock.advanceTimeBy(300)
         rule.onNodeWithText("テレメトリログ #42 を添付").assertDoesNotExist()
     }
+
+    @Test
+    fun `送信状態の切り替え中は前後の文言が重なり完了後は新しい文言だけになる`() {
+        var sendStatus by mutableStateOf<FeedbackSendStatus>(FeedbackSendStatus.Sending)
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState(sendStatus = sendStatus))
+            }
+        }
+        rule.onNodeWithText("送信中").assertExists()
+        rule.mainClock.autoAdvance = false
+        rule.runOnIdle { sendStatus = FeedbackSendStatus.Sent }
+        rule.mainClock.advanceTimeBy(100)
+        rule.onNodeWithText("送信中").assertExists()
+        rule.onNodeWithText("フィードバックを送信しました。").assertExists()
+        rule.mainClock.autoAdvance = true
+        rule.waitForIdle()
+        rule.onNodeWithText("送信中").assertDoesNotExist()
+        rule.onNodeWithText("フィードバックを送信しました。").assertExists()
+    }
 }

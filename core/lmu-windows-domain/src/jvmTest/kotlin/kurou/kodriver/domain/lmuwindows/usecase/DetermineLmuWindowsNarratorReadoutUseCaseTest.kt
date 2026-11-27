@@ -3294,6 +3294,41 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `周回数が戻ったらタイヤ摩耗の読み上げ済み周回数と評価周をリセットして基準値を取り直す`() {
+        val lateRaceDecision =
+            pitTimingUseCase.determinePitTimingTyreWear(
+                state =
+                    LmuWindowsNarratorState(
+                        lastAnnouncedPitTimingTyreWearLaps = 2,
+                        lastPitTimingTyreWearEvaluationLap = 5,
+                    ),
+                telemetry = lapTelemetry(currentLap = 5, bestLapTimeMs = 90_000L),
+                tyreWear = tyreWear(fl = 0.3),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+
+        val newSessionDecision =
+            pitTimingUseCase.determinePitTimingTyreWear(
+                state = lateRaceDecision.state,
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+                tyreWear = tyreWear(fl = 1.0),
+                settings = settings(),
+                observedAtMs = 10_000L,
+            )
+
+        assertEquals(2, lateRaceDecision.state.lastAnnouncedPitTimingTyreWearLaps)
+        val trackingState = newSessionDecision.state.pitTimingTyreWearTrackingState
+        assertEquals(emptyList<SpeechEvent>(), newSessionDecision.events)
+        assertEquals(true, trackingState.isNewSession)
+        assertEquals(1, trackingState.currentLap)
+        assertEquals(1.0, trackingState.currentLapStartValue)
+        assertEquals(1.0, trackingState.refillBaselineValue)
+        assertEquals(-1, newSessionDecision.state.lastAnnouncedPitTimingTyreWearLaps)
+        assertEquals(-1, newSessionDecision.state.lastPitTimingTyreWearEvaluationLap)
+    }
+
+    @Test
     fun `閾値未満のバーチャルエネルギー残量増加は補充とみなさず消費量の推定に含めない`() {
         val firstDecision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(

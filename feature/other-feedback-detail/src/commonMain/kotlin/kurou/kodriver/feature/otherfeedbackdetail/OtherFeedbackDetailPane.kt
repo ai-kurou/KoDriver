@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherfeedbackdetail
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -95,6 +96,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val SENTRY_URL = "https://sentry.io/"
 private const val SENTRY_LINK_ICON_ID = "sentry-link-icon"
+private const val STATUS_ENTER_MILLIS = 300
+private const val STATUS_EXIT_MILLIS = 200
 
 /**
  * OtherFeedbackDetail の画面を表示する Composable。
@@ -439,7 +442,27 @@ private fun AttachedTelemetryLogChip(
 
 @Composable
 private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
-    if (uiState.isCoolingDown && uiState.sendStatus != FeedbackSendStatus.Sent) {
+    val showCooldown = uiState.isCoolingDown && uiState.sendStatus != FeedbackSendStatus.Sent
+    // 送信結果の切り替えが分かるようにフェードし、下の送信ボタンが跳ねないよう高さも補間する。
+    AnimatedContent(
+        targetState = showCooldown to uiState.sendStatus,
+        transitionSpec = {
+            fadeIn(tween(STATUS_ENTER_MILLIS)) togetherWith fadeOut(tween(STATUS_EXIT_MILLIS))
+        },
+        label = "feedbackStatus",
+    ) { (animatedShowCooldown, animatedSendStatus) ->
+        Column(modifier = Modifier.fillMaxWidth()) {
+            FeedbackStatusMessages(showCooldown = animatedShowCooldown, sendStatus = animatedSendStatus)
+        }
+    }
+}
+
+@Composable
+private fun FeedbackStatusMessages(
+    showCooldown: Boolean,
+    sendStatus: FeedbackSendStatus,
+) {
+    if (showCooldown) {
         Text(
             text = stringResource(Res.string.feedback_cooldown),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -447,7 +470,7 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
         )
         Spacer(modifier = Modifier.height(KoDriverSpacing.small))
     }
-    when (uiState.sendStatus) {
+    when (sendStatus) {
         FeedbackSendStatus.Sent -> {
             Text(
                 text = stringResource(Res.string.feedback_sent),
