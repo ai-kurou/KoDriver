@@ -19,6 +19,7 @@ import kurou.kodriver.data.preferences.AndroidHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.AndroidKeepScreenOnEnabledRepository
 import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
+import kurou.kodriver.data.preferences.androidPreferencesCorruptionHandler
 import kurou.kodriver.data.preferences.createAndroidAudioUsagePreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
@@ -94,12 +95,30 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
-private val Context.readoutDataStore by preferencesDataStore("auto_readout_preferences")
-private val Context.serverIpDataStore by preferencesDataStore("server_ip_preferences")
-private val Context.keepScreenOnDataStore by preferencesDataStore("keep_screen_on_preferences")
-private val Context.dynamicColorDataStore by preferencesDataStore("dynamic_color_preferences")
-private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore("haptic_feedback_enabled_preferences")
+private val Context.simulatorDataStore by preferencesDataStore(
+    name = "simulator_preferences",
+    corruptionHandler = androidPreferencesCorruptionHandler,
+)
+private val Context.readoutDataStore by preferencesDataStore(
+    name = "auto_readout_preferences",
+    corruptionHandler = androidPreferencesCorruptionHandler,
+)
+private val Context.serverIpDataStore by preferencesDataStore(
+    name = "server_ip_preferences",
+    corruptionHandler = androidPreferencesCorruptionHandler,
+)
+private val Context.keepScreenOnDataStore by preferencesDataStore(
+    name = "keep_screen_on_preferences",
+    corruptionHandler = androidPreferencesCorruptionHandler,
+)
+private val Context.dynamicColorDataStore by preferencesDataStore(
+    name = "dynamic_color_preferences",
+    corruptionHandler = androidPreferencesCorruptionHandler,
+)
+private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore(
+    name = "haptic_feedback_enabled_preferences",
+    corruptionHandler = androidPreferencesCorruptionHandler,
+)
 
 /**
  * Android 版の Repository バインドを行う Koin モジュール（:core:data / androidMain）。
