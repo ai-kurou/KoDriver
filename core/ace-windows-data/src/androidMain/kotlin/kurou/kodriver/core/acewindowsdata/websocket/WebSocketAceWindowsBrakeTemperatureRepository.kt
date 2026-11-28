@@ -5,7 +5,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.acewindows.model.AceWindowsBrakeTemperatureData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
@@ -20,8 +19,6 @@ internal class WebSocketAceWindowsBrakeTemperatureRepository(
     private val retryDelayMs: Long = KODRIVER_SERVER_RETRY_DELAY_MS_DEFAULT,
     private val client: HttpClient = createWebSocketHttpClient(),
 ) : AceWindowsBrakeTemperatureRepository {
-    private val json = Json { ignoreUnknownKeys = true }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun brakeTemperatureStream(): Flow<AceWindowsBrakeTemperatureData> =
         serverIpRepository
@@ -35,7 +32,7 @@ internal class WebSocketAceWindowsBrakeTemperatureRepository(
                         port = port,
                         path = KoDriverServerFeature.BRAKE_TEMPERATURE.webSocketPath(Simulator.AceWindows),
                         retryDelayMs = retryDelayMs,
-                        decode = { json.decodeFromString<AceWindowsBrakeTemperatureData>(it) },
+                        decode = { webSocketJson.decodeFromString<AceWindowsBrakeTemperatureData>(it) },
                     )
                 }
             }

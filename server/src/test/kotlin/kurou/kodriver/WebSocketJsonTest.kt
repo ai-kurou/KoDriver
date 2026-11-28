@@ -3,6 +3,7 @@ package kurou.kodriver
 import io.ktor.server.websocket.DefaultWebSocketServerSession
 import io.ktor.websocket.CloseReason
 import io.ktor.websocket.Frame
+import io.ktor.websocket.readText
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -11,11 +12,13 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
 import kotlinx.serialization.builtins.serializer
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class WebSocketJsonTest {
@@ -88,6 +91,22 @@ class WebSocketJsonTest {
             session.sendJsonMessages(messages, String.serializer())
 
             assertTrue(messageFlowCancelled)
+        }
+
+    @Test
+    fun `非有限値を含むメッセージもエンコードして送信を続ける`() =
+        runTest {
+            every { session.incoming } returns Channel()
+            every { session.closeReason } returns CompletableDeferred()
+            val sent = mutableListOf<String>()
+            coEvery { session.send(any()) } answers { sent += (firstArg<Frame>() as Frame.Text).readText() }
+
+            session.sendJsonMessages(
+                flowOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 1.5),
+                Double.serializer(),
+            )
+
+            assertEquals(listOf("NaN", "Infinity", "-Infinity", "1.5"), sent)
         }
 
     private fun cancellableFlow(onCancelled: () -> Unit): Flow<String> =

@@ -5,7 +5,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
@@ -20,8 +19,6 @@ internal class WebSocketLmuWindowsPitStatusRepository(
     private val retryDelayMs: Long = KODRIVER_SERVER_RETRY_DELAY_MS_DEFAULT,
     private val client: HttpClient = createWebSocketHttpClient(),
 ) : LmuWindowsPitStatusRepository {
-    private val json = Json { ignoreUnknownKeys = true }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun pitStatusStream(): Flow<LmuWindowsPitStatusData> =
         serverIpRepository
@@ -35,7 +32,7 @@ internal class WebSocketLmuWindowsPitStatusRepository(
                         port = port,
                         path = KoDriverServerFeature.PIT_STATUS.webSocketPath(Simulator.LmuWindows),
                         retryDelayMs = retryDelayMs,
-                        decode = { json.decodeFromString<LmuWindowsPitStatusData>(it) },
+                        decode = { webSocketJson.decodeFromString<LmuWindowsPitStatusData>(it) },
                     )
                 }
             }

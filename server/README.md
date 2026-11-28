@@ -4,7 +4,7 @@
 
 ## WebSocket エンドポイント
 
-WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。パスは `KoDriverServerFeature.webSocketPath(simulator)` で組み立てられ、サーバー側の登録（`LmuWindowsRoutes.kt` / `AceWindowsRoutes.kt` の `telemetryWebSocket(...)`）とクライアント側の `WebSocket*Repository` で共有される。各エンドポイントは UseCase 経由で Repository を購読し、送信型を JSON として送信する。
+WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。パスは `KoDriverServerFeature.webSocketPath(simulator)` で組み立てられ、サーバー側の登録（`LmuWindowsRoutes.kt` / `AceWindowsRoutes.kt` の `telemetryWebSocket(...)`）とクライアント側の `WebSocket*Repository` で共有される。各エンドポイントは UseCase 経由で Repository を購読し、送信型を JSON として送信する。テレメトリに含まれる非有限値は、JSON 標準外の `NaN` / `Infinity` / `-Infinity` としてそのまま送信するため、受信側の `Json` にも `allowSpecialFloatingPointValues = true` が必要（Android は各 data モジュールの `webSocketJson` を使う）。
 
 ### LMU（`/ws/lmu_windows/...`）
 

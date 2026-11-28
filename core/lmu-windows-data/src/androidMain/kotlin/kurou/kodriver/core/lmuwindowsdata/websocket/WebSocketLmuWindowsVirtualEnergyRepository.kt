@@ -5,7 +5,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
@@ -20,8 +19,6 @@ internal class WebSocketLmuWindowsVirtualEnergyRepository(
     private val retryDelayMs: Long = KODRIVER_SERVER_RETRY_DELAY_MS_DEFAULT,
     private val client: HttpClient = createWebSocketHttpClient(),
 ) : LmuWindowsVirtualEnergyRepository {
-    private val json = Json { ignoreUnknownKeys = true }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> =
         serverIpRepository
@@ -35,7 +32,7 @@ internal class WebSocketLmuWindowsVirtualEnergyRepository(
                         port = port,
                         path = KoDriverServerFeature.VIRTUAL_ENERGY.webSocketPath(Simulator.LmuWindows),
                         retryDelayMs = retryDelayMs,
-                        decode = { json.decodeFromString<LmuWindowsVirtualEnergyData>(it) },
+                        decode = { webSocketJson.decodeFromString<LmuWindowsVirtualEnergyData>(it) },
                     )
                 }
             }
