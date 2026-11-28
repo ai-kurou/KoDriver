@@ -23,6 +23,7 @@ import kurou.kodriver.domain.model.isHotkeyVirtualKeyCode
 import kurou.kodriver.domain.model.normalizeReadoutCustomText
 import kurou.kodriver.domain.model.takeManualReadoutSetName
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
@@ -36,6 +37,7 @@ internal class ManualReadoutSetDetailViewModel(
     private val updateSet: UpdateManualReadoutSetUseCase,
     private val deleteSet: DeleteManualReadoutSetUseCase,
     private val observeOtherSimulatorSets: Map<String, ObserveManualReadoutSetsUseCase>,
+    private val observeWakeWordHotkey: ObserveWakeWordHotkeyUseCase,
     observeHotkeyRegistrationState: ObserveManualReadoutHotkeyRegistrationStateUseCase,
     private val retryHotkeyRegistration: RetryManualReadoutHotkeyRegistrationUseCase,
     checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
@@ -162,7 +164,7 @@ internal class ManualReadoutSetDetailViewModel(
                     hotkeyConflict.update { null }
                     return@withLock
                 }
-                val conflict = findOtherSetConflict(sets, virtualKeyCode, set.hotkeyModifiers)
+                val conflict = findConflict(sets, virtualKeyCode, set.hotkeyModifiers)
                 if (conflict == null) updateSet(set.copy(hotkeyVirtualKeyCode = virtualKeyCode))
                 hotkeyConflict.update { conflict }
             }
@@ -180,14 +182,26 @@ internal class ManualReadoutSetDetailViewModel(
                     return@withLock
                 }
                 val key = set.hotkeyVirtualKeyCode
-                val conflict = key?.let { findOtherSetConflict(sets, it, modifiers) }
+                val conflict = key?.let { findConflict(sets, it, modifiers) }
                 if (conflict == null) updateSet(set.copy(hotkeyModifiers = modifiers))
                 hotkeyConflict.update { conflict }
             }
         }
     }
 
-    // OS のホットキーはシミュレーターをまたいで共有されるため、全シミュレーターのセットと重複を確認する。
+    // OS のホットキーはアプリ全体で共有されるため、ウェイクワードと全シミュレーターのセットとの重複を確認する。
+    private suspend fun findConflict(
+        sets: List<ManualReadoutSet>,
+        virtualKeyCode: Int,
+        modifiers: ManualReadoutHotkeyModifiers,
+    ): ManualReadoutHotkeyConflict? {
+        val wakeWord = observeWakeWordHotkey().first()
+        if (wakeWord.virtualKeyCode == virtualKeyCode && wakeWord.modifiers == modifiers) {
+            return ManualReadoutHotkeyConflict.WakeWord
+        }
+        return findOtherSetConflict(sets, virtualKeyCode, modifiers)
+    }
+
     private suspend fun findOtherSetConflict(
         sets: List<ManualReadoutSet>,
         virtualKeyCode: Int,

@@ -80,10 +80,10 @@ LMU (Windows版) / ACE (Windows版)との接続先の設定は、[Windows版の�
 
 マイクの許可や入力デバイスの詳しい手順は、[Android 版のインストール手順](docs/android-install.md#マイクの許可音声認識)・[Windows 版のインストール手順](docs/windows-install.md#マイクの設定音声認識)を参照してください。
 
-## ステアリングのボタンから手動読み上げを実行する
+## ステアリングのボタンから KoDriver のホットキーを押す
 
 Windows 版では、手動読み上げセットに割り当てたホットキーを、SimHub の Control mapper でステアリングのボタンから実行できます。
-設定手順は [ステアリングのボタンから手動読み上げを実行する設定](docs/simhub-hotkey-setup.md) を参照してください。
+設定手順は [ステアリングのボタンから KoDriver のホットキーを押す設定](docs/simhub-hotkey-setup.md) を参照してください。
 
 ## GT7 (PS5) 接続設定
 

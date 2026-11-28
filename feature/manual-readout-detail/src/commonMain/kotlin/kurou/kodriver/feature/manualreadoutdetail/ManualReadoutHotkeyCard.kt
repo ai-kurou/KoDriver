@@ -8,6 +8,7 @@ import kurou.kodriver.core.designsystem.hotkeyDisplayName
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
+import kurou.kodriver.domain.model.displayName
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_clear
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_guide_link
@@ -21,6 +22,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_registration_registering
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_registration_retry
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_title
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_wake_word
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -83,6 +85,10 @@ private fun manualReadoutHotkeyConflictText(conflict: ManualReadoutHotkeyConflic
                     conflict.name,
                 )
             }
+        }
+
+        ManualReadoutHotkeyConflict.WakeWord -> {
+            stringResource(Res.string.manual_readout_hotkey_wake_word)
         }
 
         null -> {

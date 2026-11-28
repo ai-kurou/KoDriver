@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import org.junit.Rule
@@ -19,7 +20,7 @@ class OtherWakeWordHotkeyDetailPaneTest {
     private fun setPane() {
         rule.setContent {
             MaterialTheme {
-                OtherWakeWordHotkeyDetailPane(canNavigateBack = true, onBack = { backCount++ })
+                OtherWakeWordHotkeyDetailPane(canNavigateBack = true, onBack = { backCount++ }, showHotkey = false)
             }
         }
     }
@@ -32,6 +33,13 @@ class OtherWakeWordHotkeyDetailPaneTest {
         rule
             .onNodeWithText("ホットキーを押すことで、ウェイクワードを話したときと同じようにコマンドの受付を始める機能の設定です。")
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun `ホットキー非対応ではホットキーカードを表示しない`() {
+        setPane()
+
+        rule.onNodeWithTag("wake_word_hotkey_card").assertDoesNotExist()
     }
 
     @Test

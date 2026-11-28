@@ -55,7 +55,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-overlay-text-color-detail` | その他画面のオーバーレイ文字色設定詳細（8色のプリセット選択・既定色へのリセット・OKで保存） | [図](graphs/feature-other-overlay-text-color-detail.svg) |
 | `:feature:other-overlay-background-opacity-detail` | その他画面のオーバーレイ背景透明度設定詳細 | [図](graphs/feature-other-overlay-background-opacity-detail.svg) |
 | `:feature:other-microphone-cut-quiet-sound-detail` | その他画面のマイク設定「小さい音をカット」詳細（段階値のスライダー・既定値へのリセット） | [図](graphs/feature-other-microphone-cut-quiet-sound-detail.svg) |
-| `:feature:other-wake-word-hotkey-detail` | その他画面のマイク設定「ウェイクワードホットキー」詳細（タイトルと説明のみ） | [図](graphs/feature-other-wake-word-hotkey-detail.svg) |
+| `:feature:other-wake-word-hotkey-detail` | その他画面のマイク設定「ウェイクワードホットキー」詳細（Windows 版はホットキーの割り当て・手動読み上げとの重複確認・登録状態の表示） | [図](graphs/feature-other-wake-word-hotkey-detail.svg) |
 | `:feature:other-voice-speed-detail` | その他画面の読み上げ速度設定詳細 | [図](graphs/feature-other-voice-speed-detail.svg) |
 | `:feature:other-voice-pitch-detail` | その他画面の声の高さ設定詳細（保存済みピッチの監視・保存、スライダー・リセット） | [図](graphs/feature-other-voice-pitch-detail.svg) |
 | `:feature:other-volume-detail` | その他画面の読み上げ音量設定詳細 | [図](graphs/feature-other-volume-detail.svg) |
@@ -100,7 +100,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 
 LMU のブレーキ摩耗は `:core:lmu-windows-rest-api-data` がデスクトップ版で取得し、`:server` の `/ws/lmu_windows/brake_wear` から配信する。Android 版は `:core:lmu-windows-data` の WebSocket Repository で受信し、共通の残量計算・Narrator に渡す。取得失敗時の `null` も配信する。
 
-手動読み上げの詳細は `app:shared` → `:feature:manual-readout-detail` → `:core:domain` / `:core:lmu-windows-domain` / `:core:ace-windows-domain` / `:core:gt7-ps5-domain` / `:core:designsystem` に依存する。一覧は詳細スロットを公開し、feature 間依存は持たない。両プラットフォームの共通 composition root が詳細の Koin モジュールを登録する。
+手動読み上げの詳細は `app:shared` → `:feature:manual-readout-detail` → `:core:domain` / `:core:lmu-windows-domain` / `:core:ace-windows-domain` / `:core:gt7-ps5-domain` / `:core:manual-readout-domain` / `:core:speech-recognition-domain` / `:core:designsystem` に依存する。一覧は詳細スロットを公開し、feature 間依存は持たない。両プラットフォームの共通 composition root が詳細の Koin モジュールを登録する。
 
 ## domain モジュールの振り分け基準
 

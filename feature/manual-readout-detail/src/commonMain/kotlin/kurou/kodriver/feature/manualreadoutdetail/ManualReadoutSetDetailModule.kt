@@ -6,6 +6,7 @@ import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCa
 import kurou.kodriver.domain.manualreadout.usecase.RetryManualReadoutHotkeyRegistrationUseCase
 import kurou.kodriver.domain.manualreadout.usecase.UpdateManualReadoutSetUseCase
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import org.koin.core.module.Module
@@ -16,7 +17,7 @@ import org.koin.dsl.module
 /**
  * 手動読み上げセット詳細の ViewModel を提供する。
  * 消費: 各シミュレーターの ManualReadoutSetPreferencesRepository、ホットキー関連 Repository、
- * TextToSpeechRepository、SoundVolumePreferencesRepository、および Narrator が登録する
+ * WakeWordHotkeyPreferencesRepository、TextToSpeechRepository、SoundVolumePreferencesRepository、および Narrator が登録する
  * named(simulatorId) の PlayStartSoundForKeyUseCase・SpeakTextUseCase。
  */
 public val manualReadoutSetDetailModule: Module =
@@ -33,6 +34,7 @@ public val manualReadoutSetDetailModule: Module =
                 updateSet = UpdateManualReadoutSetUseCase(get(named(simulatorId))),
                 observeHotkeyRegistrationState = ObserveManualReadoutHotkeyRegistrationStateUseCase(get()),
                 retryHotkeyRegistration = RetryManualReadoutHotkeyRegistrationUseCase(get()),
+                observeWakeWordHotkey = ObserveWakeWordHotkeyUseCase(get()),
                 deleteSet = DeleteManualReadoutSetUseCase(get(named(simulatorId))),
                 observeOtherSimulatorSets =
                     Simulator.entries

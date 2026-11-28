@@ -156,6 +156,7 @@ dependencies {
     add("jvmTestImplementation", testFixtures(projects.feature.otherVolumeDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherVoiceDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherList))
+    add("jvmTestImplementation", testFixtures(projects.feature.otherWakeWordHotkeyDetail))
     add("androidHostTestImplementation", testFixtures(projects.feature.otherThemeDetail))
     add("androidHostTestImplementation", testFixtures(projects.feature.otherList))
     testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))

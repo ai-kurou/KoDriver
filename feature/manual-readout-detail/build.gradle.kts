@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
             implementation(projects.core.manualReadoutDomain)
+            implementation(projects.core.speechRecognitionDomain)
             implementation(projects.core.aceWindowsDomain)
             implementation(projects.core.lmuWindowsDomain)
             implementation(libs.compose.foundation)

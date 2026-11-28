@@ -26,6 +26,8 @@ import kurou.kodriver.feature.otherloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.otherloglist.fakeTelemetryLogRepository
 import kurou.kodriver.feature.otherloglist.telemetryLogListModule
 import kurou.kodriver.feature.othermicrophonecutquietsounddetail.otherMicrophoneCutQuietSoundDetailModule
+import kurou.kodriver.feature.otherwakewordhotkeydetail.fakeOtherWakeWordHotkeyDetailModule
+import kurou.kodriver.feature.otherwakewordhotkeydetail.otherWakeWordHotkeyDetailModule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -52,6 +54,8 @@ class DefaultOtherDetailContentTest {
                                 otherAndroidAudioUsageDetailModule,
                                 otherMicrophoneCutQuietSoundDetailModule,
                                 fakeOtherListModule,
+                                otherWakeWordHotkeyDetailModule,
+                                fakeOtherWakeWordHotkeyDetailModule,
                                 telemetryLogListModule,
                                 fakeTelemetryLogListModule,
                                 module {

@@ -20,6 +20,7 @@
     <string name="manual_readout_hotkey_guide_link">ステアリングのボタンから実行する方法を見る</string>
     <string name="manual_readout_hotkey_hint">修飾キーを選び、右の入力欄で数字または英字キーを押して割り当てます</string>
     <string name="manual_readout_hotkey_other_set">%1$s のセット%2$dで使用中のため割り当てできません</string>
+    <string name="manual_readout_hotkey_wake_word">ウェイクワードホットキーで使用中のため割り当てできません</string>
     <string name="manual_readout_hotkey_registration_registering">登録中</string>
     <string name="manual_readout_hotkey_registration_registered">登録済み</string>
     <string name="manual_readout_hotkey_registration_conflict">他のアプリが使用中のため登録できません</string>

@@ -1,10 +1,9 @@
-package kurou.kodriver.feature.manualreadoutdetail
+package kurou.kodriver.domain.model
 
-import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ManualReadoutHotkeyKeyTest {
+class ManualReadoutHotkeyModifiersDisplayNameTest {
     @Test
     fun `修飾キーの表示名を検証する`() {
         assertEquals(

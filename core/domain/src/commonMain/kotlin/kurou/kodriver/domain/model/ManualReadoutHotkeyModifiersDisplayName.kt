@@ -1,8 +1,7 @@
-package kurou.kodriver.feature.manualreadoutdetail
+package kurou.kodriver.domain.model
 
-import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
-
-internal fun ManualReadoutHotkeyModifiers.displayName(): String =
+/** 画面に表示する修飾キーの名前。 */
+public fun ManualReadoutHotkeyModifiers.displayName(): String =
     when (this) {
         ManualReadoutHotkeyModifiers.CTRL_ALT -> "Ctrl + Alt"
         ManualReadoutHotkeyModifiers.CTRL_SHIFT -> "Ctrl + Shift"

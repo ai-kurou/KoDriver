@@ -41,6 +41,7 @@ import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyPreferencesRepository
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import org.junit.Before
@@ -153,6 +154,7 @@ class ManualReadoutSetDetailWiringTest {
                         single<PlayStartSoundForKeyUseCase>(named(simulator.id)) { playStartSound }
                         single<SpeakTextUseCase>(named(simulator.id)) { speakText }
                     }
+                    single<WakeWordHotkeyPreferencesRepository> { UnassignedWakeWordHotkeyPreferencesRepository() }
                     single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(targetSimulator.id)) { repository }
                     Simulator.entries.filter { it != targetSimulator }.forEach { simulator ->
@@ -243,6 +245,7 @@ class ManualReadoutSetDetailWiringTest {
                         single<PlayStartSoundForKeyUseCase>(named(simulator.id)) { playStartSound }
                         single<SpeakTextUseCase>(named(simulator.id)) { speakText }
                     }
+                    single<WakeWordHotkeyPreferencesRepository> { UnassignedWakeWordHotkeyPreferencesRepository() }
                     single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                     single<ManualReadoutSetPreferencesRepository>(named(Simulator.Gt7Ps5.id)) { repository }
                     Simulator.entries.filter { it != Simulator.Gt7Ps5 }.forEach { simulator ->
