@@ -2,8 +2,7 @@ package kurou.kodriver.feature.otherconsoleipdetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MAX
-import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MIN
+import kurou.kodriver.domain.serverconnection.model.parseIpv4Octets
 
 /** 保存済みIPとUDPポート、操作状態から画面状態を合成する冷たい Flow。 */
 internal class OtherConsoleIpDetailFlow(
@@ -31,8 +30,4 @@ internal class OtherConsoleIpDetailFlow(
 }
 
 /** 画面状態と保存操作で共通のIP形式判定。空入力は保存不可とする。 */
-internal fun isValidConsoleIpAddress(ip: String): Boolean {
-    val parts = ip.split(".")
-    if (parts.size != 4) return false
-    return parts.all { part -> part.toIntOrNull()?.let { it in IPV4_OCTET_MIN..IPV4_OCTET_MAX } == true }
-}
+internal fun isValidConsoleIpAddress(ip: String): Boolean = parseIpv4Octets(ip) != null

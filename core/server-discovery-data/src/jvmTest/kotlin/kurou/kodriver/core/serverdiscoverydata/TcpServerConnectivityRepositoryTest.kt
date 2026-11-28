@@ -98,6 +98,9 @@ class TcpServerConnectivityRepositoryTest {
 
             assertFalse(checker.isReachable("-1.0.0.1"))
             assertFalse(checker.isReachable("256.0.0.1"))
+            assertFalse(checker.isReachable("+127.0.0.1"))
+            assertFalse(checker.isReachable("１２７.0.0.1"))
+            assertFalse(checker.isReachable("127.0.0.01"))
             assertFalse(connectCalled)
         }
 

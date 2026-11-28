@@ -64,6 +64,10 @@ class OtherConsoleIpDetailFlowTest {
                     "1..3.4" to false,
                     "-1.0.0.1" to false,
                     "256.0.0.1" to false,
+                    "+1.+2.+3.+4" to false,
+                    "-0.0.0.0" to false,
+                    "１９２.168.1.2" to false,
+                    "010.0.0.1" to false,
                     "0.0.0.0" to true,
                     "255.255.255.255" to true,
                 )
