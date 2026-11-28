@@ -11,6 +11,15 @@ internal object Gt7Ps5FuelTracker {
         observedAtMs: Long,
     ): Gt7Ps5FuelTrackingState =
         when {
+            // スタート前（周回数0以下）を起点にすると完走周回数を1周多く数えるため、追跡状態を破棄して起点を作らない。
+            // isNewSession は追跡中からの破棄時だけ立て、前のセッションの読み上げ履歴をリセットする。
+            telemetry.lapCount <= 0 -> {
+                Gt7Ps5FuelTrackingState(
+                    currentLap = telemetry.lapCount,
+                    isNewSession = state.raceStartFuel != null,
+                )
+            }
+
             telemetry.lapCount < state.currentLap -> {
                 Gt7Ps5FuelTrackingState(
                     raceStartFuel = telemetry.gasLevel,
