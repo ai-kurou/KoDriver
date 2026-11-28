@@ -1053,9 +1053,9 @@ class Gt7Ps5NarratorViewModelTest {
             stubReadoutDefaults(fuelThreshold = 3)
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-            channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
-            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
-            channel.send(gt7Telemetry(lapCount = 2, gasLevel = 20f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 40f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 3, gasLevel = 20f, gasCapacity = 100f))
 
             assertEquals(
                 listOf<SpeechEvent>(Gt7Ps5RemainingFuelLapsWarning(2, resolvedText = "燃料は残り約2周")),

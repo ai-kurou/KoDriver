@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
@@ -987,6 +988,80 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         assertEquals(-1, decision.state.lastAnnouncedRemainingLaps)
         assertEquals(-1, decision.state.lastFuelEvaluationLap)
         assertEquals(1, decision.state.fuelTrackingState.currentLap)
+    }
+
+    @Test
+    fun `周回数が0以下の間は燃料追跡の起点を作らず1周目の最初のテレメトリを起点にする`() {
+        var state = Gt7Ps5NarratorState()
+        listOf(-1, 0).forEach { lapCount ->
+            state =
+                useCase
+                    .determineRemainingFuelLaps(
+                        state = state,
+                        telemetry = telemetry(lapCount = lapCount, gasLevel = 31f),
+                        settings = settings(),
+                        observedAtMs = 0L,
+                    ).state
+
+            assertEquals(Gt7Ps5FuelTrackingState(currentLap = lapCount), state.fuelTrackingState)
+        }
+        listOf(Triple(1, 30f, 10_000L), Triple(2, 13f, 110_000L)).forEach { (lapCount, gasLevel, observedAtMs) ->
+            state =
+                useCase
+                    .determineRemainingFuelLaps(
+                        state = state,
+                        telemetry = telemetry(lapCount = lapCount, gasLevel = gasLevel),
+                        settings = settings(),
+                        observedAtMs = observedAtMs,
+                    ).state
+        }
+
+        assertEquals(1, state.fuelTrackingState.raceStartLap)
+        assertEquals(Gt7Ps5FuelUnit(30f), state.fuelTrackingState.raceStartFuel)
+        assertEquals(1, useCase.currentRemainingFuelLaps(state))
+    }
+
+    @Test
+    fun `追跡中に周回数が0へ戻ったら追跡状態と読み上げ履歴を破棄して次の1周目を起点にし直す`() {
+        val state =
+            Gt7Ps5NarratorState(
+                lastAnnouncedRemainingLaps = 2,
+                lastFuelEvaluationLap = 1,
+                fuelTrackingState =
+                    Gt7Ps5FuelTrackingState(
+                        raceStartFuel = Gt7Ps5FuelUnit(100f),
+                        raceStartLap = 1,
+                        currentLap = 1,
+                        currentGasLevel = Gt7Ps5FuelUnit(90f),
+                        bestLapTimeMs = 90_000,
+                    ),
+            )
+
+        val gridDecision =
+            useCase.determineRemainingFuelLaps(
+                state = state,
+                telemetry = telemetry(lapCount = 0, gasLevel = 30f),
+                settings = settings(),
+                observedAtMs = 200_000L,
+            )
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = gridDecision.state,
+                telemetry = telemetry(lapCount = 1, gasLevel = 29f),
+                settings = settings(),
+                observedAtMs = 210_000L,
+            )
+
+        assertTrue(gridDecision.events.isEmpty())
+        assertEquals(-1, gridDecision.state.lastAnnouncedRemainingLaps)
+        assertEquals(-1, gridDecision.state.lastFuelEvaluationLap)
+        assertEquals(
+            Gt7Ps5FuelTrackingState(currentLap = 0, isNewSession = true),
+            gridDecision.state.fuelTrackingState,
+        )
+        assertNull(useCase.currentRemainingFuelLaps(gridDecision.state))
+        assertEquals(Gt7Ps5FuelUnit(29f), firstLapDecision.state.fuelTrackingState.raceStartFuel)
+        assertEquals(Gt7Ps5FuelUnit(0f), firstLapDecision.state.fuelTrackingState.totalRefueled)
     }
 
     @Test
