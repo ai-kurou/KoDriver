@@ -19,25 +19,31 @@ public class DetermineLmuWindowsMyBestLapReadoutUseCase {
             } else {
                 state
             }
-        val stateWithCurrentBestLap = sessionState.copy(previousBestLapTimeMs = current, previousLapCount = currentLap)
-        val previous = sessionState.previousBestLapTimeMs
-        if (previous == null) return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
-        if (current <= 0L) return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
-        if (previous > 0L && current >= previous) {
-            return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        // 読み上げの有無にかかわらず観測した最速値を記録し、0からの復帰を更新と誤認しないようにする。
+        val personalBestMs =
+            if (current > 0L) minOf(sessionState.personalBestMs, current) else sessionState.personalBestMs
+        val observedState =
+            sessionState.copy(
+                personalBestMs = personalBestMs,
+                previousBestLapTimeMs = current,
+                previousLapCount = currentLap,
+            )
+        // 初回観測の値は、このアプリが更新を確認したものではないため読み上げない。
+        if (sessionState.previousBestLapTimeMs == null) {
+            return LmuWindowsNarratorReadoutDecision(observedState, emptyList())
         }
-        if (current >= sessionState.personalBestMs) {
-            return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        if (current <= 0L || current >= sessionState.personalBestMs) {
+            return LmuWindowsNarratorReadoutDecision(observedState, emptyList())
         }
         if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.MyBestLap.Root) ||
             !settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled)
         ) {
-            return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+            return LmuWindowsNarratorReadoutDecision(observedState, emptyList())
         }
 
         val event = LmuWindowsMyBestLap(lapTimeMs = current)
         return LmuWindowsNarratorReadoutDecision(
-            state = stateWithCurrentBestLap.copy(personalBestMs = current),
+            state = observedState,
             events = listOf(event),
         )
     }
