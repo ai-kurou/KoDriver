@@ -205,7 +205,9 @@ internal object LmuWindowsMapper {
         headerSizePerVehicle: Int,
     ): Int {
         val headerSize = vehicleTelemetryBase(0) + headerSizePerVehicle
-        return maxOf(0, (buffer.limit() - headerSize) / VEHICLE_STRIDE)
+        // headerSize は0台目の読み取り末尾なので、割り算の結果に0台目の分を足す。
+        // 整数除算は0方向に切り捨てるため、不足している場合は先に除外する。
+        return if (buffer.limit() < headerSize) 0 else (buffer.limit() - headerSize) / VEHICLE_STRIDE + 1
     }
 
     /** 指定オフセットの符号なし8bit整数 (uint8) を返す。 */

@@ -392,11 +392,31 @@ class LmuWindowsMapperTest {
 
         val result = LmuWindowsMapper.maxVehicleCount(buf, headerSizePerVehicle)
 
-        assertEquals(3, result)
+        assertEquals(4, result)
     }
 
     @Test
-    fun `maxVehicleCountはバッファがヘッダーサイズに満たない場合0を返す`() {
+    fun `maxVehicleCountはバッファがヘッダーサイズちょうどの場合1を返す`() {
+        val headerSizePerVehicle = 8
+        val buf = ByteBuffer.allocate(vehicleBase(playerIdx = 0) + headerSizePerVehicle)
+
+        val result = LmuWindowsMapper.maxVehicleCount(buf, headerSizePerVehicle)
+
+        assertEquals(1, result)
+    }
+
+    @Test
+    fun `maxVehicleCountはバッファがヘッダーサイズに1バイト満たない場合0を返す`() {
+        val headerSizePerVehicle = 8
+        val buf = ByteBuffer.allocate(vehicleBase(playerIdx = 0) + headerSizePerVehicle - 1)
+
+        val result = LmuWindowsMapper.maxVehicleCount(buf, headerSizePerVehicle)
+
+        assertEquals(0, result)
+    }
+
+    @Test
+    fun `maxVehicleCountはバッファがヘッダーサイズに大きく満たない場合0を返す`() {
         val result = LmuWindowsMapper.maxVehicleCount(ByteBuffer.allocate(1), headerSizePerVehicle = 8)
 
         assertEquals(0, result)

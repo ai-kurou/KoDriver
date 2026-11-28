@@ -293,7 +293,7 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
     @Test
     fun `activeVehicles がバッファ範囲を超える値でもクランプされ例外が出ない`() =
         runBlocking {
-            // バッファ135_000バイト → maxVehicleCount=3。activeVehicles=255はクランプされる
+            // バッファ135_000バイト → maxVehicleCount=4。activeVehicles=255はクランプされる
             // BufferUnderflowException が発生しないことを確認
             val buffer = buildBuffer(activeVehicles = 255, playerIdx = 0)
             val repo =
@@ -307,7 +307,8 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
         }
 
     @Test
-    fun `ヘッダー未満のバッファでは最大車両数は0になる`() {
+    fun `最大車両数は共有メモリの実サイズでは104になりヘッダー未満のバッファでは0になる`() {
+        assertEquals(104, LmuWindowsVehicleApproachRepositoryImpl.maxVehicleCount(ByteBuffer.allocate(324_820)))
         assertEquals(0, LmuWindowsVehicleApproachRepositoryImpl.maxVehicleCount(ByteBuffer.allocate(1)))
     }
 
