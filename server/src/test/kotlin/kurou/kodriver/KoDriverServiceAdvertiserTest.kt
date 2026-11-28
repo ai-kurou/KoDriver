@@ -9,6 +9,7 @@ import io.mockk.verify
 import io.sentry.Sentry
 import io.sentry.protocol.SentryId
 import java.io.IOException
+import java.net.InetAddress
 import javax.jmdns.JmDNS
 import javax.jmdns.ServiceInfo
 import kotlin.test.Test
@@ -18,10 +19,20 @@ class KoDriverServiceAdvertiserTest {
 
     private val secondJmdns: JmDNS = mockk(relaxed = true)
 
+    private val address: InetAddress = InetAddress.getByName("192.168.1.10")
+
+    private val secondAddress: InetAddress = InetAddress.getByName("172.20.0.1")
+
+    private fun testAdvertiser(
+        jmdnsFactory: (InetAddress) -> JmDNS,
+        suffixProvider: () -> String = { "AB12" },
+        addressesProvider: () -> List<InetAddress> = { listOf(address) },
+    ) = KoDriverServiceAdvertiser(addressesProvider, jmdnsFactory, suffixProvider)
+
     @Test
     fun `startするとKoDriverプレフィックス＋サフィックスでmDNSサービスを登録する`() {
         val advertiser =
-            KoDriverServiceAdvertiser(
+            testAdvertiser(
                 jmdnsFactory = { jmdns },
                 suffixProvider = { "AB12" },
             )
@@ -42,7 +53,7 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `stopすると登録済みのサービスを解除してクローズする`() {
-        val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
+        val advertiser = testAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
         advertiser.start(port = 8080)
 
         advertiser.stop()
@@ -59,7 +70,7 @@ class KoDriverServiceAdvertiserTest {
     fun `startを2回呼んでも同一のサフィックスを維持する`() {
         var callCount = 0
         val advertiser =
-            KoDriverServiceAdvertiser(
+            testAdvertiser(
                 jmdnsFactory = { if (callCount++ == 0) jmdns else secondJmdns },
                 suffixProvider = { "AB12" },
             )
@@ -84,7 +95,7 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `start前にstopしても何も起きない`() {
-        val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns })
+        val advertiser = testAdvertiser(jmdnsFactory = { jmdns })
 
         advertiser.stop()
 
@@ -98,7 +109,7 @@ class KoDriverServiceAdvertiserTest {
         every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
         try {
             val advertiser =
-                KoDriverServiceAdvertiser(
+                testAdvertiser(
                     jmdnsFactory = { throw exception },
                     suffixProvider = { "AB12" },
                 )
@@ -127,7 +138,7 @@ class KoDriverServiceAdvertiserTest {
         mockkStatic(Sentry::class)
         every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
         try {
-            val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
+            val advertiser = testAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
 
             advertiser.start(port = 8080)
             advertiser.stop()
@@ -142,8 +153,10 @@ class KoDriverServiceAdvertiserTest {
                 )
                 Sentry.captureException(exception)
             }
-            verify(exactly = 0) { jmdns.unregisterAllServices() }
-            verify(exactly = 0) { jmdns.close() }
+            verify(exactly = 1) {
+                jmdns.unregisterAllServices()
+                jmdns.close()
+            }
             confirmVerified(jmdns, Sentry::class)
         } finally {
             unmockkStatic(Sentry::class)
@@ -152,7 +165,7 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `suffixProvider省略時はKoDriver-英数字4桁形式のランダムな名前で登録する`() {
-        val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns })
+        val advertiser = KoDriverServiceAdvertiser(addressesProvider = { listOf(address) }, jmdnsFactory = { jmdns })
 
         advertiser.start(port = 8080)
 
@@ -167,13 +180,79 @@ class KoDriverServiceAdvertiserTest {
     }
 
     @Test
+    fun `対象のアドレスごとに広告し停止時にすべて解除する`() {
+        val advertiser =
+            testAdvertiser(
+                addressesProvider = { listOf(address, secondAddress) },
+                jmdnsFactory = { if (it == address) jmdns else secondJmdns },
+            )
+
+        advertiser.start(port = 8080)
+        advertiser.stop()
+
+        listOf(jmdns, secondJmdns).forEach { instance ->
+            verify(exactly = 1) {
+                instance.registerService(withArg<ServiceInfo> { assert(it.name == "KoDriver-AB12" && it.port == 8080) })
+                instance.unregisterAllServices()
+                instance.close()
+            }
+        }
+        confirmVerified(jmdns, secondJmdns)
+    }
+
+    @Test
+    fun `一部のアドレスで失敗しても残りのアドレスでは広告する`() {
+        val exception = IOException("bind failed")
+        mockkStatic(Sentry::class)
+        every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
+        try {
+            val advertiser =
+                testAdvertiser(
+                    addressesProvider = { listOf(secondAddress, address) },
+                    jmdnsFactory = { if (it == address) jmdns else throw exception },
+                )
+
+            advertiser.start(port = 8080)
+            advertiser.stop()
+
+            verify(exactly = 1) {
+                jmdns.registerService(withArg<ServiceInfo> { assert(it.port == 8080) })
+                jmdns.unregisterAllServices()
+                jmdns.close()
+                Sentry.captureException(exception)
+            }
+            confirmVerified(jmdns, Sentry::class)
+        } finally {
+            unmockkStatic(Sentry::class)
+        }
+    }
+
+    @Test
+    fun `アドレスの取得に失敗しても例外を伝播しない`() {
+        val exception = IOException("no address")
+        mockkStatic(Sentry::class)
+        every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
+        try {
+            val advertiser = testAdvertiser(addressesProvider = { throw exception }, jmdnsFactory = { jmdns })
+
+            advertiser.start(port = 8080)
+            advertiser.stop()
+
+            verify(exactly = 1) { Sentry.captureException(exception) }
+            confirmVerified(jmdns, Sentry::class)
+        } finally {
+            unmockkStatic(Sentry::class)
+        }
+    }
+
+    @Test
     fun `stopでIOExceptionが発生しても例外を伝播しない`() {
         val exception = IOException("close failed")
         every { jmdns.unregisterAllServices() } throws exception
         mockkStatic(Sentry::class)
         every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
         try {
-            val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
+            val advertiser = testAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
             advertiser.start(port = 8080)
 
             advertiser.stop()
@@ -181,9 +260,9 @@ class KoDriverServiceAdvertiserTest {
             verify(exactly = 1) {
                 jmdns.registerService(withArg<ServiceInfo> { assert(it.port == 8080) })
                 jmdns.unregisterAllServices()
+                jmdns.close()
                 Sentry.captureException(exception)
             }
-            verify(exactly = 0) { jmdns.close() }
             confirmVerified(jmdns, Sentry::class)
         } finally {
             unmockkStatic(Sentry::class)

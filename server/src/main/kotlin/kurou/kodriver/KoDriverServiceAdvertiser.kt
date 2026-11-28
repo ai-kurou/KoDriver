@@ -5,6 +5,8 @@ import kurou.kodriver.domain.captureError
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.net.InetAddress
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
 import javax.jmdns.JmDNS
 import javax.jmdns.ServiceInfo
 import kotlin.random.Random
@@ -19,38 +21,75 @@ import kotlin.random.Random
  * 同一の値を維持する。
  */
 internal class KoDriverServiceAdvertiser(
-    private val jmdnsFactory: () -> JmDNS = { JmDNS.create(InetAddress.getLocalHost()) },
+    private val addressesProvider: () -> List<InetAddress> = { mdnsAddresses() },
+    private val jmdnsFactory: (InetAddress) -> JmDNS = { JmDNS.create(it) },
     suffixProvider: () -> String = { randomSuffix() },
 ) {
-    private var jmdns: JmDNS? = null
+    private var instances: List<JmDNS> = emptyList()
     private val instanceName = "$INSTANCE_NAME_PREFIX${suffixProvider()}"
 
-    /** 指定ポートで KoDriver サービスの広告を開始する。既存広告があれば先に停止する。 */
+    /**
+     * 指定ポートで KoDriver サービスの広告を開始する。既存広告があれば先に停止する。
+     *
+     * 対象の各アドレスで広告し、一部のアドレスで失敗しても残りは広告を続ける。
+     */
     fun start(port: Int) {
         stop()
-        try {
-            val instance = jmdnsFactory()
-            instance.registerService(ServiceInfo.create(SERVICE_TYPE, instanceName, port, ""))
-            jmdns = instance
-        } catch (e: IOException) {
-            logger.warn("mDNSサービスの登録に失敗しました", e)
-            captureError(e)
-            jmdns = null
-        }
+        val addresses =
+            try {
+                addressesProvider()
+            } catch (e: IOException) {
+                reportRegistrationFailure(e)
+                return
+            }
+        instances = addresses.mapConcurrently { advertise(it, port) }.filterNotNull()
     }
 
     /** 現在の広告を解除し、JmDNS のソケットを閉じる。 */
     fun stop() {
+        instances.mapConcurrently { withdraw(it) }
+        instances = emptyList()
+    }
+
+    private fun advertise(
+        address: InetAddress,
+        port: Int,
+    ): JmDNS? {
+        var instance: JmDNS? = null
+        return try {
+            instance = jmdnsFactory(address)
+            // ServiceInfo は登録先の JmDNS が状態を持たせるため、インスタンスごとに生成する
+            instance.registerService(ServiceInfo.create(SERVICE_TYPE, instanceName, port, ""))
+            instance
+        } catch (e: IOException) {
+            reportRegistrationFailure(e)
+            instance?.let { withdraw(it) }
+            null
+        }
+    }
+
+    private fun withdraw(instance: JmDNS) {
         try {
-            jmdns?.let {
-                it.unregisterAllServices()
-                it.close()
-            }
+            instance.use { it.unregisterAllServices() }
         } catch (e: IOException) {
             logger.warn("mDNSサービスの停止に失敗しました", e)
             captureError(e)
+        }
+    }
+
+    private fun reportRegistrationFailure(e: IOException) {
+        logger.warn("mDNSサービスの登録に失敗しました", e)
+        captureError(e)
+    }
+
+    /** 登録と解除は完了まで数秒ブロックするため、アドレスの数だけ起動・終了が遅くならないよう並行して実行する。 */
+    private fun <T, R> List<T>.mapConcurrently(transform: (T) -> R): List<R> {
+        if (isEmpty()) return emptyList()
+        val executor = Executors.newFixedThreadPool(size)
+        return try {
+            executor.invokeAll(map { item -> Callable { transform(item) } }).map { it.get() }
         } finally {
-            jmdns = null
+            executor.shutdown()
         }
     }
 
