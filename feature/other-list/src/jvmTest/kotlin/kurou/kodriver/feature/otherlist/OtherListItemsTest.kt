@@ -70,10 +70,12 @@ class OtherListItemsTest {
     @Test
     fun `デスクトップではウェイクワードホットキーを小さい音をカットの直後に含める`() {
         val items = buildOtherListItems()
+        val microphoneCutQuietSoundIndex = items.indexOf(OtherListItemType.MicrophoneCutQuietSound)
 
+        assertTrue(microphoneCutQuietSoundIndex >= 0)
         assertEquals(
             OtherListItemType.WakeWordHotkey,
-            items[items.indexOf(OtherListItemType.MicrophoneCutQuietSound) + 1],
+            items[microphoneCutQuietSoundIndex + 1],
         )
     }
 
