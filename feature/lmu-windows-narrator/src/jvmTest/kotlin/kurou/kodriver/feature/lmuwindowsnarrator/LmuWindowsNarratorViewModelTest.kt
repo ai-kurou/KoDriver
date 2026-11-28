@@ -369,6 +369,7 @@ class LmuWindowsNarratorViewModelTest {
         simulator: Simulator,
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        vehicleClassStream: Flow<LmuWindowsVehicleClassData>? = null,
     ) {
         every { vehicleApproachRepository.nearbyVehiclesStream() } returns
             vehicleApproachChannel.receiveAsFlow().map { it.toNearbyVehicles() }
@@ -413,7 +414,8 @@ class LmuWindowsNarratorViewModelTest {
                 tyreTemperatureHighThresholdByVehicleClass?.mapValues { Celsius(it.value) }
                     ?: lmuWindowsAllVehicleClasses.associateWith { Celsius(tyreTemperatureHighThreshold) },
             )
-        every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(vehicleClass)
+        every { vehicleClassRepository.vehicleClassStream() } returns
+            (vehicleClassStream ?: MutableStateFlow(vehicleClass))
         every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(
                 mapOf(
@@ -512,6 +514,7 @@ class LmuWindowsNarratorViewModelTest {
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         readoutTextOverride: (suspend (SpeechEvent) -> String?)? = null,
+        vehicleClassStream: Flow<LmuWindowsVehicleClassData>? = null,
     ): LmuWindowsNarratorViewModel {
         stubRepositories(
             vehicleApproachChannel = vehicleApproachChannel,
@@ -547,6 +550,7 @@ class LmuWindowsNarratorViewModelTest {
             simulator = simulator,
             queueEnabledOverrides = queueEnabledOverrides,
             pitTimingEnabledOverrides = pitTimingEnabledOverrides,
+            vehicleClassStream = vehicleClassStream,
         )
 
         selectedSimulatorFlow?.let {
@@ -3157,6 +3161,88 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(null, trackingFromLastLog().lastValidLapConsumption)
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "laps"))
             assertEquals("タイヤ摩耗の残り周回数はデータがありません", spoken.last().narratedText)
+        }
+
+    @Test
+    fun `車両クラスを受信するまで燃料警告を保留し受信後に読み上げる`() =
+        runTest(testDispatcher) {
+            val vehicleClass = MutableSharedFlow<LmuWindowsVehicleClassData>(replay = 1)
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                telemetryChannel = fuel,
+                ttsEngine = mockTts(spoken),
+                vehicleClassStream = vehicleClass,
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+                        LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true,
+                    ),
+            )
+            vehicleClass.emit(LmuWindowsVehicleClassData.Unknown(""))
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+
+            vehicleClass.emit(LmuWindowsVehicleClassData.P3)
+            fuel.send(telemetryWithFuel(currentLiters = 9.0, capacityLiters = 100.0))
+            assertEquals(listOf<SpeechEvent>(resolvedFuelWarning), spoken)
+        }
+
+    @Test
+    fun `VEクラスのクラスが一時的に空になっても燃料警告とタイヤ過熱警告を出さない`() =
+        runTest(testDispatcher) {
+            val vehicleClass = MutableStateFlow<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Hypercar)
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val tyre = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val flags = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                telemetryChannel = fuel,
+                tyreTemperatureChannel = tyre,
+                flagChannel = flags,
+                ttsEngine = mockTts(spoken),
+                vehicleClassStream = vehicleClass,
+                tyreTemperatureHighThresholdByVehicleClass =
+                    lmuWindowsAllVehicleClasses.associateWith {
+                        if (it == LmuWindowsVehicleClassData.Hypercar) 100 else 90
+                    },
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+                        LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true,
+                        LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    ),
+            )
+            flags.send(clearFlags())
+            vehicleClass.update { LmuWindowsVehicleClassData.Unknown("") }
+
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            tyre.send(tyreTemperature(fl = 95.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+        }
+
+    @Test
+    fun `車両クラスを受信するまでタイヤ過熱警告を保留し受信後に読み上げる`() =
+        runTest(testDispatcher) {
+            val vehicleClass = MutableSharedFlow<LmuWindowsVehicleClassData>(replay = 1)
+            val tyre = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val flags = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                tyreTemperatureChannel = tyre,
+                flagChannel = flags,
+                ttsEngine = mockTts(spoken),
+                vehicleClassStream = vehicleClass,
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
+            )
+            flags.send(clearFlags())
+            tyre.send(tyreTemperature(fl = 95.0))
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+
+            vehicleClass.emit(LmuWindowsVehicleClassData.P3)
+            tyre.send(tyreTemperature(fl = 95.0))
+            assertEquals(listOf<SpeechEvent>(LmuWindowsTyreOverheat(95, "タイヤを冷やして")), spoken)
         }
 
     @Test

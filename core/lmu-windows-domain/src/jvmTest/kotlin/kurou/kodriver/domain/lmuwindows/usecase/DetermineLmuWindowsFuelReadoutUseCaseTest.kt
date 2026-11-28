@@ -83,10 +83,25 @@ class DetermineLmuWindowsFuelReadoutUseCaseTest {
         assertEquals(state, decision.state)
     }
 
+    @Test
+    fun `エネルギー源が未確定なら状態を変えず読み上げない`() {
+        val state = LmuWindowsNarratorState()
+
+        val decision =
+            useCase.determineRemainingFuel(
+                state,
+                LmuWindowsRemainingFuelData(1),
+                settings(energySource = null),
+            )
+
+        assertEquals(emptyList(), decision.events)
+        assertEquals(state, decision.state)
+    }
+
     private fun settings(
         rootEnabled: Boolean = true,
         warningReadoutEnabled: Boolean = true,
-        energySource: LmuWindowsEnergySource = LmuWindowsEnergySource.Fuel,
+        energySource: LmuWindowsEnergySource? = LmuWindowsEnergySource.Fuel,
     ): LmuWindowsNarratorReadoutSettings {
         val enabledStates: Map<ReadoutItemKey, Boolean> =
             mapOf(

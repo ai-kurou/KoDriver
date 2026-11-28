@@ -2271,6 +2271,20 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `過熱の閾値が未確定なら過熱状態を変えず読み上げない`() {
+        val state = LmuWindowsNarratorState()
+        val decision =
+            tyreUseCase.determineTyreTemperatureOverheat(
+                state = state,
+                input = tyreTemperatureInput(fl = 150.0),
+                settings = settings().copy(tyreTemperatureHighThresholdCelsius = null),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(state, decision.state)
+    }
+
+    @Test
     fun `ヒステリシス範囲内の初期温度では過熱状態にならない`() {
         val decision =
             tyreUseCase.determineTyreTemperatureOverheat(
@@ -3862,6 +3876,65 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             assertEquals(0.25, decision.state.fuelLapsTrackingState.currentValue)
             assertEquals(3, decision.state.lastPitTimingFuelEvaluationLap)
         }
+    }
+
+    @Test
+    fun `クラス未受信なら燃料の周回を評価済みにせず受信後に同じ周で警告する`() {
+        val pending =
+            pitTimingUseCase.determinePitTimingFuel(
+                fuelReadyState(),
+                lapTelemetry(3, 90_000L),
+                LmuWindowsRemainingFuelData(25),
+                settings().copy(energySource = null),
+                60_000L,
+            )
+        assertEquals(emptyList<SpeechEvent>(), pending.events)
+        assertEquals(0.25, pending.state.fuelLapsTrackingState.currentValue)
+        assertEquals(-1, pending.state.lastPitTimingFuelEvaluationLap)
+
+        val received =
+            pitTimingUseCase.determinePitTimingFuel(
+                pending.state,
+                lapTelemetry(3, 90_000L),
+                LmuWindowsRemainingFuelData(25),
+                settings(energySource = LmuWindowsEnergySource.Fuel),
+                61_000L,
+            )
+        assertEquals(listOf(LmuWindowsPitTimingWarning(2, PitTimingSource.Fuel)), received.events)
+    }
+
+    @Test
+    fun `クラス未受信ならVEの周回を評価済みにせず追跡だけを続ける`() {
+        val initial =
+            LmuWindowsNarratorState(
+                pitTimingVirtualEnergyTrackingState =
+                    fuelReadyState().fuelLapsTrackingState.copy(session = 0),
+            )
+        val energy = remainingVirtualEnergy(0.25)
+        val pending =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                initial,
+                lapTelemetry(3, 90_000L),
+                energy,
+                settings().copy(energySource = null),
+                60_000L,
+            )
+        assertEquals(emptyList<SpeechEvent>(), pending.events)
+        assertEquals(0.25, pending.state.pitTimingVirtualEnergyTrackingState.currentValue)
+        assertEquals(-1, pending.state.lastPitTimingVirtualEnergyEvaluationLap)
+
+        val received =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                pending.state,
+                lapTelemetry(3, 90_000L),
+                energy,
+                settings(),
+                61_000L,
+            )
+        assertEquals(
+            listOf(LmuWindowsPitTimingWarning(2, PitTimingSource.VirtualEnergy)),
+            received.events,
+        )
     }
 
     @Test

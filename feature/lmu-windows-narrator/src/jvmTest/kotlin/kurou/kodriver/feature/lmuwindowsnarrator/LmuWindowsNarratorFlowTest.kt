@@ -85,6 +85,57 @@ class LmuWindowsNarratorFlowTest {
         }
 
     @Test
+    fun `車両クラスは受信までnullで空クラスを除外しLMU選択解除でnullへ戻す`() =
+        runTest {
+            val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            val source = MutableSharedFlow<LmuWindowsVehicleClassData>()
+            val classes = mutableListOf<LmuWindowsVehicleClassData?>()
+            val sources = mutableListOf<LmuWindowsEnergySource?>()
+            val thresholds = mutableListOf<Celsius?>()
+            val brakes = mutableListOf<Celsius>()
+            val wears = mutableListOf<Int>()
+            val narrator = LmuWindowsNarratorFlow(selected)
+            val vehicleClass = narrator.vehicleClass { source }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vehicleClass.collect(classes::add) }
+            runCurrent()
+            assertEquals(listOf<LmuWindowsVehicleClassData?>(null), classes)
+            source.emit(LmuWindowsVehicleClassData.Unknown(""))
+            source.emit(LmuWindowsVehicleClassData.Hypercar)
+            source.emit(LmuWindowsVehicleClassData.Unknown(""))
+            source.emit(LmuWindowsVehicleClassData.Unknown("raw class"))
+            runCurrent()
+            selected.update { Simulator.Gt7Ps5 }
+            runCurrent()
+            assertEquals(
+                listOf(
+                    null,
+                    LmuWindowsVehicleClassData.Hypercar,
+                    LmuWindowsVehicleClassData.Unknown("raw class"),
+                    null,
+                ),
+                classes,
+            )
+
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                narrator.energySource(vehicleClass).collect(sources::add)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                narrator.tyreHighThreshold(vehicleClass, flowOf(emptyMap())).collect(thresholds::add)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                narrator.brakeHighThreshold(vehicleClass, flowOf(emptyMap())).collect(brakes::add)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                narrator.brakeLowThreshold(vehicleClass, flowOf(emptyMap())).collect(wears::add)
+            }
+            runCurrent()
+            assertEquals(listOf<LmuWindowsEnergySource?>(null), sources)
+            assertEquals(listOf<Celsius?>(null), thresholds)
+            assertEquals(listOf(Celsius(800)), brakes)
+            assertEquals(listOf(20), wears)
+        }
+
+    @Test
     fun `有効状態は後の詳細設定で上書きし選択先と各設定の更新を反映する`() =
         runTest {
             val selected = MutableStateFlow<Simulator>(Simulator.LmuWindows)
@@ -181,10 +232,10 @@ class LmuWindowsNarratorFlowTest {
                     ),
                 )
             val narrator = LmuWindowsNarratorFlow(flowOf(Simulator.LmuWindows))
-            val tyres = mutableListOf<Celsius>()
+            val tyres = mutableListOf<Celsius?>()
             val brakes = mutableListOf<Celsius>()
             val wears = mutableListOf<Int>()
-            val sources = mutableListOf<LmuWindowsEnergySource>()
+            val sources = mutableListOf<LmuWindowsEnergySource?>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 narrator.tyreHighThreshold(vehicleClass, tyre).collect(tyres::add)
             }

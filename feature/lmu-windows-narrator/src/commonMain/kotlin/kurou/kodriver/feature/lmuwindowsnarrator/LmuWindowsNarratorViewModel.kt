@@ -24,7 +24,6 @@ import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
@@ -33,7 +32,6 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
-import kurou.kodriver.domain.lmuwindows.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutDecision
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.lmuwindows.usecase.LmuWindowsNarratorState
@@ -136,27 +134,21 @@ internal class LmuWindowsNarratorViewModel(
 
     private val vehicleClassFlow =
         narratorFlow
-            .telemetry {
+            .vehicleClass {
                 tyreTemperatureUseCases.observeVehicleClass()
             }
 
     private val energySourceFlow =
         narratorFlow
             .energySource(vehicleClassFlow)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, LmuWindowsEnergySource.Fuel)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val tyreHighThreshold =
         narratorFlow
             .tyreHighThreshold(
                 vehicleClassFlow,
                 tyreTemperatureUseCases.observeVehicleClassHighThreshold(),
-            ).stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
-                    LmuWindowsVehicleClassData.Unknown(LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY),
-                ),
-            )
+            ).stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val tyreLowWarningPhases =
         tyreTemperatureUseCases
