@@ -49,6 +49,8 @@ public class DetermineLmuWindowsPitTimingReadoutUseCase {
                     state.copy(pitTimingVirtualEnergyTrackingState = trackingState)
                 }
             }
+        // クラス未受信の間は周回を評価済みにせず、受信後に同じ周で評価する。
+        if (settings.energySource == null) return LmuWindowsNarratorReadoutDecision(stateAfterTracking, emptyList())
         val evaluation =
             calculatePitTimingRemainingLaps(
                 trackingState = trackingState,
@@ -150,6 +152,8 @@ public class DetermineLmuWindowsPitTimingReadoutUseCase {
             return LmuWindowsNarratorReadoutDecision(state, emptyList())
         }
         val stateAfterTracking = trackFuelLaps(state, telemetry, fuel, observedAtMs)
+        // クラス未受信の間は周回を評価済みにせず、受信後に同じ周で評価する。
+        if (settings.energySource == null) return LmuWindowsNarratorReadoutDecision(stateAfterTracking, emptyList())
         val trackingState = stateAfterTracking.fuelLapsTrackingState
         val evaluation =
             calculatePitTimingRemainingLaps(
