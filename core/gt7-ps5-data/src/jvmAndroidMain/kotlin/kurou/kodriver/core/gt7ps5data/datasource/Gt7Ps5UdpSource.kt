@@ -3,7 +3,9 @@ package kurou.kodriver.core.gt7ps5data.datasource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.SharingStarted
@@ -87,7 +89,15 @@ internal class Gt7Ps5UdpSource(
         socket: UdpSocket,
         ps5Address: String,
     ) {
-        socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
+        // 最後にハートビートを送った時刻。不正パケットだけが続く間の時間経過再送の判定に使う
+        var lastHeartbeatAt = 0L
+
+        fun sendHeartbeat() {
+            socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
+            lastHeartbeatAt = currentTimeMillis()
+        }
+
+        sendHeartbeat()
         var heartbeatCounter = 0
 
         val buf = ByteArray(PACKET_MIN_SIZE)
@@ -95,18 +105,24 @@ internal class Gt7Ps5UdpSource(
 
         while (true) {
             try {
-                val packet = receivePacket(socket, buf, dgram) ?: continue
+                val packet = receivePacket(socket, buf, dgram)
+                if (packet == null) {
+                    // 不正パケットは emit しないためキャンセルを検知できない。ここで確認しないと購読解除・ポート変更が効かない
+                    currentCoroutineContext().ensureActive()
+                    if (currentTimeMillis() - lastHeartbeatAt >= HEARTBEAT_INTERVAL_MILLIS) sendHeartbeat()
+                    continue
+                }
                 _lastPacketReceivedAt.set(currentTimeMillis())
                 emit(packet)
 
                 heartbeatCounter++
                 if (heartbeatCounter >= HEARTBEAT_INTERVAL_PACKETS) {
-                    socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
+                    sendHeartbeat()
                     heartbeatCounter = 0
                 }
             } catch (_: java.net.SocketTimeoutException) {
                 yield()
-                socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
+                sendHeartbeat()
             }
         }
     }
@@ -143,6 +159,9 @@ internal class Gt7Ps5UdpSource(
         const val MAGIC = 0x47375330 // 'G7S0' in little-endian
         const val IV_OFFSET = 0x40
         const val HEARTBEAT_INTERVAL_PACKETS = 100
+
+        /** 不正パケットだけが続く間に、前回送信からこの時間経過したらハートビートを再送する。 */
+        const val HEARTBEAT_INTERVAL_MILLIS = GT7_PS5_SOCKET_TIMEOUT_MILLIS.toLong()
         const val BIND_RETRY_DELAY_MS = 1_000L
 
         /** 再接続待ちの上限。attempt は再接続に成功しても戻らないため、上限がないと待ちが延び続ける。 */

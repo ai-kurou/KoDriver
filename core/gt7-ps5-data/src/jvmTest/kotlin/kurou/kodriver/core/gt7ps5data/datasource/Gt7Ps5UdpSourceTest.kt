@@ -13,8 +13,12 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import java.net.DatagramPacket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -295,6 +299,138 @@ class Gt7Ps5UdpSourceTest {
             collectScope.cancel()
             assertEquals(listOf(33740, 33741), receivedPorts)
         }
+
+    @Test
+    fun `不正パケットが途切れず届き続けてもポート変更で古いソケットをcloseして新ポートで開き直す`() =
+        runBlocking {
+            val portFlow = MutableStateFlow(33740)
+            val receivedPorts = mutableListOf<Int>()
+            val socket1 = InvalidPacketUdpSocket()
+            val socket2 = InvalidPacketUdpSocket()
+            val sockets = listOf(socket1, socket2)
+            var callCount = 0
+
+            val collectScope = CoroutineScope(SupervisorJob())
+            val source =
+                Gt7Ps5UdpSource(
+                    consoleAddressFlow = flowOf("192.168.1.100"),
+                    listenPortFlow = portFlow,
+                    socketFactory = { port ->
+                        receivedPorts += port
+                        sockets[callCount++]
+                    },
+                    scope = collectScope,
+                )
+
+            source.packetFlow.launchIn(collectScope)
+            awaitUntil { socket1.receiveCount.get() >= 1 }
+
+            portFlow.update { 33741 }
+            awaitUntil { receivedPorts.size >= 2 && socket1.closed }
+
+            collectScope.cancel()
+            assertEquals(listOf(33740, 33741), receivedPorts)
+            assertTrue(socket1.closed)
+        }
+
+    @Test
+    fun `不正パケットだけが続いても前回送信から3秒経過するとハートビートを再送する`() =
+        runBlocking {
+            // 1パケットごとに1秒進めるため、3パケット目と6パケット目で3秒経過する
+            val heartbeats = countHeartbeatsWhileInvalidPackets(stepMillis = 1_000L, timedReceives = 6)
+
+            // 起動時 + 3秒経過時 + 6秒経過時
+            assertEquals(3, heartbeats)
+        }
+
+    @Test
+    fun `不正パケットだけが続いても3秒経過していなければハートビートを再送しない`() =
+        runBlocking {
+            // 1パケットごとに1秒進めても、2パケット目までは3秒に達しない
+            val heartbeats = countHeartbeatsWhileInvalidPackets(stepMillis = 1_000L, timedReceives = 2)
+
+            // 起動時の1回のみ
+            assertEquals(1, heartbeats)
+        }
+}
+
+/**
+ * i 回目の受信時に時計を i * stepMillis へ進める。timedReceives 回目までしか進めず、その後の受信では時計を止める。
+ * テスト側が待機している間に時計が進んで追加の再送が起きないようにするため。
+ */
+private suspend fun countHeartbeatsWhileInvalidPackets(
+    stepMillis: Long,
+    timedReceives: Int,
+): Int {
+    val now = AtomicLong(0L)
+    val socket =
+        InvalidPacketUdpSocket(
+            onReceive = { count ->
+                if (count <= timedReceives) now.set(count.toLong() * stepMillis)
+            },
+        )
+    val collectScope = CoroutineScope(SupervisorJob())
+    val source =
+        Gt7Ps5UdpSource(
+            consoleAddressFlow = flowOf("192.168.1.100"),
+            socketFactory = { socket },
+            scope = collectScope,
+            currentTimeMillis = { now.get() },
+        )
+
+    source.packetFlow.launchIn(collectScope)
+    // timedReceives 回目の受信処理が終わった後に、その次の受信が始まるまで待つ
+    awaitUntil { socket.receiveCount.get() >= timedReceives + 1 }
+    collectScope.cancel()
+
+    return socket.sentPackets.count { it.contentEquals(Gt7Ps5UdpSource.HEARTBEAT_PAYLOAD) }
+}
+
+/** 条件が満たされるまで待つ。上限を超えた場合は待機を打ち切り、呼び出し側のアサーションで失敗させる。 */
+private suspend fun awaitUntil(
+    timeoutMillis: Long = 5_000L,
+    condition: () -> Boolean,
+) {
+    val deadline = System.currentTimeMillis() + timeoutMillis
+    while (!condition() && System.currentTimeMillis() < deadline) {
+        delay(10)
+    }
+}
+
+/**
+ * 復号後のマジックが一致しない（ゼロ埋めの）パケットを途切れずに返すソケット。
+ * 不正パケットは emit されないため、キャンセル確認や時間経過の再送が無いと receiveLoop が止まらない状況を再現する。
+ */
+private class InvalidPacketUdpSocket(
+    private val onReceive: (Int) -> Unit = {},
+) : UdpSocket {
+    val receiveCount = AtomicInteger(0)
+    val sentPackets = CopyOnWriteArrayList<ByteArray>()
+
+    @Volatile
+    var closed = false
+
+    override fun receive(packet: DatagramPacket) {
+        val count = receiveCount.incrementAndGet()
+        onReceive(count)
+        val copyLength = minOf(Gt7Ps5UdpSource.PACKET_MIN_SIZE, packet.length)
+        packet.data.fill(0, 0, copyLength)
+        packet.length = copyLength
+        // CPU を使い切らないよう受信間隔を空ける
+        Thread.sleep(1)
+    }
+
+    override fun send(
+        data: ByteArray,
+        address: String,
+        port: Int,
+    ) {
+        sentPackets.add(data.copyOf())
+    }
+
+    override fun close() {
+        closed = true
+    }
 }
 
 private fun ByteArray.writeIntLE(

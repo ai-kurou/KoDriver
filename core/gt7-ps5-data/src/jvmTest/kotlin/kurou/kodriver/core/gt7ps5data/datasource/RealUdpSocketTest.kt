@@ -2,12 +2,14 @@ package kurou.kodriver.core.gt7ps5data.datasource
 
 import java.net.DatagramPacket
 import java.net.DatagramSocket
+import java.net.SocketAddress
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class RealUdpSocketTest {
     @Test
@@ -79,6 +81,33 @@ class RealUdpSocketTest {
         val second = RealUdpSocket(listenPort = port, timeoutMs = 100)
         assertEquals(port, boundPort(second))
         second.close()
+    }
+
+    @Test
+    fun `bindに失敗した場合はソケットをcloseして例外を伝播する`() {
+        val created = mutableListOf<FailingBindDatagramSocket>()
+
+        assertFailsWith<SocketException> {
+            RealUdpSocket(
+                listenPort = 0,
+                timeoutMs = 100,
+                createSocket = { FailingBindDatagramSocket().also { created += it } },
+            )
+        }
+
+        assertEquals(1, created.size)
+        assertTrue(created.single().closed)
+    }
+
+    private class FailingBindDatagramSocket : DatagramSocket(null as SocketAddress?) {
+        var closed = false
+
+        override fun bind(addr: SocketAddress?): Unit = throw SocketException("bind failed for test")
+
+        override fun close() {
+            closed = true
+            super.close()
+        }
     }
 
     private fun boundPort(socket: RealUdpSocket): Int {
