@@ -74,6 +74,8 @@ class SpeechRecognitionViewModelManualReadoutTest {
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             playChime = PlaySpeechRecognitionChimeUseCase(FakeSpeechRecognitionChimePlayer()),
+            observeWakeWordHotkeyPresses = fakeObserveWakeWordHotkeyPresses(),
+            reportSpeechRecognitionEnabled = fakeReportSpeechRecognitionEnabled(),
             reportSpeechRecognitionTranscript =
                 ReportSpeechRecognitionTranscriptUseCase(FakeSpeechRecognitionTranscriptRepository()),
         ).also {

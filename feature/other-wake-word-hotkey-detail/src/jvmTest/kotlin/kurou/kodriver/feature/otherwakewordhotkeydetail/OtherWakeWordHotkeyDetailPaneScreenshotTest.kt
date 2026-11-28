@@ -26,6 +26,16 @@ class OtherWakeWordHotkeyDetailPaneScreenshotTest {
             OtherWakeWordHotkeyDetailUiState(
                 hotkeyVirtualKeyCode = 0x41,
                 hotkeyRegistrationState = HotkeyRegistrationState.Registered,
+                speechRecognitionEnabled = true,
+            ),
+        )
+
+    @Test
+    fun `ホットキー登録済みで音声認識がOFF`() =
+        capture(
+            OtherWakeWordHotkeyDetailUiState(
+                hotkeyVirtualKeyCode = 0x41,
+                hotkeyRegistrationState = HotkeyRegistrationState.Registered,
             ),
         )
 

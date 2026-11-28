@@ -30,7 +30,9 @@ import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionFailureRea
 import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionTranscript
 import kurou.kodriver.domain.speechrecognition.model.containsSpeechRecognitionWakeWord
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionUseCase
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyPressesUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.PlaySpeechRecognitionChimeUseCase
+import kurou.kodriver.domain.speechrecognition.usecase.ReportSpeechRecognitionEnabledUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ReportSpeechRecognitionTranscriptUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.SetSpeechRecognitionModeUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -40,7 +42,7 @@ import kurou.kodriver.domain.usecase.ObserveSpeechPlaybackActiveUseCase
  * 音声認識の聞き取りを開始・停止し、認識状況を確認用に保持する。
  *
  * ウェイクワードを待つ→検出したらコマンドを [SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS] だけ待つ→ウェイクワード待ちへ戻る、
- * の順に動く。コマンドは待っている間だけ読み上げ項目の語句と照合する。読み上げ中は自分の音声を拾わないよう聞き取りを止める。
+ * の順に動く。ウェイクワードホットキーの押下は、ウェイクワードの検出と同じに扱う。コマンドは待っている間だけ読み上げ項目の語句と照合する。読み上げ中は自分の音声を拾わないよう聞き取りを止める。
  */
 @Suppress("LongParameterList")
 internal class SpeechRecognitionViewModel(
@@ -54,6 +56,8 @@ internal class SpeechRecognitionViewModel(
     private val reportSpeechRecognitionTranscript: ReportSpeechRecognitionTranscriptUseCase,
     private val observeMicrophoneCutQuietSoundLevel: ObserveMicrophoneCutQuietSoundLevelUseCase,
     private val observeMicrophoneCutQuietSoundInCommand: ObserveMicrophoneCutQuietSoundInCommandUseCase,
+    private val observeWakeWordHotkeyPresses: ObserveWakeWordHotkeyPressesUseCase,
+    private val reportSpeechRecognitionEnabled: ReportSpeechRecognitionEnabledUseCase,
     /** 入力デバイスの一覧と選択。デバイスを選べないプラットフォーム（Android）では null。 */
     private val audioInputDeviceSelector: AudioInputDeviceSelector? = null,
 ) : ViewModel() {
@@ -107,6 +111,14 @@ internal class SpeechRecognitionViewModel(
             observeMicrophoneCutQuietSoundInCommand().collect { enabled ->
                 uiState.update { it.copy(cutInCommand = enabled) }
             }
+        }
+        // 購読している間だけ OS にホットキーが登録されるため、アプリ全体で共有するこの ViewModel が購読し続ける
+        viewModelScope.launchCapturingErrors {
+            observeWakeWordHotkeyPresses().collect { onWakeWordHotkeyPressed() }
+        }
+        // 他の画面が、ホットキーに反応しない状態（音声認識の OFF）を案内できるよう共有する
+        viewModelScope.launchCapturingErrors {
+            uiState.map { it.enabled }.distinctUntilChanged().collect { reportSpeechRecognitionEnabled(it) }
         }
         // オーバーレイなど他の画面へ、聞き取った文言を共有する。聞き取りを行っていない間は空にする
         viewModelScope.launchCapturingErrors {
@@ -299,6 +311,13 @@ internal class SpeechRecognitionViewModel(
                     onFailed(SpeechRecognitionFailureReason.RecognitionFailed)
                 }
             }
+    }
+
+    /** ホットキーの押下は、ウェイクワード待ちの間だけ受け付ける（停止中・準備中・コマンド待ち・読み上げ中は無視する）。 */
+    private fun onWakeWordHotkeyPressed() {
+        if (uiState.value.status == SpeechRecognitionStatus.Listening && !commandWait.paused) {
+            commandWait.startCommandWait()
+        }
     }
 
     private suspend fun onEvent(event: SpeechRecognitionEvent) {

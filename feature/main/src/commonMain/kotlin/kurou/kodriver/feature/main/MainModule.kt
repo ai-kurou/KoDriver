@@ -17,7 +17,9 @@ import kurou.kodriver.domain.microphone.usecase.ObserveSelectedAudioInputDeviceN
 import kurou.kodriver.domain.microphone.usecase.SaveSelectedAudioInputDeviceNameUseCase
 import kurou.kodriver.domain.serverconnection.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionUseCase
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyPressesUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.PlaySpeechRecognitionChimeUseCase
+import kurou.kodriver.domain.speechrecognition.usecase.ReportSpeechRecognitionEnabledUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ReportSpeechRecognitionTranscriptUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.SetSpeechRecognitionModeUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
@@ -72,6 +74,8 @@ public val mainModule: Module =
                 reportSpeechRecognitionTranscript = ReportSpeechRecognitionTranscriptUseCase(get()),
                 observeMicrophoneCutQuietSoundLevel = ObserveMicrophoneCutQuietSoundLevelUseCase(get()),
                 observeMicrophoneCutQuietSoundInCommand = ObserveMicrophoneCutQuietSoundInCommandUseCase(get()),
+                observeWakeWordHotkeyPresses = ObserveWakeWordHotkeyPressesUseCase(get()),
+                reportSpeechRecognitionEnabled = ReportSpeechRecognitionEnabledUseCase(get()),
                 audioInputDeviceSelector =
                     if (deviceRepository != null && selectedDeviceRepository != null) {
                         AudioInputDeviceSelector(

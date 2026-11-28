@@ -31,7 +31,9 @@ import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionFailureRea
 import kurou.kodriver.domain.speechrecognition.model.SpeechRecognitionMode
 import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionRepository
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionUseCase
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyPressesUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.PlaySpeechRecognitionChimeUseCase
+import kurou.kodriver.domain.speechrecognition.usecase.ReportSpeechRecognitionEnabledUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ReportSpeechRecognitionTranscriptUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.SetSpeechRecognitionModeUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -52,6 +54,8 @@ class SpeechRecognitionViewModelWakeWordTest {
     private val playbackRepository = FakeSpeechPlaybackStateRepository()
     private val chimePlayer = FakeSpeechRecognitionChimePlayer()
     private val events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = 16)
+    private val hotkeyRepository = FakeWakeWordHotkeyRepository()
+    private val enabledRepository = FakeSpeechRecognitionEnabledRepository()
     private val dispatcher = UnconfinedTestDispatcher()
     private var viewModel: SpeechRecognitionViewModel? = null
 
@@ -85,6 +89,8 @@ class SpeechRecognitionViewModelWakeWordTest {
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(playbackRepository),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
             playChime = PlaySpeechRecognitionChimeUseCase(chimePlayer),
+            observeWakeWordHotkeyPresses = ObserveWakeWordHotkeyPressesUseCase(hotkeyRepository),
+            reportSpeechRecognitionEnabled = ReportSpeechRecognitionEnabledUseCase(enabledRepository),
             reportSpeechRecognitionTranscript =
                 ReportSpeechRecognitionTranscriptUseCase(FakeSpeechRecognitionTranscriptRepository()),
         ).also {
@@ -522,5 +528,99 @@ class SpeechRecognitionViewModelWakeWordTest {
         } finally {
             unmockkStatic(errorCapture)
         }
+    }
+
+    private fun pressHotkey() {
+        hotkeyRepository.presses.tryEmit(Unit)
+    }
+
+    @Test
+    fun `ウェイクワード待ちでホットキーを押すと確認音を鳴らしてコマンドを受け付ける`() {
+        createListeningViewModel()
+
+        pressHotkey()
+
+        assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
+        assertEquals(listOf(SpeechRecognitionMode.Command), modeRepository.modes)
+        assertEquals(listOf(SpeechRecognitionChime.WakeWordDetected), chimePlayer.played)
+        events.tryEmit(SpeechRecognitionEvent.Recognized(listOf("自己ベスト")))
+        assertEquals(1, itemRequestRepository.requests.size)
+    }
+
+    @Test
+    fun `コマンド待ちの間にホットキーを押しても確認音を鳴らさず待ち時間も延ばさない`() {
+        createListeningViewModel()
+        pressHotkey()
+        advanceBy(SPEECH_RECOGNITION_COMMAND_TIMEOUT_MS - 1)
+
+        pressHotkey()
+
+        assertEquals(listOf(SpeechRecognitionChime.WakeWordDetected), chimePlayer.played)
+        advanceBy(1)
+        assertEquals(SpeechRecognitionStatus.Listening, status)
+    }
+
+    @Test
+    fun `読み上げ中と再開待ちの間はホットキーを無視し、再開後は受け付ける`() {
+        createListeningViewModel()
+        playbackRepository.update("lmu_windows", true)
+
+        pressHotkey()
+        playbackRepository.update("lmu_windows", false)
+        pressHotkey()
+
+        assertEquals(SpeechRecognitionStatus.Listening, status)
+        assertEquals(emptyList(), chimePlayer.played)
+        advanceBy(SPEECH_RECOGNITION_RESUME_DELAY_MS)
+        assertEquals(SpeechRecognitionStatus.Listening, status)
+
+        pressHotkey()
+
+        assertEquals(SpeechRecognitionStatus.CommandWaiting, status)
+    }
+
+    @Test
+    fun `停止中はホットキーを無視する`() {
+        val viewModel = createListeningViewModel()
+        viewModel.stop()
+        modeRepository.modes.clear()
+
+        pressHotkey()
+
+        assertEquals(SpeechRecognitionStatus.Stopped, status)
+        assertEquals(emptyList(), modeRepository.modes)
+        assertEquals(emptyList(), chimePlayer.played)
+    }
+
+    @Test
+    fun `認識の準備中はホットキーを無視する`() {
+        val viewModel = createListeningViewModel()
+        viewModel.onEnabledChange(true) {}
+        modeRepository.modes.clear()
+
+        pressHotkey()
+
+        assertEquals(SpeechRecognitionStatus.Starting, status)
+        assertEquals(emptyList(), modeRepository.modes)
+        assertEquals(emptyList(), chimePlayer.played)
+    }
+
+    @Test
+    fun `音声認識のONとOFFを共有する`() {
+        val viewModel = createListeningViewModel()
+        assertEquals(true, enabledRepository.enabled.value)
+
+        viewModel.stop()
+
+        assertEquals(false, enabledRepository.enabled.value)
+    }
+
+    @Test
+    fun `失敗で止まったらOFFを共有する`() {
+        createListeningViewModel()
+
+        events.tryEmit(SpeechRecognitionEvent.Failed(SpeechRecognitionFailureReason.Unavailable))
+
+        assertEquals(false, enabledRepository.enabled.value)
     }
 }

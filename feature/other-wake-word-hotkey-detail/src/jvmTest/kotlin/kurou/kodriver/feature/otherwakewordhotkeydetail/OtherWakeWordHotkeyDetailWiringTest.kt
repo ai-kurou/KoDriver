@@ -83,8 +83,10 @@ class OtherWakeWordHotkeyDetailWiringTest {
             rule.onNodeWithText("Ctrl + Shift").assertIsDisplayed()
             rule.onNodeWithTag("wake_word_hotkey_key").performClick().performKeyInput { pressKey(Key.A) }
             rule.onNodeWithText("A").assertIsDisplayed()
+            rule.onNodeWithText("音声認識がOFFのため、押しても反応しません").performScrollTo().assertIsDisplayed()
             rule.onNodeWithText("割り当てを解除").performClick()
             rule.onNodeWithText("割り当てなし").assertIsDisplayed()
+            rule.onNodeWithText("音声認識がOFFのため、押しても反応しません").assertDoesNotExist()
             rule.onNodeWithText("ステアリングのボタンから実行する方法を見る").performScrollTo().performClick()
             rule.waitForIdle()
             verify(exactly = 1) { uriHandler.openUri(url) }
