@@ -20,6 +20,9 @@ internal object Gt7Ps5UdpPortPreferencesSerializer : Serializer<Gt7Ps5UdpPortPre
         } catch (e: SerializationException) {
             captureError(e)
             throw CorruptionException("Cannot read Gt7Ps5UdpPortPreferences.", e)
+        } catch (e: IndexOutOfBoundsException) {
+            captureError(e)
+            throw CorruptionException("Cannot read Gt7Ps5UdpPortPreferences.", e)
         }
 
     override suspend fun writeTo(

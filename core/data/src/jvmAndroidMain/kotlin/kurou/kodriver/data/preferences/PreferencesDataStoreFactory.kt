@@ -3,6 +3,7 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.Serializer
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import java.io.File
 
 /**
@@ -18,6 +19,7 @@ internal fun <T> preferencesDataStore(
             DataStoreFactory.create(
                 serializer = serializer,
                 produceFile = { File("$directory/$fileName") },
+                corruptionHandler = ReplaceFileCorruptionHandler { serializer.defaultValue },
             ),
         defaultValue = serializer.defaultValue,
     )

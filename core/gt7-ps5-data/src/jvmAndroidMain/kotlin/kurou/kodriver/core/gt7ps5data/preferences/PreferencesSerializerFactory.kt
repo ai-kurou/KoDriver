@@ -32,6 +32,9 @@ internal fun <T> protoBufPreferencesSerializer(
             } catch (e: SerializationException) {
                 captureError(e)
                 throw CorruptionException("Cannot read ${kSerializer.descriptor.serialName}.", e)
+            } catch (e: IndexOutOfBoundsException) {
+                captureError(e)
+                throw CorruptionException("Cannot read ${kSerializer.descriptor.serialName}.", e)
             }
 
         override suspend fun writeTo(
