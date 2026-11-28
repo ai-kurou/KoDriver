@@ -17,7 +17,7 @@ public fun parseIpv4Octets(ip: String): List<Int>? {
     val octets =
         parts.mapNotNull { part ->
             if (IPV4_OCTET_PATTERN.matches(part)) {
-                part.toInt().takeIf { it in IPV4_OCTET_MIN..IPV4_OCTET_MAX }
+                part.toInt().takeIf { it <= IPV4_OCTET_MAX }
             } else {
                 null
             }
