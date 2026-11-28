@@ -6,7 +6,7 @@ import kurou.kodriver.core.designsystem.KoDriverHotkeyCardTexts
 import kurou.kodriver.core.designsystem.KoDriverHotkeyRegistration
 import kurou.kodriver.core.designsystem.hotkeyDisplayName
 import kurou.kodriver.core.designsystem.simulatorDisplayName
-import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_clear

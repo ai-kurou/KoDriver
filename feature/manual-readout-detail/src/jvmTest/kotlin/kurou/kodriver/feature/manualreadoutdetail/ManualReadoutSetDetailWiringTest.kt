@@ -29,9 +29,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey

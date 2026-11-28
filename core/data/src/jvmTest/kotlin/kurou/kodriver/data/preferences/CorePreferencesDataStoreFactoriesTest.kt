@@ -89,5 +89,9 @@ class CorePreferencesDataStoreFactoriesTest {
                 val dataStore = createVoiceSpeedPreferencesDataStore(dir)
                 dataStore.updateData { it.copy(voiceSpeed = 1.5f) }
             }
+            assertWritesTo("wake_word_hotkey_preferences.pb") { dir ->
+                val dataStore = createWakeWordHotkeyPreferencesDataStore(dir)
+                dataStore.updateData { it.copy(virtualKeyCode = 0x41) }
+            }
         }
 }

@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
-import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 

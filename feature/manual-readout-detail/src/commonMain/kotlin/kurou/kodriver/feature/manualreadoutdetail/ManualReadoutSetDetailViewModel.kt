@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kurou.kodriver.domain.launchCapturingErrors
-import kurou.kodriver.domain.manualreadout.model.isManualReadoutHotkeyVirtualKeyCode
 import kurou.kodriver.domain.manualreadout.usecase.DeleteManualReadoutSetUseCase
 import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCase
@@ -20,6 +19,7 @@ import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.isHotkeyVirtualKeyCode
 import kurou.kodriver.domain.model.normalizeReadoutCustomText
 import kurou.kodriver.domain.model.takeManualReadoutSetName
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
@@ -152,7 +152,7 @@ internal class ManualReadoutSetDetailViewModel(
     }
 
     fun assignHotkey(virtualKeyCode: Int) {
-        if (!isManualReadoutHotkeyVirtualKeyCode(virtualKeyCode)) return
+        if (!isHotkeyVirtualKeyCode(virtualKeyCode)) return
         viewModelScope.launchCapturingErrors {
             mutationMutex.withLock {
                 if (deleted.value) return@withLock

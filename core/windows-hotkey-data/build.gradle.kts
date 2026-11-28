@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.manualReadoutDomain)
+    implementation(projects.core.speechRecognitionDomain)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.jna)

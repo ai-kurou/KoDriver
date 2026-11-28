@@ -2,7 +2,7 @@ package kurou.kodriver.feature.manualreadoutdetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.MANUAL_READOUT_HOTKEY_MODIFIERS_DEFAULT
 import kurou.kodriver.domain.model.ManualReadoutSet
 

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
