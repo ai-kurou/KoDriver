@@ -20,9 +20,11 @@ public class DetermineLmuWindowsTyreReadoutUseCase {
         input: TyreTemperatureReadoutInput,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
+        val hotThreshold =
+            settings.tyreTemperatureHighThresholdCelsius?.value?.toFloat()
+                ?: return LmuWindowsNarratorReadoutDecision(state, emptyList())
         val data = input.tyreCarcassTemperature
         val finiteCelsius = data.wheels.values.finiteCelsius()
-        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
         val nextOverheating =
             determineHysteresisState(
                 valuesCelsius = finiteCelsius,

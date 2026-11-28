@@ -3,10 +3,14 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEnergySource
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRemainingFuelData
@@ -32,6 +36,20 @@ internal class LmuWindowsNarratorFlow(
     fun <T> telemetry(observe: () -> Flow<T>): Flow<T> =
         selectedSimulator.flatMapLatest { simulator ->
             if (simulator !is Simulator.LmuWindows) emptyFlow() else observe()
+        }
+
+    /**
+     * 車両クラス。受信するまでと LMU の選択解除中は null。
+     * プレイヤー車両が一時的に見つからないときの空クラスは除外して、直前のクラスを保つ。
+     */
+    fun vehicleClass(observe: () -> Flow<LmuWindowsVehicleClassData>): Flow<LmuWindowsVehicleClassData?> =
+        selectedSimulator.flatMapLatest { simulator ->
+            flow {
+                emit(null)
+                if (simulator is Simulator.LmuWindows) {
+                    emitAll(observe().filterNot { it is LmuWindowsVehicleClassData.Unknown && it.name.isEmpty() })
+                }
+            }
         }
 
     @Suppress("LongParameterList")
@@ -61,30 +79,30 @@ internal class LmuWindowsNarratorFlow(
 
     fun currentLap(telemetry: Flow<LmuWindowsTelemetryData>): Flow<Int> = telemetry.map { it.timing.currentLap }
 
-    fun energySource(vehicleClass: Flow<LmuWindowsVehicleClassData>): Flow<LmuWindowsEnergySource> =
-        vehicleClass.map(::lmuWindowsVehicleClassEnergySource)
+    fun energySource(vehicleClass: Flow<LmuWindowsVehicleClassData?>): Flow<LmuWindowsEnergySource?> =
+        vehicleClass.map { it?.let(::lmuWindowsVehicleClassEnergySource) }
 
     fun tyreHighThreshold(
-        vehicleClass: Flow<LmuWindowsVehicleClassData>,
+        vehicleClass: Flow<LmuWindowsVehicleClassData?>,
         thresholds: Flow<Map<LmuWindowsVehicleClassData, Celsius>>,
-    ): Flow<Celsius> =
+    ): Flow<Celsius?> =
         combine(vehicleClass, thresholds) { currentClass, values ->
-            resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(values, currentClass)
+            currentClass?.let { resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(values, it) }
         }
 
     fun brakeHighThreshold(
-        vehicleClass: Flow<LmuWindowsVehicleClassData>,
+        vehicleClass: Flow<LmuWindowsVehicleClassData?>,
         thresholds: Flow<Map<LmuWindowsVehicleClassData, Int>>,
     ): Flow<Celsius> =
-        combine(vehicleClass, thresholds) { currentClass, values ->
+        combine(vehicleClass.map { it.orUnknownClass() }, thresholds) { currentClass, values ->
             Celsius(resolveLmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsius(values, currentClass))
         }
 
     fun brakeLowThreshold(
-        vehicleClass: Flow<LmuWindowsVehicleClassData>,
+        vehicleClass: Flow<LmuWindowsVehicleClassData?>,
         thresholds: Flow<Map<LmuWindowsVehicleClassData, Int>>,
     ): Flow<Int> =
-        combine(vehicleClass, thresholds) { currentClass, values ->
+        combine(vehicleClass.map { it.orUnknownClass() }, thresholds) { currentClass, values ->
             resolveLmuWindowsVehicleClassBrakeWearLowThresholdPercent(values, currentClass)
         }
 
@@ -108,4 +126,8 @@ internal class LmuWindowsNarratorFlow(
         ) { currentTelemetry, energy, wear, remainingFuel ->
             LmuWindowsPitTimingSnapshot(currentTelemetry, energy, wear, remainingFuel)
         }
+
+    // ブレーキの閾値は未受信でも「Unknown」用の値で判定する。
+    private fun LmuWindowsVehicleClassData?.orUnknownClass(): LmuWindowsVehicleClassData =
+        this ?: LmuWindowsVehicleClassData.Unknown(LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY)
 }

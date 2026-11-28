@@ -2271,6 +2271,20 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `過熱の閾値が未確定なら過熱状態を変えず読み上げない`() {
+        val state = LmuWindowsNarratorState()
+        val decision =
+            tyreUseCase.determineTyreTemperatureOverheat(
+                state = state,
+                input = tyreTemperatureInput(fl = 150.0),
+                settings = settings().copy(tyreTemperatureHighThresholdCelsius = null),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(state, decision.state)
+    }
+
+    @Test
     fun `ヒステリシス範囲内の初期温度では過熱状態にならない`() {
         val decision =
             tyreUseCase.determineTyreTemperatureOverheat(
