@@ -33,9 +33,9 @@ compose.resources {
 }
 
 dependencies {
-    testFixturesApi(projects.core.domain)
-    testFixturesApi(projects.core.manualReadoutDomain)
-    testFixturesApi(projects.core.speechRecognitionDomain)
+    testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(projects.core.manualReadoutDomain)
+    testFixturesImplementation(projects.core.speechRecognitionDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))
