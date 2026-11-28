@@ -22,10 +22,12 @@ import java.net.UnknownHostException
  * KoDriver サーバーの WebSocket エンドポイントへ接続し、テキストフレームを [decode] で
  * デシリアライズして emit する再接続付き [Flow] を生成する。
  *
- * デコード失敗（不正な JSON）はフレーム単位でスキップして次のフレームを待つ。接続失敗・切断は
+ * デコード失敗（不正な JSON）はフレーム単位でスキップして次のフレームを待つ。配信形式が合わない間は
+ * 失敗が続くため、デコード失敗の Sentry への送信は、返す [Flow] の収集ごとに最初の1件だけとする
+ * （再接続やデコード成功の後も再送しない）。接続失敗・切断は
  * [retryDelayMs] 待機後にリトライする。接続拒否・タイムアウト・名前解決失敗・ソケット切断・
  * 接続中の EOF（サーバー側の切断）、存在しないエンドポイントの HTTP ハンドシェイク 404 による
- * 想定内のネットワーク利用不可は Sentry へ送信せず、それ以外の失敗とデコード失敗のみ送信する。
+ * 想定内のネットワーク利用不可は Sentry へ送信せず、それ以外の接続の失敗は発生のたびに送信する。
  * 下流（collector）が投げた例外は通信失敗として扱わず、そのまま再送出する（Flow の例外透過性）。
  */
 internal fun <T> HttpClient.webSocketFlow(
@@ -37,8 +39,15 @@ internal fun <T> HttpClient.webSocketFlow(
     captureException: (Throwable) -> Unit = { captureError(it) },
 ): Flow<T> =
     flow {
+        var decodeFailureReported = false
+        val reportDecodeFailure: (Throwable) -> Unit = {
+            if (!decodeFailureReported) {
+                decodeFailureReported = true
+                captureException(it)
+            }
+        }
         while (true) {
-            connectOnce(this, host, port, path, decode, captureException)
+            connectOnce(this, host, port, path, decode, captureException, reportDecodeFailure)
             delay(retryDelayMs)
         }
     }
@@ -50,12 +59,13 @@ private suspend fun <T> HttpClient.connectOnce(
     path: String,
     decode: (String) -> T,
     captureException: (Throwable) -> Unit,
+    reportDecodeFailure: (Throwable) -> Unit,
 ) {
     try {
         webSocket(host = host, port = port, path = path) {
             for (frame in incoming) {
                 if (frame is Frame.Text) {
-                    collector.emitDecoded(frame.readText(), decode, captureException)
+                    collector.emitDecoded(frame.readText(), decode, reportDecodeFailure)
                 }
             }
         }
@@ -73,13 +83,13 @@ private suspend fun <T> HttpClient.connectOnce(
 private suspend fun <T> FlowCollector<T>.emitDecoded(
     text: String,
     decode: (String) -> T,
-    captureException: (Throwable) -> Unit,
+    reportDecodeFailure: (Throwable) -> Unit,
 ) {
     val value =
         try {
             decode(text)
         } catch (e: SerializationException) {
-            captureException(e)
+            reportDecodeFailure(e)
             return
         }
     try {
