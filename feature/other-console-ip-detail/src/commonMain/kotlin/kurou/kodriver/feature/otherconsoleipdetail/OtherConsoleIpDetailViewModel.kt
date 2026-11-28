@@ -43,7 +43,8 @@ internal class OtherConsoleIpDetailViewModel(
         detailFlow.uiState.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), detailFlow.initialUiState)
 
     fun onAddressChanged(address: String) {
-        _mutable.update { it.copy(userInput = address) }
+        // 数字入力向けキーボードは、IME や地域設定によって区切りが `,` になるため `.` として扱う
+        _mutable.update { it.copy(userInput = address.replace(',', '.')) }
     }
 
     fun onPortSelected(port: Int) {
