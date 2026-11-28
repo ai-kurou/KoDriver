@@ -87,6 +87,9 @@ DataModule にシングルトンとして登録する。`MutableSharedFlow` の�
 依頼は永続化せず、購読開始前・終了後の依頼を再配信しない。
 
 Android の `ManualReadoutHotkeyRepository` は `UnsupportedManualReadoutHotkeyRepository` を提供し、押下は通知せず、登録状態は `Unsupported`、再試行は何もしない。
+`WakeWordHotkeyRepository` も同様に `UnsupportedWakeWordHotkeyRepository` を提供する。
+
+`WakeWordHotkeyPreferencesRepository` はウェイクワードホットキーの割り当てを `wake_word_hotkey_preferences.pb` に保存し、Android・Desktop の DataModule に登録する。仮想キーコード（protobuf フィールド1、null は割り当てなし）と修飾キー（フィールド2、null・不明値は Ctrl + Alt）を保持する。
 
 音量低下警告の有効状態は `LowVolumeWarningEnabledPreferencesRepository` が
 `low_volume_warning_enabled_preferences.pb` に保存し、既定値は domain の

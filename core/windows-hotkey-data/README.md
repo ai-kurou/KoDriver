@@ -4,7 +4,11 @@ Windowsグローバルホットキーを検出するJVM専用のI/O基盤です�
 `GlobalHotkey` で修飾キーと仮想キーコードを指定し、
 `GlobalHotkeySource.observe()` から登録結果と押下の `GlobalHotkeyEvent` を受け取ります。
 非 Windows 環境ではネイティブ API を読み込まず `Unsupported` を通知します。
-`windowsHotkeyDataModule` はドメインの `ManualReadoutHotkeyRepository` をデスクトップアプリに提供します。
+`windowsHotkeyDataModule` はドメインの `ManualReadoutHotkeyRepository` と `WakeWordHotkeyRepository` をデスクトップアプリに提供します。
+
+`WakeWordHotkeyRepositoryImpl` は `WakeWordHotkeyPreferencesRepository` に保存された割り当てを監視して1件だけ登録します。
+キー・修飾キーの変更では旧登録の解除後に登録し直し、未割り当ての状態は `Unsupported` です。
+競合・失敗時だけ再試行でき、押下は過去分を再配信せず、最後の購読終了時に解除します。
 
 `ManualReadoutHotkeyRepositoryImpl` は全シミュレーターの保存済みセットを監視し、
 キーを割り当てたセットごとに保存済みの修飾キー（3択）とキーを登録します。

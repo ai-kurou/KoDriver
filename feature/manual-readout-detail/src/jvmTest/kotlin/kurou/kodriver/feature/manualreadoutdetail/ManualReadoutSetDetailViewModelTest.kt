@@ -27,7 +27,6 @@ import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinit
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
-import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.manualreadout.usecase.DeleteManualReadoutSetUseCase
@@ -37,6 +36,7 @@ import kurou.kodriver.domain.manualreadout.usecase.RetryManualReadoutHotkeyRegis
 import kurou.kodriver.domain.manualreadout.usecase.UpdateManualReadoutSetUseCase
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
