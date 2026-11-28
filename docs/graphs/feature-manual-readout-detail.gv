@@ -8,16 +8,19 @@ digraph G {
   ":core:gt7-ps5-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:lmu-windows-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:manual-readout-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
+  ":core:speech-recognition-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:manual-readout-detail"
   ":core:ace-windows-domain" -> ":core:domain"
   ":core:gt7-ps5-domain" -> ":core:domain"
   ":core:lmu-windows-domain" -> ":core:domain"
   ":core:manual-readout-domain" -> ":core:domain"
+  ":core:speech-recognition-domain" -> ":core:domain"
   ":feature:manual-readout-detail" -> ":core:domain"
   ":feature:manual-readout-detail" -> ":core:gt7-ps5-domain"
   ":feature:manual-readout-detail" -> ":core:designsystem"
   ":feature:manual-readout-detail" -> ":core:manual-readout-domain"
+  ":feature:manual-readout-detail" -> ":core:speech-recognition-domain"
   ":feature:manual-readout-detail" -> ":core:ace-windows-domain"
   ":feature:manual-readout-detail" -> ":core:lmu-windows-domain"
 }

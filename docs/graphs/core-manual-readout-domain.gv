@@ -12,6 +12,7 @@ digraph G {
   ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:manual-readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-wake-word-hotkey-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":core:data" -> ":core:domain"
   ":core:data" -> ":core:manual-readout-domain"
@@ -32,6 +33,8 @@ digraph G {
   ":feature:manual-readout-list" -> ":core:manual-readout-domain"
   ":feature:other-list" -> ":core:domain"
   ":feature:other-list" -> ":core:manual-readout-domain"
+  ":feature:other-wake-word-hotkey-detail" -> ":core:domain"
+  ":feature:other-wake-word-hotkey-detail" -> ":core:manual-readout-domain"
   ":feature:speech-recognition-list" -> ":core:domain"
   ":feature:speech-recognition-list" -> ":core:manual-readout-domain"
 }
