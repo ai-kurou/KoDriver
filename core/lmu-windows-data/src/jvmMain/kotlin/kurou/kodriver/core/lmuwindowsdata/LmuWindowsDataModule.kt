@@ -21,13 +21,13 @@ import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVirtualEnergyRepo
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
@@ -71,7 +71,7 @@ public val lmuWindowsDataModule: Module =
         }
         single<LmuWindowsVehicleApproachRepository> {
             if (isWindows) {
-                LmuWindowsVehicleApproachRepositoryImpl(thresholdsRepository = get(), source = get())
+                LmuWindowsVehicleApproachRepositoryImpl(source = get())
             } else {
                 NoOpVehicleApproachRepository()
             }
@@ -128,7 +128,7 @@ private class NoOpLmuWindowsRepository : LmuWindowsRepository {
 }
 
 private class NoOpVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
-    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
+    override fun nearbyVehiclesStream(): Flow<LmuWindowsNearbyVehiclesData> = emptyFlow()
 }
 
 private class NoOpFlagRepository : LmuWindowsFlagRepository {

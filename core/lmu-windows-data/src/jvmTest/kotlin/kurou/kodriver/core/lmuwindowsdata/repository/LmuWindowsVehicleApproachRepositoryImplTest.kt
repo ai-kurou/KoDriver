@@ -5,25 +5,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
-import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehicleData
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -55,11 +46,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
             val reader = FakeVehicleApproachMemoryReader(buildBuffer(activeVehicles = 1, playerIdx = 0))
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
                     source = makeSource(reader),
                 )
 
-            val job = launch { repo.vehicleApproachStream().collect { } }
+            val job = launch { repo.nearbyVehiclesStream().collect { } }
             delay(50)
             job.cancelAndJoin()
             reader.closed.await()
@@ -77,12 +67,11 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
                 )
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
                     source = makeSource(reader),
                 )
             var emitCount = 0
 
-            val job = launch { repo.vehicleApproachStream().collect { emitCount++ } }
+            val job = launch { repo.nearbyVehiclesStream().collect { emitCount++ } }
             delay(50)
             job.cancelAndJoin()
             reader.closed.await()
@@ -92,139 +81,55 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
         }
 
     // -------------------------------------------------------------------------
-    // 並走判定: 左右の検出
+    // 周辺車両の位置: relX = opp.posX, relY = -opp.posZ
     // -------------------------------------------------------------------------
 
     @Test
-    fun `プレイヤーの左に並走車がいる場合 isSideBySideLeft が true になる`() =
-        runBlocking {
-            // relX = opp.posX = -3.0 (左), relY = 0
-            val buffer =
-                buildBuffer(
-                    activeVehicles = 2,
-                    playerIdx = 0,
-                    opponents = listOf(VehiclePos(posX = -3.0, posZ = 0.0)),
-                )
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository =
-                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-                            longitudinal = 4.5,
-                        ),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
-
-            val result = repo.vehicleApproachStream().first()
-
-            assertTrue(result.isSideBySideLeft)
-            assertFalse(result.isSideBySideRight)
-        }
-
-    @Test
-    fun `プレイヤーの右に並走車がいる場合 isSideBySideRight が true になる`() =
-        runBlocking {
-            // relX = opp.posX = +3.0 (右), relY = 0
-            val buffer =
-                buildBuffer(
-                    activeVehicles = 2,
-                    playerIdx = 0,
-                    opponents = listOf(VehiclePos(posX = 3.0, posZ = 0.0)),
-                )
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository =
-                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-                            longitudinal = 4.5,
-                        ),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
-
-            val result = repo.vehicleApproachStream().first()
-
-            assertFalse(result.isSideBySideLeft)
-            assertTrue(result.isSideBySideRight)
-        }
-
-    @Test
-    fun `左右両方に並走車がいる場合 両方 true になる`() =
+    fun `自車以外の車両の位置を車両IDつきで返す`() =
         runBlocking {
             val buffer =
                 buildBuffer(
                     activeVehicles = 3,
+                    playerIdx = 1,
+                    opponents = listOf(VehiclePos(posX = -3.0, posZ = 2.0), VehiclePos(posX = 0.5, posZ = -4.0)),
+                )
+            val repo =
+                LmuWindowsVehicleApproachRepositoryImpl(source = makeSource(FakeVehicleApproachMemoryReader(buffer)))
+
+            val result = repo.nearbyVehiclesStream().first()
+
+            assertEquals(
+                listOf(
+                    LmuWindowsNearbyVehicleData(vehicleId = 0, lateralMeters = -3.0, longitudinalMeters = -2.0),
+                    LmuWindowsNearbyVehicleData(vehicleId = 2, lateralMeters = 0.5, longitudinalMeters = 4.0),
+                ),
+                result.vehicles,
+            )
+        }
+
+    @Test
+    fun `閾値の設定可能な上限より遠い車両は含めず上限ちょうどの車両は含める`() =
+        runBlocking {
+            val buffer =
+                buildBuffer(
+                    activeVehicles = 5,
                     playerIdx = 0,
                     opponents =
                         listOf(
-                            VehiclePos(posX = -3.0, posZ = 0.0),
-                            VehiclePos(posX = 3.0, posZ = 0.0),
+                            VehiclePos(posX = 8.0, posZ = -10.0),
+                            VehiclePos(posX = 8.1, posZ = 0.0),
+                            VehiclePos(posX = -8.1, posZ = 0.0),
+                            VehiclePos(posX = 0.0, posZ = -10.1),
                         ),
+                    // 5台分のテレメトリが収まるサイズにする
+                    bufferSize = 140_000,
                 )
             val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository =
-                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-                            longitudinal = 4.5,
-                        ),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
+                LmuWindowsVehicleApproachRepositoryImpl(source = makeSource(FakeVehicleApproachMemoryReader(buffer)))
 
-            val result = repo.vehicleApproachStream().first()
+            val result = repo.nearbyVehiclesStream().first()
 
-            assertTrue(result.isSideBySideLeft)
-            assertTrue(result.isSideBySideRight)
-        }
-
-    // -------------------------------------------------------------------------
-    // 並走判定: 前後方向の閾値 (relY = -opp.posZ)
-    // -------------------------------------------------------------------------
-
-    @Test
-    fun `前後方向の距離が閾値を超える車両は並走判定しない`() =
-        runBlocking {
-            // relY = -(-10.0) = 10.0 > 4.5*1.2=5.4 → スキップ
-            val buffer =
-                buildBuffer(
-                    activeVehicles = 2,
-                    playerIdx = 0,
-                    opponents = listOf(VehiclePos(posX = -3.0, posZ = -10.0)),
-                )
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository =
-                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-                            longitudinal = 4.5,
-                        ),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
-
-            val result = repo.vehicleApproachStream().first()
-
-            assertFalse(result.isSideBySideLeft)
-            assertFalse(result.isSideBySideRight)
-        }
-
-    @Test
-    fun `前後方向の距離が閾値ちょうどの車両は並走判定しない`() =
-        runBlocking {
-            val vehicleLength = 4.5
-            // relY = 5.4 >= threshold=5.4 → スキップ (>= で判定)
-            val buffer =
-                buildBuffer(
-                    activeVehicles = 2,
-                    playerIdx = 0,
-                    opponents = listOf(VehiclePos(posX = -3.0, posZ = -5.4)),
-                )
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository =
-                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-                            longitudinal = vehicleLength,
-                        ),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
-
-            val result = repo.vehicleApproachStream().first()
-
-            assertFalse(result.isSideBySideLeft)
+            assertEquals(listOf(1), result.vehicles.map { it.vehicleId })
         }
 
     // -------------------------------------------------------------------------
@@ -239,11 +144,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
             val fakeReader = FakeVehicleApproachMemoryReader(buffer)
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
                     source = makeSource(fakeReader),
                 )
 
-            val job = launch { repo.vehicleApproachStream().collect { } }
+            val job = launch { repo.nearbyVehiclesStream().collect { } }
             delay(50)
             job.cancelAndJoin()
             // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
@@ -260,12 +164,11 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
             val fakeReader = FakeVehicleApproachMemoryReader(buffer)
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
                     source = makeSource(fakeReader),
                 )
             var emitCount = 0
 
-            val job = launch { repo.vehicleApproachStream().collect { emitCount++ } }
+            val job = launch { repo.nearbyVehiclesStream().collect { emitCount++ } }
             delay(50)
             job.cancelAndJoin()
 
@@ -278,12 +181,11 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
             val fakeReader = FakeVehicleApproachMemoryReader(buildBuffer(activeVehicles = 0, playerIdx = 0))
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
                     source = makeSource(fakeReader),
                 )
             var emitCount = 0
 
-            val job = launch { repo.vehicleApproachStream().collect { emitCount++ } }
+            val job = launch { repo.nearbyVehiclesStream().collect { emitCount++ } }
             delay(50)
             job.cancelAndJoin()
 
@@ -298,11 +200,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
             val buffer = buildBuffer(activeVehicles = 255, playerIdx = 0)
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
                     source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
                 )
 
-            repo.vehicleApproachStream().first()
+            repo.nearbyVehiclesStream().first()
             Unit
         }
 
@@ -311,230 +212,11 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
         assertEquals(104, LmuWindowsVehicleApproachRepositoryImpl.maxVehicleCount(ByteBuffer.allocate(324_820)))
         assertEquals(0, LmuWindowsVehicleApproachRepositoryImpl.maxVehicleCount(ByteBuffer.allocate(1)))
     }
-
-    // -------------------------------------------------------------------------
-    // 横方向距離
-    // -------------------------------------------------------------------------
-
-    @Test
-    fun `左の並走車の横方向距離が正しく返る`() =
-        runBlocking {
-            // relX = -3.0 → lateralDistanceLeftMeters = 3.0
-            val buffer =
-                buildBuffer(
-                    activeVehicles = 2,
-                    playerIdx = 0,
-                    opponents = listOf(VehiclePos(posX = -3.0, posZ = 0.0)),
-                )
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository =
-                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-                            longitudinal = 4.5,
-                        ),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
-
-            val result = repo.vehicleApproachStream().first()
-
-            assertTrue(kotlin.math.abs(result.lateralDistanceLeftMeters.value - 3.0) < 1e-9)
-            assertTrue(result.lateralDistanceRightMeters.value == Double.MAX_VALUE)
-        }
-
-    @Test
-    fun `左に複数台いる場合は最近接の横距離を返す`() =
-        runBlocking {
-            // posX=-3 → absRelX=3, posX=-5 → absRelX=5 → 最近接=3.0
-            val buffer =
-                buildBuffer(
-                    activeVehicles = 3,
-                    playerIdx = 0,
-                    opponents =
-                        listOf(
-                            VehiclePos(posX = -3.0, posZ = 0.0),
-                            VehiclePos(posX = -5.0, posZ = 0.0),
-                        ),
-                )
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository =
-                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-                            longitudinal = 4.5,
-                        ),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
-
-            val result = repo.vehicleApproachStream().first()
-
-            assertTrue(kotlin.math.abs(result.lateralDistanceLeftMeters.value - 3.0) < 1e-9)
-        }
-
-    @Test
-    fun `右に複数台いる場合は最近接の横距離を返す`() =
-        runBlocking {
-            val buffer =
-                buildBuffer(
-                    activeVehicles = 3,
-                    playerIdx = 0,
-                    opponents =
-                        listOf(
-                            VehiclePos(posX = 3.0, posZ = 0.0),
-                            VehiclePos(posX = 5.0, posZ = 0.0),
-                        ),
-                )
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository =
-                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-                            longitudinal = 4.5,
-                        ),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
-
-            val result = repo.vehicleApproachStream().first()
-
-            assertEquals(3.0, result.lateralDistanceRightMeters.value)
-        }
-
-    @Test
-    fun `横方向の最小値未満と最大値超過の車両は並走判定しない`() =
-        runBlocking {
-            val buffer =
-                buildBuffer(
-                    activeVehicles = 3,
-                    playerIdx = 0,
-                    opponents =
-                        listOf(
-                            VehiclePos(posX = -0.5, posZ = 0.0),
-                            VehiclePos(posX = 6.0, posZ = 0.0),
-                        ),
-                )
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository =
-                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-                            longitudinal = 4.5,
-                            lateral = 5.0,
-                        ),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
-
-            val result = repo.vehicleApproachStream().first()
-
-            assertFalse(result.isSideBySideLeft)
-            assertFalse(result.isSideBySideRight)
-        }
-
-    @Test
-    fun `横方向閾値が更新されると新しい閾値で判定する`() =
-        runBlocking {
-            val thresholds = MutableLmuWindowsVehicleApproachThresholdsPreferencesRepository(lateral = 2.0)
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = thresholds,
-                    source =
-                        makeSource(
-                            FakeVehicleApproachMemoryReader(
-                                buildBuffer(
-                                    activeVehicles = 2,
-                                    playerIdx = 0,
-                                    opponents = listOf(VehiclePos(posX = 3.0, posZ = 0.0)),
-                                ),
-                            ),
-                        ),
-                )
-            val results = mutableListOf<Boolean>()
-            val firstResultReceived = CompletableDeferred<Unit>()
-
-            val job =
-                launch {
-                    repo
-                        .vehicleApproachStream()
-                        .map { it.isSideBySideRight }
-                        .distinctUntilChanged()
-                        .onEach {
-                            results += it
-                            if (results.size == 1) firstResultReceived.complete(Unit)
-                        }.take(2)
-                        .toList()
-                }
-            firstResultReceived.await()
-            thresholds.saveLateralThresholdMeters(4.0)
-            job.join()
-
-            assertEquals(listOf(false, true), results)
-        }
-
-    @Test
-    fun `並走車がいない場合は横距離が MAX_VALUE になる`() =
-        runBlocking {
-            val buffer = buildBuffer(activeVehicles = 1, playerIdx = 0)
-            val repo =
-                LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
-                    source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
-                )
-
-            val result = repo.vehicleApproachStream().first()
-
-            assertTrue(result.lateralDistanceLeftMeters.value == Double.MAX_VALUE)
-            assertTrue(result.lateralDistanceRightMeters.value == Double.MAX_VALUE)
-        }
 }
 
 // -----------------------------------------------------------------------------
 // ヘルパー
 // -----------------------------------------------------------------------------
-
-private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-    private val longitudinal: Double = 1.0,
-    private val lateral: Double = 5.0,
-    private val sustainedApproachDurationSeconds: Int = 4,
-) : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
-    override suspend fun resetToDefault() = Unit
-
-    override fun observeLongitudinalThresholdMeters(): Flow<Double> = flowOf(longitudinal)
-
-    override fun observeLateralThresholdMeters(): Flow<Double> = flowOf(lateral)
-
-    override fun observeSustainedApproachDurationSeconds(): Flow<Int> = flowOf(sustainedApproachDurationSeconds)
-
-    override suspend fun saveLongitudinalThresholdMeters(meters: Double) = Unit
-
-    override suspend fun saveLateralThresholdMeters(meters: Double) = Unit
-
-    override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) = Unit
-}
-
-private class MutableLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-    longitudinal: Double = 1.0,
-    lateral: Double = 5.0,
-    sustainedApproachDurationSeconds: Int = 4,
-) : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
-    override suspend fun resetToDefault() = Unit
-
-    private val longitudinalFlow = MutableStateFlow(longitudinal)
-    private val lateralFlow = MutableStateFlow(lateral)
-    private val sustainedApproachDurationSecondsFlow = MutableStateFlow(sustainedApproachDurationSeconds)
-
-    override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinalFlow
-
-    override fun observeLateralThresholdMeters(): Flow<Double> = lateralFlow
-
-    override fun observeSustainedApproachDurationSeconds(): Flow<Int> = sustainedApproachDurationSecondsFlow
-
-    override suspend fun saveLongitudinalThresholdMeters(meters: Double) {
-        longitudinalFlow.value = meters
-    }
-
-    override suspend fun saveLateralThresholdMeters(meters: Double) {
-        lateralFlow.value = meters
-    }
-
-    override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) {
-        sustainedApproachDurationSecondsFlow.value = seconds
-    }
-}
 
 private data class VehiclePos(
     val posX: Double = 0.0,
@@ -560,8 +242,9 @@ private fun buildBuffer(
     activeVehicles: Int,
     playerIdx: Int,
     opponents: List<VehiclePos> = emptyList(),
+    bufferSize: Int = 135_000,
 ): ByteBuffer {
-    val buffer = ByteBuffer.allocate(135_000).order(ByteOrder.LITTLE_ENDIAN)
+    val buffer = ByteBuffer.allocate(bufferSize).order(ByteOrder.LITTLE_ENDIAN)
 
     buffer.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, activeVehicles.toByte())
     buffer.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, playerIdx.toByte())

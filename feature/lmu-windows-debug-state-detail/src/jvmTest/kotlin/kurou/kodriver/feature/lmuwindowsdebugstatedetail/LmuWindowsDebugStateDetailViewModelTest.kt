@@ -13,6 +13,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -26,6 +28,8 @@ import kurou.kodriver.domain.debug.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.debug.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.debug.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.debug.usecase.SaveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
@@ -34,6 +38,8 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehicleData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitState
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
@@ -64,6 +70,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreDetachedRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
@@ -163,7 +170,11 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
                 observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
                 observeTelemetry = ObserveLmuWindowsUseCase(lmuWindowsRepository),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
+                observeVehicleApproach =
+                    ObserveLmuWindowsVehicleApproachUseCase(
+                        vehicleApproachRepository,
+                        FakeVehicleApproachThresholdsRepository,
+                    ),
                 observeTyreCarcassTemperature =
                     ObserveLmuWindowsTyreCarcassTemperatureUseCase(tyreCarcassTemperatureRepository),
                 observeBrakeWear =
@@ -191,7 +202,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { virtualEnergyRepository.virtualEnergyStream() } returns emptyFlow()
             every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
-            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { brakeWearRepository.brakeWearStream() } returns emptyFlow()
@@ -238,8 +250,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -293,8 +305,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -340,8 +352,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -388,8 +400,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -422,8 +434,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -445,7 +457,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -481,8 +493,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns flagsFlow
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -505,7 +517,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -541,8 +553,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(10))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -564,7 +576,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -600,8 +612,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(3))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -628,7 +640,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -664,8 +676,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(setOf(1)))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(setOf(1))).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -687,7 +699,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -724,7 +736,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
             val approach = MutableStateFlow(sampleVehicleApproach(setOf(1)))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns approach
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                approach.map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -751,7 +764,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -788,7 +801,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
             val approach = MutableStateFlow(sampleVehicleApproach(setOf(1)))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns approach
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                approach.map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -814,7 +828,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -856,7 +870,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                     lateralDistanceRightMeters = LateralDistanceMeters(1.5),
                 )
             val approach = MutableStateFlow(rightApproach)
-            every { vehicleApproachRepository.vehicleApproachStream() } returns approach
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                approach.map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -916,7 +931,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -952,8 +967,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(
                     LmuWindowsTyreCarcassTemperatureData(
@@ -984,7 +999,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -1020,8 +1035,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -1044,7 +1059,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -1080,8 +1095,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -1104,7 +1119,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -1140,8 +1155,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -1165,7 +1180,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -1201,8 +1216,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -1230,7 +1245,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -1266,8 +1281,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -1314,7 +1329,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -1350,8 +1365,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -1399,7 +1414,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -1435,8 +1450,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
             every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet())).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -1483,7 +1498,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -1522,8 +1537,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { virtualEnergyRepository.virtualEnergyStream() } returns energyFlow
             val telemetryFlow = MutableStateFlow(baselineTelemetry(3, 0.5))
             every { lmuWindowsRepository.telemetryStream() } returns telemetryFlow
-            every { vehicleApproachRepository.vehicleApproachStream() } returns
-                MutableStateFlow(sampleVehicleApproach(setOf(1)))
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                MutableStateFlow(sampleVehicleApproach(setOf(1))).map { it.toNearbyVehicles() }
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns
@@ -1590,7 +1605,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { vehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
@@ -1629,7 +1644,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { flagRepository.flagStream() } returns emptyFlow()
             every { virtualEnergyRepository.virtualEnergyStream() } returns emptyFlow()
             every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
-            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+                emptyFlow()
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
             every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
             every { brakeWearRepository.brakeWearStream() } returns emptyFlow()
@@ -1746,3 +1762,39 @@ private fun baselineTelemetry(
                     ),
             ),
     )
+
+/** 期待する並走状態になる周辺車両の位置へ変換する。距離の指定がない車両は閾値内の2mに置く。 */
+private fun LmuWindowsVehicleApproachData.toNearbyVehicles(): LmuWindowsNearbyVehiclesData {
+    fun side(
+        ids: Set<Int>,
+        distance: Double,
+        sign: Int,
+    ) = ids.map {
+        LmuWindowsNearbyVehicleData(
+            vehicleId = it,
+            lateralMeters = sign * if (distance == Double.MAX_VALUE) 2.0 else distance,
+            longitudinalMeters = 0.0,
+        )
+    }
+    return LmuWindowsNearbyVehiclesData(
+        side(sideBySideLeftVehicleIds, lateralDistanceLeftMeters.value, -1) +
+            side(sideBySideRightVehicleIds, lateralDistanceRightMeters.value, 1),
+    )
+}
+
+private object FakeVehicleApproachThresholdsRepository : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
+    override suspend fun resetToDefault() = Unit
+
+    override fun observeLongitudinalThresholdMeters() =
+        flowOf(LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MAX)
+
+    override fun observeLateralThresholdMeters() = flowOf(LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MAX)
+
+    override fun observeSustainedApproachDurationSeconds() = flowOf(7)
+
+    override suspend fun saveLongitudinalThresholdMeters(meters: Double) = Unit
+
+    override suspend fun saveLateralThresholdMeters(meters: Double) = Unit
+
+    override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) = Unit
+}

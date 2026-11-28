@@ -46,7 +46,7 @@ class LmuWindowsServerUseCasesTest {
     @Test
     fun `KoinのRepositoryから全UseCaseを組み立てる`() {
         every { lmuWindowsFlagRepository.flagStream() } returns emptyFlow()
-        every { lmuWindowsVehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+        every { lmuWindowsVehicleApproachRepository.nearbyVehiclesStream() } returns emptyFlow()
         every { lmuWindowsVehicleDamageRepository.vehicleDamageStream() } returns emptyFlow()
         every { lmuWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
         every { lmuWindowsBrakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
@@ -85,7 +85,7 @@ class LmuWindowsServerUseCasesTest {
         try {
             val useCases = lmuWindowsServerUseCasesFrom(koin)
             useCases.observeLmuWindowsRaceFlags()
-            useCases.observeLmuWindowsVehicleApproach()
+            useCases.observeLmuWindowsNearbyVehicles()
             useCases.observeLmuWindowsVehicleDamage()
             useCases.observeLmuWindowsTyreCarcassTemperature()
             useCases.observeLmuWindowsBrakeTemperature()
@@ -99,7 +99,7 @@ class LmuWindowsServerUseCasesTest {
             useCases.observeLmuWindowsCarGap()
             useCases.observeLmuWindowsClassCarGap()
             verify(exactly = 1) { lmuWindowsFlagRepository.flagStream() }
-            verify(exactly = 1) { lmuWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { lmuWindowsVehicleApproachRepository.nearbyVehiclesStream() }
             verify(exactly = 1) { lmuWindowsVehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { lmuWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { lmuWindowsBrakeTemperatureRepository.brakeTemperatureStream() }
@@ -138,7 +138,7 @@ class LmuWindowsServerUseCasesTest {
         runTest {
             val useCases = emptyLmuWindowsServerUseCases()
             assertEquals(emptyList(), useCases.observeLmuWindowsRaceFlags().toList())
-            assertEquals(emptyList(), useCases.observeLmuWindowsVehicleApproach().toList())
+            assertEquals(emptyList(), useCases.observeLmuWindowsNearbyVehicles().toList())
             assertEquals(emptyList(), useCases.observeLmuWindowsVehicleDamage().toList())
             assertEquals(emptyList(), useCases.observeLmuWindowsTyreCarcassTemperature().toList())
             assertEquals(emptyList(), useCases.observeLmuWindowsBrakeTemperature().toList())
