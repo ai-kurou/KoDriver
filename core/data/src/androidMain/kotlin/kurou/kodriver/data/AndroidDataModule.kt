@@ -8,10 +8,12 @@ import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.hotkey.UnsupportedManualReadoutHotkeyRepository
+import kurou.kodriver.data.hotkey.UnsupportedWakeWordHotkeyRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemRequestRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemSpokenRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.manualreadout.InMemorySpeechPlaybackStateRepository
+import kurou.kodriver.data.manualreadout.InMemorySpeechRecognitionEnabledRepository
 import kurou.kodriver.data.manualreadout.InMemorySpeechRecognitionTranscriptRepository
 import kurou.kodriver.data.preferences.AndroidAutoReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidDynamicColorEnabledRepository
@@ -42,6 +44,7 @@ import kurou.kodriver.data.preferences.createThemePreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePitchPreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.preferences.createVoiceSpeedPreferencesRepository
+import kurou.kodriver.data.preferences.createWakeWordHotkeyPreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.release.HttpServerVersionRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
@@ -88,7 +91,10 @@ import kurou.kodriver.domain.serverconnection.repository.AccessLocalNetworkPermi
 import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.serverconnection.repository.ServerVersionRepository
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionEnabledRepository
 import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionTranscriptRepository
+import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyPreferencesRepository
+import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyRepository
 import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -147,10 +153,12 @@ public fun androidDataModule(context: Context): Module =
         } bind ManualReadoutSettingsResetter::class
         single<DebugReadoutRequestRepository> { InMemoryDebugReadoutRequestRepository() }
         single<ManualReadoutHotkeyRepository> { UnsupportedManualReadoutHotkeyRepository() }
+        single<WakeWordHotkeyRepository> { UnsupportedWakeWordHotkeyRepository() }
         single<ManualReadoutRequestRepository> { InMemoryManualReadoutRequestRepository() }
         single<ManualReadoutItemRequestRepository> { InMemoryManualReadoutItemRequestRepository() }
         single<ManualReadoutItemSpokenRepository> { InMemoryManualReadoutItemSpokenRepository() }
         single<SpeechPlaybackStateRepository> { InMemorySpeechPlaybackStateRepository() }
+        single<SpeechRecognitionEnabledRepository> { InMemorySpeechRecognitionEnabledRepository() }
         single<SpeechRecognitionTranscriptRepository> { InMemorySpeechRecognitionTranscriptRepository() }
         single<Context> { context }
 
@@ -259,6 +267,9 @@ private fun androidDataModuleAppSettings(context: Context) =
         // オーバーレイの背景透明度設定
         single<OverlayBackgroundOpacityPreferencesRepository> {
             createOverlayBackgroundOpacityPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<WakeWordHotkeyPreferencesRepository> {
+            createWakeWordHotkeyPreferencesRepository(context.filesDir.absolutePath)
         }
         single<MicrophoneCutQuietSoundPreferencesRepository> {
             createMicrophoneCutQuietSoundPreferencesRepository(context.filesDir.absolutePath)

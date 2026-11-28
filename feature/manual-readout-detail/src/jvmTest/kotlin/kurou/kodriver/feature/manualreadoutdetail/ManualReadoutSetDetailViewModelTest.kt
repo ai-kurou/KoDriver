@@ -27,7 +27,6 @@ import kurou.kodriver.domain.acewindows.model.aceWindowsManualReadoutItemDefinit
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.gt7ps5.model.gt7Ps5ManualReadoutItemDefinitions
 import kurou.kodriver.domain.lmuwindows.model.lmuWindowsManualReadoutItemKeys
-import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutHotkeyRepository
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
 import kurou.kodriver.domain.manualreadout.usecase.DeleteManualReadoutSetUseCase
@@ -37,6 +36,7 @@ import kurou.kodriver.domain.manualreadout.usecase.RetryManualReadoutHotkeyRegis
 import kurou.kodriver.domain.manualreadout.usecase.UpdateManualReadoutSetUseCase
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.MANUAL_READOUT_SET_ITEM_MAX
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
@@ -47,6 +47,9 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.registerAceWindowsReadoutItemKeys
 import kurou.kodriver.domain.model.registerGt7Ps5ReadoutItemKeys
 import kurou.kodriver.domain.model.registerLmuWindowsReadoutItemKeys
+import kurou.kodriver.domain.speechrecognition.model.WakeWordHotkey
+import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyPreferencesRepository
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
@@ -76,12 +79,15 @@ class ManualReadoutSetDetailViewModelTest {
     private val repository: ManualReadoutSetPreferencesRepository = mockk()
     private val hotkeyRepository: ManualReadoutHotkeyRepository = mockk()
     private val otherRepository: ManualReadoutSetPreferencesRepository = mockk()
+    private val wakeWordRepository: WakeWordHotkeyPreferencesRepository = mockk()
+    private val wakeWordHotkey = MutableStateFlow(WakeWordHotkey())
     private val dispatcher = UnconfinedTestDispatcher()
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(dispatcher)
         every { otherRepository.observeSets() } returns MutableStateFlow(emptyList())
+        every { wakeWordRepository.observeWakeWordHotkey() } returns wakeWordHotkey
     }
 
     @AfterTest
@@ -104,6 +110,7 @@ class ManualReadoutSetDetailViewModelTest {
             UpdateManualReadoutSetUseCase(repository),
             DeleteManualReadoutSetUseCase(repository),
             mapOf(Simulator.Gt7Ps5.id to ObserveManualReadoutSetsUseCase(otherRepository)),
+            ObserveWakeWordHotkeyUseCase(wakeWordRepository),
             ObserveManualReadoutHotkeyRegistrationStateUseCase(hotkeyRepository),
             RetryManualReadoutHotkeyRegistrationUseCase(hotkeyRepository),
             checkTts,
@@ -915,6 +922,80 @@ class ManualReadoutSetDetailViewModelTest {
                 coVerify(exactly = 1) { repository.deleteSet("target") }
                 confirmVerified(repository)
             } finally {
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `ウェイクワードホットキーと同じ組み合わせは割り当ても修飾キー変更も拒否する`() =
+        runTest(dispatcher) {
+            wakeWordHotkey.value = WakeWordHotkey(0x41, ManualReadoutHotkeyModifiers.CTRL_SHIFT)
+            val original = ManualReadoutSet("target", hotkeyVirtualKeyCode = 0x41)
+            every { repository.observeSets() } returns MutableStateFlow(listOf(original))
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                vm.selectHotkeyModifiers(ManualReadoutHotkeyModifiers.CTRL_SHIFT)
+
+                assertEquals(ManualReadoutHotkeyConflict.WakeWord, vm.uiState.first().hotkeyConflict)
+                assertEquals(ManualReadoutHotkeyModifiers.CTRL_ALT, vm.uiState.first().hotkeyModifiers)
+                verify(exactly = 1) { wakeWordRepository.observeWakeWordHotkey() }
+                verify(exactly = 2) { repository.observeSets() }
+                confirmVerified(repository, wakeWordRepository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `ウェイクワードホットキーと同じキーでも修飾キーが異なる場合は割り当てを保存する`() =
+        runTest(dispatcher) {
+            wakeWordHotkey.value = WakeWordHotkey(0x41, ManualReadoutHotkeyModifiers.CTRL_SHIFT)
+            val original = ManualReadoutSet("target")
+            val assigned = original.copy(hotkeyVirtualKeyCode = 0x41)
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(assigned) }
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                vm.assignHotkey(0x41)
+
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                assertEquals(0x41, vm.uiState.first().hotkeyVirtualKeyCode)
+                verify(exactly = 1) { wakeWordRepository.observeWakeWordHotkey() }
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(assigned) }
+                confirmVerified(repository, wakeWordRepository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `ウェイクワードホットキーと修飾キーが同じでもキーが異なる場合は割り当てを保存する`() =
+        runTest(dispatcher) {
+            wakeWordHotkey.value = WakeWordHotkey(0x42)
+            val original = ManualReadoutSet("target")
+            val assigned = original.copy(hotkeyVirtualKeyCode = 0x41)
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(assigned) }
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                vm.assignHotkey(0x41)
+
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                assertEquals(0x41, vm.uiState.first().hotkeyVirtualKeyCode)
+                verify(exactly = 1) { wakeWordRepository.observeWakeWordHotkey() }
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(assigned) }
+                confirmVerified(repository, wakeWordRepository)
+            } finally {
+                collection.cancel()
                 vm.viewModelScope.cancel()
             }
         }

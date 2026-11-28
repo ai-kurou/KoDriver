@@ -182,6 +182,7 @@ private fun handleOtherItemClick(
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.MicrophoneCutQuietSound,
+        OtherListItemType.WakeWordHotkey,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,

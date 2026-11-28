@@ -1,11 +1,10 @@
-package kurou.kodriver.feature.manualreadoutdetail
+package kurou.kodriver.core.designsystem
 
 import androidx.compose.ui.input.key.Key
-import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ManualReadoutHotkeyKeyTest {
+class HotkeyKeyTest {
     @Test
     fun `数字と英字の対応表と表示名を検証する`() {
         val keys =
@@ -49,14 +48,10 @@ class ManualReadoutHotkeyKeyTest {
             )
         val codes = (0x30..0x39).toList() + (0x41..0x5A).toList()
         keys.zip(codes).forEach { (key, code) ->
-            assertEquals(code, manualReadoutHotkeyVirtualKeyCode(key))
-            assertEquals("${code.toChar()}", manualReadoutHotkeyDisplayName(code))
+            assertEquals(code, hotkeyVirtualKeyCode(key))
+            assertEquals("${code.toChar()}", hotkeyDisplayName(code))
         }
-        assertEquals(
-            listOf("Ctrl + Alt", "Ctrl + Shift", "Alt + Shift"),
-            ManualReadoutHotkeyModifiers.entries.map { it.displayName() },
-        )
-        assertEquals(null, manualReadoutHotkeyVirtualKeyCode(Key.F1))
-        assertEquals("112", manualReadoutHotkeyDisplayName(0x70))
+        assertEquals(null, hotkeyVirtualKeyCode(Key.F1))
+        assertEquals("112", hotkeyDisplayName(0x70))
     }
 }

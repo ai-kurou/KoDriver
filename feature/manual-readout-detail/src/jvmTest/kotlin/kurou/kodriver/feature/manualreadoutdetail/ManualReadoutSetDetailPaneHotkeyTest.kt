@@ -10,7 +10,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.pressKey
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
@@ -63,6 +63,8 @@ class ManualReadoutSetDetailPaneHotkeyTest {
                 state.value.copy(hotkeyConflict = ManualReadoutHotkeyConflict.OtherSet(Simulator.Gt7Ps5.id, 2))
         }
         rule.onNodeWithText("Gran Turismo 7（PS5） のセット2で使用中のため割り当てできません").assertExists()
+        rule.runOnIdle { state.value = state.value.copy(hotkeyConflict = ManualReadoutHotkeyConflict.WakeWord) }
+        rule.onNodeWithText("ウェイクワードホットキーで使用中のため割り当てできません").assertExists()
         rule.runOnIdle { showHotkey.value = false }
         rule.onNodeWithTag("manual_readout_hotkey_card").assertDoesNotExist()
     }

@@ -74,6 +74,8 @@ class SpeechRecognitionViewModelDeviceTest {
             observeSpeechPlaybackActive = ObserveSpeechPlaybackActiveUseCase(FakeSpeechPlaybackStateRepository()),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSelectedSimulatorRepository()),
             playChime = PlaySpeechRecognitionChimeUseCase(FakeSpeechRecognitionChimePlayer()),
+            observeWakeWordHotkeyPresses = fakeObserveWakeWordHotkeyPresses(),
+            reportSpeechRecognitionEnabled = fakeReportSpeechRecognitionEnabled(),
             reportSpeechRecognitionTranscript =
                 ReportSpeechRecognitionTranscriptUseCase(FakeSpeechRecognitionTranscriptRepository()),
             audioInputDeviceSelector =

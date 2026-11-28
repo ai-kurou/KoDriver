@@ -61,12 +61,39 @@ class OtherListPaneMicrophoneTest {
         confirmVerified(onItemClick)
     }
 
-    private fun setPane(level: Int = MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT) {
+    @Test
+    fun `マイク設定カテゴリにウェイクワードホットキーを副テキストなしで表示する`() {
+        setPane(items = listOf(OtherListItemType.WakeWordHotkey))
+
+        rule.onNodeWithText("マイク設定").assertIsDisplayed()
+        rule
+            .onNodeWithText("ウェイクワードホットキー")
+            .assertIsDisplayed()
+            .assertHasClickAction()
+            .assertIsNotSelected()
+        confirmVerified(onItemClick)
+    }
+
+    @Test
+    fun `ウェイクワードホットキーをクリックすると選択を通知する`() {
+        every { onItemClick(OtherListItemType.WakeWordHotkey) } returns Unit
+        setPane(items = listOf(OtherListItemType.WakeWordHotkey))
+
+        rule.onNodeWithText("ウェイクワードホットキー").performClick()
+
+        verify(exactly = 1) { onItemClick(OtherListItemType.WakeWordHotkey) }
+        confirmVerified(onItemClick)
+    }
+
+    private fun setPane(
+        level: Int = MICROPHONE_CUT_QUIET_SOUND_LEVEL_DEFAULT,
+        items: List<OtherListItemType> = listOf(OtherListItemType.MicrophoneCutQuietSound),
+    ) {
         rule.setContent {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                        items = listOf(OtherListItemType.MicrophoneCutQuietSound),
+                        items = items,
                         microphoneCutQuietSoundLevel = level,
                     ),
                 onItemClick = onItemClick,

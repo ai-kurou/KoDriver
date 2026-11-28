@@ -5,18 +5,27 @@ digraph G {
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:speech-recognition-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:speech-recognition-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=2.5]
+  ":core:windows-hotkey-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:manual-readout-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-wake-word-hotkey-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":core:data" -> ":core:domain"
   ":core:data" -> ":core:speech-recognition-domain"
   ":core:speech-recognition-data" -> ":core:domain"
   ":core:speech-recognition-data" -> ":core:speech-recognition-domain"
   ":core:speech-recognition-domain" -> ":core:domain"
+  ":core:windows-hotkey-data" -> ":core:domain"
+  ":core:windows-hotkey-data" -> ":core:speech-recognition-domain"
   ":feature:main" -> ":core:domain"
   ":feature:main" -> ":core:speech-recognition-domain"
+  ":feature:manual-readout-detail" -> ":core:domain"
+  ":feature:manual-readout-detail" -> ":core:speech-recognition-domain"
   ":feature:narrator-overlay" -> ":core:domain"
   ":feature:narrator-overlay" -> ":core:speech-recognition-domain"
+  ":feature:other-wake-word-hotkey-detail" -> ":core:domain"
+  ":feature:other-wake-word-hotkey-detail" -> ":core:speech-recognition-domain"
   ":feature:speech-recognition-list" -> ":core:domain"
   ":feature:speech-recognition-list" -> ":core:speech-recognition-domain"
 }

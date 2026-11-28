@@ -8,6 +8,7 @@ import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemRequestReposit
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemSpokenRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.manualreadout.InMemorySpeechPlaybackStateRepository
+import kurou.kodriver.data.manualreadout.InMemorySpeechRecognitionEnabledRepository
 import kurou.kodriver.data.manualreadout.InMemorySpeechRecognitionTranscriptRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
@@ -37,6 +38,7 @@ import kurou.kodriver.data.preferences.createThemePreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePitchPreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.preferences.createVoiceSpeedPreferencesRepository
+import kurou.kodriver.data.preferences.createWakeWordHotkeyPreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.domain.autoreadout.repository.AutoReadoutPreferencesRepository
@@ -79,7 +81,9 @@ import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import kurou.kodriver.domain.serverconnection.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionEnabledRepository
 import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionTranscriptRepository
+import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyPreferencesRepository
 import kurou.kodriver.domain.telemetrylog.repository.TelemetryLogRepository
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -134,12 +138,16 @@ private fun desktopDataModuleInMemoryRepositories() =
         single<ManualReadoutItemRequestRepository> { InMemoryManualReadoutItemRequestRepository() }
         single<ManualReadoutItemSpokenRepository> { InMemoryManualReadoutItemSpokenRepository() }
         single<SpeechPlaybackStateRepository> { InMemorySpeechPlaybackStateRepository() }
+        single<SpeechRecognitionEnabledRepository> { InMemorySpeechRecognitionEnabledRepository() }
         single<SpeechRecognitionTranscriptRepository> { InMemorySpeechRecognitionTranscriptRepository() }
     }
 
 /** 音声・読み上げ関連の DataStore Repository バインド（ファイルは directory 配下）。 */
 private fun desktopDataModuleAudioPreferences(directory: String) =
     module {
+        single<WakeWordHotkeyPreferencesRepository> {
+            createWakeWordHotkeyPreferencesRepository(directory = directory)
+        }
         single<MicrophoneCutQuietSoundPreferencesRepository> {
             createMicrophoneCutQuietSoundPreferencesRepository(directory = directory)
         }

@@ -1,4 +1,4 @@
-package kurou.kodriver.domain.manualreadout.model
+package kurou.kodriver.domain.model
 
 public sealed interface HotkeyRegistrationState {
     public data object Unsupported : HotkeyRegistrationState

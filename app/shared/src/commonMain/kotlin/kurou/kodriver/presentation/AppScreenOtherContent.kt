@@ -22,6 +22,7 @@ import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDet
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
+import kurou.kodriver.feature.otherwakewordhotkeydetail.OtherWakeWordHotkeyDetailPane
 
 /**
  * `:core:domain` の `Simulator.LmuWindows.id` と一致させる、初期選択シミュレーターの ID。
@@ -150,6 +151,10 @@ internal fun DefaultOtherDetailContent(
 
         OtherListItemType.MicrophoneCutQuietSound -> {
             OtherMicrophoneCutQuietSoundDetailPane(canNavigateBack, onBack)
+        }
+
+        OtherListItemType.WakeWordHotkey -> {
+            OtherWakeWordHotkeyDetailPane(canNavigateBack, onBack)
         }
 
         OtherListItemType.License -> {

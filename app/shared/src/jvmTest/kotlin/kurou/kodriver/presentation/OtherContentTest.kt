@@ -227,6 +227,36 @@ class OtherContentTest {
     }
 
     @Test
+    fun `ウェイクワードホットキーをタップすると選択して詳細ペインへ遷移する`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+        var backEnabled = false
+        var detailDisplayed = false
+
+        rule.setContent {
+            OtherContent(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.WakeWordHotkey),
+                        selectedItem = selectedItem,
+                    ),
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { _, _, _, _, _, _ -> detailDisplayed = true },
+            )
+        }
+
+        rule.onNodeWithText("ウェイクワードホットキー").assertExists().performTouchInput { click() }
+        rule.waitForIdle()
+
+        assertEquals(OtherListItemType.WakeWordHotkey, selectedItem)
+        assertTrue(backEnabled)
+        assertTrue(detailDisplayed)
+    }
+
+    @Test
     fun `文字色をタップするとダイアログを開き詳細ペインへ遷移しない`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false

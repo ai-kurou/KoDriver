@@ -1,45 +1,14 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
-import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.KoDriverCollapsibleVisibility
-import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverHotkeyCard
+import kurou.kodriver.core.designsystem.KoDriverHotkeyCardTexts
+import kurou.kodriver.core.designsystem.KoDriverHotkeyRegistration
+import kurou.kodriver.core.designsystem.hotkeyDisplayName
 import kurou.kodriver.core.designsystem.simulatorDisplayName
-import kurou.kodriver.domain.manualreadout.model.HotkeyRegistrationState
+import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
+import kurou.kodriver.domain.model.displayName
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.Res
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_clear
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_guide_link
@@ -53,6 +22,7 @@ import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_rea
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_registration_registering
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_registration_retry
 import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_title
+import kurou.kodriver.feature.manualreadoutdetail.generated.resources.manual_readout_hotkey_wake_word
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -65,82 +35,36 @@ internal fun ManualReadoutHotkeyCard(
     onOpenGuide: () -> Unit,
     showGuideLink: Boolean = true,
 ) {
-    val haptic = LocalHapticFeedback.current
-    val conflictText = manualReadoutHotkeyConflictText(state.hotkeyConflict)
-    val showRegistration =
-        state.hotkeyVirtualKeyCode != null && state.hotkeyRegistrationState != HotkeyRegistrationState.Unsupported
-    // 非表示への切り替えで入力が消えても、退場アニメーション中は最後の表示内容を保つ。
-    var lastConflictText by remember { mutableStateOf(conflictText) }
-    var lastRegistrationState by remember { mutableStateOf(state.hotkeyRegistrationState) }
-    if (conflictText != null) {
-        lastConflictText = conflictText
-    }
-    if (showRegistration) {
-        lastRegistrationState = state.hotkeyRegistrationState
-    }
-    DetailPaneCard(
-        title = stringResource(Res.string.manual_readout_hotkey_title),
-        modifier = Modifier.testTag("manual_readout_hotkey_card"),
-        bottomContent = {
-            Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
-                    ManualReadoutHotkeyModifiersDropdown(state.hotkeyModifiers, onSelectModifiers)
-                    ManualReadoutHotkeyKeyField(
-                        virtualKeyCode = state.hotkeyVirtualKeyCode,
-                        onAssign = onAssign,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-                KoDriverCollapsibleVisibility(visible = conflictText != null) {
-                    Text(lastConflictText.orEmpty(), color = MaterialTheme.colorScheme.error)
-                }
-                TextButton(onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onClear()
-                }, enabled = state.hotkeyVirtualKeyCode != null) {
-                    Text(stringResource(Res.string.manual_readout_hotkey_clear))
-                }
-                KoDriverCollapsibleVisibility(visible = showRegistration) {
-                    ManualReadoutHotkeyRegistration(lastRegistrationState) {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        onRetry()
-                    }
-                }
-                Text(stringResource(Res.string.manual_readout_hotkey_hint))
-                KoDriverCollapsibleVisibility(visible = showGuideLink, expandFrom = Alignment.Bottom) {
-                    ManualReadoutHotkeyGuideLink(onOpenGuide)
-                }
-            }
-        },
-    )
-}
-
-@Composable
-private fun ManualReadoutHotkeyKeyField(
-    virtualKeyCode: Int?,
-    onAssign: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val haptic = LocalHapticFeedback.current
-    OutlinedTextField(
-        value =
-            virtualKeyCode?.let { manualReadoutHotkeyDisplayName(it) }
+    KoDriverHotkeyCard(
+        texts =
+            KoDriverHotkeyCardTexts(
+                title = stringResource(Res.string.manual_readout_hotkey_title),
+                clear = stringResource(Res.string.manual_readout_hotkey_clear),
+                retry = stringResource(Res.string.manual_readout_hotkey_registration_retry),
+                hint = stringResource(Res.string.manual_readout_hotkey_hint),
+                guideLink = stringResource(Res.string.manual_readout_hotkey_guide_link),
+            ),
+        modifierOptions = ManualReadoutHotkeyModifiers.entries,
+        selectedModifier = state.hotkeyModifiers,
+        modifierLabel = { it.displayName() },
+        onSelectModifier = onSelectModifiers,
+        keyText =
+            state.hotkeyVirtualKeyCode?.let { hotkeyDisplayName(it) }
                 ?: stringResource(Res.string.manual_readout_hotkey_none),
-        onValueChange = {},
-        readOnly = true,
-        modifier =
-            modifier
-                .testTag("manual_readout_hotkey_key")
-                .onPreviewKeyEvent { event ->
-                    val code = manualReadoutHotkeyVirtualKeyCode(event.key)
-                    if (event.type == KeyEventType.KeyDown && code != null) {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        onAssign(code)
-                        true
-                    } else {
-                        false
-                    }
-                },
+        onAssign = onAssign,
+        clearEnabled = state.hotkeyVirtualKeyCode != null,
+        onClear = onClear,
+        errorText = manualReadoutHotkeyConflictText(state.hotkeyConflict),
+        registration =
+            if (state.hotkeyVirtualKeyCode == null) {
+                null
+            } else {
+                manualReadoutHotkeyRegistration(state.hotkeyRegistrationState)
+            },
+        onRetry = onRetry,
+        onOpenGuide = onOpenGuide,
+        testTagPrefix = "manual_readout_hotkey",
+        showGuideLink = showGuideLink,
     )
 }
 
@@ -163,120 +87,45 @@ private fun manualReadoutHotkeyConflictText(conflict: ManualReadoutHotkeyConflic
             }
         }
 
+        ManualReadoutHotkeyConflict.WakeWord -> {
+            stringResource(Res.string.manual_readout_hotkey_wake_word)
+        }
+
         null -> {
             null
         }
     }
 
 @Composable
-private fun ManualReadoutHotkeyGuideLink(onOpenGuide: () -> Unit) {
-    val haptic = LocalHapticFeedback.current
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier =
-            Modifier.clickable {
-                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                onOpenGuide()
-            },
-    ) {
-        Text(
-            text = stringResource(Res.string.manual_readout_hotkey_guide_link),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary,
-        )
-        Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
-        Icon(
-            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(12.dp),
-        )
-    }
-}
-
-@Composable
-private fun ManualReadoutHotkeyRegistration(
-    registration: HotkeyRegistrationState,
-    onRetry: () -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
-        ManualReadoutHotkeyRegistrationStatus(registration)
-        KoDriverCollapsibleVisibility(
-            visible =
-                registration is HotkeyRegistrationState.Conflict || registration is HotkeyRegistrationState.Failed,
-        ) {
-            TextButton(onClick = onRetry) {
-                Text(stringResource(Res.string.manual_readout_hotkey_registration_retry))
-            }
+private fun manualReadoutHotkeyRegistration(registration: HotkeyRegistrationState): KoDriverHotkeyRegistration? =
+    when (registration) {
+        HotkeyRegistrationState.Unsupported -> {
+            null
         }
-    }
-}
 
-@Composable
-private fun ManualReadoutHotkeyRegistrationStatus(registration: HotkeyRegistrationState) {
-    Crossfade(targetState = registration, label = "manualReadoutHotkeyRegistration") { animatedRegistration ->
-        when (animatedRegistration) {
-            HotkeyRegistrationState.Unsupported -> {
-            }
+        HotkeyRegistrationState.Registering -> {
+            KoDriverHotkeyRegistration(stringResource(Res.string.manual_readout_hotkey_registration_registering))
+        }
 
-            HotkeyRegistrationState.Registering -> {
-                Text(stringResource(Res.string.manual_readout_hotkey_registration_registering))
-            }
+        HotkeyRegistrationState.Registered -> {
+            KoDriverHotkeyRegistration(stringResource(Res.string.manual_readout_hotkey_registration_registered))
+        }
 
-            HotkeyRegistrationState.Registered -> {
-                Text(stringResource(Res.string.manual_readout_hotkey_registration_registered))
-            }
+        HotkeyRegistrationState.Conflict -> {
+            KoDriverHotkeyRegistration(
+                text = stringResource(Res.string.manual_readout_hotkey_registration_conflict),
+                canRetry = true,
+            )
+        }
 
-            HotkeyRegistrationState.Conflict -> {
-                Text(stringResource(Res.string.manual_readout_hotkey_registration_conflict))
-            }
-
-            is HotkeyRegistrationState.Failed -> {
-                Text(
+        is HotkeyRegistrationState.Failed -> {
+            KoDriverHotkeyRegistration(
+                text =
                     stringResource(
                         Res.string.manual_readout_hotkey_registration_failed,
-                        animatedRegistration.errorCode,
+                        registration.errorCode,
                     ),
-                )
-            }
+                canRetry = true,
+            )
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ManualReadoutHotkeyModifiersDropdown(
-    modifiers: ManualReadoutHotkeyModifiers,
-    onSelect: (ManualReadoutHotkeyModifiers) -> Unit,
-) {
-    val haptic = LocalHapticFeedback.current
-    var expanded by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = {
-        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-        expanded = it
-    }) {
-        OutlinedTextField(
-            value = modifiers.displayName(),
-            onValueChange = {},
-            readOnly = true,
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-            modifier =
-                Modifier
-                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                    .testTag("manual_readout_hotkey_modifiers"),
-        )
-        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            ManualReadoutHotkeyModifiers.entries.forEach { value ->
-                DropdownMenuItem(
-                    text = { Text(value.displayName()) },
-                    modifier = Modifier.testTag("manual_readout_hotkey_modifiers_${value.name}"),
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        onSelect(value)
-                        expanded = false
-                    },
-                )
-            }
-        }
-    }
-}

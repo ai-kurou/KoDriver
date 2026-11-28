@@ -55,6 +55,7 @@ digraph G {
   ":feature:other-voice-pitch-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-voice-speed-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-wake-word-hotkey-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:server-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -82,6 +83,7 @@ digraph G {
   ":app:shared" -> ":feature:other-overlay-text-size-detail"
   ":app:shared" -> ":feature:other-overlay-background-opacity-detail"
   ":app:shared" -> ":feature:other-microphone-cut-quiet-sound-detail"
+  ":app:shared" -> ":feature:other-wake-word-hotkey-detail"
   ":app:shared" -> ":feature:other-volume-detail"
   ":app:shared" -> ":feature:other-voice-detail"
   ":app:shared" -> ":feature:other-voice-speed-detail"

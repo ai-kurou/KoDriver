@@ -9,8 +9,6 @@
 
 `kurou.kodriver.domain.manualreadout.util` の `isManualReadoutHotkeySupported()`（expect/actual）は手動読み上げのホットキー対応判定で、Windows デスクトップのみ true を返す。`:feature:manual-readout-list` と `:feature:manual-readout-detail` が共用する。
 
-ホットキーの登録状態を表す `HotkeyRegistrationState` もこのモジュールに置く。
-
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

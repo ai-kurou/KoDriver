@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.FormatColorText
 import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.GraphicEq
+import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.MicOff
 import androidx.compose.material.icons.outlined.NewReleases
@@ -58,6 +59,7 @@ class OtherListItemIconsTest {
                 OtherListItemType.OverlayTextColor to Icons.Outlined.FormatColorText,
                 OtherListItemType.OverlayBackgroundOpacity to Icons.Outlined.Opacity,
                 OtherListItemType.MicrophoneCutQuietSound to Icons.Outlined.MicOff,
+                OtherListItemType.WakeWordHotkey to Icons.Outlined.Keyboard,
                 OtherListItemType.KeepScreenOn to Icons.Outlined.BedtimeOff,
                 OtherListItemType.Theme to Icons.Outlined.BrightnessHigh,
                 OtherListItemType.DynamicColor to Icons.Outlined.Palette,

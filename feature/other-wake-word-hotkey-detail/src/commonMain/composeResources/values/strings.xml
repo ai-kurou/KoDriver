@@ -1,0 +1,17 @@
+<resources>
+    <string name="wake_word_hotkey_title">ウェイクワードホットキー</string>
+    <string name="wake_word_hotkey_description">ホットキーを押すことで、ウェイクワードを話したときと同じようにコマンドの受付を始める機能の設定です。</string>
+    <string name="wake_word_hotkey_card_title">ホットキー</string>
+    <string name="wake_word_hotkey_none">割り当てなし</string>
+    <string name="wake_word_hotkey_clear">割り当てを解除</string>
+    <string name="wake_word_hotkey_guide_link">ステアリングのボタンから実行する方法を見る</string>
+    <string name="wake_word_hotkey_hint">修飾キーを選び、右の入力欄で数字または英字キーを押して割り当てます</string>
+    <string name="wake_word_hotkey_other_set">%1$s のセット%2$dで使用中のため割り当てできません</string>
+    <string name="wake_word_hotkey_other_set_named">%1$s の「%2$s」で使用中のため割り当てできません</string>
+    <string name="wake_word_hotkey_registration_registering">登録中</string>
+    <string name="wake_word_hotkey_registration_registered">登録済み</string>
+    <string name="wake_word_hotkey_registration_conflict">他のアプリが使用中のため登録できません</string>
+    <string name="wake_word_hotkey_registration_failed">登録に失敗しました（エラーコード: %1$d）</string>
+    <string name="wake_word_hotkey_registration_retry">再試行</string>
+    <string name="wake_word_hotkey_speech_recognition_off">音声認識がOFFのため、押しても反応しません</string>
+</resources>

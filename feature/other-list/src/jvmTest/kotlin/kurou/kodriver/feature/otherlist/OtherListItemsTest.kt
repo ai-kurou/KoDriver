@@ -47,6 +47,7 @@ class OtherListItemsTest {
                 OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.MicrophoneCutQuietSound,
+                OtherListItemType.WakeWordHotkey,
                 OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
@@ -64,6 +65,18 @@ class OtherListItemsTest {
     @Test
     fun `デスクトップでは読み上げ音声を一覧に含める`() {
         assertTrue(buildOtherListItems().contains(OtherListItemType.Voice))
+    }
+
+    @Test
+    fun `デスクトップではウェイクワードホットキーを小さい音をカットの直後に含める`() {
+        val items = buildOtherListItems()
+        val microphoneCutQuietSoundIndex = items.indexOf(OtherListItemType.MicrophoneCutQuietSound)
+
+        assertTrue(microphoneCutQuietSoundIndex >= 0)
+        assertEquals(
+            OtherListItemType.WakeWordHotkey,
+            items[microphoneCutQuietSoundIndex + 1],
+        )
     }
 
     @Test

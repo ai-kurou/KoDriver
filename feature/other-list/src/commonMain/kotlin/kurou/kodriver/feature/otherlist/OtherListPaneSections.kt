@@ -52,6 +52,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_voice
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice_pitch
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice_speed
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
+import kurou.kodriver.feature.otherlist.generated.resources.item_wake_word_hotkey
 import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
 import kurou.kodriver.feature.otherlist.generated.resources.manual_readout_settings_reset_item
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
@@ -113,7 +114,9 @@ internal fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.OverlayBackgroundOpacity,
         -> OtherListSection.OverlaySettings
 
-        OtherListItemType.MicrophoneCutQuietSound -> OtherListSection.MicrophoneSettings
+        OtherListItemType.MicrophoneCutQuietSound,
+        OtherListItemType.WakeWordHotkey,
+        -> OtherListSection.MicrophoneSettings
 
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
@@ -169,8 +172,8 @@ internal fun otherItemDisplayName(itemType: OtherListItemType): String =
             otherOverlaySettingsItemDisplayName(itemType)
         }
 
-        OtherListItemType.MicrophoneCutQuietSound -> {
-            stringResource(Res.string.item_microphone_cut_quiet_sound)
+        is OtherListItemType.MicrophoneSettings -> {
+            otherMicrophoneSettingsItemDisplayName(itemType)
         }
 
         OtherListItemType.ShowLogs,
@@ -218,6 +221,13 @@ private fun otherReadoutSettingsItemDisplayName(itemType: OtherListItemType.Read
         OtherListItemType.TtsEngineMissing -> stringResource(Res.string.item_tts_engine_missing)
         OtherListItemType.TtsLanguageDataMissing -> stringResource(Res.string.item_tts_language_data_missing)
         OtherListItemType.WindowsSpeechUnavailable -> stringResource(Res.string.item_windows_speech_unavailable)
+    }
+
+@Composable
+private fun otherMicrophoneSettingsItemDisplayName(itemType: OtherListItemType.MicrophoneSettings): String =
+    when (itemType) {
+        OtherListItemType.MicrophoneCutQuietSound -> stringResource(Res.string.item_microphone_cut_quiet_sound)
+        OtherListItemType.WakeWordHotkey -> stringResource(Res.string.item_wake_word_hotkey)
     }
 
 @Composable
@@ -314,6 +324,7 @@ internal fun OtherListItemTrailingIcon(
         OtherListItemType.AndroidAudioUsage,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.MicrophoneCutQuietSound,
+        OtherListItemType.WakeWordHotkey,
         OtherListItemType.ShowLogs,
         OtherListItemType.Feedback,
         OtherListItemType.License,

@@ -26,6 +26,8 @@ import kurou.kodriver.feature.otherloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.otherloglist.fakeTelemetryLogRepository
 import kurou.kodriver.feature.otherloglist.telemetryLogListModule
 import kurou.kodriver.feature.othermicrophonecutquietsounddetail.otherMicrophoneCutQuietSoundDetailModule
+import kurou.kodriver.feature.otherwakewordhotkeydetail.fakeOtherWakeWordHotkeyDetailModule
+import kurou.kodriver.feature.otherwakewordhotkeydetail.otherWakeWordHotkeyDetailModule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -52,6 +54,8 @@ class DefaultOtherDetailContentTest {
                                 otherAndroidAudioUsageDetailModule,
                                 otherMicrophoneCutQuietSoundDetailModule,
                                 fakeOtherListModule,
+                                otherWakeWordHotkeyDetailModule,
+                                fakeOtherWakeWordHotkeyDetailModule,
                                 telemetryLogListModule,
                                 fakeTelemetryLogListModule,
                                 module {
@@ -115,6 +119,25 @@ class DefaultOtherDetailContentTest {
 
         rule.onNodeWithText("小さい音をカット").assertIsDisplayed()
         rule.onNodeWithText("レベル 6").assertIsDisplayed()
+    }
+
+    @Test
+    fun `ウェイクワードホットキーを選択すると説明を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DefaultOtherDetailContent(
+                    itemType = OtherListItemType.WakeWordHotkey,
+                    selectedSimulatorId = "",
+                    canNavigateBack = false,
+                    onBack = {},
+                    feedbackTelemetryLogId = null,
+                    feedbackAttachRequestId = 0L,
+                )
+            }
+        }
+
+        rule.onNodeWithText("ウェイクワードホットキー").assertIsDisplayed()
+        rule.onNodeWithText("ホットキーを押すことで、ウェイクワードを話したときと同じようにコマンドの受付を始める機能の設定です。").assertIsDisplayed()
     }
 
     @Test
