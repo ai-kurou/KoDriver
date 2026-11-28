@@ -1262,11 +1262,20 @@ class LmuWindowsNarratorViewModelTest {
             val itemRequests = Channel<ManualReadoutItemRequest>(Channel.UNLIMITED)
             val spoken = mutableListOf<SpeechEvent>()
             val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+            val tts = mockTts(spoken)
+            var failSpeak = true
+            val attempted = mutableListOf<SpeechEvent>()
+            listOf(false, true).forEach { queue ->
+                every { ttsEngine.speak(capture(attempted), queue = queue, isManual = true) } answers {
+                    check(!failSpeak) { "speak failed" }
+                    spoken.add(firstArg())
+                }
+            }
             createViewModel(
                 remainingVirtualEnergyChannel = energy,
                 manualItemRequestChannel = itemRequests,
                 manualSets = emptyList(),
-                ttsEngine = mockTts(spoken),
+                ttsEngine = tts,
                 enabledOverrides = mapOf(key to false),
                 queueEnabledOverrides = mapOf(key to false),
             )
@@ -1275,12 +1284,11 @@ class LmuWindowsNarratorViewModelTest {
             mockkStatic(errorCapture)
             every { captureError(capture(captured)) } returns Unit
             try {
-                // NaNの残量は roundToInt が例外を投げる。
-                energy.send(remainingVirtualEnergy(remainingRatio = Double.NaN))
+                energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
                 itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value))
                 assertTrue(captured.isCaptured)
                 assertEquals(emptyList(), spoken)
-                energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+                failSpeak = false
                 itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value))
                 assertEquals(
                     listOf(lmuWindowsManualReadoutItemTextDefault(key.value).replace("{percent}", "80")),

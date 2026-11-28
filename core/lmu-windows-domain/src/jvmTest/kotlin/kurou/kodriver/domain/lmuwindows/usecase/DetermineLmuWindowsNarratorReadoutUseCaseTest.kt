@@ -3078,6 +3078,56 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `手動セットは非有限の比率をデータ無しとして扱う`() {
+        val key = LmuWindowsReadoutItemKey.TyreWear.Root
+        val missing =
+            manualUseCase.determineManualReadout(
+                LmuWindowsNarratorState(),
+                listOf(LmuWindowsManualReadoutItem(key.value, "残り{percent}%", null)),
+            )
+        listOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).forEach { ratio ->
+            val decision =
+                manualUseCase.determineManualReadout(
+                    LmuWindowsNarratorState(),
+                    listOf(LmuWindowsManualReadoutItem(key.value, "残り{percent}%", Ratio(ratio))),
+                )
+            assertEquals(missing, decision)
+        }
+    }
+
+    @Test
+    fun `バーチャルエネルギーが非有限なら残り0周と誤警告せず状態を変更しない`() {
+        val state = pitTimingReadyState()
+        listOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).forEach { ratio ->
+            val decision =
+                pitTimingUseCase.determinePitTimingVirtualEnergy(
+                    state = state,
+                    telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 90_000L),
+                    virtualEnergy = remainingVirtualEnergy(remainingRatio = ratio),
+                    settings = settings(),
+                    observedAtMs = 70_000L,
+                )
+            assertEquals(LmuWindowsNarratorReadoutDecision(state, emptyList()), decision)
+        }
+    }
+
+    @Test
+    fun `全輪のタイヤ摩耗が非有限なら残り0周と誤警告せず状態を変更しない`() {
+        val state = pitTimingReadyState()
+        listOf(Double.NaN, Double.POSITIVE_INFINITY).forEach { ratio ->
+            val decision =
+                pitTimingUseCase.determinePitTimingTyreWear(
+                    state = state,
+                    telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 90_000L),
+                    tyreWear = tyreWear(ratio, ratio, ratio, ratio),
+                    settings = settings(),
+                    observedAtMs = 70_000L,
+                )
+            assertEquals(LmuWindowsNarratorReadoutDecision(state, emptyList()), decision)
+        }
+    }
+
+    @Test
     fun `バーチャルエネルギー予想残り周回数は直近に完走したラップの消費率を使って最速ラップの30秒前を過ぎたら読み上げる`() {
         val firstLapDecision =
             pitTimingUseCase.determinePitTimingVirtualEnergy(
@@ -4084,6 +4134,27 @@ private fun fuelReadyState() =
                 bestLapTimeMs = 90_000L,
             ),
     )
+
+/** 次の評価で残り周回数を読み上げられる状態。 */
+private fun pitTimingReadyState(): LmuWindowsNarratorState {
+    val tracking =
+        LmuWindowsPitTimingTrackingState(
+            session = 0,
+            currentLap = 3,
+            currentLapStartedAtMs = 0L,
+            currentLapStartedAtBoundary = true,
+            currentLapStartValue = 0.5,
+            currentValue = 0.4,
+            refillBaselineValue = 0.4,
+            lastValidLapConsumption = 0.1,
+            bestLapTimeMs = 90_000L,
+            observedAtMs = 69_984L,
+        )
+    return LmuWindowsNarratorState(
+        pitTimingVirtualEnergyTrackingState = tracking,
+        pitTimingTyreWearTrackingState = tracking.copy(session = null),
+    )
+}
 
 private fun pitTimingBoundaryState(): LmuWindowsNarratorState =
     LmuWindowsNarratorState(
