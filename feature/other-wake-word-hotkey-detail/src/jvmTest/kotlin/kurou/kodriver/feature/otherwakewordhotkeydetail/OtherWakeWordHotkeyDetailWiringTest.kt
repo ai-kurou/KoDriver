@@ -98,7 +98,7 @@ class OtherWakeWordHotkeyDetailWiringTest {
     }
 
     @Test
-    fun `登録の競合と失敗と重複の文言を表示し再試行を通知する`() {
+    fun `登録状態と重複の文言を表示し再試行を通知する`() {
         var retried = 0
         val states =
             mutableStateOf(
@@ -138,5 +138,13 @@ class OtherWakeWordHotkeyDetailWiringTest {
             )
         rule.onNodeWithText("登録中").assertIsDisplayed()
         rule.onNodeWithText("のセット2で使用中のため割り当てできません", substring = true).assertIsDisplayed()
+
+        states.value =
+            states.value.copy(
+                hotkeyRegistrationState = HotkeyRegistrationState.Registered,
+                hotkeyConflict = null,
+            )
+        rule.onNodeWithText("登録済み").assertIsDisplayed()
+        rule.onNodeWithText("再試行").assertDoesNotExist()
     }
 }
