@@ -30,8 +30,8 @@ class LmuWindowsMapperTest {
         const val OFF_SCORING_LAP_START_ET = 256
         const val OFF_SCORING_PIT_STATE = 457
         const val OFF_SCORING_IN_GARAGE_STALL = 507
-        const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
-        const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
+        const val OFF_SCORING_BEST_LAP_SECTOR1 = 528
+        const val OFF_SCORING_BEST_LAP_SECTOR2 = 532
 
         const val TELEMETRY_BASE = 128464
         const val OFF_ACTIVE_VEHICLES = 0

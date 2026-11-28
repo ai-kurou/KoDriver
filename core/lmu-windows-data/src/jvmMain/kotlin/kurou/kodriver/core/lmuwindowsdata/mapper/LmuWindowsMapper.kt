@@ -43,8 +43,8 @@ import kotlin.time.Clock
  *   mLapStartET                : +256
  *   mPitState                  : +457 (uint8、0=なし,1=要求,2=入場中,3=停止中,4=出場中)
  *   mInGarageStall              : +507 (bool、正しいガレージストール内にいるか)
- *   mBestLapSector1            : +576
- *   mBestLapSector2            : +580
+ *   mBestLapSector1            : +528
+ *   mBestLapSector2            : +532
  *
  * LMUTelemetryData オフセット (128464 から):
  *   [+0] activeVehicles (uint8)
