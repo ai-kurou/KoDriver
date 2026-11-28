@@ -949,6 +949,58 @@ class ManualReadoutSetDetailViewModelTest {
         }
 
     @Test
+    fun `ウェイクワードホットキーと同じキーでも修飾キーが異なる場合は割り当てを保存する`() =
+        runTest(dispatcher) {
+            wakeWordHotkey.value = WakeWordHotkey(0x41, ManualReadoutHotkeyModifiers.CTRL_SHIFT)
+            val original = ManualReadoutSet("target")
+            val assigned = original.copy(hotkeyVirtualKeyCode = 0x41)
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(assigned) }
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                vm.assignHotkey(0x41)
+
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                assertEquals(0x41, vm.uiState.first().hotkeyVirtualKeyCode)
+                verify(exactly = 1) { wakeWordRepository.observeWakeWordHotkey() }
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(assigned) }
+                confirmVerified(repository, wakeWordRepository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
+    fun `ウェイクワードホットキーと修飾キーが同じでもキーが異なる場合は割り当てを保存する`() =
+        runTest(dispatcher) {
+            wakeWordHotkey.value = WakeWordHotkey(0x42)
+            val original = ManualReadoutSet("target")
+            val assigned = original.copy(hotkeyVirtualKeyCode = 0x41)
+            val sets = MutableStateFlow(listOf(original))
+            every { repository.observeSets() } returns sets
+            coEvery { repository.updateSet(assigned) } answers { sets.value = listOf(assigned) }
+            val vm = viewModel()
+            val collection = backgroundScope.launch(dispatcher) { vm.uiState.collect {} }
+            try {
+                vm.assignHotkey(0x41)
+
+                assertEquals(null, vm.uiState.first().hotkeyConflict)
+                assertEquals(0x41, vm.uiState.first().hotkeyVirtualKeyCode)
+                verify(exactly = 1) { wakeWordRepository.observeWakeWordHotkey() }
+                verify(exactly = 2) { repository.observeSets() }
+                coVerify(exactly = 1) { repository.updateSet(assigned) }
+                confirmVerified(repository, wakeWordRepository)
+            } finally {
+                collection.cancel()
+                vm.viewModelScope.cancel()
+            }
+        }
+
+    @Test
     fun `ホットキーは他シミュレーターのセットとの重複も拒否する`() =
         runTest(dispatcher) {
             val original = ManualReadoutSet("target")

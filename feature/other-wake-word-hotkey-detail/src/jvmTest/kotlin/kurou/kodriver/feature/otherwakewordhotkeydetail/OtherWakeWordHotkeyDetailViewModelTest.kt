@@ -206,6 +206,32 @@ class OtherWakeWordHotkeyDetailViewModelTest {
         }
 
     @Test
+    fun `手動読み上げセットとキーか修飾キーが異なる場合は保存する`() =
+        withViewModel { viewModel ->
+            val assigned = WakeWordHotkey(0x41)
+            lmuSets.value =
+                listOf(
+                    ManualReadoutSet(
+                        "lmu",
+                        hotkeyVirtualKeyCode = 0x41,
+                        hotkeyModifiers = ManualReadoutHotkeyModifiers.ALT_SHIFT,
+                    ),
+                    ManualReadoutSet("other-key", hotkeyVirtualKeyCode = 0x42),
+                )
+            coEvery { preferences.saveWakeWordHotkey(assigned) } answers { hotkey.value = assigned }
+
+            viewModel.assignHotkey(0x41)
+
+            assertEquals(null, viewModel.uiState.first().hotkeyConflict)
+            assertEquals(0x41, viewModel.uiState.first().hotkeyVirtualKeyCode)
+            coVerify(exactly = 1) { preferences.saveWakeWordHotkey(assigned) }
+            verify(exactly = 2) { preferences.observeWakeWordHotkey() }
+            verify(exactly = 1) { lmuRepository.observeSets() }
+            verify(exactly = 1) { gt7Repository.observeSets() }
+            confirmVerified(preferences, lmuRepository, gt7Repository)
+        }
+
+    @Test
     fun `再試行を委譲する`() =
         withViewModel { viewModel ->
             coEvery { hotkeyRepository.retryRegistration() } returns Unit
