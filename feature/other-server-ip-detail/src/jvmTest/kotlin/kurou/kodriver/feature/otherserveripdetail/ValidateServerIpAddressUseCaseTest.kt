@@ -30,4 +30,12 @@ class ValidateServerIpAddressUseCaseTest {
         assertFalse(useCase("192.168.1.-1"))
         assertFalse(useCase("192.168.1.256"))
     }
+
+    @Test
+    fun `符号や全角数字や先頭ゼロがある区切りは無効`() {
+        assertFalse(useCase("+1.+2.+3.+4"))
+        assertFalse(useCase("-0.0.0.0"))
+        assertFalse(useCase("１９２.168.1.2"))
+        assertFalse(useCase("010.0.0.1"))
+    }
 }

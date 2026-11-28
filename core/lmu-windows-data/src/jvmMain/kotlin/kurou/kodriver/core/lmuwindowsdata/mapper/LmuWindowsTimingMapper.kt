@@ -14,8 +14,8 @@ internal object LmuWindowsTimingMapper {
     private const val OFF_SCORING_BEST_LAP_TIME = 144
     private const val OFF_SCORING_LAST_LAP_TIME = 168
     private const val OFF_SCORING_LAP_START_ET = 256
-    private const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
-    private const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
+    private const val OFF_SCORING_BEST_LAP_SECTOR1 = 528
+    private const val OFF_SCORING_BEST_LAP_SECTOR2 = 532
     private const val OFF_LAP_NUMBER = 20
     private const val MILLIS_PER_SECOND = 1_000
 

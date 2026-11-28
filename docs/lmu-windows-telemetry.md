@@ -576,7 +576,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | ベストラップタイム | `mBestLapTime` | scoringVehicleBase+144 |
 | 前周ラップタイム | `mLastLapTime` | scoringVehicleBase+168 |
 | ラップ開始時刻 | `mLapStartET` | scoringVehicleBase+256 |
-| ベストラップ S1/S2 | `mBestLapSector1`/`mBestLapSector2` | scoringVehicleBase+576/580 |
+| ベストラップ S1/S2 | `mBestLapSector1`/`mBestLapSector2` | scoringVehicleBase+528/532 |
 | プレイヤー判定 | `mIsPlayer` | scoringVehicleBase+196 |
 | ピットレーン走行中 | `mInPits` | scoringVehicleBase+198 |
 | 車両クラス名 | `mVehicleClass[32]` | scoringVehicleBase+200 |

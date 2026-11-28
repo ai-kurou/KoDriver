@@ -6,8 +6,7 @@ import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.captureError
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
 import kurou.kodriver.domain.model.SERVER_CONNECTIVITY_CHECK_TIMEOUT_MS
-import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MAX
-import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MIN
+import kurou.kodriver.domain.serverconnection.model.parseIpv4Octets
 import kurou.kodriver.domain.serverconnection.repository.ServerConnectivityRepository
 import java.io.IOException
 import java.net.InetAddress
@@ -38,14 +37,6 @@ internal class TcpServerConnectivityRepository(
 }
 
 private fun String.toIpv4InetAddress(): InetAddress? {
-    val octets = split(".")
-    if (octets.size != 4) return null
-
-    val address = ByteArray(4)
-    octets.forEachIndexed { index, octet ->
-        val value = octet.toIntOrNull() ?: return null
-        if (value !in IPV4_OCTET_MIN..IPV4_OCTET_MAX) return null
-        address[index] = value.toByte()
-    }
-    return InetAddress.getByAddress(address)
+    val octets = parseIpv4Octets(this) ?: return null
+    return InetAddress.getByAddress(ByteArray(octets.size) { octets[it].toByte() })
 }

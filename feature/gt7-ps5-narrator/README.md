@@ -83,6 +83,7 @@ GT7 と LMU のキーはそれぞれ `gt7_ps5_`・`lmu_windows_` 接頭辞を持
 手動の燃料残り周回数は `currentRemainingFuelLaps(state)` で `fuelTrackingState` から算出する。
 開始燃料＋総給油量－現在燃料を、完走周回数＋`CURRENT_LAP_CONSUMPTION_WEIGHT`（0.9）で割った平均消費を使い、
 現在燃料÷平均消費を整数へ切り捨てる。開始燃料・開始周回が未設定、完走周回数が0以下、消費燃料が0以下なら null。
+周回数が0以下（スタート前）の間は追跡状態を破棄して起点を作らず、1以上になった最初のテレメトリを起点にする。追跡中に0以下へ戻った場合は、自動側の読み上げ履歴もリセットする。
 最終受信から5秒以内だけ推定値を使い、未受信・鮮度切れは「燃料残り周回数はデータがありません」を読む。
 `Gt7Ps5ManualReadoutItem.value` は `ManualReadoutValue`（Percent・Celsius・LapTimeMs・RemainingLaps）で、燃料残量が `Percent`（％）、燃料残り周回数が `RemainingLaps`（周）、タイヤ温度が `Celsius`（℃）、自己ベストが `LapTimeMs`（ms）。項目キーと種別が対応しない値はデータなしとして扱う。
 既定文言は `GT7_PS5_MANUAL_READOUT_REMAINING_FUEL_LAPS_TEXT_DEFAULT`（「燃料は残り約{laps}周」）で、

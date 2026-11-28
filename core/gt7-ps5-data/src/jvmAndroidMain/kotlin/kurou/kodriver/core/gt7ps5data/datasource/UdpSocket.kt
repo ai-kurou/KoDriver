@@ -17,12 +17,16 @@ internal interface UdpSocket : AutoCloseable {
 internal class RealUdpSocket(
     listenPort: Int,
     timeoutMs: Int,
+    createSocket: () -> DatagramSocket = { DatagramSocket(null) },
 ) : UdpSocket {
-    private val socket =
-        DatagramSocket(null).apply {
-            reuseAddress = true
-            bind(java.net.InetSocketAddress(listenPort))
-            soTimeout = timeoutMs
+    private val socket: DatagramSocket =
+        createSocket().also { created ->
+            // 設定・bind の途中で失敗するとソケットが閉じられずポートを握ったままになるため、失敗時は close してから再スローする
+            runCatching {
+                created.reuseAddress = true
+                created.bind(java.net.InetSocketAddress(listenPort))
+                created.soTimeout = timeoutMs
+            }.onFailure { created.close() }.getOrThrow()
         }
 
     override fun receive(packet: DatagramPacket) = socket.receive(packet)
