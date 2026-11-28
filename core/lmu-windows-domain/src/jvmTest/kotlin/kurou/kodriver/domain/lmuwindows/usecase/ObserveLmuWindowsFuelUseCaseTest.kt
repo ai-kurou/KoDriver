@@ -31,6 +31,23 @@ class ObserveLmuWindowsFuelUseCaseTest {
         }
 
     @Test
+    fun `現在量または容量が非有限なら流さない`() =
+        runTest {
+            every { repository.telemetryStream() } returns
+                flowOf(
+                    telemetry(fuel(Double.NaN, 4.0)),
+                    telemetry(fuel(Double.POSITIVE_INFINITY, 4.0)),
+                    telemetry(fuel(Double.NEGATIVE_INFINITY, 4.0)),
+                    telemetry(fuel(1.0, Double.NaN)),
+                    telemetry(fuel(1.0, Double.POSITIVE_INFINITY)),
+                )
+            val values = buildList { ObserveLmuWindowsFuelUseCase(repository)().collect(::add) }
+            assertEquals(emptyList(), values)
+            verify(exactly = 1) { repository.telemetryStream() }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `燃料割合を整数化して0から100へcoerceする`() =
         runTest {
             every { repository.telemetryStream() } returns

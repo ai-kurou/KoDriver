@@ -290,6 +290,7 @@ private class FakeSharedMemoryReader(
                 buf.putDouble(1700, currentEt)
                 buf.put(128_464, 1)
                 buf.put(128_465, 0)
+                buf.put(128_466, 1)
                 buf.putDouble(128_480, telemetryElapsedTime)
             }
         } else {

@@ -91,6 +91,7 @@ class LmuWindowsVehicleDamageRepositoryImplTest {
 
         buffer.put(telemetryBase + 0, config.activeVehicles.toByte())
         buffer.put(telemetryBase + 1, config.playerIdx.toByte())
+        buffer.put(telemetryBase + 2, 1)
 
         val vehicleBase = telemetryBase + telemInfo + config.playerIdx * vehicleStride
         buffer.put(vehicleBase + 541, if (config.overheating) 1.toByte() else 0.toByte())

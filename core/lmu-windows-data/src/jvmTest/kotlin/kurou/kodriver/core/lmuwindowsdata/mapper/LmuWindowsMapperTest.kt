@@ -36,6 +36,7 @@ class LmuWindowsMapperTest {
         const val TELEMETRY_BASE = 128464
         const val OFF_ACTIVE_VEHICLES = 0
         const val OFF_PLAYER_VEHICLE_IDX = 1
+        const val OFF_PLAYER_HAS_VEHICLE = 2
         const val OFF_TELEM_INFO = 4
         const val VEHICLE_STRIDE = 1888
 
@@ -69,6 +70,7 @@ class LmuWindowsMapperTest {
             val buf = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
             buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, (playerIdx + 1).toByte())
             buf.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, playerIdx.toByte())
+            buf.put(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE, 1)
             return buf
         }
 
@@ -324,6 +326,16 @@ class LmuWindowsMapperTest {
     }
 
     @Test
+    fun `playerHasVehicleがfalseならindexが有効でも自車なしとして扱う`() {
+        val buf = emptyBuffer(playerIdx = 0)
+        buf.put(TELEMETRY_BASE + OFF_PLAYER_HAS_VEHICLE, 0)
+
+        assertEquals(null, LmuWindowsMapper.findPlayerVehicleBase(buf))
+        assertEquals(null, LmuWindowsMapper.map(buf))
+        assertEquals(null, LmuWindowsMapper.readTelemetryElapsedTime(buf))
+    }
+
+    @Test
     fun `findPlayerVehicleBaseはactiveVehiclesが0のときnullを返す`() {
         val buf = emptyBuffer(playerIdx = 0)
         buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 0)
@@ -380,11 +392,31 @@ class LmuWindowsMapperTest {
 
         val result = LmuWindowsMapper.maxVehicleCount(buf, headerSizePerVehicle)
 
-        assertEquals(3, result)
+        assertEquals(4, result)
     }
 
     @Test
-    fun `maxVehicleCountはバッファがヘッダーサイズに満たない場合0を返す`() {
+    fun `maxVehicleCountはバッファがヘッダーサイズちょうどの場合1を返す`() {
+        val headerSizePerVehicle = 8
+        val buf = ByteBuffer.allocate(vehicleBase(playerIdx = 0) + headerSizePerVehicle)
+
+        val result = LmuWindowsMapper.maxVehicleCount(buf, headerSizePerVehicle)
+
+        assertEquals(1, result)
+    }
+
+    @Test
+    fun `maxVehicleCountはバッファがヘッダーサイズに1バイト満たない場合0を返す`() {
+        val headerSizePerVehicle = 8
+        val buf = ByteBuffer.allocate(vehicleBase(playerIdx = 0) + headerSizePerVehicle - 1)
+
+        val result = LmuWindowsMapper.maxVehicleCount(buf, headerSizePerVehicle)
+
+        assertEquals(0, result)
+    }
+
+    @Test
+    fun `maxVehicleCountはバッファがヘッダーサイズに大きく満たない場合0を返す`() {
         val result = LmuWindowsMapper.maxVehicleCount(ByteBuffer.allocate(1), headerSizePerVehicle = 8)
 
         assertEquals(0, result)
