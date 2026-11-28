@@ -59,7 +59,8 @@ internal class OtherServerIpDetailViewModel(
     }
 
     fun onIpChanged(ip: String) {
-        _mutable.update { it.copy(userInput = ip, connectivityWarning = false) }
+        // 数字入力向けキーボードは、IME や地域設定によって区切りが `,` になるため `.` として扱う
+        _mutable.update { it.copy(userInput = ip.replace(',', '.'), connectivityWarning = false) }
     }
 
     fun onDiscoveredServerSelected(server: DiscoveredServer) {

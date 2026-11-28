@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -68,6 +69,8 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
@@ -76,6 +79,8 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehicleData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTimingData
@@ -364,8 +369,14 @@ class LmuWindowsNarratorViewModelTest {
         simulator: Simulator,
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        vehicleClassStream: Flow<LmuWindowsVehicleClassData>? = null,
     ) {
-        every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
+        every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+            vehicleApproachChannel.receiveAsFlow().map { it.toNearbyVehicles() }
+        every { vehicleApproachThresholdsPreferencesRepository.observeLongitudinalThresholdMeters() } returns
+            flowOf(LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MAX)
+        every { vehicleApproachThresholdsPreferencesRepository.observeLateralThresholdMeters() } returns
+            flowOf(LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MAX)
         val telemetryShared =
             MutableSharedFlow<LmuWindowsTelemetryData>(extraBufferCapacity = TELEMETRY_BUFFER_CAPACITY)
         telemetryForwarderScope.launch { telemetryChannel.consumeEach { telemetryShared.emit(it) } }
@@ -403,7 +414,8 @@ class LmuWindowsNarratorViewModelTest {
                 tyreTemperatureHighThresholdByVehicleClass?.mapValues { Celsius(it.value) }
                     ?: lmuWindowsAllVehicleClasses.associateWith { Celsius(tyreTemperatureHighThreshold) },
             )
-        every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(vehicleClass)
+        every { vehicleClassRepository.vehicleClassStream() } returns
+            (vehicleClassStream ?: MutableStateFlow(vehicleClass))
         every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(
                 mapOf(
@@ -502,6 +514,7 @@ class LmuWindowsNarratorViewModelTest {
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         readoutTextOverride: (suspend (SpeechEvent) -> String?)? = null,
+        vehicleClassStream: Flow<LmuWindowsVehicleClassData>? = null,
     ): LmuWindowsNarratorViewModel {
         stubRepositories(
             vehicleApproachChannel = vehicleApproachChannel,
@@ -537,6 +550,7 @@ class LmuWindowsNarratorViewModelTest {
             simulator = simulator,
             queueEnabledOverrides = queueEnabledOverrides,
             pitTimingEnabledOverrides = pitTimingEnabledOverrides,
+            vehicleClassStream = vehicleClassStream,
         )
 
         selectedSimulatorFlow?.let {
@@ -552,7 +566,11 @@ class LmuWindowsNarratorViewModelTest {
             observeDebugReadoutRequest = ObserveDebugReadoutRequestUseCase(debugRequestRepository),
             vehicleApproachUseCases =
                 VehicleApproachUseCases(
-                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
+                    observeVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
+                            vehicleApproachRepository,
+                            vehicleApproachThresholdsPreferencesRepository,
+                        ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
                     observeSkipFirstLap =
                         ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(
@@ -1244,11 +1262,20 @@ class LmuWindowsNarratorViewModelTest {
             val itemRequests = Channel<ManualReadoutItemRequest>(Channel.UNLIMITED)
             val spoken = mutableListOf<SpeechEvent>()
             val key = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
+            val tts = mockTts(spoken)
+            var failSpeak = true
+            val attempted = mutableListOf<SpeechEvent>()
+            listOf(false, true).forEach { queue ->
+                every { ttsEngine.speak(capture(attempted), queue = queue, isManual = true) } answers {
+                    check(!failSpeak) { "speak failed" }
+                    spoken.add(firstArg())
+                }
+            }
             createViewModel(
                 remainingVirtualEnergyChannel = energy,
                 manualItemRequestChannel = itemRequests,
                 manualSets = emptyList(),
-                ttsEngine = mockTts(spoken),
+                ttsEngine = tts,
                 enabledOverrides = mapOf(key to false),
                 queueEnabledOverrides = mapOf(key to false),
             )
@@ -1257,12 +1284,11 @@ class LmuWindowsNarratorViewModelTest {
             mockkStatic(errorCapture)
             every { captureError(capture(captured)) } returns Unit
             try {
-                // NaNの残量は roundToInt が例外を投げる。
-                energy.send(remainingVirtualEnergy(remainingRatio = Double.NaN))
+                energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
                 itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value))
                 assertTrue(captured.isCaptured)
                 assertEquals(emptyList(), spoken)
-                energy.send(remainingVirtualEnergy(remainingRatio = 0.8))
+                failSpeak = false
                 itemRequests.send(ManualReadoutItemRequest(Simulator.LmuWindows.id, key.value))
                 assertEquals(
                     listOf(lmuWindowsManualReadoutItemTextDefault(key.value).replace("{percent}", "80")),
@@ -3143,6 +3169,88 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(null, trackingFromLastLog().lastValidLapConsumption)
             requests.send(ManualReadoutRequest(Simulator.LmuWindows.id, "laps"))
             assertEquals("タイヤ摩耗の残り周回数はデータがありません", spoken.last().narratedText)
+        }
+
+    @Test
+    fun `車両クラスを受信するまで燃料警告を保留し受信後に読み上げる`() =
+        runTest(testDispatcher) {
+            val vehicleClass = MutableSharedFlow<LmuWindowsVehicleClassData>(replay = 1)
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                telemetryChannel = fuel,
+                ttsEngine = mockTts(spoken),
+                vehicleClassStream = vehicleClass,
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+                        LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true,
+                    ),
+            )
+            vehicleClass.emit(LmuWindowsVehicleClassData.Unknown(""))
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+
+            vehicleClass.emit(LmuWindowsVehicleClassData.P3)
+            fuel.send(telemetryWithFuel(currentLiters = 9.0, capacityLiters = 100.0))
+            assertEquals(listOf<SpeechEvent>(resolvedFuelWarning), spoken)
+        }
+
+    @Test
+    fun `VEクラスのクラスが一時的に空になっても燃料警告とタイヤ過熱警告を出さない`() =
+        runTest(testDispatcher) {
+            val vehicleClass = MutableStateFlow<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Hypercar)
+            val fuel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val tyre = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val flags = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                telemetryChannel = fuel,
+                tyreTemperatureChannel = tyre,
+                flagChannel = flags,
+                ttsEngine = mockTts(spoken),
+                vehicleClassStream = vehicleClass,
+                tyreTemperatureHighThresholdByVehicleClass =
+                    lmuWindowsAllVehicleClasses.associateWith {
+                        if (it == LmuWindowsVehicleClassData.Hypercar) 100 else 90
+                    },
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        LmuWindowsReadoutItemKey.RemainingFuel.Root to true,
+                        LmuWindowsReadoutItemKey.RemainingFuel.WarningReadout to true,
+                        LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    ),
+            )
+            flags.send(clearFlags())
+            vehicleClass.update { LmuWindowsVehicleClassData.Unknown("") }
+
+            fuel.send(telemetryWithFuel(currentLiters = 10.0, capacityLiters = 100.0))
+            tyre.send(tyreTemperature(fl = 95.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+        }
+
+    @Test
+    fun `車両クラスを受信するまでタイヤ過熱警告を保留し受信後に読み上げる`() =
+        runTest(testDispatcher) {
+            val vehicleClass = MutableSharedFlow<LmuWindowsVehicleClassData>(replay = 1)
+            val tyre = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val flags = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+            val spoken = mutableListOf<SpeechEvent>()
+            createViewModel(
+                tyreTemperatureChannel = tyre,
+                flagChannel = flags,
+                ttsEngine = mockTts(spoken),
+                vehicleClassStream = vehicleClass,
+                enabledOverrides = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
+            )
+            flags.send(clearFlags())
+            tyre.send(tyreTemperature(fl = 95.0))
+            assertEquals(emptyList<SpeechEvent>(), spoken)
+
+            vehicleClass.emit(LmuWindowsVehicleClassData.P3)
+            tyre.send(tyreTemperature(fl = 95.0))
+            assertEquals(listOf<SpeechEvent>(LmuWindowsTyreOverheat(95, "タイヤを冷やして")), spoken)
         }
 
     @Test
@@ -5771,3 +5879,22 @@ private fun remainingVirtualEnergy(
     remainingRatio = LmuWindowsVirtualEnergyRatio(remainingRatio),
     session = session,
 )
+
+/** 期待する並走状態になる周辺車両の位置へ変換する。距離の指定がない車両は閾値内の2mに置く。 */
+private fun LmuWindowsVehicleApproachData.toNearbyVehicles(): LmuWindowsNearbyVehiclesData {
+    fun side(
+        ids: Set<Int>,
+        distance: Double,
+        sign: Int,
+    ) = ids.map {
+        LmuWindowsNearbyVehicleData(
+            vehicleId = it,
+            lateralMeters = sign * if (distance == Double.MAX_VALUE) 2.0 else distance,
+            longitudinalMeters = 0.0,
+        )
+    }
+    return LmuWindowsNearbyVehiclesData(
+        side(sideBySideLeftVehicleIds, lateralDistanceLeftMeters.value, -1) +
+            side(sideBySideRightVehicleIds, lateralDistanceRightMeters.value, 1),
+    )
+}

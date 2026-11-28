@@ -12,7 +12,7 @@ internal fun Route.lmuWindowsRoutes(useCases: KoDriverServerUseCases) {
         useCases.lmuWindows.observeLmuWindowsRaceFlags()
     }
     telemetryWebSocket(KoDriverServerFeature.VEHICLE_APPROACH, Simulator.LmuWindows) {
-        useCases.lmuWindows.observeLmuWindowsVehicleApproach()
+        useCases.lmuWindows.observeLmuWindowsNearbyVehicles()
     }
     telemetryWebSocket(KoDriverServerFeature.DAMAGE, Simulator.LmuWindows) {
         useCases.lmuWindows.observeLmuWindowsVehicleDamage()

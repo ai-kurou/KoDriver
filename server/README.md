@@ -4,7 +4,7 @@
 
 ## WebSocket エンドポイント
 
-WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。パスは `KoDriverServerFeature.webSocketPath(simulator)` で組み立てられ、サーバー側の登録（`LmuWindowsRoutes.kt` / `AceWindowsRoutes.kt` の `telemetryWebSocket(...)`）とクライアント側の `WebSocket*Repository` で共有される。各エンドポイントは UseCase 経由で Repository を購読し、送信型を JSON として送信する。
+WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。パスは `KoDriverServerFeature.webSocketPath(simulator)` で組み立てられ、サーバー側の登録（`LmuWindowsRoutes.kt` / `AceWindowsRoutes.kt` の `telemetryWebSocket(...)`）とクライアント側の `WebSocket*Repository` で共有される。各エンドポイントは UseCase 経由で Repository を購読し、送信型を JSON として送信する。テレメトリに含まれる非有限値は、JSON 標準外の `NaN` / `Infinity` / `-Infinity` としてそのまま送信するため、受信側の `Json` にも `allowSpecialFloatingPointValues = true` が必要（Android は各 data モジュールの `webSocketJson` を使う）。
 
 ### LMU（`/ws/lmu_windows/...`）
 
@@ -12,7 +12,7 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 | --- | --- | --- |
 | `/ws/lmu_windows/telemetry` | `ObserveLmuWindowsUseCase`（共有メモリの `LmuWindowsRepository`） | `LmuWindowsTelemetryData` 全体（同一値も継続配信） |
 | `/ws/lmu_windows/flags` | `ObserveLmuWindowsRaceFlagsUseCase`（`LmuWindowsFlagRepository`） | `LmuWindowsRaceFlagsData` |
-| `/ws/lmu_windows/vehicle_approach` | `ObserveLmuWindowsVehicleApproachUseCase`（`LmuWindowsVehicleApproachRepository`） | `LmuWindowsVehicleApproachData` |
+| `/ws/lmu_windows/vehicle_approach` | `ObserveLmuWindowsNearbyVehiclesUseCase`（`LmuWindowsVehicleApproachRepository`） | `LmuWindowsNearbyVehiclesData`（閾値を適用しない周辺車両の位置。並走判定は受信側の端末の設定で行う） |
 | `/ws/lmu_windows/damage` | `ObserveLmuWindowsVehicleDamageUseCase`（`LmuWindowsVehicleDamageRepository`） | `LmuWindowsVehicleDamageData` |
 | `/ws/lmu_windows/tyre_carcass_temperature` | `ObserveLmuWindowsTyreCarcassTemperatureUseCase`（`LmuWindowsTyreCarcassTemperatureRepository`） | `LmuWindowsTyreCarcassTemperatureData`（同一値も継続配信） |
 | `/ws/lmu_windows/brake_wear` | `ObserveLmuWindowsBrakeWearUseCase`（`LmuWindowsBrakeWearRepository`） | `LmuWindowsBrakeWearData?`（取得失敗時は JSON `null`。車両クラスとの受信順に依存しないよう、同一値も重複排除せず毎回配信） |

@@ -201,7 +201,7 @@ public val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsMyBestLapReadoutTextUseCase(get()) }
         factory { ObserveLmuWindowsUseCase(get()) }
-        factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachUseCase(get(), get()) }
         factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
         factory { ObserveAutoReadoutEnabledStatesUseCase(get()) }
         factory { ObserveAutoReadoutOrderUseCase(get()) }

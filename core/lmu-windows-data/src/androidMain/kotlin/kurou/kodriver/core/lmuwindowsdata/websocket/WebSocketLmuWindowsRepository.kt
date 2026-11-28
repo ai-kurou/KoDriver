@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.transformLatest
-import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_FUEL_MAX_AGE_MS
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
@@ -29,8 +28,6 @@ internal class WebSocketLmuWindowsRepository(
     private val client: HttpClient = createWebSocketHttpClient(),
     private val currentTimeMs: () -> Long = System::currentTimeMillis,
 ) : LmuWindowsRepository {
-    private val json = Json { ignoreUnknownKeys = true }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> =
         serverIpRepository
@@ -46,7 +43,7 @@ internal class WebSocketLmuWindowsRepository(
                             path = KoDriverServerFeature.TELEMETRY.webSocketPath(Simulator.LmuWindows),
                             retryDelayMs = retryDelayMs,
                             decode = {
-                                val telemetry = json.decodeFromString<LmuWindowsTelemetryData>(it)
+                                val telemetry = webSocketJson.decodeFromString<LmuWindowsTelemetryData>(it)
                                 telemetry.copy(fuel = telemetry.fuel.copy(receivedAtMs = currentTimeMs()))
                             },
                         ).transformLatest { telemetry ->

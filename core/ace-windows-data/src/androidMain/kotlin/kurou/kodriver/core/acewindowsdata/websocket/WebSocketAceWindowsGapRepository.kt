@@ -5,7 +5,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.acewindows.model.AceWindowsGapData
 import kurou.kodriver.domain.acewindows.repository.AceWindowsGapRepository
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
@@ -20,8 +19,6 @@ internal class WebSocketAceWindowsGapRepository(
     private val retryDelayMs: Long = KODRIVER_SERVER_RETRY_DELAY_MS_DEFAULT,
     private val client: HttpClient = createWebSocketHttpClient(),
 ) : AceWindowsGapRepository {
-    private val json = Json { ignoreUnknownKeys = true }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun gapStream(): Flow<AceWindowsGapData> =
         serverIpRepository
@@ -35,7 +32,7 @@ internal class WebSocketAceWindowsGapRepository(
                         port = port,
                         path = KoDriverServerFeature.CAR_GAP.webSocketPath(Simulator.AceWindows),
                         retryDelayMs = retryDelayMs,
-                        decode = { json.decodeFromString<AceWindowsGapData>(it) },
+                        decode = { webSocketJson.decodeFromString<AceWindowsGapData>(it) },
                     )
                 }
             }

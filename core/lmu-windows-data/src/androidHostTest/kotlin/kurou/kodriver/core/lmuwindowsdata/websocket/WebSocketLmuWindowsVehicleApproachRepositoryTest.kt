@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehicleData
 import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -44,17 +45,17 @@ class WebSocketLmuWindowsVehicleApproachRepositoryTest {
         )
 
     @Test
-    fun `ipがnullのときvehicleApproachStreamは何もemitしない`() =
+    fun `ipがnullのときnearbyVehiclesStreamは何もemitしない`() =
         runTest {
             val result =
                 withTimeoutOrNull(300) {
-                    buildRepository().vehicleApproachStream().first()
+                    buildRepository().nearbyVehiclesStream().first()
                 }
             assertNull(result)
         }
 
     @Test
-    fun `有効なJSONフレームを受信したときVehicleApproachDataをemitする`() =
+    fun `有効なJSONフレームを受信したときNearbyVehiclesDataをemitする`() =
         runTest {
             server.enqueue(
                 MockResponse().withWebSocketUpgrade(
@@ -71,10 +72,12 @@ class WebSocketLmuWindowsVehicleApproachRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().vehicleApproachStream().first()
+            val result = buildRepository().nearbyVehiclesStream().first()
 
-            assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
-            assertEquals(emptySet(), result.sideBySideRightVehicleIds)
+            assertEquals(
+                listOf(LmuWindowsNearbyVehicleData(vehicleId = 3, lateralMeters = -1.5, longitudinalMeters = 0.5)),
+                result.vehicles,
+            )
             assertEquals("/ws/lmu_windows/vehicle_approach", server.takeRequest().path)
         }
 }
@@ -98,9 +101,6 @@ private class FakeServerIpPreferencesRepositoryForVehicleApproach(
 private val VEHICLE_APPROACH_JSON =
     """
     {
-        "sideBySideLeftVehicleIds": [3],
-        "sideBySideRightVehicleIds": [],
-        "lateralDistanceLeftMeters": 1.5,
-        "lateralDistanceRightMeters": 1.7976931348623157E308
+        "vehicles": [{"vehicleId": 3, "lateralMeters": -1.5, "longitudinalMeters": 0.5}]
     }
     """.trimIndent()

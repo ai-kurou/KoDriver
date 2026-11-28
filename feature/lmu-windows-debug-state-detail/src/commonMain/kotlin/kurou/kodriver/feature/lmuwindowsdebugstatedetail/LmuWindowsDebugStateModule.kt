@@ -42,7 +42,7 @@ internal fun Module.lmuWindowsDebugStateDefinitions() {
     factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
     factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
+    factory { ObserveLmuWindowsVehicleApproachUseCase(get(), get()) }
     factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
     factory { ObserveLmuWindowsBrakeTemperatureUseCase(get()) }
     factory { ObserveLmuWindowsBrakeWearRemainingUseCase(get(), get()) }

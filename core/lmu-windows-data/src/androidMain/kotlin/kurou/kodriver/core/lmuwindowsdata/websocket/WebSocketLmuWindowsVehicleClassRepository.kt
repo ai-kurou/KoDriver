@@ -5,7 +5,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.model.KODRIVER_SERVER_PORT_DEFAULT
@@ -20,8 +19,6 @@ internal class WebSocketLmuWindowsVehicleClassRepository(
     private val retryDelayMs: Long = KODRIVER_SERVER_RETRY_DELAY_MS_DEFAULT,
     private val client: HttpClient = createWebSocketHttpClient(),
 ) : LmuWindowsVehicleClassRepository {
-    private val json = Json { ignoreUnknownKeys = true }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun vehicleClassStream(): Flow<LmuWindowsVehicleClassData> =
         serverIpRepository
@@ -35,7 +32,7 @@ internal class WebSocketLmuWindowsVehicleClassRepository(
                         port = port,
                         path = KoDriverServerFeature.VEHICLE_CLASS.webSocketPath(Simulator.LmuWindows),
                         retryDelayMs = retryDelayMs,
-                        decode = { json.decodeFromString<LmuWindowsVehicleClassData>(it) },
+                        decode = { webSocketJson.decodeFromString<LmuWindowsVehicleClassData>(it) },
                     )
                 }
             }

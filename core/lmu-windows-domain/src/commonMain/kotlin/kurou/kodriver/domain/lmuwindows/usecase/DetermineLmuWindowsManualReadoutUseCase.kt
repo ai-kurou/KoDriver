@@ -187,6 +187,7 @@ public class DetermineLmuWindowsManualReadoutUseCase {
         item: LmuWindowsManualReadoutItem,
         ratio: Double,
     ): String? {
+        if (!ratio.isFinite()) return null
         val percentage = (ratio * LMU_WINDOWS_PERCENTAGE_SCALE).roundToInt()
         return when (item.key) {
             LmuWindowsReadoutItemKey.RemainingFuel.Root.value -> {

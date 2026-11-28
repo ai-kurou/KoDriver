@@ -13,6 +13,8 @@ import kotlinx.serialization.json.Json
 internal val serverJson =
     Json {
         encodeDefaults = true
+        // テレメトリの NaN・無限大でエンコードが失敗してセッションが切れないようにする。受信側も同じ設定が必要。
+        allowSpecialFloatingPointValues = true
     }
 
 internal suspend fun <T> DefaultWebSocketServerSession.sendJsonMessages(

@@ -7,6 +7,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
@@ -275,6 +277,53 @@ class WebSocketFlowFactoryTest {
             assertEquals(listOf<Throwable>(exception), capturedExceptions)
             client.close()
         }
+
+    @Test
+    fun `デコード失敗が再接続やデコード成功をはさんで続いても収集ごとに最初の1件だけSentryへ送信する`() =
+        runTest {
+            repeat(2) {
+                enqueueFrames("invalid1", "invalid2", "hello", "invalid3")
+                enqueueFrames("invalid4", "world")
+            }
+            val client = createWebSocketHttpClient()
+            val exceptions = (1..4).associate { "invalid$it" to SerializationException("invalid$it") }
+            val capturedExceptions = mutableListOf<Throwable>()
+            try {
+                val flow =
+                    client.webSocketFlow(
+                        host = "127.0.0.1",
+                        port = server.port,
+                        path = "/ws/test",
+                        retryDelayMs = 0L,
+                        decode = { text -> exceptions[text]?.let { throw it } ?: text },
+                        captureException = { capturedExceptions += it },
+                    )
+
+                assertEquals(listOf("hello", "world"), flow.take(2).toList())
+                assertEquals(listOf<Throwable>(exceptions.getValue("invalid1")), capturedExceptions)
+
+                assertEquals(listOf("hello", "world"), flow.take(2).toList())
+                assertEquals(List<Throwable>(2) { exceptions.getValue("invalid1") }, capturedExceptions)
+            } finally {
+                client.close()
+            }
+        }
+
+    private fun enqueueFrames(vararg frames: String) {
+        server.enqueue(
+            MockResponse().withWebSocketUpgrade(
+                object : WebSocketListener() {
+                    override fun onOpen(
+                        webSocket: WebSocket,
+                        response: Response,
+                    ) {
+                        frames.forEach { webSocket.send(it) }
+                        webSocket.close(1000, "done")
+                    }
+                },
+            ),
+        )
+    }
 
     @Test
     fun `接続に失敗した場合はretryDelayMs後にリトライして再接続する`() =

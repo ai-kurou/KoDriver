@@ -101,14 +101,16 @@ public data class LmuWindowsNarratorReadoutSettings(
     val currentLap: Int,
     val skipFirstLap: Boolean,
     val vehicleApproachSustainedApproachDurationSeconds: Int,
-    val tyreTemperatureHighThresholdCelsius: Celsius,
+    /** 車両クラスを受信するまでは null。null の間はタイヤ過熱を判定しない。 */
+    val tyreTemperatureHighThresholdCelsius: Celsius?,
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
     val tyreWearThresholdPercentage: Int,
     val brakeTemperatureHighThresholdCelsius: Celsius,
     val brakeWearLowThresholdPercent: Int,
     val remainingVirtualEnergyThresholdPercentage: Int,
     val remainingFuelThresholdPercentage: Int,
-    val energySource: LmuWindowsEnergySource,
+    /** 車両クラスを受信するまでは null。null の間はエネルギー源に依存する警告を出さない。 */
+    val energySource: LmuWindowsEnergySource?,
     val pitTimingVirtualEnergyLapsThreshold: Int,
     val pitTimingTyreWearLapsThreshold: Int,
     val pitTimingFuelLapsThreshold: Int = LMU_WINDOWS_PIT_TIMING_FUEL_LAPS_DEFAULT,

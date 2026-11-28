@@ -28,6 +28,7 @@ import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsTyreDetachedRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachRepository
+import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.lmuwindows.repository.LmuWindowsVirtualEnergyRepository
@@ -68,6 +69,8 @@ class LmuWindowsDebugStateDetailModuleTest {
     private val classCarGapRepository: LmuWindowsClassCarGapRepository = mockk()
     private val lmuWindowsTyreDetachedRepository: LmuWindowsTyreDetachedRepository = mockk()
     private val lmuWindowsVehicleApproachRepository: LmuWindowsVehicleApproachRepository = mockk()
+    private val vehicleApproachThresholdsRepository: LmuWindowsVehicleApproachThresholdsPreferencesRepository =
+        mockk()
     private val lmuWindowsVehicleClassRepository: LmuWindowsVehicleClassRepository = mockk()
     private val lmuWindowsVehicleDamageRepository: LmuWindowsVehicleDamageRepository = mockk()
     private val lmuWindowsVirtualEnergyRepository: LmuWindowsVirtualEnergyRepository = mockk()
@@ -95,7 +98,9 @@ class LmuWindowsDebugStateDetailModuleTest {
         every { carGapRepository.carGapStream() } returns emptyFlow()
         every { classCarGapRepository.classCarGapStream() } returns emptyFlow()
         every { lmuWindowsTyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
-        every { lmuWindowsVehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+        every { lmuWindowsVehicleApproachRepository.nearbyVehiclesStream() } returns emptyFlow()
+        every { vehicleApproachThresholdsRepository.observeLongitudinalThresholdMeters() } returns emptyFlow()
+        every { vehicleApproachThresholdsRepository.observeLateralThresholdMeters() } returns emptyFlow()
         every { lmuWindowsVehicleClassRepository.vehicleClassStream() } returns emptyFlow()
         every { lmuWindowsVehicleDamageRepository.vehicleDamageStream() } returns emptyFlow()
         every { lmuWindowsVirtualEnergyRepository.virtualEnergyStream() } returns emptyFlow()
@@ -120,6 +125,9 @@ class LmuWindowsDebugStateDetailModuleTest {
                         single<LmuWindowsClassCarGapRepository> { classCarGapRepository }
                         single<LmuWindowsTyreDetachedRepository> { lmuWindowsTyreDetachedRepository }
                         single<LmuWindowsVehicleApproachRepository> { lmuWindowsVehicleApproachRepository }
+                        single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
+                            vehicleApproachThresholdsRepository
+                        }
                         single<LmuWindowsVehicleClassRepository> { lmuWindowsVehicleClassRepository }
                         single<LmuWindowsVehicleDamageRepository> { lmuWindowsVehicleDamageRepository }
                         single<LmuWindowsVirtualEnergyRepository> { lmuWindowsVirtualEnergyRepository }

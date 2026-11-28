@@ -919,7 +919,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(emptyList<SpeechEvent>(), first.events)
-        assertEquals(Long.MAX_VALUE, first.state.personalBestMs)
+        assertEquals(69_000L, first.state.personalBestMs)
         assertEquals(69_000L, first.state.previousBestLapTimeMs)
         assertEquals(1, first.state.previousLapCount)
 
@@ -1136,6 +1136,68 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(listOf(LmuWindowsMyBestLap(59_000L)), second.events)
+    }
+
+    @Test
+    fun `初回に観測したベストが0を挟んで復帰しても読み上げず更新したら読み上げる`() {
+        val first =
+            myBestLapUseCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 110_000L),
+                settings = settings(),
+            )
+        val missing =
+            myBestLapUseCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 0L),
+                settings = settings(),
+            )
+        val recovered =
+            myBestLapUseCase.determineMyBestLap(
+                state = missing.state,
+                telemetry = telemetry(bestLapTimeMs = 110_000L),
+                settings = settings(),
+            )
+        val improved =
+            myBestLapUseCase.determineMyBestLap(
+                state = recovered.state,
+                telemetry = telemetry(bestLapTimeMs = 109_000L),
+                settings = settings(),
+            )
+
+        assertEquals(110_000L, missing.state.personalBestMs)
+        assertEquals(emptyList<SpeechEvent>(), recovered.events)
+        assertEquals(listOf(LmuWindowsMyBestLap(109_000L)), improved.events)
+    }
+
+    @Test
+    fun `項目が無効の間に更新したベストは有効化後に0から復帰しても読み上げない`() {
+        for (disabledKey in listOf(
+            LmuWindowsReadoutItemKey.MyBestLap.Root,
+            LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
+        )) {
+            val disabled =
+                myBestLapUseCase.determineMyBestLap(
+                    state = LmuWindowsNarratorState(previousBestLapTimeMs = 60_000L),
+                    telemetry = telemetry(bestLapTimeMs = 59_000L),
+                    settings = settings(enabledStates = allEnabledStates + mapOf(disabledKey to false)),
+                )
+            val missing =
+                myBestLapUseCase.determineMyBestLap(
+                    state = disabled.state,
+                    telemetry = telemetry(bestLapTimeMs = 0L),
+                    settings = settings(),
+                )
+            val recovered =
+                myBestLapUseCase.determineMyBestLap(
+                    state = missing.state,
+                    telemetry = telemetry(bestLapTimeMs = 59_000L),
+                    settings = settings(),
+                )
+
+            assertEquals(59_000L, disabled.state.personalBestMs)
+            assertEquals(emptyList<SpeechEvent>(), recovered.events)
+        }
     }
 
     @Test
@@ -2209,6 +2271,20 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `過熱の閾値が未確定なら過熱状態を変えず読み上げない`() {
+        val state = LmuWindowsNarratorState()
+        val decision =
+            tyreUseCase.determineTyreTemperatureOverheat(
+                state = state,
+                input = tyreTemperatureInput(fl = 150.0),
+                settings = settings().copy(tyreTemperatureHighThresholdCelsius = null),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(state, decision.state)
+    }
+
+    @Test
     fun `ヒステリシス範囲内の初期温度では過熱状態にならない`() {
         val decision =
             tyreUseCase.determineTyreTemperatureOverheat(
@@ -2999,6 +3075,56 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             pitTimingUseCase.recordPitTimingAnnounced(state, LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear))
 
         assertEquals(state.copy(lastAnnouncedPitTimingTyreWearLaps = 0), announcedState)
+    }
+
+    @Test
+    fun `手動セットは非有限の比率をデータ無しとして扱う`() {
+        val key = LmuWindowsReadoutItemKey.TyreWear.Root
+        val missing =
+            manualUseCase.determineManualReadout(
+                LmuWindowsNarratorState(),
+                listOf(LmuWindowsManualReadoutItem(key.value, "残り{percent}%", null)),
+            )
+        listOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).forEach { ratio ->
+            val decision =
+                manualUseCase.determineManualReadout(
+                    LmuWindowsNarratorState(),
+                    listOf(LmuWindowsManualReadoutItem(key.value, "残り{percent}%", Ratio(ratio))),
+                )
+            assertEquals(missing, decision)
+        }
+    }
+
+    @Test
+    fun `バーチャルエネルギーが非有限なら残り0周と誤警告せず状態を変更しない`() {
+        val state = pitTimingReadyState()
+        listOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).forEach { ratio ->
+            val decision =
+                pitTimingUseCase.determinePitTimingVirtualEnergy(
+                    state = state,
+                    telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 90_000L),
+                    virtualEnergy = remainingVirtualEnergy(remainingRatio = ratio),
+                    settings = settings(),
+                    observedAtMs = 70_000L,
+                )
+            assertEquals(LmuWindowsNarratorReadoutDecision(state, emptyList()), decision)
+        }
+    }
+
+    @Test
+    fun `全輪のタイヤ摩耗が非有限なら残り0周と誤警告せず状態を変更しない`() {
+        val state = pitTimingReadyState()
+        listOf(Double.NaN, Double.POSITIVE_INFINITY).forEach { ratio ->
+            val decision =
+                pitTimingUseCase.determinePitTimingTyreWear(
+                    state = state,
+                    telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 90_000L),
+                    tyreWear = tyreWear(ratio, ratio, ratio, ratio),
+                    settings = settings(),
+                    observedAtMs = 70_000L,
+                )
+            assertEquals(LmuWindowsNarratorReadoutDecision(state, emptyList()), decision)
+        }
     }
 
     @Test
@@ -3803,6 +3929,65 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `クラス未受信なら燃料の周回を評価済みにせず受信後に同じ周で警告する`() {
+        val pending =
+            pitTimingUseCase.determinePitTimingFuel(
+                fuelReadyState(),
+                lapTelemetry(3, 90_000L),
+                LmuWindowsRemainingFuelData(25),
+                settings().copy(energySource = null),
+                60_000L,
+            )
+        assertEquals(emptyList<SpeechEvent>(), pending.events)
+        assertEquals(0.25, pending.state.fuelLapsTrackingState.currentValue)
+        assertEquals(-1, pending.state.lastPitTimingFuelEvaluationLap)
+
+        val received =
+            pitTimingUseCase.determinePitTimingFuel(
+                pending.state,
+                lapTelemetry(3, 90_000L),
+                LmuWindowsRemainingFuelData(25),
+                settings(energySource = LmuWindowsEnergySource.Fuel),
+                61_000L,
+            )
+        assertEquals(listOf(LmuWindowsPitTimingWarning(2, PitTimingSource.Fuel)), received.events)
+    }
+
+    @Test
+    fun `クラス未受信ならVEの周回を評価済みにせず追跡だけを続ける`() {
+        val initial =
+            LmuWindowsNarratorState(
+                pitTimingVirtualEnergyTrackingState =
+                    fuelReadyState().fuelLapsTrackingState.copy(session = 0),
+            )
+        val energy = remainingVirtualEnergy(0.25)
+        val pending =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                initial,
+                lapTelemetry(3, 90_000L),
+                energy,
+                settings().copy(energySource = null),
+                60_000L,
+            )
+        assertEquals(emptyList<SpeechEvent>(), pending.events)
+        assertEquals(0.25, pending.state.pitTimingVirtualEnergyTrackingState.currentValue)
+        assertEquals(-1, pending.state.lastPitTimingVirtualEnergyEvaluationLap)
+
+        val received =
+            pitTimingUseCase.determinePitTimingVirtualEnergy(
+                pending.state,
+                lapTelemetry(3, 90_000L),
+                energy,
+                settings(),
+                61_000L,
+            )
+        assertEquals(
+            listOf(LmuWindowsPitTimingWarning(2, PitTimingSource.VirtualEnergy)),
+            received.events,
+        )
+    }
+
+    @Test
     fun `燃料の同一周評価と同じ周回数の再警告を抑止する`() {
         listOf(
             fuelReadyState().copy(lastPitTimingFuelEvaluationLap = 3),
@@ -3949,6 +4134,27 @@ private fun fuelReadyState() =
                 bestLapTimeMs = 90_000L,
             ),
     )
+
+/** 次の評価で残り周回数を読み上げられる状態。 */
+private fun pitTimingReadyState(): LmuWindowsNarratorState {
+    val tracking =
+        LmuWindowsPitTimingTrackingState(
+            session = 0,
+            currentLap = 3,
+            currentLapStartedAtMs = 0L,
+            currentLapStartedAtBoundary = true,
+            currentLapStartValue = 0.5,
+            currentValue = 0.4,
+            refillBaselineValue = 0.4,
+            lastValidLapConsumption = 0.1,
+            bestLapTimeMs = 90_000L,
+            observedAtMs = 69_984L,
+        )
+    return LmuWindowsNarratorState(
+        pitTimingVirtualEnergyTrackingState = tracking,
+        pitTimingTyreWearTrackingState = tracking.copy(session = null),
+    )
+}
 
 private fun pitTimingBoundaryState(): LmuWindowsNarratorState =
     LmuWindowsNarratorState(
