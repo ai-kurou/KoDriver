@@ -27,8 +27,9 @@ public class SpeechRecognitionSlots(
 
 /**
  * 音声認識のチップとカードを返す。
- * 起動時の自動開始（[SpeechRecognitionViewModel.onAppLaunched]）、マイクの権限の要求と、アプリが見えなくなったとき（ON_STOP）の停止・前面に戻ったとき（ON_START）の再開をここで持つため、
- * `AppScreen` から一度だけ呼べば、タブを切り替えても聞き取りは止まらない。
+ * 起動時の自動開始（[SpeechRecognitionViewModel.onAppLaunched]）、マイクの権限の要求を持つ。
+ * Android のみ、アプリが背面に回ったとき（ON_STOP）に停止し、前面に戻ったとき（ON_START）に再開する。デスクトップは最小化されても聞き取りを続ける。
+ * そのため `AppScreen` から一度だけ呼べば、タブを切り替えても聞き取りは止まらない。
  * 音声認識を提供しないプラットフォームでは [SpeechRecognitionSlots.None] を返す。
  */
 @Composable
@@ -43,11 +44,14 @@ public fun rememberSpeechRecognition(): SpeechRecognitionSlots {
 internal fun rememberSpeechRecognition(
     viewModel: SpeechRecognitionViewModel,
     requestPermission: () -> Unit,
+    stopInBackground: Boolean = isSpeechRecognitionStoppedInBackgroundOnPlatform(),
 ): SpeechRecognitionSlots {
     // ON_START は前面に戻ったときにも届くため、起動時の自動開始は別に一度だけ呼ぶ
     LaunchedEffect(viewModel) { viewModel.onAppLaunched() }
-    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.onAppBackgrounded() }
-    LifecycleEventEffect(Lifecycle.Event.ON_START) { viewModel.onAppForegrounded() }
+    if (stopInBackground) {
+        LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.onAppBackgrounded() }
+        LifecycleEventEffect(Lifecycle.Event.ON_START) { viewModel.onAppForegrounded() }
+    }
     return remember(viewModel, requestPermission) {
         SpeechRecognitionSlots(
             chip = { modifier -> SpeechRecognitionChipWithToggle(viewModel, requestPermission, modifier) },

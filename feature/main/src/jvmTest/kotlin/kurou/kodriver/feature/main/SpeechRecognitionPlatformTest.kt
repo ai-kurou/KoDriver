@@ -4,6 +4,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class SpeechRecognitionPlatformTest {
@@ -21,5 +22,10 @@ class SpeechRecognitionPlatformTest {
     @Test
     fun `デスクトップでは音声認識を提供する`() {
         assertTrue(isSpeechRecognitionSupportedOnPlatform())
+    }
+
+    @Test
+    fun `デスクトップではウィンドウが見えなくなっても止めない`() {
+        assertFalse(isSpeechRecognitionStoppedInBackgroundOnPlatform())
     }
 }
