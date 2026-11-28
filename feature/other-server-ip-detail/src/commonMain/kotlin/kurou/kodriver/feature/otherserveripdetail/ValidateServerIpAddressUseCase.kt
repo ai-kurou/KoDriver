@@ -1,12 +1,7 @@
 package kurou.kodriver.feature.otherserveripdetail
 
-import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MAX
-import kurou.kodriver.domain.serverconnection.model.IPV4_OCTET_MIN
+import kurou.kodriver.domain.serverconnection.model.parseIpv4Octets
 
 internal class ValidateServerIpAddressUseCase {
-    operator fun invoke(ip: String): Boolean {
-        val parts = ip.split(".")
-        if (parts.size != 4) return false
-        return parts.all { part -> part.toIntOrNull()?.let { it in IPV4_OCTET_MIN..IPV4_OCTET_MAX } == true }
-    }
+    operator fun invoke(ip: String): Boolean = parseIpv4Octets(ip) != null
 }
