@@ -5,6 +5,7 @@ digraph G {
   ":core:domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=1]
   ":core:speech-recognition-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:speech-recognition-domain" [fillcolor="#E1BEE7", color="#8E24AA", penwidth=2.5]
+  ":core:windows-hotkey-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:speech-recognition-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -13,6 +14,8 @@ digraph G {
   ":core:speech-recognition-data" -> ":core:domain"
   ":core:speech-recognition-data" -> ":core:speech-recognition-domain"
   ":core:speech-recognition-domain" -> ":core:domain"
+  ":core:windows-hotkey-data" -> ":core:domain"
+  ":core:windows-hotkey-data" -> ":core:speech-recognition-domain"
   ":feature:main" -> ":core:domain"
   ":feature:main" -> ":core:speech-recognition-domain"
   ":feature:narrator-overlay" -> ":core:domain"

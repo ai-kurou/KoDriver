@@ -118,6 +118,7 @@ digraph G {
   ":core:text-to-speech-data" -> ":core:domain" [color="#1E88E580"]
   ":core:windows-hotkey-data" -> ":core:domain" [color="#1E88E580"]
   ":core:windows-hotkey-data" -> ":core:manual-readout-domain" [color="#1E88E580"]
+  ":core:windows-hotkey-data" -> ":core:speech-recognition-domain" [color="#1E88E580"]
   ":core:windows-startup-data" -> ":core:domain" [color="#1E88E580"]
   ":server" -> ":core:ace-windows-domain" [color="#D81B6080"]
   ":server" -> ":core:domain" [color="#D81B6080"]

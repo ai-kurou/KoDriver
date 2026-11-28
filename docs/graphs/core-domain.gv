@@ -132,6 +132,7 @@ digraph G {
   ":core:text-to-speech-data" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:domain"
   ":core:windows-hotkey-data" -> ":core:manual-readout-domain"
+  ":core:windows-hotkey-data" -> ":core:speech-recognition-domain"
   ":core:windows-startup-data" -> ":core:domain"
   ":feature:ace-windows-auto-readout-brake-temperature-detail" -> ":core:domain"
   ":feature:ace-windows-auto-readout-brake-temperature-detail" -> ":core:ace-windows-domain"
