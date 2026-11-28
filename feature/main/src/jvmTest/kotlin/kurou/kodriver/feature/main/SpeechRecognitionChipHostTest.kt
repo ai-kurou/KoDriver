@@ -118,8 +118,11 @@ class SpeechRecognitionChipHostTest {
 
     /** チップとカードを並べて出す。チップのタップで ON/OFF が切り替わり、カードに状態が出る。 */
     @Composable
-    private fun Chip(requestPermission: () -> Unit = {}) {
-        val slots = rememberSpeechRecognition(viewModel, requestPermission)
+    private fun Chip(
+        requestPermission: () -> Unit = {},
+        stopInBackground: Boolean = true,
+    ) {
+        val slots = rememberSpeechRecognition(viewModel, requestPermission, stopInBackground)
         Column {
             slots.chip(Modifier)
             slots.card(Modifier)
@@ -139,7 +142,7 @@ class SpeechRecognitionChipHostTest {
         rule.setContent {
             CompositionLocalProvider(LocalLifecycleOwner provides owner) {
                 KoDriverTheme {
-                    Chip()
+                    Chip(stopInBackground = true)
                 }
             }
         }
@@ -152,13 +155,38 @@ class SpeechRecognitionChipHostTest {
     }
 
     @Test
+    fun `デスクトップではウィンドウが見えなくなっても聞き取りを続ける`() {
+        createViewModel(granted = true)
+        val owner = TestLifecycleOwner()
+        owner.moveTo(Lifecycle.State.RESUMED)
+        rule.setContent {
+            CompositionLocalProvider(LocalLifecycleOwner provides owner) {
+                KoDriverTheme {
+                    // 既定値（デスクトップでは背面化で止めない）を使う
+                    val slots = rememberSpeechRecognition(viewModel, requestPermission = {})
+                    Column {
+                        slots.chip(Modifier)
+                        slots.card(Modifier)
+                    }
+                }
+            }
+        }
+        rule.onNodeWithContentDescription("停止中").performClick()
+        rule.runOnIdle { assertTrue(viewModel.uiState.value.enabled) }
+
+        rule.runOnUiThread { owner.handle(Lifecycle.Event.ON_STOP) }
+
+        rule.runOnIdle { assertTrue(viewModel.uiState.value.enabled) }
+    }
+
+    @Test
     fun `前面に戻ると見えなくなる前に聞き取り中だった場合は再開する`() {
         createViewModel(granted = true)
         val owner = TestLifecycleOwner()
         owner.moveTo(Lifecycle.State.RESUMED)
         rule.setContent {
             CompositionLocalProvider(LocalLifecycleOwner provides owner) {
-                KoDriverTheme { Chip() }
+                KoDriverTheme { Chip(stopInBackground = true) }
             }
         }
         rule.onNodeWithContentDescription("停止中").performClick()
