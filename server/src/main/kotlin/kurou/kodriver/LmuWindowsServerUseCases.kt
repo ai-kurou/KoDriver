@@ -6,13 +6,13 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
@@ -34,13 +34,13 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatur
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsClassCarGapUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsNearbyVehiclesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreDetachedUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
@@ -49,7 +49,7 @@ import org.koin.core.Koin
 /** LMU の WebSocket エンドポイントの購読用 UseCase。 */
 internal data class LmuWindowsServerUseCases(
     val observeLmuWindowsRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
-    val observeLmuWindowsVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
+    val observeLmuWindowsNearbyVehicles: ObserveLmuWindowsNearbyVehiclesUseCase,
     val observeLmuWindowsVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
     val observeLmuWindowsTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     val observeLmuWindowsBrakeTemperature: ObserveLmuWindowsBrakeTemperatureUseCase,
@@ -67,8 +67,8 @@ internal data class LmuWindowsServerUseCases(
 internal fun lmuWindowsServerUseCasesFrom(koin: Koin): LmuWindowsServerUseCases =
     LmuWindowsServerUseCases(
         observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
-        observeLmuWindowsVehicleApproach =
-            ObserveLmuWindowsVehicleApproachUseCase(
+        observeLmuWindowsNearbyVehicles =
+            ObserveLmuWindowsNearbyVehiclesUseCase(
                 koin.get<LmuWindowsVehicleApproachRepository>(),
             ),
         observeLmuWindowsVehicleDamage =
@@ -119,8 +119,8 @@ internal fun lmuWindowsServerUseCasesFrom(koin: Koin): LmuWindowsServerUseCases 
 internal fun emptyLmuWindowsServerUseCases(): LmuWindowsServerUseCases =
     LmuWindowsServerUseCases(
         observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(EmptyLmuWindowsFlagRepository),
-        observeLmuWindowsVehicleApproach =
-            ObserveLmuWindowsVehicleApproachUseCase(
+        observeLmuWindowsNearbyVehicles =
+            ObserveLmuWindowsNearbyVehiclesUseCase(
                 EmptyLmuWindowsVehicleApproachRepository,
             ),
         observeLmuWindowsVehicleDamage =
@@ -170,7 +170,7 @@ private object EmptyLmuWindowsFlagRepository : LmuWindowsFlagRepository {
 }
 
 private object EmptyLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
-    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
+    override fun nearbyVehiclesStream(): Flow<LmuWindowsNearbyVehiclesData> = emptyFlow()
 }
 
 private object EmptyLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository {

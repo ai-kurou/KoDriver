@@ -25,13 +25,13 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsCarGapData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsClassCarGapData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVirtualEnergyData
@@ -117,7 +117,7 @@ val fakeLmuWindowsNarratorModule =
     }
 
 class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
-    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
+    override fun nearbyVehiclesStream(): Flow<LmuWindowsNearbyVehiclesData> = emptyFlow()
 }
 
 class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {

@@ -12,7 +12,7 @@ WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパター�
 | --- | --- | --- |
 | `/ws/lmu_windows/telemetry` | `ObserveLmuWindowsUseCase`（共有メモリの `LmuWindowsRepository`） | `LmuWindowsTelemetryData` 全体（同一値も継続配信） |
 | `/ws/lmu_windows/flags` | `ObserveLmuWindowsRaceFlagsUseCase`（`LmuWindowsFlagRepository`） | `LmuWindowsRaceFlagsData` |
-| `/ws/lmu_windows/vehicle_approach` | `ObserveLmuWindowsVehicleApproachUseCase`（`LmuWindowsVehicleApproachRepository`） | `LmuWindowsVehicleApproachData` |
+| `/ws/lmu_windows/vehicle_approach` | `ObserveLmuWindowsNearbyVehiclesUseCase`（`LmuWindowsVehicleApproachRepository`） | `LmuWindowsNearbyVehiclesData`（閾値を適用しない周辺車両の位置。並走判定は受信側の端末の設定で行う） |
 | `/ws/lmu_windows/damage` | `ObserveLmuWindowsVehicleDamageUseCase`（`LmuWindowsVehicleDamageRepository`） | `LmuWindowsVehicleDamageData` |
 | `/ws/lmu_windows/tyre_carcass_temperature` | `ObserveLmuWindowsTyreCarcassTemperatureUseCase`（`LmuWindowsTyreCarcassTemperatureRepository`） | `LmuWindowsTyreCarcassTemperatureData`（同一値も継続配信） |
 | `/ws/lmu_windows/brake_wear` | `ObserveLmuWindowsBrakeWearUseCase`（`LmuWindowsBrakeWearRepository`） | `LmuWindowsBrakeWearData?`（取得失敗時は JSON `null`。車両クラスとの受信順に依存しないよう、同一値も重複排除せず毎回配信） |

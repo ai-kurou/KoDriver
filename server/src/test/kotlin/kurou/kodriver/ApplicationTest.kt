@@ -57,6 +57,8 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehicleData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitState
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
@@ -68,7 +70,6 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTyreWheelData
-import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsVehicleData
@@ -96,20 +97,19 @@ import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeTemperatur
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsBrakeWearUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsCarGapUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsClassCarGapUseCase
+import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsNearbyVehiclesUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreDetachedUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsUseCase
-import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.lmuwindows.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
-import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.WheelIndex
 import org.koin.core.context.startKoin
@@ -135,8 +135,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -201,8 +201,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -265,8 +265,8 @@ class ApplicationTest {
                         lmuWindows =
                             LmuWindowsServerUseCases(
                                 observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -344,8 +344,8 @@ class ApplicationTest {
                         lmuWindows =
                             LmuWindowsServerUseCases(
                                 observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -420,8 +420,8 @@ class ApplicationTest {
                         lmuWindows =
                             LmuWindowsServerUseCases(
                                 observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -495,7 +495,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
+                                observeLmuWindowsNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(repository),
                                 observeLmuWindowsVehicleDamage =
                                     ObserveLmuWindowsVehicleDamageUseCase(
                                         EmptyLmuWindowsVehicleDamageRepository,
@@ -552,11 +552,7 @@ class ApplicationTest {
                         withTimeout(1_000) {
                             (incoming.receive() as Frame.Text).readText()
                         }
-                    assertEquals(
-                        """{"sideBySideLeftVehicleIds":[3],"sideBySideRightVehicleIds":[],""" +
-                            """"lateralDistanceLeftMeters":1.5,"lateralDistanceRightMeters":1.7976931348623157E308}""",
-                        message,
-                    )
+                    assertEquals(VEHICLE_APPROACH_LEFT_JSON, message)
                 }
         }
 
@@ -573,7 +569,7 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
+                                observeLmuWindowsNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(repository),
                                 observeLmuWindowsVehicleDamage =
                                     ObserveLmuWindowsVehicleDamageUseCase(
                                         EmptyLmuWindowsVehicleDamageRepository,
@@ -649,8 +645,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
@@ -726,8 +722,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
@@ -802,8 +798,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -879,8 +875,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -961,8 +957,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1043,8 +1039,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1129,8 +1125,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1210,8 +1206,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1287,8 +1283,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1368,8 +1364,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1445,8 +1441,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1524,8 +1520,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1598,8 +1594,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1676,8 +1672,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1750,8 +1746,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1828,8 +1824,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1903,8 +1899,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -1982,8 +1978,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2059,8 +2055,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2140,8 +2136,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2219,8 +2215,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2302,8 +2298,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2381,8 +2377,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2462,8 +2458,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2541,8 +2537,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2624,8 +2620,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2701,8 +2697,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2778,8 +2774,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2861,8 +2857,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -2941,8 +2937,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -3021,8 +3017,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -3095,8 +3091,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -3171,8 +3167,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -3245,8 +3241,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -3321,8 +3317,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -3400,8 +3396,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -3479,8 +3475,8 @@ class ApplicationTest {
                                     ObserveLmuWindowsRaceFlagsUseCase(
                                         FakeLmuWindowsFlagRepository(),
                                     ),
-                                observeLmuWindowsVehicleApproach =
-                                    ObserveLmuWindowsVehicleApproachUseCase(
+                                observeLmuWindowsNearbyVehicles =
+                                    ObserveLmuWindowsNearbyVehiclesUseCase(
                                         EmptyLmuWindowsVehicleApproachRepository,
                                     ),
                                 observeLmuWindowsVehicleDamage =
@@ -3650,28 +3646,20 @@ private const val YELLOW_FLAG_JSON =
         """"playerFlag":"UNKNOWN","playerUnderYellow":true}"""
 
 private val vehicleApproachDataLeft =
-    LmuWindowsVehicleApproachData(
-        sideBySideLeftVehicleIds = setOf(3),
-        sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = LateralDistanceMeters(1.5),
-        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
+    LmuWindowsNearbyVehiclesData(
+        listOf(LmuWindowsNearbyVehicleData(vehicleId = 3, lateralMeters = -1.5, longitudinalMeters = 0.5)),
     )
 
 private val vehicleApproachDataRight =
-    LmuWindowsVehicleApproachData(
-        sideBySideLeftVehicleIds = emptySet(),
-        sideBySideRightVehicleIds = setOf(5),
-        lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
-        lateralDistanceRightMeters = LateralDistanceMeters(2.0),
+    LmuWindowsNearbyVehiclesData(
+        listOf(LmuWindowsNearbyVehicleData(vehicleId = 5, lateralMeters = 2.0, longitudinalMeters = -4.0)),
     )
 
 private const val VEHICLE_APPROACH_LEFT_JSON =
-    """{"sideBySideLeftVehicleIds":[3],"sideBySideRightVehicleIds":[],""" +
-        """"lateralDistanceLeftMeters":1.5,"lateralDistanceRightMeters":1.7976931348623157E308}"""
+    """{"vehicles":[{"vehicleId":3,"lateralMeters":-1.5,"longitudinalMeters":0.5}]}"""
 
 private const val VEHICLE_APPROACH_RIGHT_JSON =
-    """{"sideBySideLeftVehicleIds":[],"sideBySideRightVehicleIds":[5],""" +
-        """"lateralDistanceLeftMeters":1.7976931348623157E308,"lateralDistanceRightMeters":2.0}"""
+    """{"vehicles":[{"vehicleId":5,"lateralMeters":2.0,"longitudinalMeters":-4.0}]}"""
 
 private val overheatingDamage =
     LmuWindowsVehicleDamageData(
@@ -3826,17 +3814,17 @@ private class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {
 }
 
 private class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
-    private val channel = Channel<LmuWindowsVehicleApproachData>(capacity = Channel.UNLIMITED)
+    private val channel = Channel<LmuWindowsNearbyVehiclesData>(capacity = Channel.UNLIMITED)
 
-    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = channel.receiveAsFlow()
+    override fun nearbyVehiclesStream(): Flow<LmuWindowsNearbyVehiclesData> = channel.receiveAsFlow()
 
-    fun emit(data: LmuWindowsVehicleApproachData) {
+    fun emit(data: LmuWindowsNearbyVehiclesData) {
         channel.trySend(data).getOrThrow()
     }
 }
 
 private object EmptyLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
-    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
+    override fun nearbyVehiclesStream(): Flow<LmuWindowsNearbyVehiclesData> = emptyFlow()
 }
 
 private object EmptyLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository {

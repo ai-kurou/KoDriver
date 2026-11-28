@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -68,6 +69,8 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MAX
+import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MAX
 import kurou.kodriver.domain.lmuwindows.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsBrakeWearData
@@ -76,6 +79,8 @@ import kurou.kodriver.domain.lmuwindows.model.LmuWindowsEngineData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsInputsData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehicleData
+import kurou.kodriver.domain.lmuwindows.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.lmuwindows.model.LmuWindowsTimingData
@@ -365,7 +370,12 @@ class LmuWindowsNarratorViewModelTest {
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
-        every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
+        every { vehicleApproachRepository.nearbyVehiclesStream() } returns
+            vehicleApproachChannel.receiveAsFlow().map { it.toNearbyVehicles() }
+        every { vehicleApproachThresholdsPreferencesRepository.observeLongitudinalThresholdMeters() } returns
+            flowOf(LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_MAX)
+        every { vehicleApproachThresholdsPreferencesRepository.observeLateralThresholdMeters() } returns
+            flowOf(LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_MAX)
         val telemetryShared =
             MutableSharedFlow<LmuWindowsTelemetryData>(extraBufferCapacity = TELEMETRY_BUFFER_CAPACITY)
         telemetryForwarderScope.launch { telemetryChannel.consumeEach { telemetryShared.emit(it) } }
@@ -552,7 +562,11 @@ class LmuWindowsNarratorViewModelTest {
             observeDebugReadoutRequest = ObserveDebugReadoutRequestUseCase(debugRequestRepository),
             vehicleApproachUseCases =
                 VehicleApproachUseCases(
-                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
+                    observeVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
+                            vehicleApproachRepository,
+                            vehicleApproachThresholdsPreferencesRepository,
+                        ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
                     observeSkipFirstLap =
                         ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(
@@ -5771,3 +5785,22 @@ private fun remainingVirtualEnergy(
     remainingRatio = LmuWindowsVirtualEnergyRatio(remainingRatio),
     session = session,
 )
+
+/** 期待する並走状態になる周辺車両の位置へ変換する。距離の指定がない車両は閾値内の2mに置く。 */
+private fun LmuWindowsVehicleApproachData.toNearbyVehicles(): LmuWindowsNearbyVehiclesData {
+    fun side(
+        ids: Set<Int>,
+        distance: Double,
+        sign: Int,
+    ) = ids.map {
+        LmuWindowsNearbyVehicleData(
+            vehicleId = it,
+            lateralMeters = sign * if (distance == Double.MAX_VALUE) 2.0 else distance,
+            longitudinalMeters = 0.0,
+        )
+    }
+    return LmuWindowsNearbyVehiclesData(
+        side(sideBySideLeftVehicleIds, lateralDistanceLeftMeters.value, -1) +
+            side(sideBySideRightVehicleIds, lateralDistanceRightMeters.value, 1),
+    )
+}
