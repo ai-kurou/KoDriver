@@ -919,7 +919,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(emptyList<SpeechEvent>(), first.events)
-        assertEquals(Long.MAX_VALUE, first.state.personalBestMs)
+        assertEquals(69_000L, first.state.personalBestMs)
         assertEquals(69_000L, first.state.previousBestLapTimeMs)
         assertEquals(1, first.state.previousLapCount)
 
@@ -1136,6 +1136,68 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(listOf(LmuWindowsMyBestLap(59_000L)), second.events)
+    }
+
+    @Test
+    fun `初回に観測したベストが0を挟んで復帰しても読み上げず更新したら読み上げる`() {
+        val first =
+            myBestLapUseCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 110_000L),
+                settings = settings(),
+            )
+        val missing =
+            myBestLapUseCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 0L),
+                settings = settings(),
+            )
+        val recovered =
+            myBestLapUseCase.determineMyBestLap(
+                state = missing.state,
+                telemetry = telemetry(bestLapTimeMs = 110_000L),
+                settings = settings(),
+            )
+        val improved =
+            myBestLapUseCase.determineMyBestLap(
+                state = recovered.state,
+                telemetry = telemetry(bestLapTimeMs = 109_000L),
+                settings = settings(),
+            )
+
+        assertEquals(110_000L, missing.state.personalBestMs)
+        assertEquals(emptyList<SpeechEvent>(), recovered.events)
+        assertEquals(listOf(LmuWindowsMyBestLap(109_000L)), improved.events)
+    }
+
+    @Test
+    fun `項目が無効の間に更新したベストは有効化後に0から復帰しても読み上げない`() {
+        for (disabledKey in listOf(
+            LmuWindowsReadoutItemKey.MyBestLap.Root,
+            LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
+        )) {
+            val disabled =
+                myBestLapUseCase.determineMyBestLap(
+                    state = LmuWindowsNarratorState(previousBestLapTimeMs = 60_000L),
+                    telemetry = telemetry(bestLapTimeMs = 59_000L),
+                    settings = settings(enabledStates = allEnabledStates + mapOf(disabledKey to false)),
+                )
+            val missing =
+                myBestLapUseCase.determineMyBestLap(
+                    state = disabled.state,
+                    telemetry = telemetry(bestLapTimeMs = 0L),
+                    settings = settings(),
+                )
+            val recovered =
+                myBestLapUseCase.determineMyBestLap(
+                    state = missing.state,
+                    telemetry = telemetry(bestLapTimeMs = 59_000L),
+                    settings = settings(),
+                )
+
+            assertEquals(59_000L, disabled.state.personalBestMs)
+            assertEquals(emptyList<SpeechEvent>(), recovered.events)
+        }
     }
 
     @Test
