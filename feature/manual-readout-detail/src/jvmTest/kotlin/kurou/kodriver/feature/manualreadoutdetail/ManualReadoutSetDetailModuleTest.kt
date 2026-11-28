@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyPreferencesRepository
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import org.koin.core.parameter.parametersOf
@@ -84,6 +85,9 @@ class ManualReadoutSetDetailModuleTest {
                             Simulator.entries.forEach { simulator ->
                                 single<PlayStartSoundForKeyUseCase>(named(simulator.id)) { playStartSound }
                                 single<SpeakTextUseCase>(named(simulator.id)) { speakText }
+                            }
+                            single<WakeWordHotkeyPreferencesRepository> {
+                                UnassignedWakeWordHotkeyPreferencesRepository()
                             }
                             single<ManualReadoutHotkeyRepository> { hotkeyRepository }
                             repositories.forEach { (id, repository) ->

@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.manualreadoutdetail
 
 internal sealed interface ManualReadoutHotkeyConflict {
+    data object WakeWord : ManualReadoutHotkeyConflict
+
     data class OtherSet(
         val simulatorId: String,
         val setNumber: Int,
