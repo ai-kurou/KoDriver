@@ -25,8 +25,10 @@ import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.speechrecognition.model.WakeWordHotkey
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionEnabledRepository
 import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyPreferencesRepository
 import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyRepository
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionEnabledUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.RetryWakeWordHotkeyRegistrationUseCase
@@ -43,6 +45,8 @@ class OtherWakeWordHotkeyDetailViewModelTest {
     private val hotkeyRepository: WakeWordHotkeyRepository = mockk()
     private val lmuRepository: ManualReadoutSetPreferencesRepository = mockk()
     private val gt7Repository: ManualReadoutSetPreferencesRepository = mockk()
+    private val enabledRepository: SpeechRecognitionEnabledRepository = mockk()
+    private val speechRecognitionEnabled = MutableStateFlow(false)
     private val dispatcher = UnconfinedTestDispatcher()
     private val hotkey = MutableStateFlow(WakeWordHotkey())
     private val registration = MutableStateFlow<HotkeyRegistrationState>(HotkeyRegistrationState.Unsupported)
@@ -53,6 +57,7 @@ class OtherWakeWordHotkeyDetailViewModelTest {
     fun setUp() {
         Dispatchers.setMain(dispatcher)
         every { preferences.observeWakeWordHotkey() } returns hotkey
+        every { enabledRepository.enabled } returns speechRecognitionEnabled
         every { hotkeyRepository.registrationStateStream() } returns registration
         every { lmuRepository.observeSets() } returns lmuSets
         every { gt7Repository.observeSets() } returns gt7Sets
@@ -75,6 +80,7 @@ class OtherWakeWordHotkeyDetailViewModelTest {
                         Simulator.LmuWindows.id to ObserveManualReadoutSetsUseCase(lmuRepository),
                         Simulator.Gt7Ps5.id to ObserveManualReadoutSetsUseCase(gt7Repository),
                     ),
+                    ObserveSpeechRecognitionEnabledUseCase(enabledRepository),
                 )
             backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
             try {
@@ -98,6 +104,21 @@ class OtherWakeWordHotkeyDetailViewModelTest {
                 ),
                 viewModel.uiState.first(),
             )
+        }
+
+    @Test
+    fun `割り当て済みで音声認識がOFFの間だけ注意書きを出す`() =
+        withViewModel { viewModel ->
+            assertEquals(false, viewModel.uiState.first().showSpeechRecognitionOffNotice)
+
+            hotkey.value = WakeWordHotkey(0x41)
+            assertEquals(true, viewModel.uiState.first().showSpeechRecognitionOffNotice)
+
+            speechRecognitionEnabled.value = true
+            assertEquals(false, viewModel.uiState.first().showSpeechRecognitionOffNotice)
+
+            verify(exactly = 1) { enabledRepository.enabled }
+            confirmVerified(enabledRepository)
         }
 
     @Test

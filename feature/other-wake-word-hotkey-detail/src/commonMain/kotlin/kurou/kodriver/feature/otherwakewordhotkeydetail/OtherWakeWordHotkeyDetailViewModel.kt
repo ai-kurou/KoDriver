@@ -15,6 +15,7 @@ import kurou.kodriver.domain.manualreadout.usecase.ObserveManualReadoutSetsUseCa
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.domain.model.isHotkeyVirtualKeyCode
 import kurou.kodriver.domain.speechrecognition.model.WakeWordHotkey
+import kurou.kodriver.domain.speechrecognition.usecase.ObserveSpeechRecognitionEnabledUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyRegistrationStateUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.ObserveWakeWordHotkeyUseCase
 import kurou.kodriver.domain.speechrecognition.usecase.RetryWakeWordHotkeyRegistrationUseCase
@@ -26,6 +27,7 @@ internal class OtherWakeWordHotkeyDetailViewModel(
     observeRegistrationState: ObserveWakeWordHotkeyRegistrationStateUseCase,
     private val retryRegistration: RetryWakeWordHotkeyRegistrationUseCase,
     private val observeManualReadoutSets: Map<String, ObserveManualReadoutSetsUseCase>,
+    observeSpeechRecognitionEnabled: ObserveSpeechRecognitionEnabledUseCase,
 ) : ViewModel() {
     private val conflict = MutableStateFlow<OtherWakeWordHotkeyConflict?>(null)
 
@@ -33,12 +35,18 @@ internal class OtherWakeWordHotkeyDetailViewModel(
     private val mutationMutex = Mutex()
 
     val uiState =
-        combine(observeHotkey(), conflict, observeRegistrationState()) { hotkey, conflict, registration ->
+        combine(
+            observeHotkey(),
+            conflict,
+            observeRegistrationState(),
+            observeSpeechRecognitionEnabled(),
+        ) { hotkey, conflict, registration, speechRecognitionEnabled ->
             OtherWakeWordHotkeyDetailUiState(
                 hotkeyVirtualKeyCode = hotkey.virtualKeyCode,
                 hotkeyModifiers = hotkey.modifiers,
                 hotkeyConflict = conflict,
                 hotkeyRegistrationState = registration,
+                speechRecognitionEnabled = speechRecognitionEnabled,
             )
         }.stateIn(
             viewModelScope,

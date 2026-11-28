@@ -13,4 +13,5 @@
     <string name="wake_word_hotkey_registration_conflict">他のアプリが使用中のため登録できません</string>
     <string name="wake_word_hotkey_registration_failed">登録に失敗しました（エラーコード: %1$d）</string>
     <string name="wake_word_hotkey_registration_retry">再試行</string>
+    <string name="wake_word_hotkey_speech_recognition_off">音声認識がOFFのため、押しても反応しません</string>
 </resources>

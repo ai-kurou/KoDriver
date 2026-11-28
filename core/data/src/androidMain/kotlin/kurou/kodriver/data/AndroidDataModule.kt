@@ -13,6 +13,7 @@ import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemRequestReposit
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutItemSpokenRepository
 import kurou.kodriver.data.manualreadout.InMemoryManualReadoutRequestRepository
 import kurou.kodriver.data.manualreadout.InMemorySpeechPlaybackStateRepository
+import kurou.kodriver.data.manualreadout.InMemorySpeechRecognitionEnabledRepository
 import kurou.kodriver.data.manualreadout.InMemorySpeechRecognitionTranscriptRepository
 import kurou.kodriver.data.preferences.AndroidAutoReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidDynamicColorEnabledRepository
@@ -89,6 +90,7 @@ import kurou.kodriver.domain.serverconnection.repository.AccessLocalNetworkPermi
 import kurou.kodriver.domain.serverconnection.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.serverconnection.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.serverconnection.repository.ServerVersionRepository
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionEnabledRepository
 import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionTranscriptRepository
 import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyPreferencesRepository
 import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyRepository
@@ -137,6 +139,7 @@ public fun androidDataModule(context: Context): Module =
         single<ManualReadoutItemRequestRepository> { InMemoryManualReadoutItemRequestRepository() }
         single<ManualReadoutItemSpokenRepository> { InMemoryManualReadoutItemSpokenRepository() }
         single<SpeechPlaybackStateRepository> { InMemorySpeechPlaybackStateRepository() }
+        single<SpeechRecognitionEnabledRepository> { InMemorySpeechRecognitionEnabledRepository() }
         single<SpeechRecognitionTranscriptRepository> { InMemorySpeechRecognitionTranscriptRepository() }
         single<Context> { context }
 

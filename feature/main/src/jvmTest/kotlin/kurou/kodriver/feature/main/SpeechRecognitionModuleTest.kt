@@ -61,6 +61,12 @@ class SpeechRecognitionModuleTest {
                         single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
                         single<SpeechRecognitionTranscriptRepository> { FakeSpeechRecognitionTranscriptRepository() }
+                        single<kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyRepository> {
+                            FakeWakeWordHotkeyRepository()
+                        }
+                        single<kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionEnabledRepository> {
+                            FakeSpeechRecognitionEnabledRepository()
+                        }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                         single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
                         single<MicrophoneCutQuietSoundPreferencesRepository> {
@@ -102,6 +108,12 @@ class SpeechRecognitionModuleTest {
                         single<ManualReadoutItemRequestRepository> { FakeManualReadoutItemRequestRepository() }
                         single<SpeechPlaybackStateRepository> { FakeSpeechPlaybackStateRepository() }
                         single<SpeechRecognitionTranscriptRepository> { FakeSpeechRecognitionTranscriptRepository() }
+                        single<kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyRepository> {
+                            FakeWakeWordHotkeyRepository()
+                        }
+                        single<kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionEnabledRepository> {
+                            FakeSpeechRecognitionEnabledRepository()
+                        }
                         single<SimulatorPreferencesRepository> { FakeSelectedSimulatorRepository() }
                         single<SpeechRecognitionChimePlayer> { FakeSpeechRecognitionChimePlayer() }
                         single<MicrophoneCutQuietSoundPreferencesRepository> {

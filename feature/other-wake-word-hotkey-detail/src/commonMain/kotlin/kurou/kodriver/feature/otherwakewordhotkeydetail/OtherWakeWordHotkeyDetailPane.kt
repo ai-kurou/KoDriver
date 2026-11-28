@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,6 +21,7 @@ import kurou.kodriver.domain.manualreadout.util.isManualReadoutHotkeySupported
 import kurou.kodriver.domain.model.ManualReadoutHotkeyModifiers
 import kurou.kodriver.feature.otherwakewordhotkeydetail.generated.resources.Res
 import kurou.kodriver.feature.otherwakewordhotkeydetail.generated.resources.wake_word_hotkey_description
+import kurou.kodriver.feature.otherwakewordhotkeydetail.generated.resources.wake_word_hotkey_speech_recognition_off
 import kurou.kodriver.feature.otherwakewordhotkeydetail.generated.resources.wake_word_hotkey_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -95,6 +98,13 @@ internal fun OtherWakeWordHotkeyDetailContent(
                         onSelectModifiers = onSelectModifiers,
                         onOpenGuide = { uriHandler.openUri(SIMHUB_HOTKEY_SETUP_URL) },
                     )
+                    if (uiState.showSpeechRecognitionOffNotice) {
+                        Text(
+                            text = stringResource(Res.string.wake_word_hotkey_speech_recognition_off),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }

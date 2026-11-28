@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherwakewordhotkeydetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.domain.manualreadout.repository.ManualReadoutSetPreferencesRepository
@@ -9,6 +10,7 @@ import kurou.kodriver.domain.model.HotkeyRegistrationState
 import kurou.kodriver.domain.model.ManualReadoutSet
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.speechrecognition.model.WakeWordHotkey
+import kurou.kodriver.domain.speechrecognition.repository.SpeechRecognitionEnabledRepository
 import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyPreferencesRepository
 import kurou.kodriver.domain.speechrecognition.repository.WakeWordHotkeyRepository
 import org.koin.core.qualifier.named
@@ -19,12 +21,22 @@ val fakeOtherWakeWordHotkeyDetailModule =
     module {
         single<WakeWordHotkeyPreferencesRepository> { FakeWakeWordHotkeyPreferencesRepository() }
         single<WakeWordHotkeyRepository> { FakeWakeWordHotkeyRepository() }
+        single<SpeechRecognitionEnabledRepository> { FakeDetailSpeechRecognitionEnabledRepository() }
         Simulator.entries.forEach { simulator ->
             single<ManualReadoutSetPreferencesRepository>(named(simulator.id)) {
                 FakeEmptyManualReadoutSetPreferencesRepository()
             }
         }
     }
+
+class FakeDetailSpeechRecognitionEnabledRepository : SpeechRecognitionEnabledRepository {
+    private val state = MutableStateFlow(false)
+    override val enabled: StateFlow<Boolean> = state
+
+    override fun update(enabled: Boolean) {
+        state.value = enabled
+    }
+}
 
 class FakeWakeWordHotkeyPreferencesRepository : WakeWordHotkeyPreferencesRepository {
     private val hotkey = MutableStateFlow(WakeWordHotkey())

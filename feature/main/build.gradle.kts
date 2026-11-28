@@ -92,6 +92,7 @@ dependencies {
     testFixturesApi(projects.core.gt7Ps5Domain)
     testFixturesApi(projects.core.aceWindowsDomain)
     testFixturesApi(projects.core.debugDomain)
+    testFixturesImplementation(projects.core.speechRecognitionDomain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))
