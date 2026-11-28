@@ -105,6 +105,22 @@ class OtherServerIpDetailViewModelTest {
         }
 
     @Test
+    fun `IPアドレスの区切りに入力されたカンマはドットになる`() =
+        runTest {
+            every { repository.serverIp() } returns ipFlow
+            val viewModel = createViewModel()
+
+            viewModel.onIpChanged("10,0,0.1")
+
+            assertEquals(
+                OtherServerIpDetailUiState(inputIp = "10.0.0.1", isInputValid = true),
+                viewModel.uiState.first(),
+            )
+            verify(exactly = 1) { repository.serverIp() }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `不正なIPアドレスを入力するとisInputValidがfalseになる`() =
         runTest {
             every { repository.serverIp() } returns ipFlow

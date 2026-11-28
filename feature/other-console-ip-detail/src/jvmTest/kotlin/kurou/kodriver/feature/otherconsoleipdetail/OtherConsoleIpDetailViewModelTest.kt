@@ -102,6 +102,17 @@ class OtherConsoleIpDetailViewModelTest {
         }
 
     @Test
+    fun `区切りにカンマを入力したIPアドレスはドット区切りで保存される`() =
+        runTest {
+            viewModel.onAddressChanged("10,0,0.5")
+            assertEquals("10.0.0.5", viewModel.uiState.first().inputAddress)
+
+            viewModel.onSave()
+
+            assertEquals("10.0.0.5", addressRepository.consoleAddress().first())
+        }
+
+    @Test
     fun `無効なIPアドレスは保存できない`() =
         runTest {
             viewModel.onAddressChanged("bad_ip")
